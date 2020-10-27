@@ -1,0 +1,242 @@
+_id: spc_94e24740f2d7484fa06b63b902026a60
+type: ApiSpec
+parentId: wrk_3123a62ce2ec491b82a8a6c4f1a39553
+modified: 1603469330982
+created: 1600878383799
+fileName: solace-platform-api.yml
+contents: >
+  openapi: 3.0.0
+
+  info:
+    title: Solace Platform API
+    description: 
+    version: 0.0.1
+  servers:
+    - url: https://example.io/v1
+
+  components:
+    securitySchemes:
+      BasicAuth:
+        type: http
+        scheme: basic
+    parameters:
+      api_id:
+        name: api_id
+        description: the id of the api
+        in: path
+        required: true
+        schema:
+          type: string
+      api_domain_id:
+        name: api_domain_id
+        description: the id of the api domain
+        in: path
+        required: true
+        schema:
+          type: string
+      api_product_id:
+        name: api_product_id
+        description: the id of the api product
+        in: path
+        required: true
+        schema:
+          type: string
+      attribute_name:
+        name: attribute_name
+        description: name of an attribute attached to a resource
+        in: path
+        required: true
+        schema:
+          type: string
+      app_id:
+        name: app_id
+        description: id of an app
+        in: path
+        required: true
+        schema:
+          type: string
+      company_id:
+        name: company_id
+        description: id of a company
+        in: path
+        required: true
+        schema:
+          type: string
+
+    
+  security:
+    - BasicAuth: []
+
+  tags:
+    - name: apis
+    - name: apiProducts
+  paths:
+    /apis:
+      post:
+       tags:
+       - apis
+      get:
+       tags:
+        - apis
+       description: Returns a list of APIs, maps to underlying event portal api /api/v1/eventPortal/applications
+    /apis/{api_id}:
+      get:
+       tags:
+       - apis
+       parameters:
+       - $ref: '#/components/parameters/api_id'
+      patch:
+       tags:
+       - apis
+       parameters:
+       - $ref: '#/components/parameters/api_id'
+      delete:
+       tags:
+       - apis
+       parameters:
+       - $ref: '#/components/parameters/api_id'
+    /apis/{api_id}/spec:
+     get:
+       tags:
+       - apis
+       parameters:
+       - $ref: '#/components/parameters/api_id'
+    /apiDomains:
+      post:
+       tags:
+       - apis
+      get:
+       tags:
+        - apis
+    /apiDomains/{api_domain_id}:
+      get:
+       tags:
+       - apis
+       parameters:
+       - $ref: '#/components/parameters/api_domain_id'
+      patch:
+       tags:
+       - apis
+       parameters:
+       - $ref: '#/components/parameters/api_domain_id'
+      delete:
+       tags:
+       - apis
+       parameters:
+       - $ref: '#/components/parameters/api_domain_id'
+
+    /apiProducts:
+      post:
+       tags:
+       - apiProducts
+      get:
+       tags:
+        - apiProducts
+    /apiProducts/{api_product_id}:
+      get:
+       tags:
+       - apiProducts
+       parameters:
+       - $ref: '#/components/parameters/api_product_id'
+      patch:
+       tags:
+       - apiProducts
+       parameters:
+       - $ref: '#/components/parameters/api_product_id'
+      delete:
+       tags:
+       - apiProducts
+       parameters:
+       - $ref: '#/components/parameters/api_product_id'
+    /apiProducts/{api_product_id}/attributes:
+      post:
+       tags:
+       - apiProducts
+      get:
+       tags:
+        - apiProducts
+    /apiProducts/{api_product_id}/attributes/{attribute_name}:
+      get:
+       tags:
+       - apiProducts
+       parameters:
+       - $ref: '#/components/parameters/api_product_id'
+       - $ref: '#/components/parameters/attribute_name'
+      patch:
+       tags:
+       - apiProducts
+       parameters:
+       - $ref: '#/components/parameters/api_product_id'
+       - $ref: '#/components/parameters/attribute_name'
+      delete:
+       tags:
+       - apiProducts
+       parameters:
+       - $ref: '#/components/parameters/api_product_id'
+       - $ref: '#/components/parameters/attribute_name'
+    /apps:
+     get:
+      tags:
+      - apps
+      parameters:
+      - name: expand
+        in: query
+        description: expand results to include other app information
+        schema:
+          type: string
+      - name: status
+        in: query
+        description: Filter by app status
+        schema:
+          type: string
+      - name: apptype
+        in: query
+        description: app type (developer/company)
+        schema:
+          type: string
+      - name: appfamily
+        in: query
+        description: app family
+        schema:
+          type: string
+    /apps/{app_id}:
+     get:
+      tags:
+      - apps
+      parameters:
+      - $ref: '#/components/parameters/app_id'
+    /companies:
+     get:
+      tags: 
+      - companies
+     post:
+      tags:
+       - companies
+    /companies/{company_id}:
+     get:
+       tags:
+       - companies
+       parameters:
+       - $ref: '#/components/parameters/company_id'
+    /deployments:
+     get:
+      tags: 
+      - deployments
+     post:
+      tags:
+       - deployments
+    /developers:
+     get:
+      tags: 
+      - developers
+     post:
+      tags:
+       - developers
+    /environments:
+     get:
+      tags: 
+      - environments
+     post:
+      tags:
+       - environments
+contentType: yaml
