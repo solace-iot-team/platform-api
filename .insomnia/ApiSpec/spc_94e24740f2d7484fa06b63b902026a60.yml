@@ -1,10 +1,10 @@
 _id: spc_94e24740f2d7484fa06b63b902026a60
 type: ApiSpec
 parentId: wrk_3123a62ce2ec491b82a8a6c4f1a39553
-modified: 1603469330982
+modified: 1603799777935
 created: 1600878383799
 fileName: solace-platform-api.yml
-contents: >
+contents: >+
   openapi: 3.0.0
 
   info:
@@ -239,4 +239,6 @@ contents: >
      post:
       tags:
        - environments
+       
+       
 contentType: yaml
