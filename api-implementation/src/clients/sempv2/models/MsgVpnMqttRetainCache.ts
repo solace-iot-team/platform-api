@@ -1,0 +1,21 @@
+/* istanbul ignore file */
+/* tslint:disable */
+/* eslint-disable */
+export interface MsgVpnMqttRetainCache {
+    /**
+     * The name of the MQTT Retain Cache.
+     */
+    cacheName?: string;
+    /**
+     * Enable or disable this MQTT Retain Cache. When the cache is disabled, neither retain messages nor retain requests will be delivered by the cache. However, live retain messages will continue to be delivered to currently connected MQTT clients. The default value is `false`.
+     */
+    enabled?: boolean;
+    /**
+     * The message lifetime, in seconds. If a message remains cached for the duration of its lifetime, the cache will remove the message. A lifetime of 0 results in the message being retained indefinitely. The default value is `0`.
+     */
+    msgLifetime?: number;
+    /**
+     * The name of the Message VPN.
+     */
+    msgVpnName?: string;
+}
