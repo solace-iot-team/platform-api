@@ -12,6 +12,9 @@ declare namespace Components {
         namespace AppId {
             export type AppId = string;
         }
+        namespace AppName {
+            export type AppName = string;
+        }
         namespace AttributeName {
             export type AttributeName = string;
         }
@@ -293,25 +296,62 @@ declare namespace Components {
              */
             subResources?: string[];
         }
+        export interface App {
+            name: string;
+            /**
+             * A setting, in milliseconds, for the lifetime of the consumer key that will be  generated for the developer app. The default value, -1, indicates an infinite validity period. Once set, the expiration can't be updated.
+             */
+            expiresIn?: number;
+            apiProducts: string[];
+            attributes?: Attributes;
+            scopes?: string[];
+            callbackUrl?: string;
+            credentials: Credentials;
+        }
+        export interface AppPatch {
+            name?: string;
+            apiProducts?: string[];
+            attributes?: Attributes;
+            scopes?: string[];
+            callbackUrl?: string;
+            credentials?: Credentials;
+            status?: "approved" | "pending";
+        }
+        export type Attributes = {
+            name: string;
+            value: string;
+        }[];
+        export interface ClientCertificateCredentials {
+            username?: string;
+            certificate?: string;
+            privateKey?: string;
+        }
+        export interface ConsumerCredentials {
+            consumerKey?: string;
+            consumerSecret?: string;
+        }
+        export interface Credentials {
+            expiresAt: number;
+            issuedAt?: number;
+            "secretType:"?: "UsernamePassword" | "ClientCertificate" | "ConsumerCredentials";
+            /**
+             * if omitted credentials will be auto-generated
+             */
+            secret?: /* if omitted credentials will be auto-generated */ UserNamePasswordCredentials | ClientCertificateCredentials | ConsumerCredentials;
+        }
         export interface Developer {
             email: string;
             firstName: string;
             lastName: string;
             userName: string;
-            attributes?: {
-                name: string;
-                value: string;
-            }[];
+            attributes?: Attributes;
         }
         export interface DeveloperPatch {
             email?: string;
             firstName?: string;
             lastName?: string;
             userName?: string;
-            attributes?: {
-                name: string;
-                value: string;
-            }[];
+            attributes?: Attributes;
         }
         export interface ErrorResponse {
             /**
@@ -331,6 +371,10 @@ declare namespace Components {
             meta?: {
                 [name: string]: unknown;
             };
+        }
+        export interface UserNamePasswordCredentials {
+            username?: string;
+            password?: string;
         }
     }
 }
@@ -553,7 +597,77 @@ declare namespace Paths {
         namespace Patch {
             export type RequestBody = Components.Schemas.DeveloperPatch;
             namespace Responses {
-                export type $200 = /* The API Product Schema */ Components.Schemas.APIProduct;
+                export type $200 = Components.Schemas.App;
+                export type $400 = Components.Schemas.ErrorResponse;
+                export type $401 = Components.Schemas.ErrorResponse;
+                export type $403 = Components.Schemas.ErrorResponse;
+                export type $404 = Components.Schemas.ErrorResponse;
+                export type $422 = Components.Schemas.ErrorResponse;
+                export type $500 = Components.Schemas.ErrorResponse;
+                export type $503 = Components.Schemas.ErrorResponse;
+                export type $504 = Components.Schemas.ErrorResponse;
+            }
+        }
+    }
+    namespace Developers$DeveloperUsernameApps {
+        namespace Get {
+            namespace Responses {
+                export type $200 = Components.Schemas.App[];
+                export type $400 = Components.Schemas.ErrorResponse;
+                export type $401 = Components.Schemas.ErrorResponse;
+                export type $403 = Components.Schemas.ErrorResponse;
+                export type $404 = Components.Schemas.ErrorResponse;
+                export type $500 = Components.Schemas.ErrorResponse;
+                export type $503 = Components.Schemas.ErrorResponse;
+                export type $504 = Components.Schemas.ErrorResponse;
+            }
+        }
+        namespace Post {
+            export type RequestBody = Components.Schemas.App;
+            namespace Responses {
+                export type $201 = Components.Schemas.App;
+                export type $400 = Components.Schemas.ErrorResponse;
+                export type $401 = Components.Schemas.ErrorResponse;
+                export type $403 = Components.Schemas.ErrorResponse;
+                export type $404 = Components.Schemas.ErrorResponse;
+                export type $422 = Components.Schemas.ErrorResponse;
+                export type $500 = Components.Schemas.ErrorResponse;
+                export type $503 = Components.Schemas.ErrorResponse;
+                export type $504 = Components.Schemas.ErrorResponse;
+            }
+        }
+    }
+    namespace Developers$DeveloperUsernameApps$AppName {
+        namespace Delete {
+            namespace Responses {
+                export interface $204 {
+                }
+                export type $400 = Components.Schemas.ErrorResponse;
+                export type $401 = Components.Schemas.ErrorResponse;
+                export type $403 = Components.Schemas.ErrorResponse;
+                export type $404 = Components.Schemas.ErrorResponse;
+                export type $422 = Components.Schemas.ErrorResponse;
+                export type $500 = Components.Schemas.ErrorResponse;
+                export type $503 = Components.Schemas.ErrorResponse;
+                export type $504 = Components.Schemas.ErrorResponse;
+            }
+        }
+        namespace Get {
+            namespace Responses {
+                export type $200 = Components.Schemas.App;
+                export type $400 = Components.Schemas.ErrorResponse;
+                export type $401 = Components.Schemas.ErrorResponse;
+                export type $403 = Components.Schemas.ErrorResponse;
+                export type $404 = Components.Schemas.ErrorResponse;
+                export type $500 = Components.Schemas.ErrorResponse;
+                export type $503 = Components.Schemas.ErrorResponse;
+                export type $504 = Components.Schemas.ErrorResponse;
+            }
+        }
+        namespace Patch {
+            export type RequestBody = Components.Schemas.AppPatch;
+            namespace Responses {
+                export type $200 = Components.Schemas.App;
                 export type $400 = Components.Schemas.ErrorResponse;
                 export type $401 = Components.Schemas.ErrorResponse;
                 export type $403 = Components.Schemas.ErrorResponse;

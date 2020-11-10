@@ -12,6 +12,13 @@ components:
       type: http
       scheme: basic
   parameters:
+    app_name:
+      name: app_name
+      description: the name of the app
+      in: path
+      required: true
+      schema:
+        type: string
     api_name:
       name: api_name
       description: the name of the api
@@ -404,22 +411,24 @@ components:
         userName:
           type: string
         attributes:
-          type: array
-          items:
-            type: object
-            properties:
-              name:
-                type: string
-              value:
-                type: string
-            required:
-              - name
-              - value
+          $ref: '#/components/schemas/attributes'
       required:
         - email
         - firstName
         - lastName
         - userName
+    attributes:
+      type: array
+      items:
+        type: object
+        properties:
+          name:
+            type: string
+          value:
+            type: string
+        required:
+        - name
+        - value
 
     DeveloperPatch:
       type: object
@@ -433,18 +442,111 @@ components:
         userName:
           type: string
         attributes:
+          $ref: '#/components/schemas/attributes'
+          
+    App:
+      type: object
+      properties:
+        name: 
+          type: string
+        expiresIn: 
+          type: number
+          description: A setting, in milliseconds, for the lifetime of the consumer key that will be  generated for the developer app. The default value, -1, indicates an infinite validity period. Once set, the expiration can't be updated.
+        apiProducts:
           type: array
           items:
-            type: object
-            properties:
-              name:
-                type: string
-              value:
-                type: string
-            required:
-              - name
-              - value
+            type: string
+        attributes:
+          $ref: '#/components/schemas/attributes'
+        scopes:
+          type: array
+          items:
+            type: string
+        callbackUrl:
+            type: string
+        credentials:
+          $ref: '#/components/schemas/Credentials'
+      required:
+      - name
+      - apiProducts
+      - credentials
+    AppPatch:
+      type: object
+      properties:
+        name: 
+          type: string
+        apiProducts:
+          type: array
+          items:
+            type: string
+        attributes:
+          $ref: '#/components/schemas/attributes'
+        scopes:
+          type: array
+          items:
+            type: string
+        callbackUrl:
+            type: string
+        credentials:
+          $ref: '#/components/schemas/Credentials'
+        status:
+          type: string
+          enum:
+          - approved
+          - pending
+          
 
+    Credentials:
+      type: object
+      required:
+      - expiresAt
+      - secretType
+      properties:
+        expiresAt:
+          default: -1
+          type: number
+        issuedAt:
+          type: number
+        secretType::
+          type: string 
+          enum:
+          - UsernamePassword
+          - ClientCertificate
+          - ConsumerCredentials
+        secret:
+          description: if omitted credentials will be auto-generated
+          oneOf:
+          - $ref: '#/components/schemas/UserNamePasswordCredentials'
+          - $ref: '#/components/schemas/ClientCertificateCredentials'
+          - $ref: '#/components/schemas/ConsumerCredentials'
+
+    UserNamePasswordCredentials:
+      type: object
+      properties:
+        username:
+          type: string
+        password:
+          type: string
+          
+    ConsumerCredentials:
+      type: object
+      properties:
+        consumerKey:
+          type: string
+        consumerSecret:
+          type: string
+
+    ClientCertificateCredentials:
+      type: object
+      properties:
+        username:
+          type: string
+        certificate:
+          type: string
+        privateKey: 
+          type: string
+
+    
 security:
   - BasicAuth: []
 
@@ -1277,11 +1379,11 @@ paths:
             "$ref": "#/components/schemas/DeveloperPatch"    
      responses:
        '200':
-         description: Updated API Product
+         description: Updated App
          content: 
            application/json:
              schema:
-               $ref: '#/components/schemas/APIProduct'
+               $ref: '#/components/schemas/App'
        '400': 
          description: "Bad Request."
          content: 
@@ -1338,6 +1440,331 @@ paths:
      - developers
      parameters:
      - $ref: '#/components/parameters/developer_username'
+     responses:
+       '204':
+         description: No contentt
+       '400': 
+         description: "Bad Request."
+         content: 
+          "application/json": 
+           schema: 
+            "$ref": "#/components/schemas/ErrorResponse"
+          "*/*": 
+           schema: 
+            "$ref": "#/components/schemas/ErrorResponse"
+       '401': 
+         description: "Unauthorized."
+         content: 
+          "application/json": 
+           schema: 
+            "$ref": "#/components/schemas/ErrorResponse"
+       '403': 
+         description: "Forbidden."
+         content: 
+          "application/json": 
+           schema: 
+            "$ref": "#/components/schemas/ErrorResponse"
+       '404': 
+         description: "Not Found."
+         content: 
+          "application/json": 
+           schema: 
+            "$ref": "#/components/schemas/ErrorResponse"
+       '422': 
+         description: "AlreadyExists."
+         content: 
+          "application/json": 
+           schema: 
+            "$ref": "#/components/schemas/ErrorResponse"
+       '500': 
+         description: "Internal Server Error."
+         content: 
+          "application/json": 
+           schema: 
+            "$ref": "#/components/schemas/ErrorResponse"
+       '503': 
+         description: "Service Unavailable."
+         content: 
+          "application/json": 
+           schema: 
+            "$ref": "#/components/schemas/ErrorResponse"
+       '504': 
+         description: "Gateway Timeout."
+         content: 
+          "application/json": 
+           schema: 
+            "$ref": "#/components/schemas/ErrorResponse"
+  /developers/{developer_username}/apps:
+    post:
+     tags:
+     - apps
+     - developers
+     parameters:
+     - $ref: '#/components/parameters/developer_username'
+     requestBody: 
+       description: "App information"
+       content: 
+         "application/json": 
+           schema: 
+            "$ref": "#/components/schemas/App"    
+     responses:
+       '201':
+         description: New API Product
+         content: 
+           application/json:
+             schema:
+               $ref: '#/components/schemas/App'
+       '400': 
+         description: "Bad Request."
+         content: 
+          "application/json": 
+           schema: 
+            "$ref": "#/components/schemas/ErrorResponse"
+          "*/*": 
+           schema: 
+            "$ref": "#/components/schemas/ErrorResponse"
+       '401': 
+         description: "Unauthorized."
+         content: 
+          "application/json": 
+           schema: 
+            "$ref": "#/components/schemas/ErrorResponse"
+       '403': 
+         description: "Forbidden."
+         content: 
+          "application/json": 
+           schema: 
+            "$ref": "#/components/schemas/ErrorResponse"
+       '404': 
+         description: "Not Found."
+         content: 
+          "application/json": 
+           schema: 
+            "$ref": "#/components/schemas/ErrorResponse"
+       '422': 
+         description: "AlreadyExists."
+         content: 
+          "application/json": 
+           schema: 
+            "$ref": "#/components/schemas/ErrorResponse"
+       '500': 
+         description: "Internal Server Error."
+         content: 
+          "application/json": 
+           schema: 
+            "$ref": "#/components/schemas/ErrorResponse"
+       '503': 
+         description: "Service Unavailable."
+         content: 
+          "application/json": 
+           schema: 
+            "$ref": "#/components/schemas/ErrorResponse"
+       '504': 
+         description: "Gateway Timeout."
+         content: 
+          "application/json": 
+           schema: 
+            "$ref": "#/components/schemas/ErrorResponse"
+    get:
+     tags:
+      - apps
+      - developers
+     parameters:
+     - $ref: '#/components/parameters/developer_username'
+     - $ref: '#/components/parameters/page_size'
+     - $ref: '#/components/parameters/page_number'
+     responses:
+       '200':
+         description: list of apps
+         content: 
+           application/json:
+             schema:
+               type: array
+               items:
+                 $ref: '#/components/schemas/App'
+       '400': 
+         description: "Bad Request."
+         content: 
+          "application/json": 
+           schema: 
+            "$ref": "#/components/schemas/ErrorResponse"
+          "*/*": 
+           schema: 
+            "$ref": "#/components/schemas/ErrorResponse"
+       '401': 
+         description: "Unauthorized."
+         content: 
+          "application/json": 
+           schema: 
+            "$ref": "#/components/schemas/ErrorResponse"
+       '403': 
+         description: "Forbidden."
+         content: 
+          "application/json": 
+           schema: 
+            "$ref": "#/components/schemas/ErrorResponse"
+       '404': 
+         description: "Not Found."
+         content: 
+          "application/json": 
+           schema: 
+            "$ref": "#/components/schemas/ErrorResponse"
+       '500': 
+         description: "Internal Server Error."
+         content: 
+          "application/json": 
+           schema: 
+            "$ref": "#/components/schemas/ErrorResponse"
+       '503': 
+         description: "Service Unavailable."
+         content: 
+          "application/json": 
+           schema: 
+            "$ref": "#/components/schemas/ErrorResponse"
+       '504': 
+         description: "Gateway Timeout."
+         content: 
+          "application/json": 
+           schema: 
+            "$ref": "#/components/schemas/ErrorResponse"
+  /developers/{developer_username}/apps/{app_name}:
+    get:
+     tags:
+     - apps
+     - developers
+     parameters:
+     - $ref: '#/components/parameters/developer_username'
+     - $ref: '#/components/parameters/app_name'
+     responses:
+       '200':
+         description:  an API Product
+         content: 
+           application/json:
+             schema:
+               $ref: '#/components/schemas/App'
+       '400': 
+         description: "Bad Request."
+         content: 
+          "application/json": 
+           schema: 
+            "$ref": "#/components/schemas/ErrorResponse"
+          "*/*": 
+           schema: 
+            "$ref": "#/components/schemas/ErrorResponse"
+       '401': 
+         description: "Unauthorized."
+         content: 
+          "application/json": 
+           schema: 
+            "$ref": "#/components/schemas/ErrorResponse"
+       '403': 
+         description: "Forbidden."
+         content: 
+          "application/json": 
+           schema: 
+            "$ref": "#/components/schemas/ErrorResponse"
+       '404': 
+         description: "Not Found."
+         content: 
+          "application/json": 
+           schema: 
+            "$ref": "#/components/schemas/ErrorResponse"
+       '500': 
+         description: "Internal Server Error."
+         content: 
+          "application/json": 
+           schema: 
+            "$ref": "#/components/schemas/ErrorResponse"
+       '503': 
+         description: "Service Unavailable."
+         content: 
+          "application/json": 
+           schema: 
+            "$ref": "#/components/schemas/ErrorResponse"
+       '504': 
+         description: "Gateway Timeout."
+         content: 
+          "application/json": 
+           schema: 
+            "$ref": "#/components/schemas/ErrorResponse"
+    patch:
+     tags:
+     - apps
+     - developers
+     parameters:
+     - $ref: '#/components/parameters/developer_username'
+     - $ref: '#/components/parameters/app_name'
+     requestBody: 
+       description: ""
+       content: 
+         "application/json": 
+           schema: 
+            "$ref": "#/components/schemas/AppPatch"    
+     responses:
+       '200':
+         description: App
+         content: 
+           application/json:
+             schema:
+               $ref: '#/components/schemas/App'
+       '400': 
+         description: "Bad Request."
+         content: 
+          "application/json": 
+           schema: 
+            "$ref": "#/components/schemas/ErrorResponse"
+          "*/*": 
+           schema: 
+            "$ref": "#/components/schemas/ErrorResponse"
+       '401': 
+         description: "Unauthorized."
+         content: 
+          "application/json": 
+           schema: 
+            "$ref": "#/components/schemas/ErrorResponse"
+       '403': 
+         description: "Forbidden."
+         content: 
+          "application/json": 
+           schema: 
+            "$ref": "#/components/schemas/ErrorResponse"
+       '404': 
+         description: "Not Found."
+         content: 
+          "application/json": 
+           schema: 
+            "$ref": "#/components/schemas/ErrorResponse"
+       '422': 
+         description: "AlreadyExists."
+         content: 
+          "application/json": 
+           schema: 
+            "$ref": "#/components/schemas/ErrorResponse"
+       '500': 
+         description: "Internal Server Error."
+         content: 
+          "application/json": 
+           schema: 
+            "$ref": "#/components/schemas/ErrorResponse"
+       '503': 
+         description: "Service Unavailable."
+         content: 
+          "application/json": 
+           schema: 
+            "$ref": "#/components/schemas/ErrorResponse"
+       '504': 
+         description: "Gateway Timeout."
+         content: 
+          "application/json": 
+           schema: 
+            "$ref": "#/components/schemas/ErrorResponse"
+    delete:
+     tags:
+     - apps
+     - developers
+     parameters:
+     - $ref: '#/components/parameters/developer_username'
+     - $ref: '#/components/parameters/app_name'
      responses:
        '204':
          description: No contentt
