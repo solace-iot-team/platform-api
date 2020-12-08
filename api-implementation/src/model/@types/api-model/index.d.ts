@@ -24,6 +24,9 @@ declare namespace Components {
         namespace DeveloperUsername {
             export type DeveloperUsername = string;
         }
+        namespace EnvName {
+            export type EnvName = string;
+        }
         namespace PageNumber {
             export type PageNumber = number; // int32
         }
@@ -321,23 +324,13 @@ declare namespace Components {
             name: string;
             value: string;
         }[];
-        export interface ClientCertificateCredentials {
-            username?: string;
-            certificate?: string;
-            privateKey?: string;
-        }
-        export interface ConsumerCredentials {
-            consumerKey?: string;
-            consumerSecret?: string;
-        }
         export interface Credentials {
             expiresAt: number;
             issuedAt?: number;
-            "secretType:"?: "UsernamePassword" | "ClientCertificate" | "ConsumerCredentials";
-            /**
-             * if omitted credentials will be auto-generated
-             */
-            secret?: /* if omitted credentials will be auto-generated */ UserNamePasswordCredentials | ClientCertificateCredentials | ConsumerCredentials;
+            secret?: {
+                consumerKey: string;
+                consumerSecret?: string;
+            };
         }
         export interface Developer {
             email: string;
@@ -352,6 +345,32 @@ declare namespace Components {
             lastName?: string;
             userName?: string;
             attributes?: Attributes;
+        }
+        export interface Environment {
+            /**
+             * example:
+             * dev
+             */
+            name: string;
+            /**
+             * example:
+             * development environment
+             */
+            description: string;
+            /**
+             * example:
+             * xm7dc2dfas4
+             */
+            serviceId: string;
+            properties?: Properties;
+        }
+        export interface EnvironmentPatch {
+            /**
+             * example:
+             * development environment
+             */
+            description?: string;
+            properties?: Properties;
         }
         export interface ErrorResponse {
             /**
@@ -372,10 +391,18 @@ declare namespace Components {
                 [name: string]: unknown;
             };
         }
-        export interface UserNamePasswordCredentials {
-            username?: string;
-            password?: string;
-        }
+        export type Properties = {
+            /**
+             * example:
+             * key
+             */
+            key: string;
+            /**
+             * example:
+             * value
+             */
+            value: string;
+        }[];
     }
 }
 declare namespace Paths {
@@ -597,7 +624,7 @@ declare namespace Paths {
         namespace Patch {
             export type RequestBody = Components.Schemas.DeveloperPatch;
             namespace Responses {
-                export type $200 = Components.Schemas.App;
+                export type $200 = Components.Schemas.Developer;
                 export type $400 = Components.Schemas.ErrorResponse;
                 export type $401 = Components.Schemas.ErrorResponse;
                 export type $403 = Components.Schemas.ErrorResponse;
@@ -668,6 +695,76 @@ declare namespace Paths {
             export type RequestBody = Components.Schemas.AppPatch;
             namespace Responses {
                 export type $200 = Components.Schemas.App;
+                export type $400 = Components.Schemas.ErrorResponse;
+                export type $401 = Components.Schemas.ErrorResponse;
+                export type $403 = Components.Schemas.ErrorResponse;
+                export type $404 = Components.Schemas.ErrorResponse;
+                export type $422 = Components.Schemas.ErrorResponse;
+                export type $500 = Components.Schemas.ErrorResponse;
+                export type $503 = Components.Schemas.ErrorResponse;
+                export type $504 = Components.Schemas.ErrorResponse;
+            }
+        }
+    }
+    namespace Environments {
+        namespace Get {
+            namespace Responses {
+                export type $200 = Components.Schemas.Environment[];
+                export type $400 = Components.Schemas.ErrorResponse;
+                export type $401 = Components.Schemas.ErrorResponse;
+                export type $403 = Components.Schemas.ErrorResponse;
+                export type $404 = Components.Schemas.ErrorResponse;
+                export type $500 = Components.Schemas.ErrorResponse;
+                export type $503 = Components.Schemas.ErrorResponse;
+                export type $504 = Components.Schemas.ErrorResponse;
+            }
+        }
+        namespace Post {
+            export type RequestBody = Components.Schemas.Environment;
+            namespace Responses {
+                export type $201 = Components.Schemas.Environment;
+                export type $400 = Components.Schemas.ErrorResponse;
+                export type $401 = Components.Schemas.ErrorResponse;
+                export type $403 = Components.Schemas.ErrorResponse;
+                export type $404 = Components.Schemas.ErrorResponse;
+                export type $422 = Components.Schemas.ErrorResponse;
+                export type $500 = Components.Schemas.ErrorResponse;
+                export type $503 = Components.Schemas.ErrorResponse;
+                export type $504 = Components.Schemas.ErrorResponse;
+            }
+        }
+    }
+    namespace Environments$EnvName {
+        namespace Delete {
+            namespace Responses {
+                export interface $204 {
+                }
+                export type $400 = Components.Schemas.ErrorResponse;
+                export type $401 = Components.Schemas.ErrorResponse;
+                export type $403 = Components.Schemas.ErrorResponse;
+                export type $404 = Components.Schemas.ErrorResponse;
+                export type $422 = Components.Schemas.ErrorResponse;
+                export type $500 = Components.Schemas.ErrorResponse;
+                export type $503 = Components.Schemas.ErrorResponse;
+                export type $504 = Components.Schemas.ErrorResponse;
+            }
+        }
+        namespace Get {
+            namespace Responses {
+                export type $200 = Components.Schemas.Environment;
+                export type $400 = Components.Schemas.ErrorResponse;
+                export type $401 = Components.Schemas.ErrorResponse;
+                export type $403 = Components.Schemas.ErrorResponse;
+                export type $404 = Components.Schemas.ErrorResponse;
+                export type $500 = Components.Schemas.ErrorResponse;
+                export type $503 = Components.Schemas.ErrorResponse;
+                export type $504 = Components.Schemas.ErrorResponse;
+            }
+        }
+        namespace Patch {
+            export type RequestBody = Components.Schemas.EnvironmentPatch;
+            namespace Responses {
+                export type $200 = Components.Schemas.Environment;
                 export type $400 = Components.Schemas.ErrorResponse;
                 export type $401 = Components.Schemas.ErrorResponse;
                 export type $403 = Components.Schemas.ErrorResponse;

@@ -6,7 +6,7 @@ import API = Components.Schemas.API;
 import { AsyncApiService, Application, ApplicationDomainsResponse, ApplicationDomainsService, ApplicationResponse, ApplicationsService, OpenAPI, GenerateAsyncAPIRequest } from "./clients/eventportal";
 
 
-export class EventPortalFacade {
+class EventPortalFacade {
 	constructor() {
 		OpenAPI.TOKEN = 'eyJhbGciOiJSUzI1NiIsImtpZCI6Im1hYXNfcHJvZF8yMDIwMDMyNiIsInR5cCI6IkpXVCJ9.eyJvcmciOiJzb2xhY2Vpb3R0ZWFtIiwib3JnVHlwZSI6IkVOVEVSUFJJU0UiLCJzdWIiOiIzZTJvY214MTA1IiwicGVybWlzc2lvbnMiOiJBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQXdBQU09IiwiYXBpVG9rZW5JZCI6Inlhb2wzc2ZveG03IiwiaXNzIjoiU29sYWNlIENvcnBvcmF0aW9uIiwiaWF0IjoxNjAzODA3NzQ1fQ.QIBpi5_U6b1DnAwbDbJiFIT0pomqa4AyOLtmSOEF6zhoxKMm4Y27WbILZnxnh_gpdX-tvt18YcuNk4xs3T5JjFfU3qrczRHSuj2vEdsCpDQWdyZTPV4NQ-zPxRvigTjaTlcdXin8XwMGh8nZdylgRMlRQjvotomnXQxgbUol0Kl1ziFFMybqeD10qCDsUW6Jv-PKibBN3cnCsWwPZX6d_XYUECs1AHjgs5pk-A8v3DHcnxbXiAP4XXrry6ztopAWKMc5rVFoB_WFY4yi0reuTYjn6Sf0g7vZxFifRZZHZmqZtNQUiX6S80eQG4kF3YDKlr5PfLDNp4iRQe0-3svIPw';
 	}
@@ -128,8 +128,11 @@ export class EventPortalFacade {
 
 		);
 	}
-	public async getApiSpec(name: string, asyncAPIVersion: string): Promise<string> {
+	public async getApiSpec(name: string, asyncAPIVersion?: string): Promise<string> {
 		return new Promise<string>((resolve, reject) => {
+			if (!asyncAPIVersion){
+				asyncAPIVersion = "2.0.0";
+			}
 			var result: Promise<any> = ApplicationsService.list2(100, 1, name);
 			result.then(
 				(value: ApplicationResponse) => {
@@ -153,3 +156,5 @@ export class EventPortalFacade {
 		);
 	}
 }
+
+export default new EventPortalFacade();

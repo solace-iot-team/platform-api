@@ -1,5 +1,6 @@
 import DevelopersService from '../../services/developers.service';
 import { Request, Response } from 'express';
+import L from '../../../common/logger';
 
 export class Controller {
   all(req: Request, res: Response): void {
@@ -41,6 +42,7 @@ export class Controller {
     DevelopersService.delete(req.params['name']).then((r) => {
       res.status(r).end();
     }).catch((e) => {
+      
       res.status(e).end();
     });
   }
@@ -65,6 +67,7 @@ export class Controller {
       }
       else res.status(500).end();
     }).catch((e) => {
+      L.error(e);
       res.status(e).end()
     });
   }

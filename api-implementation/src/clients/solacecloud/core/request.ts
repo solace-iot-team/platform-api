@@ -83,7 +83,7 @@ async function getHeaders(options: ApiRequestOptions): Promise<Headers> {
 
     const token = await getToken();
     if (isDefined(token) && token !== '') {
-        headers.append('Authorization', `Basic ${token}`);
+        headers.append('Authorization', `Bearer ${token}`);
     }
 
     if (options.body) {
@@ -166,6 +166,7 @@ function catchErrors(options: ApiRequestOptions, result: ApiResult): void {
     }
 
     if (!result.ok) {
+        console.log(result.body);
         throw new ApiError(result, 'Generic Error');
     }
 }

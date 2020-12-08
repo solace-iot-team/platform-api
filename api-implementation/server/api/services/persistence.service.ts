@@ -91,6 +91,7 @@ export class PersistenceService {
       const collection: mongodb.Collection = this.getCollection();
       body._id = _id;
       collection.insertOne(body).then((v: mongodb.InsertOneWriteOpResult<any>) => {
+        delete body._id;
         resolve(body);
       }).catch((e) => {
         L.error(e);
@@ -105,18 +106,20 @@ export class PersistenceService {
       const collection: mongodb.Collection = this.getCollection();
       var q = query;
       if (q){
-        q._id = name;
+        q._id = _id;
       } else  {
-        q = { _id: name };
+        q = { _id: _id };
       }
       collection.updateOne(q, { $set: body }).then((v: mongodb.UpdateWriteOpResult) => {
-        L.info(v);
+        //L.info(v);
         if (v.matchedCount == 0) {
           reject(404);
         }
         this.byName(_id).then((p) => {
+          delete p._id;
           resolve(p);
         }).catch((e) => {
+          L.info(e);
           reject(e);
         });
 
@@ -125,6 +128,35 @@ export class PersistenceService {
       });
     });
   }
+
+
+
+  validateReferences(names: string[]): Promise<boolean> {
+    return new Promise<boolean>((resolve, reject) => {
+      var isApproved: boolean = true;
+      var results: Promise<boolean>[] = [];
+      names.forEach((n) => {
+        results.push(new Promise<boolean>((resolve, reject) => {
+          this.byName(n).then((p) => {
+            resolve(true);
+          }
+          ).catch((e) => {
+            reject(`Referenced name ${n} does not exist`);
+          })
+        }));
+      });
+      Promise.all(results).then((r) => { resolve(true) }).catch((e) => {
+        L.info(e);
+        reject(422);
+      });
+
+    }
+
+    );
+  }
+
 }
+
+
 
 //export default new PersistenceService();

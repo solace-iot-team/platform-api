@@ -32,8 +32,8 @@ OpenAPI.TOKEN = 'eyJhbGciOiJSUzI1NiIsImtpZCI6Im1hYXNfcHJvZF8yMDIwMDMyNiIsInR5cCI
 // 	});
 // });
 var eventPortalFacade = new EventPortalFacade();
-var l: Promise<APIDomainsResponseItem[]> = eventPortalFacade.getApis();
-l.then((val)=>{console.log(val)}); 
+//var l: Promise<APIDomainsResponseItem[]> = eventPortalFacade.getApis();
+//l.then((val)=>{console.log(val)}); 
 
 var apis: Promise<any> = ApplicationsService.list2(100, 1, 'My Application', 'roegjk48bm1');
 apis.then((value: ApplicationsResponse) => {
