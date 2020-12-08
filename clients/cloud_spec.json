@@ -1,0 +1,712 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "Solace Cloud API",
+    "description": "Solace Cloud API",
+    "version": "0.0.1"
+  },
+  "servers": [
+    {
+      "url": "https://api.solace.cloud/api/v0/"
+    }
+  ],
+  "components": {
+    "securitySchemes": {
+      "BearerAuth": {
+        "type": "http",
+        "scheme": "bearer"
+      }
+    },
+    "parameters": {
+      "service_id": {
+        "name": "service_id",
+        "description": "the id of a cloud service",
+        "in": "path",
+        "required": true,
+        "schema": {
+          "type": "string"
+        }
+      }
+    },
+    "schemas": {
+      "ErrorResponse": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "example": "An error occurred"
+          },
+          "errorId": {
+            "type": "string",
+            "example": "123e4567-e89b-12d3-a456-426655440000"
+          },
+          "meta": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "object",
+              "example": "'object': { 'field': 'description' }"
+            },
+            "example": "'object': { 'field': 'description' }"
+          }
+        }
+      },
+      "Service": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string"
+          },
+          "timestamp": {
+            "type": "integer"
+          },
+          "userId": {
+            "type": "string"
+          },
+          "serviceId": {
+            "type": "string"
+          },
+          "infrastructureId": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "msgVpnName": {
+            "type": "string"
+          },
+          "datacenterId": {
+            "type": "string"
+          },
+          "datacenterProvider": {
+            "type": "string"
+          },
+          "serviceTypeId": {
+            "type": "string"
+          },
+          "serviceClassId": {
+            "type": "string"
+          },
+          "adminState": {
+            "type": "string"
+          },
+          "adminProgress": {
+            "type": "string"
+          },
+          "created": {
+            "type": "integer"
+          },
+          "creationState": {
+            "type": "string"
+          },
+          "messagingProtocols": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "name": {
+                  "type": "string"
+                },
+                "username": {
+                  "type": "string"
+                },
+                "password": {
+                  "type": "string"
+                },
+                "endPoints": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "name": {
+                        "type": "string"
+                      },
+                      "transport": {
+                        "type": "string"
+                      },
+                      "uris": {
+                        "type": "array",
+                        "items": {
+                          "type": "string"
+                        }
+                      },
+                      "secured": {
+                        "type": "string"
+                      },
+                      "compressed": {
+                        "type": "string"
+                      }
+                    },
+                    "required": [
+                      "name",
+                      "transport",
+                      "uris",
+                      "secured",
+                      "compressed"
+                    ]
+                  }
+                },
+                "limits": {
+                  "type": "object"
+                }
+              },
+              "required": [
+                "name",
+                "username",
+                "password",
+                "endPoints",
+                "limits"
+              ]
+            }
+          },
+          "managementProtocols": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "name": {
+                  "type": "string"
+                },
+                "username": {
+                  "type": "string"
+                },
+                "password": {
+                  "type": "string"
+                },
+                "endPoints": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "name": {
+                        "type": "string"
+                      },
+                      "uris": {
+                        "type": "array",
+                        "items": {
+                          "type": "string"
+                        }
+                      },
+                      "secured": {
+                        "type": "string"
+                      },
+                      "authenticated": {
+                        "type": "string"
+                      }
+                    },
+                    "required": [
+                      "name",
+                      "uris",
+                      "secured",
+                      "authenticated"
+                    ]
+                  }
+                },
+                "limits": {
+                  "type": "object"
+                }
+              },
+              "required": [
+                "name",
+                "username",
+                "password",
+                "endPoints",
+                "limits"
+              ]
+            }
+          },
+          "msgVpnAttributes": {
+            "type": "object",
+            "properties": {
+              "vpnEventLargeMsgThreshold": {
+                "type": "string"
+              },
+              "authenticationClientCertValidateDateEnabled": {
+                "type": "string"
+              },
+              "vpnMaxConnectionCount": {
+                "type": "string"
+              },
+              "vpnAdminUsername": {
+                "type": "string"
+              },
+              "vpnMaxTransactedSessionCount": {
+                "type": "string"
+              },
+              "subDomainName": {
+                "type": "string"
+              },
+              "vmrVersion": {
+                "type": "string"
+              },
+              "vpnAdminPassword": {
+                "type": "string"
+              },
+              "vpnName": {
+                "type": "string"
+              },
+              "vpnMaxTransactionCount": {
+                "type": "string"
+              },
+              "vpnMaxMsgSpoolUsage": {
+                "type": "string"
+              },
+              "vpnMaxEndpointCount": {
+                "type": "string"
+              },
+              "vpnMaxEgressFlowCount": {
+                "type": "string"
+              },
+              "vpnMaxSubscriptionCount": {
+                "type": "string"
+              },
+              "authenticationClientCertEnabled": {
+                "type": "string"
+              },
+              "vpnEnabled": {
+                "type": "string"
+              },
+              "truststoreUri": {
+                "type": "string"
+              },
+              "authenticationBasicEnabled": {
+                "type": "string"
+              },
+              "vpnMaxIngressFlowCount": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "vpnEventLargeMsgThreshold",
+              "authenticationClientCertValidateDateEnabled",
+              "vpnMaxConnectionCount",
+              "vpnAdminUsername",
+              "vpnMaxTransactedSessionCount",
+              "subDomainName",
+              "vmrVersion",
+              "vpnAdminPassword",
+              "vpnName",
+              "vpnMaxTransactionCount",
+              "vpnMaxMsgSpoolUsage",
+              "vpnMaxEndpointCount",
+              "vpnMaxEgressFlowCount",
+              "vpnMaxSubscriptionCount",
+              "authenticationClientCertEnabled",
+              "vpnEnabled",
+              "truststoreUri",
+              "authenticationBasicEnabled",
+              "vpnMaxIngressFlowCount"
+            ]
+          },
+          "locked": {
+            "type": "boolean"
+          },
+          "messagingStorage": {
+            "type": "integer"
+          },
+          "serviceStage": {
+            "type": "string"
+          },
+          "servicePackageId": {
+            "type": "string"
+          },
+          "serviceClassDisplayedAttributes": {
+            "type": "object",
+            "properties": {
+              "High Availability": {
+                "type": "string"
+              },
+              "Network Speed": {
+                "type": "string"
+              },
+              "Storage": {
+                "type": "string"
+              },
+              "Message Broker Tenancy": {
+                "type": "string"
+              },
+              "Queues": {
+                "type": "string"
+              },
+              "Clients": {
+                "type": "string"
+              },
+              "Network Usage": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "High Availability",
+              "Network Speed",
+              "Storage",
+              "Message Broker Tenancy",
+              "Queues",
+              "Clients",
+              "Network Usage"
+            ]
+          },
+          "accountingLimits": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "string"
+                },
+                "value": {
+                  "type": "string"
+                },
+                "unit": {
+                  "type": "string"
+                },
+                "thresholds": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "type": {
+                        "type": "string"
+                      },
+                      "value": {
+                        "type": "string"
+                      }
+                    },
+                    "required": [
+                      "type",
+                      "value"
+                    ]
+                  }
+                }
+              },
+              "required": [
+                "id",
+                "value",
+                "unit",
+                "thresholds"
+              ]
+            }
+          },
+          "certificateAuthorities": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "clientProfiles": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "cluster": {
+            "type": "object",
+            "properties": {
+              "name": {
+                "type": "string"
+              },
+              "password": {
+                "type": "string"
+              },
+              "remoteAddress": {
+                "type": "string"
+              },
+              "primaryRouterName": {
+                "type": "string"
+              },
+              "supportedAuthenticationMode": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              }
+            },
+            "required": [
+              "name",
+              "password",
+              "remoteAddress",
+              "primaryRouterName",
+              "supportedAuthenticationMode"
+            ]
+          },
+          "redundancyGroupSslEnabled": {
+            "type": "boolean"
+          },
+          "configSyncSslEnabled": {
+            "type": "boolean"
+          }
+        }
+      },
+      "ServicesResponse": {
+        "type": "object",
+        "required": [
+          "data",
+          "meta"
+        ],
+        "properties": {
+          "data": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Service"
+            }
+          },
+          "meta": {
+            "type": "object",
+            "properties": {
+              "currentTime": {
+                "type": "number",
+                "example": 1605548717294
+              },
+              "pages": {
+                "type": "object",
+                "properties": {
+                  "next-page": {
+                    "type": "number",
+                    "example": 1
+                  },
+                  "total-pages": {
+                    "type": "number",
+                    "example": 1
+                  }
+                }
+              },
+              "pageNumber": {
+                "type": "number",
+                "example": 0
+              },
+              "count": {
+                "type": "number",
+                "example": 3
+              },
+              "pageSize": {
+                "type": "number",
+                "example": 100
+              }
+            }
+          }
+        }
+      },
+      "ServiceResponse": {
+        "type": "object",
+        "required": [
+          "data",
+          "meta"
+        ],
+        "properties": {
+          "data": {
+            "$ref": "#/components/schemas/Service"
+          },
+          "meta": {
+            "type": "object",
+            "properties": {
+              "currentTime": {
+                "type": "number",
+                "example": 1605548717294
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "security": [
+    {
+      "BearerAuth": []
+    }
+  ],
+  "paths": {
+    "/services": {
+      "get": {
+        "operationId": "listServices",
+        "tags": [
+          "services"
+        ],
+        "responses": {
+          "200": {
+            "description": "list of services",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ServicesResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              },
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Service Unavailable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "504": {
+            "description": "Gateway Timeout.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/services/{service_id}": {
+      "get": {
+        "operationId": "getService",
+        "tags": [
+          "services"
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/service_id"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "service",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ServiceResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              },
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Service Unavailable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "504": {
+            "description": "Gateway Timeout.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
