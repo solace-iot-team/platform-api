@@ -58,56 +58,52 @@ export class DevelopersService {
   }
 
   createApp(developer: string, body: App): Promise<App> {
-    return new Promise<App>((resolve, reject) => {
-      this.byName(developer).then((d) => {
-        L.info(d);
-        if (!d) {
-          reject(404);
+    return new Promise<App>(async (resolve, reject) => {
+      const d = await this.byName(developer);
+      L.info(d);
+      if (!d) {
+        reject(404);
+      }
+      var app: DeveloperApp = {
+        appType: 'developer',
+        ownerId: developer,
+        apiProducts: body.apiProducts,
+        name: body.name,
+        attributes: body.attributes,
+        callbackUrl: body.callbackUrl,
+        expiresIn: body.expiresIn,
+        scopes: body.scopes,
+        credentials: body.credentials
+
+      };
+      const approvalCheck = await this.validateAPIProducts(app);
+      if (approvalCheck) {
+        if (approvalCheck) {
+          app.status = 'approved';
+        } else {
+          app.status = 'pending';
         }
-        var app: DeveloperApp = {
-          appType: 'developer',
-          ownerId: developer,
-          apiProducts: body.apiProducts,
-          name: body.name,
-          attributes: body.attributes,
-          callbackUrl: body.callbackUrl,
-          expiresIn: body.expiresIn,
-          scopes: body.scopes,
-          credentials: body.credentials
-
-        };
-        var approvalCheck: Promise<boolean> = this.validateAPIProducts(app);
-        approvalCheck.then((approved: boolean) => {
-          if (approved) {
-            app.status = 'approved';
-          } else {
-            app.status = 'pending';
-          }
-          if (!body.credentials.secret) {
-            var consumerCredentials = {
-              consumerKey: passwordGenerator.generate({
-                length: 32, numbers: true, strict: true
-              }),
-              consumerSecret: passwordGenerator.generate({
-                length: 16, numbers: true, strict: true
-              })
-            };
-            body.credentials.secret = consumerCredentials;
-          }
-          var promise: Promise<any> = this.appPersistenceService.create(body.name, app);
-          promise.then((val) => {
-            if (app.status == 'approved')
-              BrokerService.provisionApp(app)
-          }).catch((e) => reject(e));
-          resolve(promise);
-        }).catch((e) => {
-          L.info(`caught ${e} from approval check}`);
-          reject(e);
+        if (!body.credentials.secret) {
+          var consumerCredentials = {
+            consumerKey: passwordGenerator.generate({
+              length: 32, numbers: true, strict: true
+            }),
+            consumerSecret: passwordGenerator.generate({
+              length: 16, numbers: true, strict: true
+            })
+          };
+          body.credentials.secret = consumerCredentials;
+        }
+        var promise: Promise<any> = this.appPersistenceService.create(body.name, app);
+        promise.then(async (val) => {
+          if (app.status == 'approved')
+            await BrokerService.provisionApp(app)
         }).catch((e) => reject(e));
+        resolve(promise);
 
-      }).catch((e) => {
-        reject(e);
-      });
+      }
+
+
 
     });
   }
@@ -115,8 +111,9 @@ export class DevelopersService {
   update(name: string, body: Developer): Promise<Developer> {
     return this.persistenceService.update(name, body);
   }
+
   updateApp(developer: string, name: string, body: AppPatch): Promise<AppPatch> {
-    return new Promise<App>((resolve, reject) => {
+    return new Promise<App>(async (resolve, reject) => {
       this.byName(developer).then((d) => {
         L.info(d);
         if (!d) {
@@ -130,18 +127,20 @@ export class DevelopersService {
           status: body.status
 
         };
-        var approvalCheck: Promise<boolean> = this.validateAPIProducts(app);
-        approvalCheck.then((approved: boolean) => {
-          resolve(this.appPersistenceService.update(body.name, app));
-        }).catch((e) => {
-          L.info(`caught ${e} from approval check}`);
-          reject(e);
-        }).catch((e) => reject(e));
-
-      }).catch((e) => {
-        reject(e);
+        try {
+          // don't care about approval check - we accept whatever status we get. but need to make sure references are valid
+          const approvalCheck = this.validateAPIProducts(app);
+          resolve(this.appPersistenceService.update(name, app));
+          var promise: Promise<any> = this.appPersistenceService.update(name, app);
+          promise.then(async (val: App) => {
+            if (app.status == 'approved')
+              await BrokerService.provisionApp(val);
+          }).catch((e) => reject(e));
+          resolve(promise);
+        } catch {
+          reject(422);
+        }
       });
-
     });
   }
 
