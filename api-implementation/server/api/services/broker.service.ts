@@ -4,12 +4,15 @@ import App = Components.Schemas.App;
 import APIProduct = Components.Schemas.APIProduct;
 import Environment = Components.Schemas.Environment;
 import ApiProductsService from './apiProducts.service';
+import ApisService from './apis.service';
+
 import EnvironmentsService from './environments.service';
 import { Service } from "../../../src/clients/solacecloud"
 import { AllService, MsgVpnClientUsername, MsgVpnClientUsernameResponse, MsgVpnAclProfile, MsgVpnAclProfileResponse, MsgVpnAclProfilePublishException, MsgVpnAclProfilePublishExceptionResponse, MsgVpnAclProfileSubscribeExceptionResponse, MsgVpnAclProfileSubscribeException } from '../../../src/clients/sempv2';
 import SolaceCloudFacade from '../../../src/solacecloudfacade';
-import EventPortalFacade from '../../../src/eventportalfacade';
 import { Sempv2Client } from '../../../src/sempv2-client';
+
+import parser from '@asyncapi/parser';
 
 enum Direction {
 	Publish = "Publish",
@@ -17,7 +20,7 @@ enum Direction {
 }
 class BrokerService {
 
-	provisionApp(app: App) {
+	async provisionApp(app: App) {
 		var environmentNames: string[] = [];
 
 		var apiProductPromises: Promise<APIProduct>[] = [];
@@ -25,7 +28,8 @@ class BrokerService {
 			L.info(productName);
 			apiProductPromises.push(ApiProductsService.byName(productName));
 		});
-		Promise.all(apiProductPromises).then((products: APIProduct[]) => {
+
+		Promise.all(apiProductPromises).then(async (products: APIProduct[]) => {
 			products.forEach((product: APIProduct) => {
 				product.environments.forEach((e: string) => {
 					environmentNames.push(e);
@@ -33,14 +37,20 @@ class BrokerService {
 				L.info(`env: ${product.environments}`);
 			});
 			environmentNames = Array.from(new Set(environmentNames));
-			this.getServices(environmentNames).then((services: Service[]) => this.createACLs(app, services)
-				.then((values) => this.createClientUsernames(app, services))
-				.then((values) => this.createClientACLExceptions(app, services, products)))
-				.catch((e) => { L.error(e) });
-		}).catch((e) => {
-			L.error(e);
+
+			try {
+				const services = await this.getServices(environmentNames);
+				var a = await this.createACLs(app, services);
+				L.info(`created acl profile ${app.name}`);
+				var b = await this.createClientUsernames(app, services);
+				L.info(`created client username ${app.name}`);
+				var c = await this.createClientACLExceptions(app, services, products);
+			} catch {
+				L.error("Provisioninig error");
+			}
 		});
 	}
+
 	deprovisionApp() {
 
 	}
@@ -86,17 +96,12 @@ class BrokerService {
 
 	}
 
-	private createACLs(app: App, services: Service[]): Promise<any> {
-		return new Promise<any>((resolve, reject) => {
-			var aclUsernameResponses: Promise<MsgVpnAclProfileResponse>[] = [];
-			services.forEach((service: Service) => {
-				var sempProtocol = service.managementProtocols.find(i => i.name === "SEMP");
-				L.info();
-				L.info(sempProtocol.username);
-				L.info(sempProtocol.password);
-				var sempv2Client = new Sempv2Client(sempProtocol.endPoints.find(j => j.name === "Secured SEMP Config").uris[0],
-					sempProtocol.username,
-					sempProtocol.password);
+	private createACLs(app: App, services: Service[]) {
+		return new Promise<any>(async (resolve, reject) => {
+			var allACLResponses: Promise<MsgVpnAclProfileResponse>[] = [];
+			for (var service of services) {
+
+				var sempv2Client = this.getSEMPv2Client(service);
 				var aclProfile: MsgVpnAclProfile = {
 					aclProfileName: app.credentials.secret.consumerKey,
 					clientConnectDefaultAction: MsgVpnAclProfile.clientConnectDefaultAction.ALLOW,
@@ -105,25 +110,29 @@ class BrokerService {
 					msgVpnName: service.msgVpnName
 
 				};
+				try {
+					var getResponse = await AllService.getMsgVpnAclProfile(service.msgVpnName, app.credentials.secret.consumerKey);
+					L.info("ACL Looked up");
+					var responseUpd = await AllService.updateMsgVpnAclProfile(service.msgVpnName, app.credentials.secret.consumerKey, aclProfile);
+					L.info("ACL updated");
+				} catch (e) {
 
-				var response = AllService.createMsgVpnAclProfile(service.msgVpnName, aclProfile);
-				aclUsernameResponses.push(response);
-			});
-			Promise.all(aclUsernameResponses).then((responses) => resolve()).catch((e) => reject(e));
+					try {
+						let response = await AllService.createMsgVpnAclProfile(service.msgVpnName, aclProfile);
+						L.info("created  ACL");
+					} catch (e) {
+						reject(e);
+					}
+				}
+			};
+			resolve();
 		});
 	}
 
 	private createClientUsernames(app: App, services: Service[]): Promise<any> {
-		return new Promise<any>((resolve, reject) => {
-			var clientUsernameResponses: Promise<MsgVpnClientUsernameResponse>[] = [];
-			services.forEach((service: Service) => {
-				var sempProtocol = service.managementProtocols.find(i => i.name === "SEMP");
-				L.info();
-				L.info(sempProtocol.username);
-				L.info(sempProtocol.password);
-				var sempv2Client = new Sempv2Client(sempProtocol.endPoints.find(j => j.name === "Secured SEMP Config").uris[0],
-					sempProtocol.username,
-					sempProtocol.password);
+		return new Promise<any>(async (resolve, reject) => {
+			for (var service of services) {
+				var sempV2Client = this.getSEMPv2Client(service);
 				var clientUsername: MsgVpnClientUsername = {
 					aclProfileName: app.credentials.secret.consumerKey,
 					clientUsername: app.credentials.secret.consumerKey,
@@ -133,86 +142,113 @@ class BrokerService {
 					enabled: true
 
 				};
-				var response = AllService.createMsgVpnClientUsername(service.msgVpnName, clientUsername);
-				clientUsernameResponses.push(response);
-			});
-			Promise.all(clientUsernameResponses).then((responses) => resolve()).catch((e) => reject(e));
+				try {
+					var getResponse = await AllService.getMsgVpnClientUsername(service.msgVpnName, app.credentials.secret.consumerKey);
+					L.info("Client Username Looked up");
+					var responseUpd = await AllService.updateMsgVpnClientUsername(service.msgVpnName, app.credentials.secret.consumerKey, clientUsername);
+					L.info("Client Username updated");
+				} catch (e) {
+
+					try {
+						let response = await AllService.createMsgVpnClientUsername(service.msgVpnName, clientUsername);
+						L.info("created  Client Username");
+					} catch (e) {
+						reject(e);
+					}
+				}
+			}
+			resolve();
 		});
 	}
 
 	private createClientACLExceptions(app: App, services: Service[], apiProducts: APIProduct[]): Promise<void> {
-		return new Promise<any>((resolve, reject) => {
+		return new Promise<any>(async (resolve, reject) => {
 			L.info(` services: ${services}`);
 			var publishExceptions: string[] = [];
 			var subscribeExceptions: string[] = [];
 			// compile list of event destinations sub / pub separately
-			var asyncAPIPromisesSubscribe: Promise<string[]>[] = [];
-			var asyncAPIPromisesPublish: Promise<string[]>[] = [];
-			apiProducts.forEach((product: APIProduct) => {
+			for (var product of apiProducts) {
 				publishExceptions = this.getResources(product.pubResources).concat(publishExceptions);
 				subscribeExceptions = this.getResources(product.subResources).concat(subscribeExceptions);
-				asyncAPIPromisesSubscribe.push(this.getResourcesFromAsyncAPIs(product.apis, Direction.Subscribe));
-				asyncAPIPromisesPublish.push(this.getResourcesFromAsyncAPIs(product.apis, Direction.Publish));
-			});
-			Promise.all(asyncAPIPromisesSubscribe).then((values) => {
-				values.forEach((value) => {
-					subscribeExceptions = subscribeExceptions.concat(value);
-				});
-			}).then((s) => Promise.all(asyncAPIPromisesPublish).then((values) => {
-				values.forEach((value) => {
-					publishExceptions = publishExceptions.concat(value);
-				})
+				var strs: string[] = await this.getResourcesFromAsyncAPIs(product.apis, Direction.Subscribe);
+				for (var s of strs) {
+					subscribeExceptions.push(s);
+				}
+				strs = await this.getResourcesFromAsyncAPIs(product.apis, Direction.Publish);
+				for (var s of strs) {
+					publishExceptions.push(s);
+				}
 			}
-			).then((values) => {
-				publishExceptions = Array.from(new Set(publishExceptions));
-				subscribeExceptions = Array.from(new Set(subscribeExceptions));
-			})).then((values) => {
-				this.addPublishTopicExceptions(app, services, publishExceptions).then(
-					(p)=> this.addSubscribeTopicExceptions(app, services, subscribeExceptions).then((p)=>resolve())
-				).catch((e)=> reject(e));
-			});
-
+			L.info(publishExceptions);
+			L.info(subscribeExceptions);
+			try {
+			var q = await this.addPublishTopicExceptions(app, services, publishExceptions);
+			} catch {}
+			var r = await this.addSubscribeTopicExceptions(app, services, subscribeExceptions);
 		});
 	}
 
 	private addPublishTopicExceptions(app: App, services: Service[], exceptions: string[]): Promise<void> {
-		return new Promise<void>((resolve, reject) => {
-			var promises: Promise<MsgVpnAclProfilePublishExceptionResponse>[] = [];
-			services.forEach((service: Service) => {
-				exceptions.forEach((exception: string) => {
+		return new Promise<void>(async (resolve, reject) => {
+			for (var service of services) {
+				var sempV2Client = this.getSEMPv2Client(service);
+				for (var exception of exceptions) {
 					var aclException: MsgVpnAclProfilePublishException = {
 						aclProfileName: app.credentials.secret.consumerKey,
 						msgVpnName: service.msgVpnName,
 						publishExceptionTopic: exception,
 						topicSyntax: MsgVpnAclProfilePublishException.topicSyntax.SMF
 					};
+					L.info("createMsgVpnAclProfilePublishException");
 					L.info(aclException);
-					var p = AllService.createMsgVpnAclProfilePublishException(service.msgVpnName, app.credentials.secret.consumerKey, aclException);
-					promises.push(p);
-				})
+					try {
+						var getResponse = await AllService.getMsgVpnAclProfilePublishException(service.msgVpnName, app.credentials.secret.consumerKey, MsgVpnAclProfilePublishException.topicSyntax.SMF, exception);
+						L.info("ACL Looked up");
+					} catch (e) {
 
-			});
-			Promise.all(promises).then((p)=> resolve()).catch((e)=> reject(e));
+						try {
+							let response = await AllService.createMsgVpnAclProfilePublishException(service.msgVpnName, app.credentials.secret.consumerKey, aclException);
+							L.info("created  PublishException");
+						} catch (e) {
+							reject(e);
+						}
+					}
+				}
+
+			}
+			resolve();
 		});
 
 	}
 	private addSubscribeTopicExceptions(app: App, services: Service[], exceptions: string[]): Promise<void> {
-		return new Promise<void>((resolve, reject) => {
-			var promises: Promise<MsgVpnAclProfileSubscribeExceptionResponse>[] = [];
-			services.forEach((service: Service) => {
-				exceptions.forEach((exception: string) => {
+		return new Promise<void>(async (resolve, reject) => {
+			for (var service of services) {
+				var sempV2Client = this.getSEMPv2Client(service);
+				for (var exception of exceptions) {
 					var aclException: MsgVpnAclProfileSubscribeException = {
 						aclProfileName: app.credentials.secret.consumerKey,
 						msgVpnName: service.msgVpnName,
 						subscribeExceptionTopic: exception,
-						topicSyntax: MsgVpnAclProfilePublishException.topicSyntax.SMF
+						topicSyntax: MsgVpnAclProfileSubscribeException.topicSyntax.SMF
 					};
-					var p = AllService.createMsgVpnAclProfileSubscribeException(service.msgVpnName, app.credentials.secret.consumerKey, aclException);
-					promises.push(p);
-				})
+					L.info("createMsgVpnAclProfileSubscribeException");
+					L.info(aclException);
+					try {
+						var getResponse = await AllService.getMsgVpnAclProfileSubscribeException(service.msgVpnName, app.credentials.secret.consumerKey, MsgVpnAclProfileSubscribeException.topicSyntax.SMF, exception);
+						L.info("ACL Looked up");
+					} catch {
 
-			});
-			Promise.all(promises).then((p)=> resolve()).catch((e)=> reject(e));
+						try {
+							let response = await AllService.createMsgVpnAclProfileSubscribeException(service.msgVpnName, app.credentials.secret.consumerKey, aclException);
+							L.info("created  SubscribeException");
+						} catch (e) {
+							reject(e);
+						}
+					}
+				}
+
+			}
+			resolve();
 		});
 
 	}
@@ -222,23 +258,41 @@ class BrokerService {
 			(resolve, reject) => {
 				var apiPromises: Promise<string>[] = [];
 				apis.forEach((api: string) => {
-					apiPromises.push(EventPortalFacade.getApiSpec(api));
+					apiPromises.push(ApisService.byName(api));
 				});
-				Promise.all(apiPromises).then((specs) => {
+				Promise.all(apiPromises).then(async (specs) => {
+					var parserPromises: Promise<any>[] = [];
 					var resources: string[] = [];
-					specs.forEach((spec) => {
-						const chnlsMap = new Map(Object.entries(spec["channels"]));
-						chnlsMap.forEach((chnlObj, chnlName) => {
-							if (direction == Direction.Subscribe && chnlObj["subscribe"]) {
-								resources.push(this.scrubDestination(chnlName));
-							}
-							if (direction == Direction.Publish && chnlObj["publish"]) {
-								resources.push(this.scrubDestination(chnlName));
-							}
-						});
+					specs.forEach((specification: string) => {
+						var p: Promise<any> = parser.parse(specification);
+						parserPromises.push(p);
 
+						p.then(
+							(spec) => {
+								spec.channelNames().forEach((s: string) => {
+
+									var channel = spec.channel(s);
+
+									if (direction == Direction.Subscribe && channel.hasSubscribe()) {
+										L.info(`Subscribe ${s}`)
+										resources.push(this.scrubDestination(s));
+									}
+									if (direction == Direction.Publish && channel.hasPublish()) {
+										L.info(`Publish ${s}`)
+										resources.push(this.scrubDestination(s));
+									}
+								});
+							}
+						).catch((e) => {
+							L.error(e);
+							reject(e);
+						});
 					});
-					resolve(resources);
+					Promise.all(parserPromises).then((vals) => {
+						resolve(resources);
+					});
+
+
 				});
 			}
 		);
@@ -252,6 +306,14 @@ class BrokerService {
 
 	private scrubDestination(destination: string) {
 		return destination.replace(/\{[^\/]*\}(?!$)/g, "*").replace(/\{[^\/]*\}$/, ">");
+	}
+
+	private getSEMPv2Client(service: Service): Sempv2Client {
+		var sempProtocol = service.managementProtocols.find(i => i.name === "SEMP");
+		var sempv2Client = new Sempv2Client(sempProtocol.endPoints.find(j => j.name === "Secured SEMP Config").uris[0],
+			sempProtocol.username,
+			sempProtocol.password);
+		return sempv2Client;
 	}
 
 
