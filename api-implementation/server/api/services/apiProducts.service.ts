@@ -1,17 +1,17 @@
 import L from '../../common/logger';
 import APIProduct = Components.Schemas.APIProduct;
 import { PersistenceService } from './persistence.service';
-import EventPortalFacade from '../../../src/eventportalfacade';
 
 import EnvironmentsService from './environments.service';
+import ApisService from './apis.service';
 
 export class ApiProductsService {
 
   private persistenceService: PersistenceService;
-  
+
   constructor() {
     this.persistenceService = new PersistenceService('api_products');
-    
+
   }
 
   all(): Promise<APIProduct[]> {
@@ -35,7 +35,7 @@ export class ApiProductsService {
         }).catch((e) => {
           reject(e);
         });
-      }).catch((e)=>{
+      }).catch((e) => {
         reject(e);
       })
 
@@ -43,18 +43,21 @@ export class ApiProductsService {
   }
 
   update(name: string, body: APIProduct): Promise<APIProduct> {
-   return new Promise<APIProduct>((resolve, reject) => {
-      var apiReferenceCheck: Promise<boolean> = this.validateReferences(body);
-      apiReferenceCheck.then((b: boolean) => {
+    return new Promise<APIProduct>(async (resolve, reject) => {
+      try {
+        const apiReferenceCheck = await this.validateReferences(body);
+        L.info(` reference check result ${apiReferenceCheck}`);
+        if (!apiReferenceCheck)
+          reject(422);
         this.persistenceService.update(name, body).then((p) => {
           resolve(p);
         }).catch((e) => {
           reject(e);
         });
-      }).catch((e)=>{
-        reject(e);
-      })
 
+      } catch {
+        reject(422);
+      }
     });
   }
 
@@ -63,20 +66,23 @@ export class ApiProductsService {
       var results: Promise<boolean>[] = [];
       product.apis.forEach((n) => {
         results.push(new Promise<boolean>((resolve, reject) => {
-          EventPortalFacade.getApi(n).then((p) => {
+          ApisService.byName(n).then((p) => {
+            if (!p) {
+              reject(`Referenced API ${n} does not exist`)
+            }
             resolve(true);
           }
           ).catch((e) => {
-           L.info(e);
-          reject(`Referenced API ${n} does not exist`);
+            L.info(e);
+            reject(`Referenced API ${n} does not exist`);
           })
         }));
       });
-      product.environments.forEach((envName: string)=>{
+      product.environments.forEach((envName: string) => {
         results.push(new Promise<boolean>((resolve, reject) => {
           EnvironmentsService.byName(envName).then((p) => {
-            if (p){
-            resolve(true);
+            if (p) {
+              resolve(true);
             } else {
               reject(`Referenced environment ${envName} does not exist`);
             }
