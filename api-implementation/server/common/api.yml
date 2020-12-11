@@ -765,16 +765,16 @@ paths:
      requestBody: 
        description: "async api specification"
        content: 
-         "application/json": 
+         "text/plain": 
            schema: 
             type: string    
      responses:
        '200':
          description: updated async api specification
          content: 
-           application/json:
+           text/plain:
              schema:
-               $ref: '#/components/schemas/APIProduct'
+               type: string
        '400': 
          description: "Bad Request."
          content: 
