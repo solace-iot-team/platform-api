@@ -3,7 +3,7 @@ import { PersistenceService } from './persistence.service';
 
 const parser = require('@asyncapi/parser');
 
-interface apiSpecification {
+export interface APISpecification {
   name: string,
   specification: string
 }
@@ -19,9 +19,9 @@ export class ApisService {
 
   async all(): Promise<string[]> {
     return new Promise<string[]>((resolve, reject) => {
-      this.persistenceService.all().then((all: apiSpecification[]) => {
+      this.persistenceService.all().then((all: APISpecification[]) => {
         var names: string[] = [];
-        all.forEach((spec: apiSpecification) => {
+        all.forEach((spec: APISpecification) => {
           names.push(spec.name);
         });
         resolve(names);
@@ -34,7 +34,7 @@ export class ApisService {
 
   byName(name: string): Promise<string> {
     return new Promise<string>((resolve, reject) => {
-      this.persistenceService.byName(name).then((spec: apiSpecification) => {
+      this.persistenceService.byName(name).then((spec: APISpecification) => {
         if (!spec) {
           resolve(null);
         } else
@@ -55,11 +55,11 @@ export class ApisService {
       if (!isValid){
         reject(400);
       }
-      var spec: apiSpecification = {
+      var spec: APISpecification = {
         name: name,
         specification: body
       };
-      this.persistenceService.create(name, spec).then((spec: apiSpecification) => {
+      this.persistenceService.create(name, spec).then((spec: APISpecification) => {
         resolve(spec.specification);
       }).catch((e) => {
         reject(e);
@@ -73,11 +73,11 @@ export class ApisService {
       if (!isValid){
         reject(400);
       }
-      var spec: apiSpecification = {
+      var spec: APISpecification = {
         name: name,
         specification: body
       };
-      this.persistenceService.update(name, spec).then((spec: apiSpecification) => {
+      this.persistenceService.update(name, spec).then((spec: APISpecification) => {
         resolve(spec.specification);
       }).catch((e) => {
         reject(e);
