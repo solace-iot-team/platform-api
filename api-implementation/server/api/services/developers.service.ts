@@ -78,33 +78,27 @@ export class DevelopersService {
       };
       const approvalCheck = await this.validateAPIProducts(app);
       if (approvalCheck) {
-        if (approvalCheck) {
-          app.status = 'approved';
-        } else {
-          app.status = 'pending';
-        }
-        if (!body.credentials.secret) {
-          var consumerCredentials = {
-            consumerKey: passwordGenerator.generate({
-              length: 32, numbers: true, strict: true
-            }),
-            consumerSecret: passwordGenerator.generate({
-              length: 16, numbers: true, strict: true
-            })
-          };
-          body.credentials.secret = consumerCredentials;
-        }
-        var promise: Promise<any> = this.appPersistenceService.create(body.name, app);
-        promise.then(async (val) => {
-          if (app.status == 'approved')
-            await BrokerService.provisionApp(app)
-        }).catch((e) => reject(e));
-        resolve(promise);
-
+        app.status = 'approved';
+      } else {
+        app.status = 'pending';
       }
-
-
-
+      if (!body.credentials.secret) {
+        var consumerCredentials = {
+          consumerKey: passwordGenerator.generate({
+            length: 32, numbers: true, strict: true
+          }),
+          consumerSecret: passwordGenerator.generate({
+            length: 16, numbers: true, strict: true
+          })
+        };
+        body.credentials.secret = consumerCredentials;
+      }
+      var promise: Promise<any> = this.appPersistenceService.create(body.name, app);
+      promise.then(async (val) => {
+        if (app.status == 'approved')
+          await BrokerService.provisionApp(app)
+      }).catch((e) => reject(e));
+      resolve(promise);
     });
   }
 
