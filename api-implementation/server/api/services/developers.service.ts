@@ -114,6 +114,8 @@ export class DevelopersService {
           reject(404);
         }
         var app: DeveloperAppPatch = {
+          ownerId: developer,
+          appType: "developer",
           apiProducts: body.apiProducts,
           name: body.name,
           attributes: body.attributes,
