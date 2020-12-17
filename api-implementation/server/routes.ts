@@ -5,12 +5,14 @@ import apiDomainsRouter from './api/controllers/apiDomains/router';
 import apiProductsRouter from './api/controllers/apiProducts/router';
 import developersRouter from './api/controllers/developers/router';
 import environmentsRouter from './api/controllers/environments/router';
+import accountRouter from './api/controllers/account/router';
 
-export default function routes(app: Application): void {
-  app.use('/v1/apis', apisRouter);
-  app.use('/v1/event-portal/apis', eventPortalApisRouter);
-  app.use('/v1/apiDomains', apiDomainsRouter);  
-  app.use('/v1/apiProducts', apiProductsRouter);  
-  app.use('/v1/developers', developersRouter);  
-  app.use('/v1/environments', environmentsRouter);  
+export default function routes(app: Application, auth : any): void {
+  app.use('/v1/apis', auth, apisRouter);
+  app.use('/v1/event-portal/apis', auth, eventPortalApisRouter);
+  app.use('/v1/apiDomains', auth, apiDomainsRouter);  
+  app.use('/v1/apiProducts', auth, apiProductsRouter);  
+  app.use('/v1/developers', auth, developersRouter);  
+  app.use('/v1/environments', auth, environmentsRouter);  
+  app.use('/v1/account', auth, accountRouter);  
 }
