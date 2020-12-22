@@ -77,7 +77,7 @@ components:
     page_size:
      name: pageSize
      in: query
-     description: "The number of itesm to get per page. Min: 1 Max: 100"
+     description: "Currently not honoured. The number of itesm to get per page. Min: 1 Max: 100"
      required: false
      schema: 
       type: integer
@@ -86,7 +86,7 @@ components:
     page_number:
      name: pageNumber
      in: query
-     description: "The page number to get. Min: 1"
+     description: "Currently not honoured. The page number to get. Min: 1"
      required: false
      schema: 
        type: integer
@@ -109,6 +109,7 @@ components:
         example: "'object': { 'field': 'description' }"
        example: "'object': { 'field': 'description' }"
     APIDomain: 
+     description: "Event Portal API Domain information. Currently only provided as utiity to retrieve metadata from the Event Portal."
      required: 
       - enforceUniqueTopicNames
      type: object
@@ -159,6 +160,7 @@ components:
       type: 
        type: string
     APIListItem:
+      description: "API List item (short info). Currently only provided as utiity to retrieve metadata from the Event Portal."
       type: object
       properties:
         name: 
@@ -168,6 +170,7 @@ components:
           type: string
           example: Acme Rideshare
     API: 
+     description: "Event Portal API information. Currently only provided as utiity to retrieve metadata from the Event Portal."
      required: 
       - apiDomainName
       - name
@@ -245,7 +248,7 @@ components:
       - pubResources
       - apis
       type: object
-      description: The API Product Schema
+      description: "An API product consists of a list of API resources (URIs) and custom metadata required by the API provider. API products enable you to bundle and distribute your APIs to multiple developer groups simultaneously"
       properties:
           apis:
               description: APIs associated with this product.
@@ -327,7 +330,7 @@ components:
               type: array      
     APIProductPatch:
       type: object
-      description: The API Product Schema
+      description: "Used for PATCH operation, An API product consists of a list of API resources (URIs) and custom metadata required by the API provider. API products enable you to bundle and distribute your APIs to multiple developer groups simultaneously"
       properties:
           apis:
               description: APIs associated with this product.
@@ -406,6 +409,7 @@ components:
                 type: string
               type: array      
     Developer:
+      description: "A profile for a developer. After the developer is created, they can register an app and receive API credentials"
       type: object
       properties:
         email:
@@ -438,6 +442,7 @@ components:
 
     DeveloperPatch:
       type: object
+      description: "Used for PATCH operation, A profile for a developer. After the developer is created, they can register an app and receive API credentials"
       properties:
         email:
           type: string
@@ -452,6 +457,7 @@ components:
           
     App:
       type: object
+      description: "An app associated with a developer. Associates the app with an API product, and auto-generates an API credentials for the app to use"
       properties:
         name: 
           type: string
@@ -477,6 +483,7 @@ components:
       - apiProducts
       - credentials
     AppPatch:
+      description: "Used for PATCH operation. An app associated with a developer. Associates the app with an API product, and auto-generates an API credentials for the app to use"
       type: object
       properties:
         name: 
@@ -503,6 +510,7 @@ components:
           
 
     Credentials:
+      description: Credentials object associated with an app
       type: object
       required:
       - expiresAt
@@ -522,6 +530,7 @@ components:
             consumerSecret:
               type: string
     Environment:
+      description: an environment
       type: object
       required:
       - name
@@ -541,6 +550,7 @@ components:
           $ref: '#/components/schemas/Properties'
 
     EnvironmentPatch:
+      description: used for PATCH operation, an environment
       type: object
       properties:
         description:
@@ -550,6 +560,7 @@ components:
           $ref: '#/components/schemas/Properties'
 
     Service:
+      description: provides information about a service in the Solace Cloud account.
       type: object
       properties:
         type:
@@ -819,6 +830,7 @@ components:
         configSyncSslEnabled:
           type: boolean
     ServicesResponse:
+      description: provides information about services in the Solace Cloud account.
       type: object
       required:
       - data
@@ -872,6 +884,17 @@ security:
 
 tags:
   - name: apis
+    description: "Represents Async API specifications. The specifications must be compliant documents in JSON or YML format"
+  - name: apiProducts
+    description: "An API product consists of a list of API resources (URIs) and custom metadata required by the API provider. API products enable you to bundle and distribute your APIs to multiple developer groups simultaneously"
+  - name: developers
+    description: "Developers must register. After they are registered, developers register their apps, choose the APIs they want to use, and receive the unique API credentials (consumer keys and secrets) needed to access APIs."
+  - name: apps
+    description: "Manage consumer credentials for apps"
+  - name: environments
+    description: "An environment provides a runtime execution context for APIs. Each environment is associated with a specific Service in the associated Solace Cloud account. Typical environments are dev, stage, prod ..."
+  - name: eventPortal
+    description: "Provides read-only access to the Solace Event Portal associated with the account. Currently provided as a utility resource so existing Async API stubs can be exported from the portal. Currently these specifications are not necessarily compliant and information such as binding is missing."
 paths:
   /apis:
     get:
