@@ -50,7 +50,18 @@ export class DevelopersService {
   }
 
   deleteApp(developer: string, name: string): Promise<number> {
-    return this.appPersistenceService.delete(name, { ownerId: developer });
+    return new Promise<number>(async (resolve, reject) => {
+      const d = await this.byName(developer);
+      L.info(d);
+      if (!d) {
+        reject(404);
+      }
+      var promise: Promise<any> =this.appPersistenceService.byName(name, { ownerId: developer });
+      promise.then(async (app) => {
+        await BrokerService.deprovisionApp(app);
+      }).catch((e) => reject(e));
+      resolve(this.appPersistenceService.delete(name, { ownerId: developer }));
+    });
   }
 
   create(body: Developer): Promise<Developer> {
