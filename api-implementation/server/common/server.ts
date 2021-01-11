@@ -25,6 +25,7 @@ export default class ExpressServer {
       })
     );
     app.use(bodyParser.text({ limit: process.env.REQUEST_LIMIT || '100kb' }));
+    app.use(bodyParser.json({ limit: process.env.REQUEST_LIMIT || '100kb' }));
     app.use(cookieParser(process.env.SESSION_SECRET));
     app.use(express.static(`${root}/public`));
 
