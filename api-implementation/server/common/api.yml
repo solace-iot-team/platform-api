@@ -2164,7 +2164,7 @@ paths:
           "application/json": 
            schema: 
             "$ref": "#/components/schemas/ErrorResponse"
-  /{organization}developers/{developer_username}/apps:
+  /{organization}/developers/{developer_username}/apps:
     parameters:
     - $ref: '#/components/parameters/organization'
     - $ref: '#/components/parameters/developer_username'
