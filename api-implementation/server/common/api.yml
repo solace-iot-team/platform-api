@@ -12,6 +12,13 @@ components:
       type: http
       scheme: basic
   parameters:
+    organization:
+      name: organization
+      description: the name of the organization (tenant) a resource belongs to
+      in: path
+      required: true
+      schema:
+        type: string
     app_name:
       name: app_name
       description: the name of the app
@@ -865,6 +872,17 @@ components:
               type: number
               example: 100
     
+    Organization:
+      type: object
+      properties:
+        name:
+          type: string
+          example: myorg
+        cloud-token:
+          type: string
+          description: a Solace Cloud API Token, requires "get services" and "event portal read" permissions
+          example: eyXhbGciOiJSUzI1NiIsImtpZCI6Im1hYXNfcHJvZF8yMDIwMDMyNiIsInR5cCI6IkpXVCJ9.eyJvcmcifiJzb2xhY2Vpb3R0ZWFtIiwib3JnVHlwZSI6IkVOVEVSUFJJU0UiLCJzdWIiOiIzZTJvY214MTA1IiwicGVybWlzc2lvbnMiOiJBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQXdBQU09IiwiYXBpVG9rZW5JZCI6Inlhb2wzc2ZveG03IiwiaXNzIjoiU29sYWNlIENvcnBvcmF0aW9uIiwiaWF0IjoxNjAzODA3NzQ1fQ.QIBpi5_U6b1DnAwbDbJiFIT0pomqa4AyOLtmSOEF6zhoxKMm4Y27WbILZnxnh_gpdX-tvt18Ycuck4xs3T5JjFfU3qrczRHSuj2vEdsCpDQWdyZTPV4NQ-zPxRvigTjaTlcdXin8XwMGh8nZdylgRMlRQjvotomnXQxgbUol0Kl1ziFFMybqeD10qCDsUW6Jv-PKibBN3cnCsWwPZX6d_XYUECs1AHjgs5pk-A8v3DHcnvbXiAP4XXrry6ztopAWKMc5rVFoB_WFY4yi0reuTYjn6Sf0g7vZxFifRZZHZmqZtNQUiX6S80eQG4kF3YDKlr5PfLDNp4iRfe0-3svIPw
+    
     Properties:
       type: array
       items:
@@ -893,10 +911,323 @@ tags:
     description: "Manage consumer credentials for apps"
   - name: environments
     description: "An environment provides a runtime execution context for APIs. Each environment is associated with a specific Service in the associated Solace Cloud account. Typical environments are dev, stage, prod ..."
+  - name: organizations
+    description: "Manage organizations / tenants"
   - name: eventPortal
     description: "Provides read-only access to the Solace Event Portal associated with the account. Currently provided as a utility resource so existing Async API stubs can be exported from the portal. Currently these specifications are not necessarily compliant and information such as binding is missing."
 paths:
-  /apis:
+  /organizations:
+    get:
+      tags: 
+      - organizations
+      responses:
+       '200':
+         description: list of APIs
+         content: 
+           application/json:
+             schema:
+               type: array
+               items:
+                 "$ref": "#/components/schemas/Organization"
+       '400': 
+         description: "Bad Request."
+         content: 
+          "application/json": 
+           schema: 
+            "$ref": "#/components/schemas/ErrorResponse"
+          "*/*": 
+           schema: 
+            "$ref": "#/components/schemas/ErrorResponse"
+       '401': 
+         description: "Unauthorized."
+         content: 
+          "application/json": 
+           schema: 
+            "$ref": "#/components/schemas/ErrorResponse"
+       '403': 
+         description: "Forbidden."
+         content: 
+          "application/json": 
+           schema: 
+            "$ref": "#/components/schemas/ErrorResponse"
+       '404': 
+         description: "Not Found."
+         content: 
+          "application/json": 
+           schema: 
+            "$ref": "#/components/schemas/ErrorResponse"
+       '500': 
+         description: "Internal Server Error."
+         content: 
+          "application/json": 
+           schema: 
+            "$ref": "#/components/schemas/ErrorResponse"
+       '503': 
+         description: "Service Unavailable."
+         content: 
+          "application/json": 
+           schema: 
+            "$ref": "#/components/schemas/ErrorResponse"
+       '504': 
+         description: "Gateway Timeout."
+         content: 
+          "application/json": 
+           schema: 
+            "$ref": "#/components/schemas/ErrorResponse"
+    post:
+     tags:
+     - organizations
+     requestBody: 
+       description: "Organization"
+       content: 
+         "application/json": 
+           schema: 
+            "$ref": "#/components/schemas/Organization"    
+     responses:
+       '200':
+         description: Updated Organization
+         content: 
+           application/json:
+             schema:
+               $ref: '#/components/schemas/Organization'
+       '400': 
+         description: "Bad Request."
+         content: 
+          "application/json": 
+           schema: 
+            "$ref": "#/components/schemas/ErrorResponse"
+          "*/*": 
+           schema: 
+            "$ref": "#/components/schemas/ErrorResponse"
+       '401': 
+         description: "Unauthorized."
+         content: 
+          "application/json": 
+           schema: 
+            "$ref": "#/components/schemas/ErrorResponse"
+       '403': 
+         description: "Forbidden."
+         content: 
+          "application/json": 
+           schema: 
+            "$ref": "#/components/schemas/ErrorResponse"
+       '404': 
+         description: "Not Found."
+         content: 
+          "application/json": 
+           schema: 
+            "$ref": "#/components/schemas/ErrorResponse"
+       '422': 
+         description: "AlreadyExists."
+         content: 
+          "application/json": 
+           schema: 
+            "$ref": "#/components/schemas/ErrorResponse"
+       '500': 
+         description: "Internal Server Error."
+         content: 
+          "application/json": 
+           schema: 
+            "$ref": "#/components/schemas/ErrorResponse"
+       '503': 
+         description: "Service Unavailable."
+         content: 
+          "application/json": 
+           schema: 
+            "$ref": "#/components/schemas/ErrorResponse"
+       '504': 
+         description: "Gateway Timeout."
+         content: 
+          "application/json": 
+           schema: 
+            "$ref": "#/components/schemas/ErrorResponse"
+
+  /organizations/{organization}:
+    parameters:
+    - $ref: '#/components/parameters/organization'
+    get:
+      tags: 
+      - organizations
+      responses:
+       '200':
+         description: list of APIs
+         content: 
+           application/json:
+             schema:
+              "$ref": "#/components/schemas/Organization"
+       '400': 
+         description: "Bad Request."
+         content: 
+          "application/json": 
+           schema: 
+            "$ref": "#/components/schemas/ErrorResponse"
+          "*/*": 
+           schema: 
+            "$ref": "#/components/schemas/ErrorResponse"
+       '401': 
+         description: "Unauthorized."
+         content: 
+          "application/json": 
+           schema: 
+            "$ref": "#/components/schemas/ErrorResponse"
+       '403': 
+         description: "Forbidden."
+         content: 
+          "application/json": 
+           schema: 
+            "$ref": "#/components/schemas/ErrorResponse"
+       '404': 
+         description: "Not Found."
+         content: 
+          "application/json": 
+           schema: 
+            "$ref": "#/components/schemas/ErrorResponse"
+       '500': 
+         description: "Internal Server Error."
+         content: 
+          "application/json": 
+           schema: 
+            "$ref": "#/components/schemas/ErrorResponse"
+       '503': 
+         description: "Service Unavailable."
+         content: 
+          "application/json": 
+           schema: 
+            "$ref": "#/components/schemas/ErrorResponse"
+       '504': 
+         description: "Gateway Timeout."
+         content: 
+          "application/json": 
+           schema: 
+            "$ref": "#/components/schemas/ErrorResponse"
+    patch:
+     tags:
+     - organizations
+     requestBody: 
+       description: "Organization"
+       content: 
+         "application/json": 
+           schema: 
+            "$ref": "#/components/schemas/Organization"    
+     responses:
+       '200':
+         description: Updated Organization
+         content: 
+           application/json:
+             schema:
+               $ref: '#/components/schemas/Organization'
+       '400': 
+         description: "Bad Request."
+         content: 
+          "application/json": 
+           schema: 
+            "$ref": "#/components/schemas/ErrorResponse"
+          "*/*": 
+           schema: 
+            "$ref": "#/components/schemas/ErrorResponse"
+       '401': 
+         description: "Unauthorized."
+         content: 
+          "application/json": 
+           schema: 
+            "$ref": "#/components/schemas/ErrorResponse"
+       '403': 
+         description: "Forbidden."
+         content: 
+          "application/json": 
+           schema: 
+            "$ref": "#/components/schemas/ErrorResponse"
+       '404': 
+         description: "Not Found."
+         content: 
+          "application/json": 
+           schema: 
+            "$ref": "#/components/schemas/ErrorResponse"
+       '422': 
+         description: "AlreadyExists."
+         content: 
+          "application/json": 
+           schema: 
+            "$ref": "#/components/schemas/ErrorResponse"
+       '500': 
+         description: "Internal Server Error."
+         content: 
+          "application/json": 
+           schema: 
+            "$ref": "#/components/schemas/ErrorResponse"
+       '503': 
+         description: "Service Unavailable."
+         content: 
+          "application/json": 
+           schema: 
+            "$ref": "#/components/schemas/ErrorResponse"
+       '504': 
+         description: "Gateway Timeout."
+         content: 
+          "application/json": 
+           schema: 
+            "$ref": "#/components/schemas/ErrorResponse"
+    delete:
+     tags:
+     - organizations
+     responses:
+       '204':
+         description: No content
+       '400': 
+         description: "Bad Request."
+         content: 
+          "application/json": 
+           schema: 
+            "$ref": "#/components/schemas/ErrorResponse"
+          "*/*": 
+           schema: 
+            "$ref": "#/components/schemas/ErrorResponse"
+       '401': 
+         description: "Unauthorized."
+         content: 
+          "application/json": 
+           schema: 
+            "$ref": "#/components/schemas/ErrorResponse"
+       '403': 
+         description: "Forbidden."
+         content: 
+          "application/json": 
+           schema: 
+            "$ref": "#/components/schemas/ErrorResponse"
+       '404': 
+         description: "Not Found."
+         content: 
+          "application/json": 
+           schema: 
+            "$ref": "#/components/schemas/ErrorResponse"
+       '422': 
+         description: "AlreadyExists."
+         content: 
+          "application/json": 
+           schema: 
+            "$ref": "#/components/schemas/ErrorResponse"
+       '500': 
+         description: "Internal Server Error."
+         content: 
+          "application/json": 
+           schema: 
+            "$ref": "#/components/schemas/ErrorResponse"
+       '503': 
+         description: "Service Unavailable."
+         content: 
+          "application/json": 
+           schema: 
+            "$ref": "#/components/schemas/ErrorResponse"
+       '504': 
+         description: "Gateway Timeout."
+         content: 
+          "application/json": 
+           schema: 
+            "$ref": "#/components/schemas/ErrorResponse"
+
+  /{organization}/apis:
+    parameters:
+    - $ref: '#/components/parameters/organization'
     get:
      tags:
       - apis
@@ -957,12 +1288,13 @@ paths:
           "application/json": 
            schema: 
             "$ref": "#/components/schemas/ErrorResponse"
-  /apis/{api_name}:
+  /{organization}/apis/{api_name}:
+    parameters:
+    - $ref: '#/components/parameters/organization'
+    - $ref: '#/components/parameters/api_name'
     put:
       tags: 
       - apis
-      parameters:
-      - $ref: '#/components/parameters/api_name'
       requestBody: 
        description: "Async API specification"
        content: 
@@ -1030,8 +1362,6 @@ paths:
     get:
      tags:
      - apis
-     parameters:
-     - $ref: '#/components/parameters/api_name'
      responses:
        '200':
          description:  async api sepc
@@ -1087,8 +1417,6 @@ paths:
     patch:
      tags:
      - apis
-     parameters:
-     - $ref: '#/components/parameters/api_name'
      requestBody: 
        description: "async api specification"
        content: 
@@ -1156,8 +1484,6 @@ paths:
     delete:
      tags:
      - apis
-     parameters:
-     - $ref: '#/components/parameters/api_name'
      responses:
        '204':
          description: No content
@@ -1212,7 +1538,9 @@ paths:
           "application/json": 
            schema: 
             "$ref": "#/components/schemas/ErrorResponse"
-  /apiProducts:
+  /{organization}/apiProducts:
+    parameters:
+    - $ref: '#/components/parameters/organization'
     post:
      tags:
      - apiProducts
@@ -1340,12 +1668,13 @@ paths:
           "application/json": 
            schema: 
             "$ref": "#/components/schemas/ErrorResponse"
-  /apiProducts/{api_product_name}:
+  /{organization}/apiProducts/{api_product_name}:
+    parameters:
+    - $ref: '#/components/parameters/organization'
+    - $ref: '#/components/parameters/api_product_name'
     get:
      tags:
      - apiProducts
-     parameters:
-     - $ref: '#/components/parameters/api_product_name'
      responses:
        '200':
          description:  an API Product
@@ -1401,8 +1730,6 @@ paths:
     patch:
      tags:
      - apiProducts
-     parameters:
-     - $ref: '#/components/parameters/api_product_name'
      requestBody: 
        description: "Application domains have a name and topic domain."
        content: 
@@ -1470,8 +1797,6 @@ paths:
     delete:
      tags:
      - apiProducts
-     parameters:
-     - $ref: '#/components/parameters/api_product_name'
      responses:
        '204':
          description: No contentt
@@ -1526,7 +1851,9 @@ paths:
           "application/json": 
            schema: 
             "$ref": "#/components/schemas/ErrorResponse"
-  /developers:
+  /{organization}/developers:
+    parameters:
+    - $ref: '#/components/parameters/organization'
     post:
      tags:
      - developers
@@ -1654,12 +1981,13 @@ paths:
           "application/json": 
            schema: 
             "$ref": "#/components/schemas/ErrorResponse"
-  /developers/{developer_username}:
+  /{organization}/developers/{developer_username}:
+    parameters:
+    - $ref: '#/components/parameters/organization'
+    - $ref: '#/components/parameters/developer_username'
     get:
      tags:
      - developers
-     parameters:
-     - $ref: '#/components/parameters/developer_username'
      responses:
        '200':
          description:  a developer
@@ -1715,8 +2043,6 @@ paths:
     patch:
      tags:
      - developers
-     parameters:
-     - $ref: '#/components/parameters/developer_username'
      requestBody: 
        description: "Application domains have a name and topic domain."
        content: 
@@ -1784,8 +2110,6 @@ paths:
     delete:
      tags:
      - developers
-     parameters:
-     - $ref: '#/components/parameters/developer_username'
      responses:
        '204':
          description: No contentt
@@ -1840,13 +2164,14 @@ paths:
           "application/json": 
            schema: 
             "$ref": "#/components/schemas/ErrorResponse"
-  /developers/{developer_username}/apps:
+  /{organization}developers/{developer_username}/apps:
+    parameters:
+    - $ref: '#/components/parameters/organization'
+    - $ref: '#/components/parameters/developer_username'
     post:
      tags:
      - apps
      - developers
-     parameters:
-     - $ref: '#/components/parameters/developer_username'
      requestBody: 
        description: "App information"
        content: 
@@ -1916,7 +2241,6 @@ paths:
       - apps
       - developers
      parameters:
-     - $ref: '#/components/parameters/developer_username'
      - $ref: '#/components/parameters/page_size'
      - $ref: '#/components/parameters/page_number'
      responses:
@@ -1973,14 +2297,15 @@ paths:
           "application/json": 
            schema: 
             "$ref": "#/components/schemas/ErrorResponse"
-  /developers/{developer_username}/apps/{app_name}:
+  /{organization}/developers/{developer_username}/apps/{app_name}:
+    parameters:
+    - $ref: '#/components/parameters/organization'
+    - $ref: '#/components/parameters/developer_username'
+    - $ref: '#/components/parameters/app_name'
     get:
      tags:
      - apps
      - developers
-     parameters:
-     - $ref: '#/components/parameters/developer_username'
-     - $ref: '#/components/parameters/app_name'
      responses:
        '200':
          description:  an app
@@ -2037,9 +2362,6 @@ paths:
      tags:
      - apps
      - developers
-     parameters:
-     - $ref: '#/components/parameters/developer_username'
-     - $ref: '#/components/parameters/app_name'
      requestBody: 
        description: ""
        content: 
@@ -2108,9 +2430,6 @@ paths:
      tags:
      - apps
      - developers
-     parameters:
-     - $ref: '#/components/parameters/developer_username'
-     - $ref: '#/components/parameters/app_name'
      responses:
        '204':
          description: No contentt
@@ -2165,7 +2484,9 @@ paths:
           "application/json": 
            schema: 
             "$ref": "#/components/schemas/ErrorResponse"
-  /environments:
+  /{organization}/environments:
+    parameters:
+    - $ref: '#/components/parameters/organization'
     post:
      tags:
      - environments
@@ -2293,12 +2614,13 @@ paths:
           "application/json": 
            schema: 
             "$ref": "#/components/schemas/ErrorResponse"
-  /environments/{env_name}:
+  /{organization}/environments/{env_name}:
+    parameters:
+    - $ref: '#/components/parameters/organization'
+    - $ref: '#/components/parameters/env_name'
     get:
      tags:
      - environments
-     parameters:
-     - $ref: '#/components/parameters/env_name'
      responses:
        '200':
          description:  environment
@@ -2354,8 +2676,6 @@ paths:
     patch:
      tags:
      - environments
-     parameters:
-     - $ref: '#/components/parameters/env_name'
      requestBody: 
        description: "Application domains have a name and topic domain."
        content: 
@@ -2423,8 +2743,6 @@ paths:
     delete:
      tags:
      - environments
-     parameters:
-     - $ref: '#/components/parameters/env_name'
      responses:
        '204':
          description: No contentt
@@ -2479,7 +2797,9 @@ paths:
           "application/json": 
            schema: 
             "$ref": "#/components/schemas/ErrorResponse"
-  /account/services:
+  /{organization}/services:
+    parameters:
+    - $ref: '#/components/parameters/organization'
     get:
      tags:
       - environments
@@ -2540,7 +2860,9 @@ paths:
           "application/json": 
            schema: 
             "$ref": "#/components/schemas/ErrorResponse"
-  /event-portal/apis:
+  /{organization}/event-portal/apis:
+    parameters:
+    - $ref: '#/components/parameters/organization'
     get:
      tags:
       - eventPortal
@@ -2609,12 +2931,13 @@ paths:
           "application/json": 
            schema: 
             "$ref": "#/components/schemas/ErrorResponse"
-  /event-portal/apis/{api_name}:
+  /{organization}/event-portal/apis/{api_name}:
+    parameters:
+    - $ref: '#/components/parameters/organization'
+    - $ref: '#/components/parameters/api_name'
     get:
      tags:
      - eventPortal
-     parameters:
-     - $ref: '#/components/parameters/api_name'
      responses:
        '200':
          description: the API  corresponding to the name requested
@@ -2669,12 +2992,14 @@ paths:
           "application/json": 
            schema: 
             "$ref": "#/components/schemas/ErrorResponse"
-  /event-portal/apis/{api_name}/spec:
-   get:
+  /{organization}/event-portal/apis/{api_name}/spec:
+    parameters:
+    - $ref: '#/components/parameters/organization'
+    - $ref: '#/components/parameters/api_name'
+    get:
      tags:
      - eventPortal
      parameters:
-     - $ref: '#/components/parameters/api_name'
      - name: async_api_version
        schema:
         type: string
@@ -2734,7 +3059,9 @@ paths:
           "application/json": 
            schema: 
             "$ref": "#/components/schemas/ErrorResponse"
-  /event-portal/apiDomains:
+  /{organization}/event-portal/apiDomains:
+    parameters:
+    - $ref: '#/components/parameters/organization'
     get:
      tags:
       - eventPortal
@@ -2795,12 +3122,13 @@ paths:
           "application/json": 
            schema: 
             "$ref": "#/components/schemas/ErrorResponse"
-  /event-portal/apiDomains/{api_domain_name}:
+  /{organization}/event-portal/apiDomains/{api_domain_name}:
+    parameters:
+    - $ref: '#/components/parameters/organization'
+    - $ref: '#/components/parameters/api_domain_name'
     get:
      tags:
      - eventPortal
-     parameters:
-     - $ref: '#/components/parameters/api_domain_name'
      responses:
        '200':
          description: the API domain corresponding to the name requested
