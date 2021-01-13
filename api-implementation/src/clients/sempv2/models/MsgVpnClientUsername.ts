@@ -1,0 +1,37 @@
+/* istanbul ignore file */
+/* tslint:disable */
+/* eslint-disable */
+export interface MsgVpnClientUsername {
+    /**
+     * The ACL Profile of the Client Username. The default value is `"default"`.
+     */
+    aclProfileName?: string;
+    /**
+     * The Client Profile of the Client Username. The default value is `"default"`.
+     */
+    clientProfileName?: string;
+    /**
+     * The name of the Client Username.
+     */
+    clientUsername?: string;
+    /**
+     * Enable or disable the Client Username. When disabled, all clients currently connected as the Client Username are disconnected. The default value is `false`.
+     */
+    enabled?: boolean;
+    /**
+     * Enable or disable guaranteed endpoint permission override for the Client Username. When enabled all guaranteed endpoints may be accessed, modified or deleted with the same permission as the owner. The default value is `false`.
+     */
+    guaranteedEndpointPermissionOverrideEnabled?: boolean;
+    /**
+     * The name of the Message VPN.
+     */
+    msgVpnName?: string;
+    /**
+     * The password for the Client Username. This attribute is absent from a GET and not updated when absent in a PUT. The default is to have no `password`.
+     */
+    password?: string;
+    /**
+     * Enable or disable the subscription management capability of the Client Username. This is the ability to manage subscriptions on behalf of other Client Usernames. The default value is `false`.
+     */
+    subscriptionManagerEnabled?: boolean;
+}
