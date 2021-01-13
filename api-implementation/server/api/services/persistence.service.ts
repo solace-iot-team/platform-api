@@ -1,18 +1,29 @@
 import L from '../../common/logger';
 import { databaseaccess } from '../../../src/databaseaccess';
 import mongodb, { DeleteWriteOpResultObject } from 'mongodb';
+import C from 'continuation-local-storage';
 
 export class PersistenceService {
-  private collection : string;
+  private collection: string;
   getCollection = () => {
-    return databaseaccess.client.db('solace-platform').collection(this.collection);
+    var namespace = C.getNamespace('platform-api');
+    var db : string = "platform";
+    var org: string = null;
+    namespace.run(function () {
+      org = namespace.get('org');
+    });
+    if (org){
+      db = org;
+    }
+    L.info(`db is ${db}`);
+    return databaseaccess.client.db(db).collection(this.collection);
   }
-  constructor(collection: string){
+  constructor(collection: string) {
     this.collection = collection;
   }
 
   all(query?: object): Promise<any[]> {
-    if (!query){
+    if (!query) {
       query = {};
     }
     return new Promise<any[]>((resolve, reject) => {
@@ -38,9 +49,9 @@ export class PersistenceService {
     return new Promise<any>((resolve, reject) => {
       const collection: mongodb.Collection = this.getCollection();
       var q = query;
-      if (q){
+      if (q) {
         q._id = name;
-      } else  {
+      } else {
         q = { _id: name };
       }
       L.info(q);
@@ -63,9 +74,9 @@ export class PersistenceService {
     return new Promise<number>((resolve, reject) => {
       const collection: mongodb.Collection = this.getCollection();
       var q = query;
-      if (q){
+      if (q) {
         q._id = name;
-      } else  {
+      } else {
         q = { _id: name };
       }
       L.info(q);
@@ -105,9 +116,9 @@ export class PersistenceService {
       L.info(`patching ${this.collection} with _id ${_id}`);
       const collection: mongodb.Collection = this.getCollection();
       var q = query;
-      if (q){
+      if (q) {
         q._id = _id;
-      } else  {
+      } else {
         q = { _id: _id };
       }
       collection.updateOne(q, { $set: body }).then((v: mongodb.UpdateWriteOpResult) => {
