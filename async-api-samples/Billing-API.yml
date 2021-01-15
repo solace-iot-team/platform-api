@@ -480,6 +480,11 @@ channels:
     subscribe:
       message:
         $ref: '#/components/messages/TripUpdated'
+      bindings:
+        mqtt:
+          qos: 2
+          retain: true
+          bindingVersion: 0.1.0
     parameters:
       driver_id:
         $ref: '#/components/parameters/driver_id'
@@ -489,6 +494,11 @@ channels:
         $ref: '#/components/parameters/status'
   'acme/rideshare/driver/funds/deposited/1.0.1/{driver_id}/{trip_id}/{payment_id}':
     publish:
+      bindings:
+        mqtt:
+          qos: 2
+          retain: true
+          bindingVersion: 0.1.0
       message:
         $ref: '#/components/messages/DriverFundsDeposited'
     parameters:
@@ -501,6 +511,11 @@ channels:
 
   'acme/rideshare/billing/receipt/created/1.0.1/json/{request_id}':
     publish:
+      bindings:
+        mqtt:
+          qos: 2
+          retain: true
+          bindingVersion: 0.1.0
       message:
         $ref: '#/components/messages/CustomerReceiptGenerated'
     parameters:
