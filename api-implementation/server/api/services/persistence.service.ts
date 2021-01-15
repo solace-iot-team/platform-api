@@ -3,16 +3,21 @@ import { databaseaccess } from '../../../src/databaseaccess';
 import mongodb, { DeleteWriteOpResultObject } from 'mongodb';
 import C from 'continuation-local-storage';
 
+export interface Paging {
+  pageNumber: number,
+  pageSize: number
+}
+
 export class PersistenceService {
   private collection: string;
   getCollection = () => {
     var namespace = C.getNamespace('platform-api');
-    var db : string = "platform";
+    var db: string = "platform";
     var org: string = null;
     namespace.run(function () {
       org = namespace.get('org');
     });
-    if (org){
+    if (org) {
       db = org;
     }
     L.info(`db is ${db}`);
@@ -22,13 +27,22 @@ export class PersistenceService {
     this.collection = collection;
   }
 
-  all(query?: object): Promise<any[]> {
+  all(query?: object, sort?: object, paging?: Paging): Promise<any[]> {
     if (!query) {
       query = {};
     }
+    if (!sort) {
+      sort = {};
+    }
     return new Promise<any[]>((resolve, reject) => {
       const collection: mongodb.Collection = this.getCollection();
-      collection.find(query).toArray(
+      var x: mongodb.Cursor<any> = null;
+      if (paging) {
+        x = collection.find(query).sort(sort).skip((paging.pageNumber-1)* paging.pageSize).limit(paging.pageSize);
+      } else {
+        x = collection.find(query).sort(sort);
+      }
+      x.toArray(
         (err, items) => {
           if (err) {
             L.error('Caught error', err);
