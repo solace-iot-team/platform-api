@@ -3,6 +3,8 @@ import L from '../../common/logger';
 import App = Components.Schemas.App;
 import APIProduct = Components.Schemas.APIProduct;
 import Environment = Components.Schemas.Environment;
+import Permissions = Components.Schemas.Permissions;
+
 import ApiProductsService from './apiProducts.service';
 import ApisService from './apis.service';
 
@@ -13,6 +15,7 @@ import SolaceCloudFacade from '../../../src/solacecloudfacade';
 import { Sempv2Client } from '../../../src/sempv2-client';
 
 import parser from '@asyncapi/parser';
+import { resolve } from 'path';
 
 enum Direction {
 	Publish = "Publish",
@@ -20,6 +23,38 @@ enum Direction {
 }
 class BrokerService {
 
+
+
+	getPermissions(app: App): Promise<Permissions> {
+		return new Promise<Permissions>((resolve, reject) => {
+			var environmentNames: string[] = [];
+
+			var apiProductPromises: Promise<APIProduct>[] = [];
+			app.apiProducts.forEach((productName: string) => {
+				L.info(productName);
+				apiProductPromises.push(ApiProductsService.byName(productName));
+			});
+
+			Promise.all(apiProductPromises).then(async (products: APIProduct[]) => {
+				products.forEach((product: APIProduct) => {
+					product.environments.forEach((e: string) => {
+						environmentNames.push(e);
+					})
+					L.info(`env: ${product.environments}`);
+				});
+				environmentNames = Array.from(new Set(environmentNames));
+
+				try {
+					var c: Permissions = await this.getClientACLExceptions(app, products);
+					resolve(c);
+
+				} catch {
+					L.error("Get permissions error");
+					reject(500);
+				}
+			});
+		});
+	}
 	async provisionApp(app: App) {
 		var environmentNames: string[] = [];
 
@@ -261,6 +296,35 @@ class BrokerService {
 		});
 	}
 
+	public getClientACLExceptions(app: App, apiProducts: APIProduct[]): Promise<Permissions> {
+		return new Promise<Permissions>(async (resolve, reject) => {
+			
+			var publishExceptions: string[] = [];
+			var subscribeExceptions: string[] = [];
+			// compile list of event destinations sub / pub separately
+			for (var product of apiProducts) {
+				publishExceptions = this.getResources(product.pubResources).concat(publishExceptions);
+				subscribeExceptions = this.getResources(product.subResources).concat(subscribeExceptions);
+				var strs: string[] = await this.getResourcesFromAsyncAPIs(product.apis, Direction.Subscribe);
+				for (var s of strs) {
+					subscribeExceptions.push(s);
+				}
+				strs = await this.getResourcesFromAsyncAPIs(product.apis, Direction.Publish);
+				for (var s of strs) {
+					publishExceptions.push(s);
+				}
+			}
+			L.info(publishExceptions);
+			L.info(subscribeExceptions);
+			var permissions: Permissions = {
+				publish: publishExceptions,
+				subscribe: subscribeExceptions
+			}
+			resolve(permissions);
+		});
+	}
+
+
 	private addPublishTopicExceptions(app: App, services: Service[], exceptions: string[]): Promise<void> {
 		return new Promise<void>(async (resolve, reject) => {
 			for (var service of services) {
@@ -370,6 +434,52 @@ class BrokerService {
 			}
 		);
 	}
+
+	private getBindingsFromAsyncAPIs(apis: string[]): Promise<string[]> {
+		return new Promise<string[]>(
+			(resolve, reject) => {
+				var apiPromises: Promise<string>[] = [];
+				apis.forEach((api: string) => {
+					apiPromises.push(ApisService.byName(api));
+				});
+				Promise.all(apiPromises).then(async (specs) => {
+					var parserPromises: Promise<any>[] = [];
+					var resources: string[] = [];
+					specs.forEach((specification: string) => {
+						var p: Promise<any> = parser.parse(specification);
+						parserPromises.push(p);
+
+						p.then(
+							(spec) => {
+								spec.channelNames().forEach((s: string) => {
+
+									var channel = spec.channel(s);
+									var bindingProtocols: string[] = [];
+									if (channel.hasSubscribe()) {
+										bindingProtocols = bindingProtocols.concat(channel.getSubscribe().bindingProtocols());
+										
+									}
+									if (channel.hasPublish()) {
+										bindingProtocols = bindingProtocols.concat(channel.getPublish().bindingProtocols());
+									}
+									resources = resources.concat(bindingProtocols);
+								});
+							}
+						).catch((e) => {
+							L.error(e);
+							reject(e);
+						});
+					});
+					Promise.all(parserPromises).then((vals) => {
+						resolve(resources);
+					});
+
+
+				});
+			}
+		);
+	}
+
 	private getResources(resources: string[]): string[] {
 		var returnResources: string[] = [];
 		resources.forEach((resource: string) => returnResources.push(this.scrubDestination(resource)))

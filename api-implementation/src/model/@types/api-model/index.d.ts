@@ -323,6 +323,9 @@ declare namespace Components {
             apiProducts: string[];
             attributes?: Attributes;
             scopes?: string[];
+            /**
+             * callback url for webhooks
+             */
             callbackUrl?: string;
             credentials: /* Credentials object associated with an app */ Credentials;
         }
@@ -334,9 +337,32 @@ declare namespace Components {
             apiProducts?: string[];
             attributes?: Attributes;
             scopes?: string[];
+            /**
+             * callback url for webhooks
+             */
             callbackUrl?: string;
             credentials?: /* Credentials object associated with an app */ Credentials;
             status?: "approved" | "pending";
+        }
+        /**
+         * App Response Object - includes protocol binding information and app premissions. An app associated with a developer. Associates the app with an API product, and auto-generates an API credentials for the app to use.
+         */
+        export interface AppResponse {
+            name: string;
+            /**
+             * A setting, in milliseconds, for the lifetime of the consumer key that will be  generated for the developer app. The default value, -1, indicates an infinite validity period. Once set, the expiration can't be updated.
+             */
+            expiresIn?: number;
+            apiProducts: string[];
+            attributes?: Attributes;
+            scopes?: string[];
+            /**
+             * callback url for webhooks
+             */
+            callbackUrl?: string;
+            credentials: /* Credentials object associated with an app */ Credentials;
+            messagingProtocols?: MessagingProtocols;
+            permissions?: /* lists all the publish and subscribe topics an app has access to. Restrictions on   topic elements are taken into account. */ Permissions;
         }
         export type Attributes = {
             name: string;
@@ -424,6 +450,47 @@ declare namespace Components {
                 [name: string]: unknown;
             };
         }
+        export interface History {
+            /**
+             * example:
+             * Update product "Product 1"
+             */
+            title?: string;
+            /**
+             * example:
+             * PATCH
+             */
+            operation?: string;
+            /**
+             * UNIX timestamp when auditable event occurred
+             * example:
+             * 1610714525243
+             */
+            at?: number;
+            /**
+             * example:
+             * admin
+             */
+            user?: string;
+            /**
+             * the request URI
+             */
+            requestURI?: string;
+            requestBody?: string;
+        }
+        export type MessagingProtocols = {
+            name: string;
+            username: string;
+            password: string;
+            endPoints: {
+                name: string;
+                transport: string;
+                uris: string[];
+                secured: string;
+                compressed: string;
+            }[];
+            limits: unknown;
+        }[];
         export interface Organization {
             /**
              * example:
@@ -436,6 +503,31 @@ declare namespace Components {
              * eyXhbGciOiJSUzI1NiIsImtpZCI6Im1hYXNfcHJvZF8yMDIwMDMyNiIsInR5cCI6IkpXVCJ9.eyJvcmcifiJzb2xhY2Vpb3R0ZWFtIiwib3JnVHlwZSI6IkVOVEVSUFJJU0UiLCJzdWIiOiIzZTJvY214MTA1IiwicGVybWlzc2lvbnMiOiJBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQXdBQU09IiwiYXBpVG9rZW5JZCI6Inlhb2wzc2ZveG03IiwiaXNzIjoiU29sYWNlIENvcnBvcmF0aW9uIiwiaWF0IjoxNjAzODA3NzQ1fQ.QIBpi5_U6b1DnAwbDbJiFIT0pomqa4AyOLtmSOEF6zhoxKMm4Y27WbILZnxnh_gpdX-tvt18Ycuck4xs3T5JjFfU3qrczRHSuj2vEdsCpDQWdyZTPV4NQ-zPxRvigTjaTlcdXin8XwMGh8nZdylgRMlRQjvotomnXQxgbUol0Kl1ziFFMybqeD10qCDsUW6Jv-PKibBN3cnCsWwPZX6d_XYUECs1AHjgs5pk-A8v3DHcnvbXiAP4XXrry6ztopAWKMc5rVFoB_WFY4yi0reuTYjn6Sf0g7vZxFifRZZHZmqZtNQUiX6S80eQG4kF3YDKlr5PfLDNp4iRfe0-3svIPw
              */
             "cloud-token"?: string;
+        }
+        /**
+         * lists all the publish and subscribe topics an app has access to. Restrictions on   topic elements are taken into account.
+         */
+        export interface Permissions {
+            /**
+             * example:
+             * [
+             *   "order/notifications/DE/>",
+             *   "order/cancellation/DE/>",
+             *   "order/notifications/FR/>",
+             *   "order/cancellation/FR/>"
+             * ]
+             */
+            subscribe?: string[];
+            /**
+             * example:
+             * [
+             *   "order/create/DE/>",
+             *   "order/update/DE/>",
+             *   "order/create/FR/>",
+             *   "order/update/FR/>"
+             * ]
+             */
+            publish?: string[];
         }
         export type Properties = {
             /**
@@ -801,6 +893,34 @@ declare namespace Paths {
             }
         }
     }
+    namespace $OrganizationDevelopers$DeveloperUsernameApps {
+        namespace Get {
+            namespace Responses {
+                export type $200 = /* An app associated with a developer. Associates the app with an API product, and auto-generates an API credentials for the app to use */ Components.Schemas.App[];
+                export type $400 = Components.Schemas.ErrorResponse;
+                export type $401 = Components.Schemas.ErrorResponse;
+                export type $403 = Components.Schemas.ErrorResponse;
+                export type $404 = Components.Schemas.ErrorResponse;
+                export type $500 = Components.Schemas.ErrorResponse;
+                export type $503 = Components.Schemas.ErrorResponse;
+                export type $504 = Components.Schemas.ErrorResponse;
+            }
+        }
+        namespace Post {
+            export type RequestBody = /* An app associated with a developer. Associates the app with an API product, and auto-generates an API credentials for the app to use */ Components.Schemas.App;
+            namespace Responses {
+                export type $201 = /* An app associated with a developer. Associates the app with an API product, and auto-generates an API credentials for the app to use */ Components.Schemas.App;
+                export type $400 = Components.Schemas.ErrorResponse;
+                export type $401 = Components.Schemas.ErrorResponse;
+                export type $403 = Components.Schemas.ErrorResponse;
+                export type $404 = Components.Schemas.ErrorResponse;
+                export type $422 = Components.Schemas.ErrorResponse;
+                export type $500 = Components.Schemas.ErrorResponse;
+                export type $503 = Components.Schemas.ErrorResponse;
+                export type $504 = Components.Schemas.ErrorResponse;
+            }
+        }
+    }
     namespace $OrganizationDevelopers$DeveloperUsernameApps$AppName {
         namespace Delete {
             namespace Responses {
@@ -818,7 +938,7 @@ declare namespace Paths {
         }
         namespace Get {
             namespace Responses {
-                export type $200 = /* An app associated with a developer. Associates the app with an API product, and auto-generates an API credentials for the app to use */ Components.Schemas.App;
+                export type $200 = /* App Response Object - includes protocol binding information and app premissions. An app associated with a developer. Associates the app with an API product, and auto-generates an API credentials for the app to use. */ Components.Schemas.AppResponse;
                 export type $400 = Components.Schemas.ErrorResponse;
                 export type $401 = Components.Schemas.ErrorResponse;
                 export type $403 = Components.Schemas.ErrorResponse;
@@ -831,7 +951,7 @@ declare namespace Paths {
         namespace Patch {
             export type RequestBody = /* Used for PATCH operation. An app associated with a developer. Associates the app with an API product, and auto-generates an API credentials for the app to use */ Components.Schemas.AppPatch;
             namespace Responses {
-                export type $200 = /* An app associated with a developer. Associates the app with an API product, and auto-generates an API credentials for the app to use */ Components.Schemas.App;
+                export type $200 = /* App Response Object - includes protocol binding information and app premissions. An app associated with a developer. Associates the app with an API product, and auto-generates an API credentials for the app to use. */ Components.Schemas.AppResponse;
                 export type $400 = Components.Schemas.ErrorResponse;
                 export type $401 = Components.Schemas.ErrorResponse;
                 export type $403 = Components.Schemas.ErrorResponse;
@@ -1003,6 +1123,20 @@ declare namespace Paths {
             }
         }
     }
+    namespace $OrganizationHistory {
+        namespace Get {
+            namespace Responses {
+                export type $200 = Components.Schemas.History[];
+                export type $400 = Components.Schemas.ErrorResponse;
+                export type $401 = Components.Schemas.ErrorResponse;
+                export type $403 = Components.Schemas.ErrorResponse;
+                export type $404 = Components.Schemas.ErrorResponse;
+                export type $500 = Components.Schemas.ErrorResponse;
+                export type $503 = Components.Schemas.ErrorResponse;
+                export type $504 = Components.Schemas.ErrorResponse;
+            }
+        }
+    }
     namespace $OrganizationServices {
         namespace Get {
             namespace Responses {
@@ -1017,10 +1151,10 @@ declare namespace Paths {
             }
         }
     }
-    namespace $Organizationdevelopers$DeveloperUsernameApps {
+    namespace Organizations {
         namespace Get {
             namespace Responses {
-                export type $200 = /* An app associated with a developer. Associates the app with an API product, and auto-generates an API credentials for the app to use */ Components.Schemas.App[];
+                export type $200 = Components.Schemas.Organization[];
                 export type $400 = Components.Schemas.ErrorResponse;
                 export type $401 = Components.Schemas.ErrorResponse;
                 export type $403 = Components.Schemas.ErrorResponse;
@@ -1031,28 +1165,14 @@ declare namespace Paths {
             }
         }
         namespace Post {
-            export type RequestBody = /* An app associated with a developer. Associates the app with an API product, and auto-generates an API credentials for the app to use */ Components.Schemas.App;
+            export type RequestBody = Components.Schemas.Organization;
             namespace Responses {
-                export type $201 = /* An app associated with a developer. Associates the app with an API product, and auto-generates an API credentials for the app to use */ Components.Schemas.App;
+                export type $200 = Components.Schemas.Organization;
                 export type $400 = Components.Schemas.ErrorResponse;
                 export type $401 = Components.Schemas.ErrorResponse;
                 export type $403 = Components.Schemas.ErrorResponse;
                 export type $404 = Components.Schemas.ErrorResponse;
                 export type $422 = Components.Schemas.ErrorResponse;
-                export type $500 = Components.Schemas.ErrorResponse;
-                export type $503 = Components.Schemas.ErrorResponse;
-                export type $504 = Components.Schemas.ErrorResponse;
-            }
-        }
-    }
-    namespace Organizations {
-        namespace Get {
-            namespace Responses {
-                export type $200 = Components.Schemas.Organization[];
-                export type $400 = Components.Schemas.ErrorResponse;
-                export type $401 = Components.Schemas.ErrorResponse;
-                export type $403 = Components.Schemas.ErrorResponse;
-                export type $404 = Components.Schemas.ErrorResponse;
                 export type $500 = Components.Schemas.ErrorResponse;
                 export type $503 = Components.Schemas.ErrorResponse;
                 export type $504 = Components.Schemas.ErrorResponse;

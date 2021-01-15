@@ -2,7 +2,9 @@ import L from '../../common/logger';
 import Developer = Components.Schemas.Developer;
 import App = Components.Schemas.App;
 import Credentials = Components.Schemas.Credentials;
+import Permissions = Components.Schemas.Permissions;
 import AppPatch = Components.Schemas.AppPatch;
+import AppResponse = Components.Schemas.AppResponse;
 import ApiProductsService from './apiProducts.service';
 import BrokerService from './broker.service';
 
@@ -41,8 +43,16 @@ export class DevelopersService {
     return this.persistenceService.byName(name);
   }
 
-  appByName(developer: string, name: string): Promise<Developer> {
-    return this.appPersistenceService.byName(name, { ownerId: developer });
+  appByName(developer: string, name: string): Promise<AppResponse> {
+    return new Promise<AppResponse>((resolve, reject) => { 
+      this.appPersistenceService.byName(name, { ownerId: developer })
+      .then((app: AppResponse)=>{
+        BrokerService.getPermissions(app).then((p: Permissions)=>{ app.permissions = p; 
+          resolve(app)
+        }).catch((e)=>{reject(e)});
+      })
+      .catch((e)=>{reject(e)}); 
+    });
   }
 
   delete(name: string): Promise<number> {
@@ -56,7 +66,7 @@ export class DevelopersService {
       if (!d) {
         reject(404);
       }
-      var promise: Promise<any> =this.appPersistenceService.byName(name, { ownerId: developer });
+      var promise: Promise<any> = this.appPersistenceService.byName(name, { ownerId: developer });
       promise.then(async (app) => {
         await BrokerService.deprovisionApp(app);
       }).catch((e) => reject(e));

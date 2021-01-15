@@ -482,6 +482,7 @@ components:
           items:
             type: string
         callbackUrl:
+            description: callback url for webhooks
             type: string
         credentials:
           $ref: '#/components/schemas/Credentials'
@@ -506,6 +507,7 @@ components:
           items:
             type: string
         callbackUrl:
+            description: callback url for webhooks
             type: string
         credentials:
           $ref: '#/components/schemas/Credentials'
@@ -514,8 +516,106 @@ components:
           enum:
           - approved
           - pending
-          
 
+    AppResponse:
+      type: object
+      description: "App Response Object - includes protocol binding information and app premissions. An app associated with a developer. Associates the app with an API product, and auto-generates an API credentials for the app to use."
+      properties:
+        name: 
+          type: string
+        expiresIn: 
+          type: number
+          description: A setting, in milliseconds, for the lifetime of the consumer key that will be  generated for the developer app. The default value, -1, indicates an infinite validity period. Once set, the expiration can't be updated.
+        apiProducts:
+          type: array
+          items:
+            type: string
+        attributes:
+          $ref: '#/components/schemas/attributes'
+        scopes:
+          type: array
+          items:
+            type: string
+        callbackUrl:
+            description: callback url for webhooks
+            type: string
+        credentials:
+          $ref: '#/components/schemas/Credentials'
+        messagingProtocols:
+          $ref: '#/components/schemas/MessagingProtocols'
+        permissions:
+          $ref: '#/components/schemas/Permissions'
+      required:
+      - name
+      - apiProducts
+      - credentials
+          
+    MessagingProtocols:
+      type: array
+      items:
+        type: object
+        properties:
+          name:
+            type: string
+          username:
+            type: string
+          password:
+            type: string
+          endPoints:
+            type: array
+            items:
+              type: object
+              properties:
+                name:
+                  type: string
+                transport:
+                  type: string
+                uris:
+                  type: array
+                  items:
+                    type: string
+                secured:
+                  type: string
+                compressed:
+                  type: string
+              required:
+              - name
+              - transport
+              - uris
+              - secured
+              - compressed
+          limits:
+            type: object
+        required:
+        - name
+        - username
+        - password
+        - endPoints
+        - limits
+    
+    Permissions:
+      description: lists all the publish and subscribe topics an app has access to. Restrictions on   topic elements are taken into account.
+      type: object
+      properties:
+        subscribe:
+          type: array
+          items: 
+            type: string
+          example:
+          - order/notifications/DE/>
+          - order/cancellation/DE/>
+          - order/notifications/FR/>
+          - order/cancellation/FR/>
+        publish:
+          type: array
+          items: 
+            type: string
+          example:
+          - order/create/DE/>
+          - order/update/DE/>
+          - order/create/FR/>
+          - order/update/FR/>
+    
     Credentials:
       description: Credentials object associated with an app
       type: object
@@ -897,6 +997,29 @@ components:
           value: 
             type: string
             example: value
+    History:
+      type: object
+      properties:
+        title:
+          type: string
+          example: Update product "Product 1" 
+        operation:
+          type: string
+          example: PATCH
+        at:
+          type: number
+          description: UNIX timestamp when auditable event occurred
+          example: 1610714525243
+        user:
+          type: string
+          example: admin
+        requestURI:
+          type: string
+          description: the request URI
+        requestBody:
+          type: string
+        
+        
 security:
   - BasicAuth: []
 
@@ -911,7 +1034,7 @@ tags:
     description: "Manage consumer credentials for apps"
   - name: environments
     description: "An environment provides a runtime execution context for APIs. Each environment is associated with a specific Service in the associated Solace Cloud account. Typical environments are dev, stage, prod ..."
-  - name: organizations
+  - name: management
     description: "Manage organizations / tenants"
   - name: eventPortal
     description: "Provides read-only access to the Solace Event Portal associated with the account. Currently provided as a utility resource so existing Async API stubs can be exported from the portal. Currently these specifications are not necessarily compliant and information such as binding is missing."
@@ -919,7 +1042,7 @@ paths:
   /organizations:
     get:
       tags: 
-      - organizations
+      - management
       responses:
        '200':
          description: list of APIs
@@ -976,7 +1099,7 @@ paths:
             "$ref": "#/components/schemas/ErrorResponse"
     post:
      tags:
-     - organizations
+     - management
      requestBody: 
        description: "Organization"
        content: 
@@ -1041,13 +1164,12 @@ paths:
           "application/json": 
            schema: 
             "$ref": "#/components/schemas/ErrorResponse"
-
   /organizations/{organization}:
     parameters:
     - $ref: '#/components/parameters/organization'
     get:
       tags: 
-      - organizations
+      - management
       responses:
        '200':
          description: list of APIs
@@ -1102,7 +1224,7 @@ paths:
             "$ref": "#/components/schemas/ErrorResponse"
     patch:
      tags:
-     - organizations
+     - management
      requestBody: 
        description: "Organization"
        content: 
@@ -1169,7 +1291,7 @@ paths:
             "$ref": "#/components/schemas/ErrorResponse"
     delete:
      tags:
-     - organizations
+     - management
      responses:
        '204':
          description: No content
@@ -1202,6 +1324,69 @@ paths:
             "$ref": "#/components/schemas/ErrorResponse"
        '422': 
          description: "AlreadyExists."
+         content: 
+          "application/json": 
+           schema: 
+            "$ref": "#/components/schemas/ErrorResponse"
+       '500': 
+         description: "Internal Server Error."
+         content: 
+          "application/json": 
+           schema: 
+            "$ref": "#/components/schemas/ErrorResponse"
+       '503': 
+         description: "Service Unavailable."
+         content: 
+          "application/json": 
+           schema: 
+            "$ref": "#/components/schemas/ErrorResponse"
+       '504': 
+         description: "Gateway Timeout."
+         content: 
+          "application/json": 
+           schema: 
+            "$ref": "#/components/schemas/ErrorResponse"
+  /{organization}/history:
+    parameters:
+    - $ref: '#/components/parameters/organization'
+    get:
+     tags:
+      - management
+     parameters:
+     - $ref: '#/components/parameters/page_size'
+     - $ref: '#/components/parameters/page_number'
+     responses:
+       '200':
+         description: audit history
+         content: 
+           application/json:
+             schema: 
+              type: array
+              items:
+               "$ref": "#/components/schemas/History"
+       '400': 
+         description: "Bad Request."
+         content: 
+          "application/json": 
+           schema: 
+            "$ref": "#/components/schemas/ErrorResponse"
+          "*/*": 
+           schema: 
+            "$ref": "#/components/schemas/ErrorResponse"
+       '401': 
+         description: "Unauthorized."
+         content: 
+          "application/json": 
+           schema: 
+            "$ref": "#/components/schemas/ErrorResponse"
+       '403': 
+         description: "Forbidden."
+         content: 
+          "application/json": 
+           schema: 
+            "$ref": "#/components/schemas/ErrorResponse"
+       '404': 
+         description: "Not Found."
          content: 
           "application/json": 
            schema: 
@@ -2312,7 +2497,7 @@ paths:
          content: 
            application/json:
              schema:
-               $ref: '#/components/schemas/App'
+               $ref: '#/components/schemas/AppResponse'
        '400': 
          description: "Bad Request."
          content: 
@@ -2374,7 +2559,7 @@ paths:
          content: 
            application/json:
              schema:
-               $ref: '#/components/schemas/App'
+               $ref: '#/components/schemas/AppResponse'
        '400': 
          description: "Bad Request."
          content: 
