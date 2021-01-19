@@ -244,6 +244,7 @@ declare namespace Components {
              * A comma separated list of Publish API resources to be bundled in the API Product.
              */
             subResources: string[];
+            protocols?: Protocol[];
         }
         /**
          * Used for PATCH operation, An API product consists of a list of API resources (URIs) and custom metadata required by the API provider. API products enable you to bundle and distribute your APIs to multiple developer groups simultaneously
@@ -361,7 +362,7 @@ declare namespace Components {
              */
             callbackUrl?: string;
             credentials: /* Credentials object associated with an app */ Credentials;
-            messagingProtocols?: MessagingProtocols;
+            messagingProtocols?: Endpoint[];
             permissions?: /* lists all the publish and subscribe topics an app has access to. Restrictions on   topic elements are taken into account. */ Permissions;
         }
         export type Attributes = {
@@ -398,6 +399,28 @@ declare namespace Components {
             lastName?: string;
             userName?: string;
             attributes?: Attributes;
+        }
+        export interface Endpoint {
+            protocol?: Protocol;
+            /**
+             * The protocol transport
+             * example:
+             * TCP
+             */
+            transport?: string;
+            secure?: "yes" | "no";
+            compressed?: "yes" | "no";
+            /**
+             * example:
+             * smf://1234abc.messaging.solace.cloud:55555
+             */
+            uri?: string; // uri
+            /**
+             * environment name
+             * example:
+             * dev
+             */
+            environment?: string;
         }
         /**
          * an environment
@@ -478,19 +501,6 @@ declare namespace Components {
             requestURI?: string;
             requestBody?: string;
         }
-        export type MessagingProtocols = {
-            name: string;
-            username: string;
-            password: string;
-            endPoints: {
-                name: string;
-                transport: string;
-                uris: string[];
-                secured: string;
-                compressed: string;
-            }[];
-            limits: unknown;
-        }[];
         export interface Organization {
             /**
              * example:
@@ -541,6 +551,10 @@ declare namespace Components {
              */
             value: string;
         }[];
+        export interface Protocol {
+            name: "amqp" | "amqps" | "http" | "https" | "jms" | "mqtt" | "secure-mqtt" | "ws" | "wss" | "smf" | "smfs";
+            version?: string;
+        }
         /**
          * provides information about a service in the Solace Cloud account.
          */

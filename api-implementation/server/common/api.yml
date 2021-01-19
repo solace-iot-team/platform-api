@@ -334,7 +334,12 @@ components:
                 example:
                   '{/resource2}'
                 type: string
-              type: array      
+              type: array  
+          protocols:
+            type: array
+            items:
+              $ref: '#/components/schemas/Protocol'
+            
     APIProductPatch:
       type: object
       description: "Used for PATCH operation, An API product consists of a list of API resources (URIs) and custom metadata required by the API provider. API products enable you to bundle and distribute your APIs to multiple developer groups simultaneously"
@@ -542,7 +547,9 @@ components:
         credentials:
           $ref: '#/components/schemas/Credentials'
         messagingProtocols:
-          $ref: '#/components/schemas/MessagingProtocols'
+          type: array
+          items:
+            $ref: '#/components/schemas/Endpoint'
         permissions:
           $ref: '#/components/schemas/Permissions'
       required:
@@ -550,49 +557,6 @@ components:
       - apiProducts
       - credentials
           
-    MessagingProtocols:
-      type: array
-      items:
-        type: object
-        properties:
-          name:
-            type: string
-          username:
-            type: string
-          password:
-            type: string
-          endPoints:
-            type: array
-            items:
-              type: object
-              properties:
-                name:
-                  type: string
-                transport:
-                  type: string
-                uris:
-                  type: array
-                  items:
-                    type: string
-                secured:
-                  type: string
-                compressed:
-                  type: string
-              required:
-              - name
-              - transport
-              - uris
-              - secured
-              - compressed
-          limits:
-            type: object
-        required:
-        - name
-        - username
-        - password
-        - endPoints
-        - limits
-    
     Permissions:
       description: lists all the publish and subscribe topics an app has access to. Restrictions on   topic elements are taken into account.
       type: object
@@ -1018,8 +982,57 @@ components:
           description: the request URI
         requestBody:
           type: string
+    Protocol:
+      type: object
+      required: 
+      - name
+      properties:
+        name:
+          type: string
+          enum:
+          - amqp
+          - amqps
+          - http
+          - https
+          - jms
+          - mqtt
+          - secure-mqtt
+          - ws
+          - wss
+          - smf
+          - smfs
+        version:
+          type: string
+    Endpoint:
+      type: object
+      properties:
+        protocol: 
+          "$ref": "#/components/schemas/Protocol"
+
+        transport:
+          type: string
+          example: TCP
+          description: The protocol transport
+        secure:
+          type: string
+          enum:
+          - yes
+          - no
+        compressed:
+          type: string
+          enum:
+          - yes
+          - no
+        uri:
+          type: string
+          format: uri
+          example: "smf://1234abc.messaging.solace.cloud:55555"
+        environment:
+          type: string
+          description: environment name
+          example: dev
         
-        
+          
 security:
   - BasicAuth: []
 

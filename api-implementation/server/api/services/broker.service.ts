@@ -4,6 +4,8 @@ import App = Components.Schemas.App;
 import APIProduct = Components.Schemas.APIProduct;
 import Environment = Components.Schemas.Environment;
 import Permissions = Components.Schemas.Permissions;
+import Endpoint = Components.Schemas.Endpoint;
+import Protocol = Components.Schemas.Protocol;
 
 import ApiProductsService from './apiProducts.service';
 import ApisService from './apis.service';
@@ -16,13 +18,24 @@ import { Sempv2Client } from '../../../src/sempv2-client';
 
 import parser from '@asyncapi/parser';
 import { resolve } from 'path';
+import { prototype } from 'module';
 
 enum Direction {
 	Publish = "Publish",
 	Subscribe = "Subscribe"
 }
-class BrokerService {
 
+interface ProtocolMapping {
+	name: string,
+	protocolKeys: SolaceProtocolIdentifiers
+}
+
+interface SolaceProtocolIdentifiers {
+	name: string
+	protocol: string
+}
+
+class BrokerService {
 
 
 	getPermissions(app: App): Promise<Permissions> {
@@ -153,7 +166,26 @@ class BrokerService {
 			});
 
 		});
+	}
 
+	private getServiceByEnv(envName: string): Promise<Service> {
+		return new Promise<Service>((resolve, reject) => {
+			L.info(envName);
+			var ep = EnvironmentsService.byName(envName);
+			ep.then((env: Environment) => {
+				L.info(env.serviceId);
+				var r = SolaceCloudFacade.getServiceByEnvironment(env);
+
+				r.then((service: Service) => {
+					resolve(service);
+				}).catch((e) => {
+					L.error(e);
+					reject(e)
+				});
+
+			});
+
+		});
 	}
 
 	private createACLs(app: App, services: Service[]) {
@@ -298,7 +330,7 @@ class BrokerService {
 
 	public getClientACLExceptions(app: App, apiProducts: APIProduct[]): Promise<Permissions> {
 		return new Promise<Permissions>(async (resolve, reject) => {
-			
+
 			var publishExceptions: string[] = [];
 			var subscribeExceptions: string[] = [];
 			// compile list of event destinations sub / pub separately
@@ -435,6 +467,48 @@ class BrokerService {
 		);
 	}
 
+	public async getMessagingProtocols(app: App): Promise<Endpoint[]> {
+
+		return new Promise<Endpoint[]>((resolve, reject) => {
+			var endpoints: Endpoint[] = [];
+
+			var apiProductPromises: Promise<APIProduct>[] = [];
+			app.apiProducts.forEach((productName: string) => {
+				L.info(productName);
+				apiProductPromises.push(ApiProductsService.byName(productName));
+			});
+
+			Promise.all(apiProductPromises).then(async (products: APIProduct[]) => {
+				for (var product of products) {
+					L.info(`getMessagingProtocols ${product.name}`);
+					for (var envName of product.environments) {
+						const service = await this.getServiceByEnv(envName);
+						for (var protocol of product.protocols) {
+							L.info(`getMessagingProtocols ${protocol.name}`);
+							var keys = this.getProtocolMappings().find(element => element.name == protocol.name).protocolKeys;
+							L.info(`getMessagingProtocols ${keys.name} ${keys.protocol}`);
+							var endpoint = service.messagingProtocols.find(mp => mp.name == keys.name).endPoints.find(ep => ep.transport == keys.protocol);
+							L.info(endpoint);
+							var newEndpoint: Endpoint = {
+								compressed: endpoint.compressed == 'yes' ? 'yes' : 'no',
+								environment: envName,
+								secure: endpoint.secured == 'yes' ? 'yes' : 'no',
+								protocol: protocol,
+								transport: endpoint.transport,
+								uri: endpoint.uris[0]
+							};
+							endpoints.push(newEndpoint);
+						}
+					}
+				}
+				resolve(endpoints);
+
+			});
+
+		});
+
+	}
+
 	private getBindingsFromAsyncAPIs(apis: string[]): Promise<string[]> {
 		return new Promise<string[]>(
 			(resolve, reject) => {
@@ -457,7 +531,7 @@ class BrokerService {
 									var bindingProtocols: string[] = [];
 									if (channel.hasSubscribe()) {
 										bindingProtocols = bindingProtocols.concat(channel.getSubscribe().bindingProtocols());
-										
+
 									}
 									if (channel.hasPublish()) {
 										bindingProtocols = bindingProtocols.concat(channel.getPublish().bindingProtocols());
@@ -499,6 +573,90 @@ class BrokerService {
 		return sempv2Client;
 	}
 
+	private getProtocolMappings(): ProtocolMapping[] {
+		var map: ProtocolMapping[] = [];
+		var mqtt: ProtocolMapping = {
+			name: 'mqtt',
+			protocolKeys: {
+				name: 'MQTT',
+				protocol: "TCP"
+			}
+		};
+		map.push(mqtt);
+
+		var mqtts: ProtocolMapping = {
+			name: 'secure-mqtt',
+			protocolKeys: {
+				name: 'MQTT',
+				protocol: "SSL"
+			}
+		};
+		map.push(mqtts);
+
+		var amqp: ProtocolMapping = {
+			name: 'amqp',
+			protocolKeys: {
+				name: 'AMQP',
+				protocol: "AMQP"
+			}
+		};
+		map.push(amqp);
+
+		var amqps: ProtocolMapping = {
+			name: 'amqps',
+			protocolKeys: {
+				name: 'AMQP',
+				protocol: "AMQPS"
+			}
+		};
+		map.push(amqps);
+
+		var http: ProtocolMapping = {
+			name: 'http',
+			protocolKeys: {
+				name: 'REST',
+				protocol: "HTTP"
+			}
+		};
+		map.push(http);
+
+		var https: ProtocolMapping = {
+			name: 'https',
+			protocolKeys: {
+				name: 'REST',
+				protocol: "HTTPS"
+			}
+		};
+		map.push(https);
+
+		var smf: ProtocolMapping = {
+			name: 'smf',
+			protocolKeys: {
+				name: 'SMF',
+				protocol: "TCP"
+			}
+		};
+		map.push(smf);
+
+		var smfs: ProtocolMapping = {
+			name: 'https',
+			protocolKeys: {
+				name: 'SMF',
+				protocol: "TLS"
+			}
+		};
+		map.push(smfs);
+
+		var jms: ProtocolMapping = {
+			name: 'jms',
+			protocolKeys: {
+				name: 'JMS',
+				protocol: "TCP"
+			}
+		};
+		map.push(jms);
+		return map;
+	}
 
 }
 export default new BrokerService();

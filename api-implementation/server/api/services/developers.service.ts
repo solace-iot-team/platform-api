@@ -43,16 +43,13 @@ export class DevelopersService {
     return this.persistenceService.byName(name);
   }
 
-  appByName(developer: string, name: string): Promise<AppResponse> {
-    return new Promise<AppResponse>((resolve, reject) => { 
-      this.appPersistenceService.byName(name, { ownerId: developer })
-      .then((app: AppResponse)=>{
-        BrokerService.getPermissions(app).then((p: Permissions)=>{ app.permissions = p; 
-          resolve(app)
-        }).catch((e)=>{reject(e)});
-      })
-      .catch((e)=>{reject(e)}); 
-    });
+  async appByName(developer: string, name: string): Promise<AppResponse> {
+    var app: AppResponse = await this.appPersistenceService.byName(name, { ownerId: developer });
+    var permissions = await BrokerService.getPermissions(app);
+    var endpoints = await BrokerService.getMessagingProtocols(app);
+    app.permissions = permissions;
+    app.messagingProtocols = endpoints;
+    return app;
   }
 
   delete(name: string): Promise<number> {
