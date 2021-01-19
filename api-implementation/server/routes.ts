@@ -26,8 +26,8 @@ export default function routes(app: Application, auth: any): void {
     res.status(404).end();
   });
 
-  router.use('/:org', function (req, res, next) {
-    var org: string = req.params['org'];
+  router.param('org', function (req, res, next, org) {
+    //var org: string = req.params['org'];
     L.debug("org param is " + org);
     OrganizationsService.byName(org).then((r: Organization) => {
       var namespace = C.getNamespace('platform-api');
@@ -44,18 +44,18 @@ export default function routes(app: Application, auth: any): void {
 
 
   const auditableVerbs: string[] = ['POST', 'PUT', 'DELETE', 'PATCH'];
-  router.use('/:org', auth, function (req: basicAuth.IBasicAuthedRequest, res, next) {
+  router.use('/*', auth, function (req: basicAuth.IBasicAuthedRequest, res, next) {
     if (auditableVerbs.indexOf(req.method) > -1) {
       var h: History = {
         at: Date.now(),
         operation: req.method,
         requestBody: req.body,
-        requestURI: req.url,
-        title: `${req.method} ${req.url}`,
+        requestURI: req.baseUrl,
+        title: `${req.method} ${req.baseUrl}`,
         user: req.auth.user
       };
       HistoryService.create(h);
-      L.debug(`auditable request: ${req.method}, ${req.url}, ${req.path}`);
+      L.debug(`auditable request: ${req.method}, ${req.baseUrl}`);
     }
     next();
   });
@@ -63,7 +63,7 @@ export default function routes(app: Application, auth: any): void {
 
 
 
-
+  router.use('/organizations', auth, organizationsRouter);
   router.use('/:org/apis', auth, apisRouter);
   router.use('/:org/event-portal/apis', auth, eventPortalApisRouter);
   router.use('/:org/apiDomains', auth, apiDomainsRouter);
@@ -72,7 +72,7 @@ export default function routes(app: Application, auth: any): void {
   router.use('/:org/environments', auth, environmentsRouter);
   router.use('/:org/services', auth, accountRouter);
   router.use('/:org/history', auth, historyRouter);
-  router.use('/organizations', auth, organizationsRouter);
+
 
   app.use('/v1', router);
 
