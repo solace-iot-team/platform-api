@@ -12,7 +12,7 @@ import ApisService from './apis.service';
 
 import EnvironmentsService from './environments.service';
 import { Service } from "../../../src/clients/solacecloud"
-import { AllService, MsgVpnClientUsername, MsgVpnClientUsernameResponse, MsgVpnAclProfile, MsgVpnAclProfileResponse, MsgVpnAclProfilePublishException, MsgVpnAclProfilePublishExceptionResponse, MsgVpnAclProfileSubscribeExceptionResponse, MsgVpnAclProfileSubscribeException } from '../../../src/clients/sempv2';
+import { ApiError, AllService, MsgVpnClientUsername, MsgVpnClientUsernameResponse, MsgVpnAclProfile, MsgVpnAclProfileResponse, MsgVpnAclProfilePublishException, MsgVpnAclProfilePublishExceptionResponse, MsgVpnAclProfileSubscribeExceptionResponse, MsgVpnAclProfileSubscribeException, MsgVpnQueue } from '../../../src/clients/sempv2';
 import SolaceCloudFacade from '../../../src/solacecloudfacade';
 import { Sempv2Client } from '../../../src/sempv2-client';
 
@@ -92,9 +92,11 @@ class BrokerService {
 				L.info(`created acl profile ${app.name}`);
 				var b = await this.createClientUsernames(app, services);
 				L.info(`created client username ${app.name}`);
+				var d = await this.createQueues(app, services, products);
 				var c = await this.createClientACLExceptions(app, services, products);
+				
 			} catch {
-				L.error("Provisioninig error");
+				L.error("Provisioning error");
 			}
 		});
 	}
@@ -327,6 +329,38 @@ class BrokerService {
 			var r = await this.addSubscribeTopicExceptions(app, services, subscribeExceptions);
 		});
 	}
+	private createQueues(app: App, services: Service[], apiProducts: APIProduct[]): Promise<void> {
+		return new Promise<any>(async (resolve, reject) => {
+			L.info(`createQueueSubscriptions services: ${services}`);
+			var subscribeExceptions: string[] = [];
+			// compile list of event destinations sub / pub separately
+			for (var product of apiProducts) {
+				var strs: string[] = await this.getRDPSubscriptionsFromAsyncAPIs(product.apis);
+				for (var s of strs) {
+					subscribeExceptions.push(s);
+				}
+			}
+			// loop over services
+			for (var service of services){
+			   //create queues
+				var sempV2Client = this.getSEMPv2Client(service);
+				try {
+					var q = AllService.getMsgVpnQueue(service.msgVpnName, app.credentials.secret.consumerKey);
+					var newQ: MsgVpnQueue = {
+
+					}
+					AllService.updateMsgVpnQueue(service.msgVpnName, app.credentials.secret.consumerKey, newQ);
+				} catch (e: any) {
+
+				} 
+
+		       	
+			}
+			// attach subscriptions
+			L.info(subscribeExceptions);
+			resolve();
+		});
+	}
 
 	public getClientACLExceptions(app: App, apiProducts: APIProduct[]): Promise<Permissions> {
 		return new Promise<Permissions>(async (resolve, reject) => {
@@ -448,6 +482,46 @@ class BrokerService {
 									}
 									if (direction == Direction.Publish && channel.hasPublish()) {
 										L.info(`Publish ${s}`)
+										resources.push(this.scrubDestination(s));
+									}
+								});
+							}
+						).catch((e) => {
+							L.error(e);
+							reject(e);
+						});
+					});
+					Promise.all(parserPromises).then((vals) => {
+						resolve(resources);
+					});
+
+
+				});
+			}
+		);
+	}	
+	private getRDPSubscriptionsFromAsyncAPIs(apis: string[]): Promise<string[]> {
+		return new Promise<string[]>(
+			(resolve, reject) => {
+				var apiPromises: Promise<string>[] = [];
+				apis.forEach((api: string) => {
+					apiPromises.push(ApisService.byName(api));
+				});
+				Promise.all(apiPromises).then(async (specs) => {
+					var parserPromises: Promise<any>[] = [];
+					var resources: string[] = [];
+					specs.forEach((specification: string) => {
+						var p: Promise<any> = parser.parse(specification);
+						parserPromises.push(p);
+
+						p.then(
+							(spec) => {
+								spec.channelNames().forEach((s: string) => {
+
+									var channel = spec.channel(s);
+										
+									if (channel.hasSubscribe() && (channel.subscribe().hasBinding('http')|| channel.subscribe().hasBinding('https'))) {
+										L.info(`getRDPSubscriptionsFromAsyncAPIs subscribe ${s}`)
 										resources.push(this.scrubDestination(s));
 									}
 								});
