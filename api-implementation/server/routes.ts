@@ -20,7 +20,6 @@ import * as basicAuth from 'express-basic-auth'
 
 export default function routes(app: Application, auth: any): void {
   var router = express.Router();
-  var ns = C.createNamespace('platform-api');
 
   router.get('/', (req: Request, res: Response) => {
     res.status(404).end();
@@ -28,35 +27,42 @@ export default function routes(app: Application, auth: any): void {
 
   router.param('org', function (req, res, next, org) {
     //var org: string = req.params['org'];
+    var ns = C.createNamespace('platform-api');
+    L.info(`org in namespace is ${ns.get('org')}`);
     L.debug("org param is " + org);
     OrganizationsService.byName(org).then((r: Organization) => {
-      var namespace = C.getNamespace('platform-api');
-      namespace.run(function () {
-        namespace.set('org', org);
-        namespace.set('cloud-token', r["cloud-token"]);
+      //var namespace = C.getNamespace('platform-api');
+
+      ns.run(function () {
+        ns.set('org', org);
+        ns.set('cloud-token', r["cloud-token"]);
         next();
       });
     }).catch(e => {
-      L.debug(`no org matching URI ${req.url}`);
+      L.debug(`no org matching URI ${req.baseUrl} ${e}`);
       res.status(404).end();
     });
   });
 
 
-  const auditableVerbs: string[] = ['POST', 'PUT', 'DELETE', 'PATCH'];
+  const auditableVerbs: string[] = ['GET', 'POST', 'PUT', 'DELETE', 'PATCH'];
   router.use('/*', auth, function (req: basicAuth.IBasicAuthedRequest, res, next) {
-    if (auditableVerbs.indexOf(req.method) > -1) {
-      var h: History = {
-        at: Date.now(),
-        operation: req.method,
-        requestBody: req.body,
-        requestURI: req.baseUrl,
-        title: `${req.method} ${req.baseUrl}`,
-        user: req.auth.user
+    res.on("finish", function () {
+      L.info("after");
+      if (auditableVerbs.indexOf(req.method) > -1) {
+        var h: History = {
+          at: Date.now(),
+          operation: req.method,
+          requestBody: req.body,
+          requestURI: req.baseUrl,
+          title: `${req.method} ${req.baseUrl}`,
+          user: req.auth.user
+        };
+        HistoryService.create(h);
+        L.debug(`auditable request: ${req.method}, ${req.baseUrl}, ${res.statusCode}`);
+        C.reset();
       };
-      HistoryService.create(h);
-      L.debug(`auditable request: ${req.method}, ${req.baseUrl}`);
-    }
+    });
     next();
   });
 
