@@ -44,12 +44,20 @@ export class DevelopersService {
   }
 
   async appByName(developer: string, name: string): Promise<AppResponse> {
-    var app: AppResponse = await this.appPersistenceService.byName(name, { ownerId: developer });
-    var permissions = await BrokerService.getPermissions(app);
-    var endpoints = await BrokerService.getMessagingProtocols(app);
-    app.permissions = permissions;
-    app.messagingProtocols = endpoints;
-    return app;
+    try {
+      var app: AppResponse = await this.appPersistenceService.byName(name, { ownerId: developer });
+      if (app) {
+        var permissions = await BrokerService.getPermissions(app);
+        var endpoints = await BrokerService.getMessagingProtocols(app);
+        app.permissions = permissions;
+        app.messagingProtocols = endpoints;
+      } else {
+        throw(404);
+      }
+      return app;
+    } catch (e) {
+
+    }
   }
 
   delete(name: string): Promise<number> {
@@ -118,7 +126,7 @@ export class DevelopersService {
             await BrokerService.provisionApp(app);
         }).catch((e) => reject(e));
         resolve(promise);
-      } catch (e){
+      } catch (e) {
         L.error(`createApp ${e}`);
         reject(e);
       }
