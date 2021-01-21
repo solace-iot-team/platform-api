@@ -67,8 +67,8 @@ export class Controller {
       }
       else res.status(500).end();
     }).catch((e) => {
-      L.error(e);
-      res.status(e).end()
+      L.error(`Error in createApp ${e}`);
+      res.status(e).send("");
     });
   }
 

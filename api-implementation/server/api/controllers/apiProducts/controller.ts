@@ -14,7 +14,8 @@ export class Controller {
       }
       else res.status(500).end();
     }).catch((e) => {
-      res.status(e).end()
+      L.info(`APIProducts.create ${e}`);
+      res.status(e).send("");
     });
   }
 

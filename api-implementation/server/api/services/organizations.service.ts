@@ -1,12 +1,13 @@
 import L from '../../common/logger';
 import Organization = Components.Schemas.Organization;
 import { PersistenceService } from './persistence.service';
+import C from 'continuation-local-storage';
 
 const reserved: string = "platform";
 
 export class OrganizationsService {
 
-  
+
 
   private persistenceService: PersistenceService;
   constructor() {
@@ -18,6 +19,10 @@ export class OrganizationsService {
   }
 
   byName(name: string): Promise<Organization> {
+    var namespace = C.getNamespace('platform-api');
+    namespace.run(function () {
+      namespace.set('org', 'platform');
+    });
     return this.persistenceService.byName(name);
   }
 
@@ -40,15 +45,15 @@ export class OrganizationsService {
   }
 
   update(name: string, body: Organization): Promise<Organization> {
-   return new Promise<Organization>((resolve, reject) => {
+    return new Promise<Organization>((resolve, reject) => {
       if (body.name == reserved) {
         reject(401);
-      }    this.persistenceService.update(name, body).then((p) => {
-      resolve(p);
-    }).catch((e) => {
-      reject(e);
+      } this.persistenceService.update(name, body).then((p) => {
+        resolve(p);
+      }).catch((e) => {
+        reject(e);
+      });
     });
-  });
   }
 
 }

@@ -27,19 +27,25 @@ export class ApiProductsService {
   }
 
   create(body: APIProduct): Promise<APIProduct> {
-    return new Promise<APIProduct>((resolve, reject) => {
-      var apiReferenceCheck: Promise<boolean> = this.validateReferences(body);
-      apiReferenceCheck.then((b: boolean) => {
+    return new Promise<APIProduct>(async (resolve, reject) => {
+      try {
+        const apiReferenceCheck: boolean = await this.validateReferences(body);
+        L.info(` reference check result ${apiReferenceCheck}`);
+        if (!apiReferenceCheck)
+          L.info(` reference check failed ${apiReferenceCheck}`);
+          reject(422);
         this.persistenceService.create(body.name, body).then((p) => {
           resolve(p);
         }).catch((e) => {
           reject(e);
         });
-      }).catch((e) => {
-        reject(e);
-      })
 
+      } catch (e){
+        L.info(` reference check failed ${e}`);
+        reject(422);
+      }
     });
+
   }
 
   update(name: string, body: APIProduct): Promise<APIProduct> {
@@ -65,16 +71,16 @@ export class ApiProductsService {
     return new Promise<boolean>((resolve, reject) => {
       var results: Promise<boolean>[] = [];
       product.apis.forEach((n) => {
-        results.push(new Promise<boolean>((resolve, reject) => {
+        results.push(new Promise<boolean>((resolve1, reject1) => {
           ApisService.byName(n).then((p) => {
             if (!p) {
-              reject(`Referenced API ${n} does not exist`)
+              reject1(`Referenced API ${n} does not exist`)
             }
-            resolve(true);
+            resolve1(true);
           }
           ).catch((e) => {
-            L.info(e);
-            reject(`Referenced API ${n} does not exist`);
+            L.info(`validateReferences ${e} Referenced API ${n} does not exist`);
+            reject1(`Referenced API ${n} does not exist`);
           })
         }));
       });
@@ -88,14 +94,14 @@ export class ApiProductsService {
             }
           }
           ).catch((e) => {
-            L.info(e);
+            L.info(`validateReferences ${e} Referenced env ${envName} does not exist`);
             reject(`Referenced environment ${envName} does not exist`);
           })
         }));
       });
 
       Promise.all(results).then((r) => { resolve(true) }).catch((e) => {
-        L.info(e);
+        L.info(`validateReferences a rejection occurred ${e}`);
         reject(422);
       });
 

@@ -68,9 +68,10 @@ export class PersistenceService {
       } else {
         q = { _id: name };
       }
-      L.info(q);
+      L.debug(`PersistenceService.byName the query ${JSON.stringify(q)}, ${collection.collectionName}, ${collection.namespace}`);
       collection.findOne(q).then(
         (item) => {
+          L.debug(item);
           if (!item) {
             resolve(null);
           }
@@ -79,6 +80,7 @@ export class PersistenceService {
         }
 
       ).catch((e) => {
+        L.warn(`PersistenceService.byName ${e}`);
         reject(e);
       });
     });
