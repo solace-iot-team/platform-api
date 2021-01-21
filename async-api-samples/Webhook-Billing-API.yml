@@ -1,0 +1,531 @@
+--- 
+asyncapi: "2.0.0"
+channels: 
+  ? "acme/rideshare/billing/receipt/created/1.0.1/json/{request_id}"
+  : 
+    parameters: 
+      request_id: 
+        $ref: "#/components/parameters/request_id"
+    publish: 
+      bindings: 
+        http: 
+          bindingVersion: "0.1.0"
+          method: POST
+          type: request
+      message: 
+        $ref: "#/components/messages/CustomerReceiptGenerated"
+  ? "acme/rideshare/driver/funds/deposited/1.0.1/{driver_id}/{trip_id}/{payment_id}"
+  : 
+    parameters: 
+      driver_id: 
+        $ref: "#/components/parameters/driver_id"
+      payment_id: 
+        $ref: "#/components/parameters/payment_id"
+      trip_id: 
+        $ref: "#/components/parameters/trip_id"
+    subscribe: 
+      bindings: 
+        http: 
+          bindingVersion: "0.1.0"
+          method: POST
+          query: 
+            properties: 
+              api-key: 
+                type: string
+            required: 
+              - api-key
+            type: object
+          type: request
+      message: 
+        $ref: "#/components/messages/DriverFundsDeposited"
+  ? "acme/rideshare/trip/updated/7.0.2/json/{driver_id}/{trip_id}/{status}"
+  : 
+    parameters: 
+      driver_id: 
+        $ref: "#/components/parameters/driver_id"
+      status: 
+        $ref: "#/components/parameters/status"
+      trip_id: 
+        $ref: "#/components/parameters/trip_id"
+    subscribe: 
+      bindings: 
+        mqtt: 
+          bindingVersion: "0.1.0"
+          qos: 2
+          retain: true
+      message: 
+        $ref: "#/components/messages/TripUpdated"
+components: 
+  messages: 
+    CustomerReceiptGenerated: 
+      contentType: application/json
+      payload: 
+        $ref: "#/components/schemas/RideReceipt"
+      schemaFormat: application/vnd.aai.asyncapi+json;version=2.0.0
+    DriverFundsDeposited: 
+      contentType: application/json
+      payload: 
+        $ref: "#/components/schemas/DriverPayment"
+      schemaFormat: application/vnd.aai.asyncapi+json;version=2.0.0
+    TripUpdated: 
+      contentType: application/json
+      payload: 
+        $ref: "#/components/schemas/Trip"
+      schemaFormat: application/vnd.aai.asyncapi+json;version=2.0.0
+  parameters: 
+    driver_id: 
+      schema: 
+        type: string
+    payment_id: 
+      schema: 
+        type: string
+    request_id: 
+      schema: 
+        type: string
+    status: 
+      schema: 
+        type: string
+    trip_id: 
+      schema: 
+        type: string
+  schemas: 
+    DriverPayment: 
+      $id: "http://example.com/root.json"
+      $schema: "http://json-schema.org/draft-07/schema#"
+      definitions: {}
+      properties: 
+        count: 
+          $id: "#/properties/count"
+          default: 0
+          examples: 
+            - 1200
+          title: "The Count Schema"
+          type: integer
+        limit: 
+          $id: "#/properties/limit"
+          default: 0
+          examples: 
+            - 1
+          title: "The Limit Schema"
+          type: integer
+        offset: 
+          $id: "#/properties/offset"
+          default: 0
+          examples: 
+            - 0
+          title: "The Offset Schema"
+          type: integer
+        payments: 
+          $id: "#/properties/payments"
+          items: 
+            $id: "#/properties/payments/items"
+            properties: 
+              amount: 
+                $id: "#/properties/payments/items/properties/amount"
+                default: 0
+                examples: 
+                  - 4.12
+                title: "The Amount Schema"
+                type: number
+              breakdown: 
+                $id: "#/properties/payments/items/properties/breakdown"
+                properties: 
+                  other: 
+                    $id: "#/properties/payments/items/properties/breakdown/properties/other"
+                    default: 0
+                    examples: 
+                      - 4.16
+                    title: "The Other Schema"
+                    type: number
+                  service_fee: 
+                    $id: "#/properties/payments/items/properties/breakdown/properties/service_fee"
+                    default: 0
+                    examples: 
+                      - -1.04
+                    title: "The Service_fee Schema"
+                    type: number
+                  toll: 
+                    $id: "#/properties/payments/items/properties/breakdown/properties/toll"
+                    default: 0
+                    examples: 
+                      - 1
+                    title: "The Toll Schema"
+                    type: integer
+                required: 
+                  - other
+                  - toll
+                  - service_fee
+                title: "The Breakdown Schema"
+                type: object
+              cash_collected: 
+                $id: "#/properties/payments/items/properties/cash_collected"
+                default: 0
+                examples: 
+                  - 0
+                title: "The Cash_collected Schema"
+                type: integer
+              category: 
+                $id: "#/properties/payments/items/properties/category"
+                default: ""
+                examples: 
+                  - fare
+                pattern: ^(.*)$
+                title: "The Category Schema"
+                type: string
+              currency_code: 
+                $id: "#/properties/payments/items/properties/currency_code"
+                default: ""
+                examples: 
+                  - USD
+                pattern: ^(.*)$
+                title: "The Currency_code Schema"
+                type: string
+              driver_id: 
+                $id: "#/properties/payments/items/properties/driver_id"
+                default: ""
+                examples: 
+                  - 8LvWuRAq2511gmr8EMkovekFNa2848lyMaQevIto-aXmnK9oKNRtfTxYLgPq9OSt8EzAu5pDB7XiaQIrcp-zXgOA5EyK4h00U6D1o7aZpXIQah--U77Eh7LEBiksj2rahB==
+                pattern: ^(.*)$
+                title: "The Driver_id Schema"
+                type: string
+              event_time: 
+                $id: "#/properties/payments/items/properties/event_time"
+                default: 0
+                examples: 
+                  - 1502842757
+                title: "The Event_time Schema"
+                type: integer
+              partner_id: 
+                $id: "#/properties/payments/items/properties/partner_id"
+                default: ""
+                examples: 
+                  - 8LvWuRAq2511gmr8EMkovekFNa2848lyMaQevIto-aXmnK9oKNRtfTxYLgPq9OSt8EzAu5pDB7XiaQIrcp-zXgOA5EyK4h00U6D1o7aZpXIQah--U77Eh7LEBiksj2rahB==
+                pattern: ^(.*)$
+                title: "The Partner_id Schema"
+                type: string
+              payment_id: 
+                $id: "#/properties/payments/items/properties/payment_id"
+                default: ""
+                examples: 
+                  - 5cb8304c-f3f0-4a46-b6e3-b55e020750d7
+                pattern: ^(.*)$
+                title: "The Payment_id Schema"
+                type: string
+              rider_fees: 
+                $id: "#/properties/payments/items/properties/rider_fees"
+                properties: 
+                  split_fare: 
+                    $id: "#/properties/payments/items/properties/rider_fees/properties/split_fare"
+                    default: 0
+                    examples: 
+                      - 0.5
+                    title: "The Split_fare Schema"
+                    type: number
+                required: 
+                  - split_fare
+                title: "The Rider_fees Schema"
+                type: object
+              trip_id: 
+                $id: "#/properties/payments/items/properties/trip_id"
+                default: ""
+                examples: 
+                  - 5cb8304c-f3f0-4a46-b6e3-b55e020750d7
+                pattern: ^(.*)$
+                title: "The Trip_id Schema"
+                type: string
+            required: 
+              - payment_id
+              - category
+              - event_time
+              - trip_id
+              - cash_collected
+              - amount
+              - driver_id
+              - breakdown
+              - rider_fees
+              - partner_id
+              - currency_code
+            title: "The Items Schema"
+            type: object
+          title: "The Payments Schema"
+          type: array
+      required: 
+        - count
+        - limit
+        - payments
+        - offset
+      title: "The Root Schema"
+      type: object
+    RideReceipt: 
+      $id: "http://example.com/root.json"
+      $schema: "http://json-schema.org/draft-07/schema#"
+      definitions: {}
+      properties: 
+        charge_adjustments: 
+          $id: "#/properties/charge_adjustments"
+          title: "The Charge_adjustments Schema"
+          type: array
+        currency_code: 
+          $id: "#/properties/currency_code"
+          default: ""
+          examples: 
+            - USD
+          pattern: ^(.*)$
+          title: "The Currency_code Schema"
+          type: string
+        distance: 
+          $id: "#/properties/distance"
+          default: ""
+          examples: 
+            - "1.49"
+          pattern: ^(.*)$
+          title: "The Distance Schema"
+          type: string
+        distance_label: 
+          $id: "#/properties/distance_label"
+          default: ""
+          examples: 
+            - miles
+          pattern: ^(.*)$
+          title: "The Distance_label Schema"
+          type: string
+        duration: 
+          $id: "#/properties/duration"
+          default: ""
+          examples: 
+            - "00:11:35"
+          pattern: ^(.*)$
+          title: "The Duration Schema"
+          type: string
+        request_id: 
+          $id: "#/properties/request_id"
+          default: ""
+          examples: 
+            - b5512127-a134-4bf4-b1ba-fe9f48f56d9d
+          pattern: ^(.*)$
+          title: "The Request_id Schema"
+          type: string
+        subtotal: 
+          $id: "#/properties/subtotal"
+          default: ""
+          examples: 
+            - $12.78
+          pattern: ^(.*)$
+          title: "The Subtotal Schema"
+          type: string
+        total_charged: 
+          $id: "#/properties/total_charged"
+          default: ""
+          examples: 
+            - $5.92
+          pattern: ^(.*)$
+          title: "The Total_charged Schema"
+          type: string
+        total_fare: 
+          $id: "#/properties/total_fare"
+          default: ""
+          examples: 
+            - $5.92
+          pattern: ^(.*)$
+          title: "The Total_fare Schema"
+          type: string
+        total_owed: 
+          $id: "#/properties/total_owed"
+          default: ~
+          examples: 
+            - ~
+          title: "The Total_owed Schema"
+          type: "null"
+      required: 
+        - request_id
+        - subtotal
+        - total_charged
+        - total_owed
+        - total_fare
+        - currency_code
+        - charge_adjustments
+        - duration
+        - distance
+        - distance_label
+      title: "The Root Schema"
+      type: object
+    Trip: 
+      $id: "http://example.com/root.json"
+      $schema: "http://json-schema.org/draft-07/schema#"
+      definitions: {}
+      properties: 
+        currency_code: 
+          $id: "#/properties/currency_code"
+          default: ""
+          examples: 
+            - USD
+          pattern: ^(.*)$
+          title: "The Currency_code Schema"
+          type: string
+        distance: 
+          $id: "#/properties/distance"
+          default: 0
+          examples: 
+            - 0.37
+          title: "The Distance Schema"
+          type: number
+        driver_id: 
+          $id: "#/properties/driver_id"
+          default: ""
+          examples: 
+            - 8LvWuRAq2511gmr8EMkovekFNa2848lyMaQevIto-aXmnK9oKNRtfTxYLgPq9OSt8EzAu5pDB7XiaQIrcp-zXgOA5EyK4h00U6D1o7aZpXIQah--U77Eh7LEBiksj2rahB==
+          pattern: ^(.*)$
+          title: "The Driver_id Schema"
+          type: string
+        dropoff: 
+          $id: "#/properties/dropoff"
+          properties: 
+            timestamp: 
+              $id: "#/properties/dropoff/properties/timestamp"
+              default: 0
+              examples: 
+                - 1502844378
+              title: "The Timestamp Schema"
+              type: integer
+          required: 
+            - timestamp
+          title: "The Dropoff Schema"
+          type: object
+        duration: 
+          $id: "#/properties/duration"
+          default: 0
+          examples: 
+            - 475
+          title: "The Duration Schema"
+          type: integer
+        fare: 
+          $id: "#/properties/fare"
+          default: 0
+          examples: 
+            - 6.2
+          title: "The Fare Schema"
+          type: number
+        pickup: 
+          $id: "#/properties/pickup"
+          properties: 
+            timestamp: 
+              $id: "#/properties/pickup/properties/timestamp"
+              default: 0
+              examples: 
+                - 1502843903
+              title: "The Timestamp Schema"
+              type: integer
+          required: 
+            - timestamp
+          title: "The Pickup Schema"
+          type: object
+        start_city: 
+          $id: "#/properties/start_city"
+          properties: 
+            display_name: 
+              $id: "#/properties/start_city/properties/display_name"
+              default: ""
+              examples: 
+                - "Charleston, WV"
+              pattern: ^(.*)$
+              title: "The Display_name Schema"
+              type: string
+            latitude: 
+              $id: "#/properties/start_city/properties/latitude"
+              default: 0
+              examples: 
+                - 38.3498
+              title: "The Latitude Schema"
+              type: number
+            longitude: 
+              $id: "#/properties/start_city/properties/longitude"
+              default: 0
+              examples: 
+                - -81.6326
+              title: "The Longitude Schema"
+              type: number
+          required: 
+            - latitude
+            - display_name
+            - longitude
+          title: "The Start_city Schema"
+          type: object
+        status: 
+          $id: "#/properties/status"
+          default: ""
+          examples: 
+            - completed
+          pattern: ^(.*)$
+          title: "The Status Schema"
+          type: string
+        status_changes: 
+          $id: "#/properties/status_changes"
+          items: 
+            $id: "#/properties/status_changes/items"
+            properties: 
+              status: 
+                $id: "#/properties/status_changes/items/properties/status"
+                default: ""
+                examples: 
+                  - accepted
+                pattern: ^(.*)$
+                title: "The Status Schema"
+                type: string
+              timestamp: 
+                $id: "#/properties/status_changes/items/properties/timestamp"
+                default: 0
+                examples: 
+                  - 1502843899
+                title: "The Timestamp Schema"
+                type: integer
+            required: 
+              - status
+              - timestamp
+            title: "The Items Schema"
+            type: object
+          title: "The Status_changes Schema"
+          type: array
+        surge_multiplier: 
+          $id: "#/properties/surge_multiplier"
+          default: 0
+          examples: 
+            - 1
+          title: "The Surge_multiplier Schema"
+          type: integer
+        trip_id: 
+          $id: "#/properties/trip_id"
+          default: ""
+          examples: 
+            - b5613b6a-fe74-4704-a637-50f8d51a8bb1
+          pattern: ^(.*)$
+          title: "The Trip_id Schema"
+          type: string
+        vehicle_id: 
+          $id: "#/properties/vehicle_id"
+          default: ""
+          examples: 
+            - 0082b54a-6a5e-4f6b-b999-b0649f286381
+          pattern: ^(.*)$
+          title: "The Vehicle_id Schema"
+          type: string
+      required: 
+        - fare
+        - dropoff
+        - vehicle_id
+        - distance
+        - start_city
+        - status_changes
+        - surge_multiplier
+        - pickup
+        - driver_id
+        - status
+        - duration
+        - trip_id
+        - currency_code
+      title: "The Root Schema"
+      type: object
+info: 
+  title: "Billing App"
+  version: "0.0.1"
+  x-application-class: unspecified
+  x-view: provider
