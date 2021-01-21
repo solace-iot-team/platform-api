@@ -14,9 +14,11 @@ export class PersistenceService {
     var namespace = C.getNamespace('platform-api');
     var db: string = "platform";
     var org: string = null;
-    namespace.run(function () {
-      org = namespace.get('org');
-    });
+    if (namespace) {
+      namespace.run(function () {
+        org = namespace.get('org');
+      });
+    }
     if (org) {
       db = org;
     }
@@ -38,7 +40,7 @@ export class PersistenceService {
       const collection: mongodb.Collection = this.getCollection();
       var x: mongodb.Cursor<any> = null;
       if (paging) {
-        x = collection.find(query).sort(sort).skip((paging.pageNumber-1)* paging.pageSize).limit(paging.pageSize);
+        x = collection.find(query).sort(sort).skip((paging.pageNumber - 1) * paging.pageSize).limit(paging.pageSize);
       } else {
         x = collection.find(query).sort(sort);
       }
