@@ -68,36 +68,39 @@ class BrokerService {
 			});
 		});
 	}
-	async provisionApp(app: App) {
-		var environmentNames: string[] = [];
+	provisionApp(app: App): Promise<any> {
+		return new Promise<any>((resolve, reject) => {
+			var environmentNames: string[] = [];
 
-		var apiProductPromises: Promise<APIProduct>[] = [];
-		app.apiProducts.forEach((productName: string) => {
-			L.info(productName);
-			apiProductPromises.push(ApiProductsService.byName(productName));
-		});
-
-		Promise.all(apiProductPromises).then(async (products: APIProduct[]) => {
-			products.forEach((product: APIProduct) => {
-				product.environments.forEach((e: string) => {
-					environmentNames.push(e);
-				})
-				L.info(`env: ${product.environments}`);
+			var apiProductPromises: Promise<APIProduct>[] = [];
+			app.apiProducts.forEach((productName: string) => {
+				L.info(productName);
+				apiProductPromises.push(ApiProductsService.byName(productName));
 			});
-			environmentNames = Array.from(new Set(environmentNames));
 
-			try {
-				const services = await this.getServices(environmentNames);
-				var a = await this.createACLs(app, services);
-				L.info(`created acl profile ${app.name}`);
-				var b = await this.createClientUsernames(app, services);
-				L.info(`created client username ${app.name}`);
-				var d = await this.createQueues(app, services, products);
-				var c = await this.createClientACLExceptions(app, services, products);
-				
-			} catch {
-				L.error("Provisioning error");
-			}
+			Promise.all(apiProductPromises).then(async (products: APIProduct[]) => {
+				products.forEach((product: APIProduct) => {
+					product.environments.forEach((e: string) => {
+						environmentNames.push(e);
+					})
+					L.info(`env: ${product.environments}`);
+				});
+				environmentNames = Array.from(new Set(environmentNames));
+
+				try {
+					const services = await this.getServices(environmentNames);
+					var a = await this.createACLs(app, services);
+					L.info(`created acl profile ${app.name}`);
+					var b = await this.createClientUsernames(app, services);
+					L.info(`created client username ${app.name}`);
+					//var d = await this.createQueues(app, services, products);
+					var c = await this.createClientACLExceptions(app, services, products);
+					resolve(null);
+				} catch (e) {
+					L.error(`Provisioning error ${e}`);
+					reject(e);
+				}
+			});
 		});
 	}
 
@@ -321,12 +324,14 @@ class BrokerService {
 					publishExceptions.push(s);
 				}
 			}
+			L.info("******** createClientACLExceptions");
 			L.info(publishExceptions);
 			L.info(subscribeExceptions);
+			L.info("******** createClientACLExceptions");
 			try {
 				var q = await this.addPublishTopicExceptions(app, services, publishExceptions);
 			} catch { }
-			var r = await this.addSubscribeTopicExceptions(app, services, subscribeExceptions);
+			//var r = await this.addSubscribeTopicExceptions(app, services, subscribeExceptions);
 		});
 	}
 	private createQueues(app: App, services: Service[], apiProducts: APIProduct[]): Promise<void> {
@@ -341,8 +346,8 @@ class BrokerService {
 				}
 			}
 			// loop over services
-			for (var service of services){
-			   //create queues
+			for (var service of services) {
+				//create queues
 				var sempV2Client = this.getSEMPv2Client(service);
 				try {
 					var q = AllService.getMsgVpnQueue(service.msgVpnName, app.credentials.secret.consumerKey);
@@ -352,9 +357,9 @@ class BrokerService {
 					AllService.updateMsgVpnQueue(service.msgVpnName, app.credentials.secret.consumerKey, newQ);
 				} catch (e: any) {
 
-				} 
+				}
 
-		       	
+
 			}
 			// attach subscriptions
 			L.info(subscribeExceptions);
@@ -405,20 +410,23 @@ class BrokerService {
 					L.info("createMsgVpnAclProfilePublishException");
 					L.info(aclException);
 					try {
-						var getResponse = await AllService.getMsgVpnAclProfilePublishException(service.msgVpnName, app.credentials.secret.consumerKey, MsgVpnAclProfilePublishException.topicSyntax.SMF, exception);
+	
+						var getResponse = await AllService.getMsgVpnAclProfilePublishException(service.msgVpnName, app.credentials.secret.consumerKey, MsgVpnAclProfilePublishException.topicSyntax.SMF, encodeURIComponent( exception));
 						L.info("ACL Looked up");
 					} catch (e) {
-
+						L.info(`addPublishTopicExceptions lookup  failed ${e}`);
 						try {
 							let response = await AllService.createMsgVpnAclProfilePublishException(service.msgVpnName, app.credentials.secret.consumerKey, aclException);
 							L.info("created  PublishException");
 						} catch (e) {
+							L.info(`addPublishTopicExceptions add failed ${e}`);
 							reject(e);
 						}
 					}
 				}
 
 			}
+			L.info("addPublishTopicExceptions resolved");
 			resolve();
 		});
 
@@ -499,7 +507,7 @@ class BrokerService {
 				});
 			}
 		);
-	}	
+	}
 	private getRDPSubscriptionsFromAsyncAPIs(apis: string[]): Promise<string[]> {
 		return new Promise<string[]>(
 			(resolve, reject) => {
@@ -519,8 +527,8 @@ class BrokerService {
 								spec.channelNames().forEach((s: string) => {
 
 									var channel = spec.channel(s);
-										
-									if (channel.hasSubscribe() && (channel.subscribe().hasBinding('http')|| channel.subscribe().hasBinding('https'))) {
+
+									if (channel.hasSubscribe() && (channel.subscribe().hasBinding('http') || channel.subscribe().hasBinding('https'))) {
 										L.info(`getRDPSubscriptionsFromAsyncAPIs subscribe ${s}`)
 										resources.push(this.scrubDestination(s));
 									}

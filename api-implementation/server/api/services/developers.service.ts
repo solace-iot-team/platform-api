@@ -52,7 +52,7 @@ export class DevelopersService {
         app.permissions = permissions;
         app.messagingProtocols = endpoints;
       } else {
-        throw(404);
+        throw (404);
       }
       return app;
     } catch (e) {
@@ -138,7 +138,7 @@ export class DevelopersService {
   }
 
   updateApp(developer: string, name: string, body: AppPatch): Promise<AppPatch> {
-    return new Promise<App>(async (resolve, reject) => {
+    return new Promise<App>((resolve, reject) => {
       this.byName(developer).then((d) => {
         L.info(d);
         if (!d) {
@@ -154,19 +154,21 @@ export class DevelopersService {
           status: body.status
 
         };
-        try {
-          // don't care about approval check - we accept whatever status we get. but need to make sure references are valid
-          const approvalCheck = this.validateAPIProducts(app);
-          resolve(this.appPersistenceService.update(name, app));
+        // don't care about approval check - we accept whatever status we get. but need to make sure references are valid
+        this.validateAPIProducts(app).then((v) => {
           var promise: Promise<any> = this.appPersistenceService.update(name, app);
-          promise.then(async (val: App) => {
-            if (app.status == 'approved')
-              await BrokerService.provisionApp(val);
+          promise.then((val: App) => {
+            if (app.status == 'approved') {
+              L.info(`provisioning app ${app.name}`);
+              BrokerService.provisionApp(val).then((r) => resolve(promise)).catch((e)=> reject(e));
+            } else {
+              resolve(promise);
+            }
           }).catch((e) => reject(e));
-          resolve(promise);
-        } catch {
+
+        }).catch(e => {
           reject(422);
-        }
+        });
       });
     });
   }
