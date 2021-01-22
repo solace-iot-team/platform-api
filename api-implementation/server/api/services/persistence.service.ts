@@ -123,7 +123,7 @@ export class PersistenceService {
         delete body._id;
         resolve(body);
       }).catch((e) => {
-        L.error(e);
+        L.error(`insert into ${collection.namespace} failed ${e}`);
         reject(422);
       });
     });

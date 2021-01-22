@@ -31,17 +31,19 @@ export class ApiProductsService {
       try {
         const apiReferenceCheck: boolean = await this.validateReferences(body);
         L.info(` reference check result ${apiReferenceCheck}`);
-        if (!apiReferenceCheck)
+        if (!apiReferenceCheck) {
           L.info(` reference check failed ${apiReferenceCheck}`);
           reject(422);
+        }
         this.persistenceService.create(body.name, body).then((p) => {
           resolve(p);
         }).catch((e) => {
+          L.error(`APIProductsService.create error ${e}`);
           reject(e);
         });
 
-      } catch (e){
-        L.info(` reference check failed ${e}`);
+      } catch (e) {
+        L.error(`APIProductsService.create failure  ${e}`);
         reject(422);
       }
     });
