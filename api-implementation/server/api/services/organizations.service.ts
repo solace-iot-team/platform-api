@@ -2,6 +2,7 @@ import L from '../../common/logger';
 import Organization = Components.Schemas.Organization;
 import { PersistenceService } from './persistence.service';
 import C from 'continuation-local-storage';
+import { ErrorResponseInternal } from '../middlewares/error.handler';
 
 const reserved: string = "platform";
 
@@ -33,7 +34,7 @@ export class OrganizationsService {
   create(body: Organization): Promise<Organization> {
     return new Promise<Organization>((resolve, reject) => {
       if (body.name == reserved) {
-        reject(401);
+        reject(new ErrorResponseInternal(401, `Access denied, reserved name`))
       }
       this.persistenceService.create(body.name, body).then((p) => {
         resolve(p);
@@ -47,7 +48,7 @@ export class OrganizationsService {
   update(name: string, body: Organization): Promise<Organization> {
     return new Promise<Organization>((resolve, reject) => {
       if (body.name == reserved) {
-        reject(401);
+        reject(new ErrorResponseInternal(401, `Access denied, reserved name`))
       } this.persistenceService.update(name, body).then((p) => {
         resolve(p);
       }).catch((e) => {

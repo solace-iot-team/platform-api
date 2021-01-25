@@ -1,5 +1,6 @@
 import EventPortalApisService from '../../services/eventPortalApis.service';
-import { Request, Response } from 'express';
+import { NextFunction, Request, Response } from 'express';
+import { ErrorResponseInternal } from '../../middlewares/error.handler';
 
 export class Controller {
   all(req: Request, res: Response): void {
@@ -9,11 +10,11 @@ export class Controller {
   byName(req: Request, res: Response): void {
     EventPortalApisService.byName(req.params['name']).then((r) => {
       if (r) res.json(r);
-      else res.status(404).end();
+      else res.status(404).json(new ErrorResponseInternal(404, "Not found")).send();
     });
   }
 
-  specByName(req: Request, res: Response): void {
+  specByName(req: Request, res: Response, next: NextFunction): void {
     let asyncAPIVersionParam = req.query.async_api_version;
     let asyncAPIVersion: string = '2.0.0';
     if (asyncAPIVersionParam){
@@ -21,8 +22,8 @@ export class Controller {
     }
     EventPortalApisService.specByName(req.params['name'], asyncAPIVersion).then((r) => {
       if (r) res.json(r);
-      else res.status(404).end();
-    }).catch((e)=>{res.status(e).end()});
+      else res.status(404).json(new ErrorResponseInternal(404, "Not found")).send();
+    }).catch ((e)=> next(e));
   }
 
 }

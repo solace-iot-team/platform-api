@@ -1,48 +1,40 @@
 import EnvironmentsService from '../../services/environments.service';
-import { Request, Response } from 'express';
+import { NextFunction, Request, Response } from 'express';
 
 export class Controller {
-  all(req: Request, res: Response): void {
+  all(req: Request, res: Response, next: NextFunction): void {
     EnvironmentsService.all().then((r) => res.json(r));
   }
 
-  create(req: Request, res: Response): void {
+  create(req: Request, res: Response, next: NextFunction): void {
     EnvironmentsService.create(req.body).then((r) => {
       if (r) {
         res.status(201).json(r);
       }
       else res.status(500).end();
-    }).catch((e) => {
-      res.status(e).end()
-    });
+    }).catch ((e)=> next(e));
   }
 
 
-  update(req: Request, res: Response): void {
+  update(req: Request, res: Response, next: NextFunction): void {
     EnvironmentsService.update(req.params['name'], req.body).then((r) => {
       if (r) {
         res.status(200).json(r);
       }
       else res.status(500).end();
-    }).catch((e) => {
-      res.status(e).end()
-    });
+    }).catch ((e)=> next(e));
   }
-  byName(req: Request, res: Response): void {
+  byName(req: Request, res: Response, next: NextFunction): void {
     EnvironmentsService.byName(req.params['name']).then((r) => {
       if (r) res.json(r);
       else res.status(404).end();
-    }).catch((e) => {
-      res.status(e).end();
-    });
+    }).catch ((e)=> next(e));
   }
 
-  delete(req: Request, res: Response): void {
+  delete(req: Request, res: Response, next: NextFunction): void {
     EnvironmentsService.delete(req.params['name']).then((r) => {
       res.status(r).end();
-    }).catch((e) => {
-      res.status(e).end();
-    });
+    }).catch ((e)=> next(e));
   }
 
 }

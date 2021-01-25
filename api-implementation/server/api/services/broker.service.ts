@@ -19,6 +19,7 @@ import { Sempv2Client } from '../../../src/sempv2-client';
 import parser from '@asyncapi/parser';
 import { resolve } from 'path';
 import { prototype } from 'module';
+import { ErrorResponseInternal } from '../middlewares/error.handler';
 
 enum Direction {
 	Publish = "Publish",
@@ -61,9 +62,9 @@ class BrokerService {
 					var c: Permissions = await this.getClientACLExceptions(app, products);
 					resolve(c);
 
-				} catch {
+				} catch (e){
 					L.error("Get permissions error");
-					reject(500);
+					reject(new ErrorResponseInternal(500, e));
 				}
 			});
 		});
@@ -98,7 +99,7 @@ class BrokerService {
 					resolve(null);
 				} catch (e) {
 					L.error(`Provisioning error ${e}`);
-					reject(e);
+					reject(new ErrorResponseInternal(500, e));
 				}
 			});
 		});

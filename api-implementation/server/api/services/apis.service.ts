@@ -1,4 +1,5 @@
 import L from '../../common/logger';
+import { ErrorResponseInternal } from '../middlewares/error.handler';
 import { PersistenceService } from './persistence.service';
 
 const parser = require('@asyncapi/parser');
@@ -36,7 +37,7 @@ export class ApisService {
     return new Promise<string>((resolve, reject) => {
       this.persistenceService.byName(name).then((spec: APISpecification) => {
         if (!spec) {
-          resolve(null);
+          reject(new ErrorResponseInternal(404, `Async API ${name} not found`));
         } else
           resolve(spec.specification);
       }).catch((e) => {
@@ -53,7 +54,7 @@ export class ApisService {
     return new Promise<string>(async (resolve, reject) => {
       const isValid = await this.isValidSpec(body);
       if (!isValid){
-        reject(400);
+        reject(new ErrorResponseInternal(400, `Entity ${name} does not exist`));
       }
       var spec: APISpecification = {
         name: name,
@@ -71,7 +72,7 @@ export class ApisService {
     return new Promise<string>(async (resolve, reject) => {
       const isValid = await this.isValidSpec(body);
       if (!isValid){
-        reject(400);
+        reject(new ErrorResponseInternal(400, `AsyncAPI document is not valid`));
       }
       var spec: APISpecification = {
         name: name,
@@ -87,7 +88,7 @@ export class ApisService {
 
   private async isValidSpec(spec: string): Promise<boolean> {
     return new Promise<boolean>((resolve, reject) => {
-      parser.parse(spec).then((val) => resolve(true)).catch((e) => resolve(false));
+      parser.parse(spec).then((val) => resolve(true)).catch((e) => reject(false));
     });
   }
 

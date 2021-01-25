@@ -3,7 +3,8 @@ import L from '../server/common/logger';
 import APIListItem = Components.Schemas.APIListItem;
 import APIDomain = Components.Schemas.APIDomain;
 import API = Components.Schemas.API;
-import { AsyncApiService, Application, ApplicationDomainsResponse, ApplicationDomainsService, ApplicationResponse, ApplicationsService, OpenAPI, GenerateAsyncAPIRequest } from "./clients/eventportal";
+import { ApiError, AsyncApiService, Application, ApplicationDomainsResponse, ApplicationDomainsService, ApplicationResponse, ApplicationsService, OpenAPI, GenerateAsyncAPIRequest } from "./clients/eventportal";
+import { ErrorResponseInternal } from '../server/api/middlewares/error.handler';
 
 
 class EventPortalFacade {
@@ -36,7 +37,7 @@ class EventPortalFacade {
 					resolve(apiList);
 				});
 			});
-			result.catch((val) => { reject("API Error" + val) });
+			result.catch((val: ApiError) => { reject(new ErrorResponseInternal(val.status, val.message)) });
 
 		});
 	}
@@ -92,7 +93,7 @@ class EventPortalFacade {
 					});
 				}
 			});
-			result.catch((val) => { reject("API Error" + val) });
+			result.catch((val: ApiError) => { reject(new ErrorResponseInternal(val.status, val.message)) });
 
 		});
 	}
@@ -103,7 +104,7 @@ class EventPortalFacade {
 				(value: ApplicationResponse) => {
 					var app: Application = value.data[0];
 					if (!app) {
-						reject(null);
+						reject(new ErrorResponseInternal(404, `Entity ${name} does not exist`))
 					}
 					var output: API = {
 						name: app.name,
@@ -120,9 +121,10 @@ class EventPortalFacade {
 					};
 					resolve(output);
 				}
-			).catch((error) => {
-				reject(error);
+			).catch((val: ApiError) => {
+				reject(new ErrorResponseInternal(val.status, val.message));
 			});
+
 
 		}
 
@@ -138,17 +140,17 @@ class EventPortalFacade {
 				(value: ApplicationResponse) => {
 					var app: Application = value.data[0];
 					if (!app) {
-						reject(404);
+						reject(new ErrorResponseInternal(404, `Entity ${name} does not exist`));
 					}
 					var apiId = app.id;
 					var asyncAPIRequestBody: GenerateAsyncAPIRequest = { asyncApiVersion: asyncAPIVersion };
 					var asyncAPIResponse: Promise<any> = AsyncApiService.generateAsyncApi(apiId, asyncAPIRequestBody);
 					asyncAPIResponse.then((v: string) => {
 						resolve(v);
-					}).catch((e) => { reject(e) });
+					}).catch((e: ApiError) => { reject(new ErrorResponseInternal(e.status, e.message)) });
 				}
-			).catch((error) => {
-				reject(error);
+			).catch((val: ApiError) => {
+				reject(new ErrorResponseInternal(val.status, val.message));
 			});
 
 		}

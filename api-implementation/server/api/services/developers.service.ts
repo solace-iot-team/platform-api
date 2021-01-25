@@ -9,6 +9,7 @@ import ApiProductsService from './apiProducts.service';
 import BrokerService from './broker.service';
 
 import { PersistenceService } from './persistence.service';
+import { ErrorResponseInternal } from '../middlewares/error.handler';
 
 var passwordGenerator = require('generate-password');
 
@@ -69,7 +70,7 @@ export class DevelopersService {
       const d = await this.byName(developer);
       L.info(d);
       if (!d) {
-        reject(404);
+        reject(new ErrorResponseInternal(404, `Entity ${developer} does not exist`))
       }
       var promise: Promise<any> = this.appPersistenceService.byName(name, { ownerId: developer });
       promise.then(async (app) => {
@@ -88,7 +89,7 @@ export class DevelopersService {
       const d = await this.byName(developer);
       L.info(d);
       if (!d) {
-        reject(404);
+        reject(new ErrorResponseInternal(404, `Entity ${developer} does not exist`))
       }
       var app: DeveloperApp = {
         appType: 'developer',
@@ -142,7 +143,7 @@ export class DevelopersService {
       this.byName(developer).then((d) => {
         L.info(d);
         if (!d) {
-          reject(404);
+          reject(new ErrorResponseInternal(404, `Entity ${developer} does not exist`))
         }
         var app: DeveloperAppPatch = {
           ownerId: developer,
@@ -167,7 +168,7 @@ export class DevelopersService {
           }).catch((e) => reject(e));
 
         }).catch(e => {
-          reject(422);
+          reject(e);
         });
       });
     });
@@ -193,7 +194,7 @@ export class DevelopersService {
       });
       Promise.all(results).then((r) => { resolve(isApproved) }).catch((e) => {
         L.info(e);
-        reject(422);
+        reject(new ErrorResponseInternal(422, e));
       });
 
     }

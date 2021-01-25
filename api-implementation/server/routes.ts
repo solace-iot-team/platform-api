@@ -45,7 +45,7 @@ export default function routes(app: Application, auth: any): void {
   });
 
 
-  const auditableVerbs: string[] = ['GET', 'POST', 'PUT', 'DELETE', 'PATCH'];
+  const auditableVerbs: string[] = ['POST', 'PUT', 'DELETE', 'PATCH'];
   router.use('/*', auth, function (req: basicAuth.IBasicAuthedRequest, res, next) {
     res.on("finish", function () {
       L.info("after");
@@ -59,7 +59,7 @@ export default function routes(app: Application, auth: any): void {
           user: req.auth.user
         };
         HistoryService.create(h);
-        L.debug(`auditable request: ${req.method}, ${req.baseUrl}, ${res.statusCode}`);
+        L.debug(`auditable request: ${req.method}, ${req.url}, ${res.statusCode}`);
         C.reset();
       };
     });

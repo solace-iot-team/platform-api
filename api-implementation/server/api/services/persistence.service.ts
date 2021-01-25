@@ -1,7 +1,8 @@
 import L from '../../common/logger';
 import { databaseaccess } from '../../../src/databaseaccess';
-import mongodb, { DeleteWriteOpResultObject } from 'mongodb';
+import mongodb, { DeleteWriteOpResultObject, MongoError } from 'mongodb';
 import C from 'continuation-local-storage';
+import {ErrorResponseInternal} from '../middlewares/error.handler';
 
 export interface Paging {
   pageNumber: number,
@@ -45,11 +46,11 @@ export class PersistenceService {
         x = collection.find(query).sort(sort);
       }
       x.toArray(
-        (err, items) => {
+        (err: MongoError, items) => {
           if (err) {
             L.error('Caught error', err);
 
-            reject(err);
+            reject(new ErrorResponseInternal(500, err.message));
           } else {
             items.forEach((item) => {
               delete item._id;
@@ -81,9 +82,9 @@ export class PersistenceService {
           resolve(item);
         }
 
-      ).catch((e) => {
+      ).catch((e:MongoError) => {
         L.warn(`PersistenceService.byName ${e}`);
-        reject(e);
+        reject(new ErrorResponseInternal(500, e.message));
       });
     });
   }
@@ -100,16 +101,16 @@ export class PersistenceService {
       L.info(q);
       collection.deleteOne(q).then(
         (item: DeleteWriteOpResultObject) => {
-          L.info(` deleted count: ${item.deletedCount}`);
+          L.debug(` deleted count: ${item.deletedCount}`);
           if (item.deletedCount == 1) {
             resolve(204)
           } else {
-            reject(404);
+            reject(new ErrorResponseInternal(404, `No entity ${name} found `));
           }
         }
 
-      ).catch((e) => {
-        reject(e);
+      ).catch((e: MongoError) => {
+        reject(new ErrorResponseInternal(422, e.message));
       });
     });
   }
@@ -122,9 +123,9 @@ export class PersistenceService {
       collection.insertOne(body).then((v: mongodb.InsertOneWriteOpResult<any>) => {
         delete body._id;
         resolve(body);
-      }).catch((e) => {
+      }).catch((e: MongoError) => {
         L.error(`insert into ${collection.namespace} failed ${e}`);
-        reject(422);
+        reject (new ErrorResponseInternal(422, e.message));
       });
     });
   }
@@ -142,7 +143,7 @@ export class PersistenceService {
       collection.updateOne(q, { $set: body }).then((v: mongodb.UpdateWriteOpResult) => {
         //L.info(v);
         if (v.matchedCount == 0) {
-          reject(404);
+          reject(new ErrorResponseInternal(404, `No entity ${_id} found `));
         }
         this.byName(_id).then((p) => {
           delete p._id;
@@ -152,8 +153,8 @@ export class PersistenceService {
           reject(e);
         });
 
-      }).catch((e) => {
-        reject(422);
+      }).catch((e: MongoError) => {
+        reject(new ErrorResponseInternal(422, e.message));
       });
     });
   }
@@ -170,13 +171,13 @@ export class PersistenceService {
             resolve(true);
           }
           ).catch((e) => {
-            reject(`Referenced name ${n} does not exist`);
+            reject(new ErrorResponseInternal(422, `Referenced name ${n} does not exist`));
           })
         }));
       });
       Promise.all(results).then((r) => { resolve(true) }).catch((e) => {
         L.info(e);
-        reject(422);
+        (new ErrorResponseInternal(422, e));
       });
 
     }

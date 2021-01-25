@@ -4,6 +4,7 @@ import { PersistenceService } from './persistence.service';
 
 import EnvironmentsService from './environments.service';
 import ApisService from './apis.service';
+import {ErrorResponseInternal} from '../middlewares/error.handler';
 
 export class ApiProductsService {
 
@@ -32,8 +33,9 @@ export class ApiProductsService {
         const apiReferenceCheck: boolean = await this.validateReferences(body);
         L.info(` reference check result ${apiReferenceCheck}`);
         if (!apiReferenceCheck) {
-          L.info(` reference check failed ${apiReferenceCheck}`);
-          reject(422);
+          L.info( ` reference check failed ${apiReferenceCheck}`);
+          reject(new ErrorResponseInternal(422, ` reference check failed ${apiReferenceCheck}`));
+          
         }
         this.persistenceService.create(body.name, body).then((p) => {
           resolve(p);
@@ -44,7 +46,7 @@ export class ApiProductsService {
 
       } catch (e) {
         L.error(`APIProductsService.create failure  ${e}`);
-        reject(422);
+        reject (e);
       }
     });
 
@@ -56,15 +58,15 @@ export class ApiProductsService {
         const apiReferenceCheck = await this.validateReferences(body);
         L.info(` reference check result ${apiReferenceCheck}`);
         if (!apiReferenceCheck)
-          reject(422);
+          reject(new ErrorResponseInternal(422, ` reference check failed ${apiReferenceCheck}`));
         this.persistenceService.update(name, body).then((p) => {
           resolve(p);
         }).catch((e) => {
           reject(e);
         });
 
-      } catch {
-        reject(422);
+      } catch (e){
+        reject(e);
       }
     });
   }
@@ -82,7 +84,7 @@ export class ApiProductsService {
           }
           ).catch((e) => {
             L.info(`validateReferences ${e} Referenced API ${n} does not exist`);
-            reject1(`Referenced API ${n} does not exist`);
+            reject1(new ErrorResponseInternal(422, `Referenced API ${n} does not exist`));
           })
         }));
       });
@@ -92,19 +94,19 @@ export class ApiProductsService {
             if (p) {
               resolve(true);
             } else {
-              reject(`Referenced environment ${envName} does not exist`);
+              reject(new ErrorResponseInternal(422, `Referenced environment ${envName} does not exist`));
             }
           }
           ).catch((e) => {
             L.info(`validateReferences ${e} Referenced env ${envName} does not exist`);
-            reject(`Referenced environment ${envName} does not exist`);
+            reject(new ErrorResponseInternal(422, `Referenced environment ${envName} does not exist`));
           })
         }));
       });
 
       Promise.all(results).then((r) => { resolve(true) }).catch((e) => {
         L.info(`validateReferences a rejection occurred ${e}`);
-        reject(422);
+        reject(e);
       });
 
     }

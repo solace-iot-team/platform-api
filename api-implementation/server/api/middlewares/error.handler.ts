@@ -1,6 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
-
-// eslint-disable-next-line no-unused-vars, no-shadow
+import L from '../../common/logger';
+import ErrorResponse = Components.Schemas.ErrorResponse;
+//eslint - disable - next - line no - unused - vars, no - shadow
 export default function errorHandler(
   err,
   req: Request,
@@ -8,6 +9,26 @@ export default function errorHandler(
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   next: NextFunction
 ): void {
-  const errors = err.errors || [{ message: err.message }];
-  res.status(err.status || 500).json({ errors });
+    var theError: ErrorResponseInternal = err;
+    var statusCode : number = theError.statusCode;
+    delete theError.statusCode;
+    res.status(statusCode || 500).json( theError);
 }
+
+
+
+
+export class ErrorResponseInternal extends Error implements ErrorResponse {
+  statusCode: number;
+  errorId: string;
+
+  constructor(statusCode: number, message: string) {
+
+    super();
+    this.errorId = String(statusCode);
+    this.statusCode = statusCode;
+    this.message = message;
+  }
+}
+
+

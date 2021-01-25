@@ -1,94 +1,78 @@
 import DevelopersService from '../../services/developers.service';
-import { Request, Response } from 'express';
+import { NextFunction, Request, Response } from 'express';
 import L from '../../../common/logger';
 
 export class Controller {
-  all(req: Request, res: Response): void {
-    DevelopersService.all().then((r) => res.json(r));
+  all(req: Request, res: Response, next: NextFunction): void {
+    DevelopersService.all().then((r) => res.json(r)).catch((e) => next(e));
+    ;
   }
 
-  create(req: Request, res: Response): void {
+  create(req: Request, res: Response, next: NextFunction): void {
     DevelopersService.create(req.body).then((r) => {
       if (r) {
         res.status(201).json(r);
       }
       else res.status(500).end();
-    }).catch((e) => {
-      res.status(e).end()
-    });
+    }).catch((e) => next(e));
   }
 
 
-  update(req: Request, res: Response): void {
+  update(req: Request, res: Response, next: NextFunction): void {
     DevelopersService.update(req.params['name'], req.body).then((r) => {
       if (r) {
         res.status(200).json(r);
       }
       else res.status(500).end();
-    }).catch((e) => {
-      res.status(e).end()
-    });
+    }).catch((e) => next(e));
   }
-  byName(req: Request, res: Response): void {
+  byName(req: Request, res: Response, next: NextFunction): void {
     DevelopersService.byName(req.params['name']).then((r) => {
       if (r) res.json(r);
       else res.status(404).end();
-    }).catch((e) => {
-      res.status(e).end();
-    });
+    }).catch((e) => next(e));
   }
 
-  delete(req: Request, res: Response): void {
+  delete(req: Request, res: Response, next: NextFunction): void {
     DevelopersService.delete(req.params['name']).then((r) => {
       res.status(r).end();
-    }).catch((e) => {
-      
-      res.status(e).end();
-    });
+    }).catch((e) => next(e));
   }
 
 
   // developer apps
-  allApps(req: Request, res: Response): void {
-    DevelopersService.allDevelopersApps(req.params['developer']).then((r) => res.json(r));
+  allApps(req: Request, res: Response, next: NextFunction): void {
+    DevelopersService.allDevelopersApps(req.params['developer']).then((r) => res.json(r)).catch((e) => next(e));
+    ;
   }
-  appByName(req: Request, res: Response): void {
+  appByName(req: Request, res: Response, next: NextFunction): void {
     DevelopersService.appByName(req.params['developer'], req.params['name']).then((r) => {
       if (r) res.json(r);
       else res.status(404).end();
-    }).catch((e) => {
-      res.status(e).end();
-    });
+    }).catch((e) => next(e));
   }
-  createApp(req: Request, res: Response): void {
-    DevelopersService.createApp(req.params['developer'],req.body).then((r) => {
+  createApp(req: Request, res: Response, next: NextFunction): void {
+    DevelopersService.createApp(req.params['developer'], req.body).then((r) => {
       if (r) {
         res.status(201).json(r);
       }
       else res.status(500).end();
-    }).catch((e) => {
-      L.error(`Error in createApp ${e}`);
-      res.status(e).send("");
-    });
+    }).catch((e) => next(e));
   }
 
-  updateApp(req: Request, res: Response): void {
+  updateApp(req: Request, res: Response, next: NextFunction): void {
     DevelopersService.updateApp(req.params['developer'], req.params['name'], req.body).then((r) => {
       if (r) {
         res.status(200).json(r);
       }
       else res.status(500).end();
-    }).catch((e) => {
-      res.status(e).end()
-    });
-  }  
+    }).catch((e) => next(e));
+  }
 
-   deleteApp(req: Request, res: Response): void {
+  deleteApp(req: Request, res: Response, next: NextFunction): void {
     DevelopersService.deleteApp(req.params['developer'], req.params['name']).then((r) => {
       res.status(r).end();
-    }).catch((e) => {
-      res.status(e).end();
-    });
-  } 
+    }).catch((e) => next(e));
+  }
 }
 export default new Controller();
