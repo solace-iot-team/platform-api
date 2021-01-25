@@ -132,7 +132,7 @@ class EventPortalFacade {
 	}
 	public async getApiSpec(name: string, asyncAPIVersion?: string): Promise<string> {
 		return new Promise<string>((resolve, reject) => {
-			if (!asyncAPIVersion){
+			if (!asyncAPIVersion) {
 				asyncAPIVersion = "2.0.0";
 			}
 			var result: Promise<any> = ApplicationsService.list2(100, 1, name);
@@ -144,8 +144,24 @@ class EventPortalFacade {
 					}
 					var apiId = app.id;
 					var asyncAPIRequestBody: GenerateAsyncAPIRequest = { asyncApiVersion: asyncAPIVersion };
+					L.debug(`Requesting Async API ${apiId} spec ${JSON.stringify(asyncAPIRequestBody)}`);
 					var asyncAPIResponse: Promise<any> = AsyncApiService.generateAsyncApi(apiId, asyncAPIRequestBody);
-					asyncAPIResponse.then((v: string) => {
+					asyncAPIResponse.then((v: any) => {
+						L.debug(`Parsing API spec `);
+
+						Object.keys(v.channels).forEach(e => {
+							var x = e.match(/(?<=\{)[^}]*(?=\})/g);
+							var parameters = {};
+							if (x) {
+								x.forEach(match => {
+									parameters[match] = {
+										description: match,
+										schema: { type: "string" }
+									};
+								});
+								v.channels[e].parameters = parameters;
+							}
+						});
 						resolve(v);
 					}).catch((e: ApiError) => { reject(new ErrorResponseInternal(e.status, e.message)) });
 				}
