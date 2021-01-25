@@ -143,7 +143,7 @@ export class DevelopersService {
       this.byName(developer).then((d) => {
         L.info(d);
         if (!d) {
-          reject(new ErrorResponseInternal(404, `Entity ${developer} does not exist`))
+          reject(new ErrorResponseInternal(404, `Entity ${developer} does not exist`));
         }
         var app: DeveloperAppPatch = {
           ownerId: developer,

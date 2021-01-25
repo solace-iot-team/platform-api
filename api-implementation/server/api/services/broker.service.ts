@@ -331,8 +331,13 @@ class BrokerService {
 			L.info("******** createClientACLExceptions");
 			try {
 				var q = await this.addPublishTopicExceptions(app, services, publishExceptions);
-			} catch { }
-			//var r = await this.addSubscribeTopicExceptions(app, services, subscribeExceptions);
+				var r = await this.addSubscribeTopicExceptions(app, services, subscribeExceptions);
+				resolve();
+			} catch (e) { 
+
+				
+				reject(new ErrorResponseInternal(400, e));
+			}
 		});
 	}
 	private createQueues(app: App, services: Service[], apiProducts: APIProduct[]): Promise<void> {
@@ -446,16 +451,18 @@ class BrokerService {
 					L.info("createMsgVpnAclProfileSubscribeException");
 					L.info(aclException);
 					try {
-						var getResponse = await AllService.getMsgVpnAclProfileSubscribeException(service.msgVpnName, app.credentials.secret.consumerKey, MsgVpnAclProfileSubscribeException.topicSyntax.SMF, exception);
-						L.info("ACL Looked up");
-					} catch {
-
+						var getResponse = await AllService.getMsgVpnAclProfileSubscribeException(service.msgVpnName, app.credentials.secret.consumerKey, MsgVpnAclProfileSubscribeException.topicSyntax.SMF, encodeURIComponent( exception));
+						L.info("addSubscribeTopicExceptions: exception exists");
+					} catch (e){
+						L.info(`addSubscribeTopicExceptions lookup  failed ${JSON.stringify(e)}`);
 						try {
 							let response = await AllService.createMsgVpnAclProfileSubscribeException(service.msgVpnName, app.credentials.secret.consumerKey, aclException);
 							L.info("created  SubscribeException");
 						} catch (e) {
+							L.info(`addSubscribeTopicExceptions add failed ${e}`);
 							reject(e);
 						}
+
 					}
 				}
 
