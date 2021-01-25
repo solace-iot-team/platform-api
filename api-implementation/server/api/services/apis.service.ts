@@ -55,16 +55,17 @@ export class ApisService {
       const isValid = await this.isValidSpec(body);
       if (!isValid) {
         reject(new ErrorResponseInternal(400, `Entity ${name} is not valid`));
+      } else {
+        var spec: APISpecification = {
+          name: name,
+          specification: body
+        };
+        this.persistenceService.create(name, spec).then((spec: APISpecification) => {
+          resolve(spec.specification);
+        }).catch((e) => {
+          reject(new ErrorResponseInternal(400, e));
+        });
       }
-      var spec: APISpecification = {
-        name: name,
-        specification: body
-      };
-      this.persistenceService.create(name, spec).then((spec: APISpecification) => {
-        resolve(spec.specification);
-      }).catch((e) => {
-        reject(e);
-      });
     });
   }
 
@@ -74,16 +75,17 @@ export class ApisService {
         const isValid = await this.isValidSpec(body);
         if (!isValid) {
           reject(new ErrorResponseInternal(400, `AsyncAPI document is not valid`));
+        } else {
+          var spec: APISpecification = {
+            name: name,
+            specification: body
+          };
+          this.persistenceService.update(name, spec).then((spec: APISpecification) => {
+            resolve(spec.specification);
+          }).catch((e) => {
+            reject(e);
+          });
         }
-        var spec: APISpecification = {
-          name: name,
-          specification: body
-        };
-        this.persistenceService.update(name, spec).then((spec: APISpecification) => {
-          resolve(spec.specification);
-        }).catch((e) => {
-          reject(e);
-        });
       } catch (e) {
         reject(new ErrorResponseInternal(400, e));
       }
@@ -97,7 +99,7 @@ export class ApisService {
         L.debug('valid spec');
         resolve(true);
       }).catch((e) => {
-        L.debug('invalid spec');
+        L.debug(`invalid spec ${JSON.stringify(e)}`);
         resolve(false)
       });
     });
