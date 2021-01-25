@@ -1,5 +1,6 @@
-import L from '../../../common/logger';import ApisService from '../../services/apis.service';
+import L from '../../../common/logger'; import ApisService from '../../services/apis.service';
 import { NextFunction, Request, Response } from 'express';
+import { ErrorResponseInternal } from '../../middlewares/error.handler';
 
 export class Controller {
   all(req: Request, res: Response): void {
@@ -9,16 +10,17 @@ export class Controller {
   byName(req: Request, res: Response, next: NextFunction): void {
     ApisService.byName(req.params['name']).then((r) => {
       if (r) res.json(r);
-      else res.status(404).end();
-        }).catch ((e)=> next(e));
+      else
+        next(new ErrorResponseInternal(404, `Not found`));
+    }).catch((e) => next(e));
   }
- create(req: Request, res: Response, next: NextFunction): void {
+  create(req: Request, res: Response, next: NextFunction): void {
     ApisService.create(req.params['name'], req.body).then((r) => {
       if (r) {
         res.status(201).json(r);
       }
       else res.status(500).end();
-    }).catch ((e)=> next(e));
+    }).catch((e) => next(e));
   }
 
 
@@ -28,13 +30,13 @@ export class Controller {
         res.status(200).json(r);
       }
       else res.status(500).end();
-    }).catch ((e)=> next(e));
+    }).catch((e) => next(e));
   }
 
   delete(req: Request, res: Response, next: NextFunction): void {
     ApisService.delete(req.params['name']).then((r) => {
       res.status(r).end();
-    }).catch ((e)=> next(e));
+    }).catch((e) => next(e));
   }
 
 

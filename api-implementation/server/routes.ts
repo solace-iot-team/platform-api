@@ -17,6 +17,7 @@ import C from 'continuation-local-storage';
 import Organization = Components.Schemas.Organization;
 import History = Components.Schemas.History;
 import * as basicAuth from 'express-basic-auth'
+import { ErrorResponseInternal } from './api/middlewares/error.handler';
 
 export default function routes(app: Application, auth: any): void {
   var router = express.Router();
@@ -40,7 +41,8 @@ export default function routes(app: Application, auth: any): void {
       });
     }).catch(e => {
       L.debug(`no org matching URI ${req.baseUrl} ${e}`);
-      res.status(404).end();
+      next(new ErrorResponseInternal(404, `Not found`));
+      //res.status(404).end();
     });
   });
 

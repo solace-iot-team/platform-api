@@ -53,8 +53,8 @@ export class ApisService {
   async create(name: string, body: string): Promise<string> {
     return new Promise<string>(async (resolve, reject) => {
       const isValid = await this.isValidSpec(body);
-      if (!isValid){
-        reject(new ErrorResponseInternal(400, `Entity ${name} does not exist`));
+      if (!isValid) {
+        reject(new ErrorResponseInternal(400, `Entity ${name} is not valid`));
       }
       var spec: APISpecification = {
         name: name,
@@ -70,25 +70,36 @@ export class ApisService {
 
   update(name: string, body: string): Promise<string> {
     return new Promise<string>(async (resolve, reject) => {
-      const isValid = await this.isValidSpec(body);
-      if (!isValid){
-        reject(new ErrorResponseInternal(400, `AsyncAPI document is not valid`));
+      try {
+        const isValid = await this.isValidSpec(body);
+        if (!isValid) {
+          reject(new ErrorResponseInternal(400, `AsyncAPI document is not valid`));
+        }
+        var spec: APISpecification = {
+          name: name,
+          specification: body
+        };
+        this.persistenceService.update(name, spec).then((spec: APISpecification) => {
+          resolve(spec.specification);
+        }).catch((e) => {
+          reject(e);
+        });
+      } catch (e) {
+        reject(new ErrorResponseInternal(400, e));
       }
-      var spec: APISpecification = {
-        name: name,
-        specification: body
-      };
-      this.persistenceService.update(name, spec).then((spec: APISpecification) => {
-        resolve(spec.specification);
-      }).catch((e) => {
-        reject(e);
-      });
     });
   }
 
   private async isValidSpec(spec: string): Promise<boolean> {
     return new Promise<boolean>((resolve, reject) => {
-      parser.parse(spec).then((val) => resolve(true)).catch((e) => reject(false));
+      L.debug(`validating spec`);
+      parser.parse(spec).then((val) => {
+        L.debug('valid spec');
+        resolve(true);
+      }).catch((e) => {
+        L.debug('invalid spec');
+        resolve(false)
+      });
     });
   }
 
