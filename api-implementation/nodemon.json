@@ -5,7 +5,8 @@
   "ignore": ["test/**/*.ts", "test/**/*.spec.ts", ".git", "node_modules"],
   "watch": [
     "server",
-    ".env"
+    ".env",
+    "src"
   ],
   "ext": "ts,js,json,yaml,yml"
 }
