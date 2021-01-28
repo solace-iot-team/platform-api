@@ -74,7 +74,7 @@ export class PersistenceService {
       L.debug(`PersistenceService.byName the query ${JSON.stringify(q)}, ${collection.collectionName}, ${collection.namespace}`);
       collection.findOne(q).then(
         (item) => {
-          L.debug(item);
+          //L.debug(item);
           if (!item) {
             resolve(null);
           }
