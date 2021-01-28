@@ -343,7 +343,7 @@ declare namespace Components {
              */
             callbackUrl?: string;
             credentials?: /* Credentials object associated with an app */ Credentials;
-            status?: "approved" | "pending";
+            status?: AppStatus;
         }
         /**
          * App Response Object - includes protocol binding information and app premissions. An app associated with a developer. Associates the app with an API product, and auto-generates an API credentials for the app to use.
@@ -365,6 +365,7 @@ declare namespace Components {
             messagingProtocols?: Endpoint[];
             permissions?: /* lists all the publish and subscribe topics an app has access to. Restrictions on   topic elements are taken into account. */ Permissions;
         }
+        export type AppStatus = "approved" | "pending";
         export type Attributes = {
             name: string;
             value: string;
@@ -441,7 +442,6 @@ declare namespace Components {
              * xm7dc2dfas4
              */
             serviceId: string;
-            properties?: Properties;
         }
         /**
          * used for PATCH operation, an environment
@@ -452,7 +452,6 @@ declare namespace Components {
              * development environment
              */
             description?: string;
-            properties?: Properties;
         }
         export interface ErrorResponse {
             /**
@@ -539,18 +538,6 @@ declare namespace Components {
              */
             publish?: string[];
         }
-        export type Properties = {
-            /**
-             * example:
-             * key
-             */
-            key: string;
-            /**
-             * example:
-             * value
-             */
-            value: string;
-        }[];
         export interface Protocol {
             name: "amqp" | "amqps" | "http" | "https" | "jms" | "mqtt" | "secure-mqtt" | "ws" | "wss" | "smf" | "smfs";
             version?: string;
@@ -920,6 +907,9 @@ declare namespace Paths {
                 export type $504 = Components.Schemas.ErrorResponse;
             }
         }
+        namespace Parameters {
+            export type Status = Components.Schemas.AppStatus;
+        }
         namespace Post {
             export type RequestBody = /* An app associated with a developer. Associates the app with an API product, and auto-generates an API credentials for the app to use */ Components.Schemas.App;
             namespace Responses {
@@ -933,6 +923,9 @@ declare namespace Paths {
                 export type $503 = Components.Schemas.ErrorResponse;
                 export type $504 = Components.Schemas.ErrorResponse;
             }
+        }
+        export interface QueryParameters {
+            status?: Parameters.Status;
         }
     }
     namespace $OrganizationDevelopers$DeveloperUsernameApps$AppName {

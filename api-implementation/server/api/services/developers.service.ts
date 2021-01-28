@@ -8,7 +8,7 @@ import AppResponse = Components.Schemas.AppResponse;
 import ApiProductsService from './apiProducts.service';
 import BrokerService from './broker.service';
 
-import { PersistenceService } from './persistence.service';
+import { Paging, PersistenceService } from './persistence.service';
 import { ErrorResponseInternal } from '../middlewares/error.handler';
 
 var passwordGenerator = require('generate-password');
@@ -36,8 +36,10 @@ export class DevelopersService {
     return this.persistenceService.all();
   }
 
-  allDevelopersApps(name: string): Promise<App[]> {
-    return this.appPersistenceService.all({ ownerId: name, appType: 'developer' });
+  allDevelopersApps(name: string, paging: Paging, query: any ): Promise<App[]> {
+    query.ownerId = name;
+    query.appType = 'developer';
+    return this.appPersistenceService.all(query, {}, paging);
   }
 
   byName(name: string): Promise<Developer> {

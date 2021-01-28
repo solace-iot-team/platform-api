@@ -1,6 +1,7 @@
 import DevelopersService from '../../services/developers.service';
 import { NextFunction, Request, Response } from 'express';
 import L from '../../../common/logger';
+import { Paging } from '../../services/persistence.service';
 
 export class Controller {
   all(req: Request, res: Response, next: NextFunction): void {
@@ -42,7 +43,17 @@ export class Controller {
 
   // developer apps
   allApps(req: Request, res: Response, next: NextFunction): void {
-    DevelopersService.allDevelopersApps(req.params['developer']).then((r) => res.json(r)).catch((e) => next(e));
+    var p : Paging = {
+      pageNumber: parseInt(req.query.pageNumber as string),
+      pageSize: parseInt(req.query.pageSize as string)
+    };
+    var q: any = {
+      
+    }
+    if (req.query.status){
+      q.status = req.query.status;
+    }
+    DevelopersService.allDevelopersApps(req.params['developer'], p, q).then((r) => res.json(r)).catch((e) => next(e));
     ;
   }
   appByName(req: Request, res: Response, next: NextFunction): void {
