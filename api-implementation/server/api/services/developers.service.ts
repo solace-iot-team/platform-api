@@ -36,7 +36,7 @@ export class DevelopersService {
     return this.persistenceService.all();
   }
 
-  allDevelopersApps(name: string, paging: Paging, query: any ): Promise<App[]> {
+  allDevelopersApps(name: string, paging: Paging, query: any): Promise<App[]> {
     query.ownerId = name;
     query.appType = 'developer';
     return this.appPersistenceService.all(query, {}, paging);
@@ -150,20 +150,26 @@ export class DevelopersService {
         var app: DeveloperAppPatch = {
           ownerId: developer,
           appType: "developer",
-          apiProducts: body.apiProducts,
-          name: body.name,
-          attributes: body.attributes,
-          callbackUrl: body.callbackUrl,
-          status: body.status
-
+          name: name
         };
+
+        if (body.apiProducts)
+          app.apiProducts = body.apiProducts;
+        if (body.attributes)
+          app.attributes = body.attributes;
+        if (body.callbackUrl)
+          app.callbackUrl = body.callbackUrl;
+        if (body.status)
+          app.status = body.status;
+
+        L.info(`App patch request ${JSON.stringify(app)}`);
         // don't care about approval check - we accept whatever status we get. but need to make sure references are valid
         this.validateAPIProducts(app).then((v) => {
           var promise: Promise<any> = this.appPersistenceService.update(name, app);
           promise.then((val: App) => {
             if (app.status == 'approved') {
               L.info(`provisioning app ${app.name}`);
-              BrokerService.provisionApp(val).then((r) => resolve(promise)).catch((e)=> reject(e));
+              BrokerService.provisionApp(val).then((r) => resolve(promise)).catch((e) => reject(e));
             } else {
               resolve(promise);
             }
@@ -182,6 +188,9 @@ export class DevelopersService {
     return new Promise<boolean>((resolve, reject) => {
       var isApproved: boolean = true;
       var results: Promise<boolean>[] = [];
+      if (!app.apiProducts){
+        resolve(true);
+      }
       app.apiProducts.forEach((product) => {
         results.push(new Promise<boolean>((resolve, reject) => {
           ApiProductsService.byName(product).then((p) => {
