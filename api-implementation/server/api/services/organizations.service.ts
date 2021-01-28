@@ -36,7 +36,7 @@ export class OrganizationsService {
         databaseaccess.client.db(name).dropDatabase().then((r) => {
           resolve(this.persistenceService.delete(name));
         }).catch((e) => {
-          reject(new ErrorResponseInternal(404, e));
+          reject(new ErrorResponseInternal(404, `Organization not found`));
         });
       }
     });
