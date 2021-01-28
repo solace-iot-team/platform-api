@@ -1,6 +1,7 @@
 import OrganizationsService from '../../services/organizations.service';
 import { NextFunction, Request, Response } from 'express';
 import L from '../../../common/logger';
+import { ErrorResponseInternal } from '../../middlewares/error.handler';
 
 export class Controller {
   all(req: Request, res: Response, next: NextFunction): void {
@@ -13,7 +14,8 @@ export class Controller {
       if (r) {
         res.status(201).json(r);
       }
-      else res.status(500).end();
+      else 
+        next(new ErrorResponseInternal(500, `No response`));
     }).catch((e) => next(e));
 
   }
@@ -24,15 +26,20 @@ export class Controller {
       if (r) {
         res.status(200).json(r);
       }
-      else res.status(500).end();
+      else next(new ErrorResponseInternal(500, `No response`));
     }).catch((e) => next(e));
 
   }
   byName(req: Request, res: Response, next: NextFunction): void {
     OrganizationsService.byName(req.params['name']).then((r) => {
-      if (r) res.json(r);
-      else res.status(404).end();
-    }).catch((e) => next(e));
+      if (r) 
+        res.status(200).json(r);
+      else 
+        next(new ErrorResponseInternal(404, `No response`));
+    }).catch((e) => {
+      L.debug(e);
+      next(e);
+    });
 
   }
 

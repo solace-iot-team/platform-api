@@ -21,10 +21,6 @@ export class OrganizationsService {
   }
 
   byName(name: string): Promise<Organization> {
-    var namespace = C.getNamespace('platform-api');
-    namespace.run(function () {
-      namespace.set('org', 'platform');
-    });
     return this.persistenceService.byName(name);
   }
 
