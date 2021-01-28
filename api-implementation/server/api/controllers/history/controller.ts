@@ -9,7 +9,6 @@ export class Controller {
       pageNumber: parseInt(req.query.pageNumber as string),
       pageSize: parseInt(req.query.pageSize as string)
     };
-    req.query
     HistoryService.all(p).then((r) => res.json(r)).catch ((e)=> next(e));
 ;
   }
