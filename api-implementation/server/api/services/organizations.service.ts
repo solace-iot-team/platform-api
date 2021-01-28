@@ -3,6 +3,7 @@ import Organization = Components.Schemas.Organization;
 import { PersistenceService } from './persistence.service';
 import C from 'continuation-local-storage';
 import { ErrorResponseInternal } from '../middlewares/error.handler';
+import { databaseaccess } from '../../../src/databaseaccess';
 
 const reserved: string = "platform";
 
@@ -28,13 +29,21 @@ export class OrganizationsService {
   }
 
   delete(name: string): Promise<number> {
-    return this.persistenceService.delete(name);
+    return new Promise<number>((resolve, reject) => {
+      databaseaccess.client.db(name).dropDatabase().then((r) => {
+        resolve (this.persistenceService.delete(name));
+      }).catch((e) => {
+        reject( new ErrorResponseInternal(404, e));
+      });
+
+    });
+
   }
 
   create(body: Organization): Promise<Organization> {
     return new Promise<Organization>((resolve, reject) => {
       if (body.name == reserved) {
-        reject(new ErrorResponseInternal(401, `Access denied, reserved name`))
+        reject(new ErrorResponseInternal(401, `Access denied, reserved name`));
       }
       this.persistenceService.create(body.name, body).then((p) => {
         resolve(p);
