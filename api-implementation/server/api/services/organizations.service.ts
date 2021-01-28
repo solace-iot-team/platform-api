@@ -30,12 +30,15 @@ export class OrganizationsService {
 
   delete(name: string): Promise<number> {
     return new Promise<number>((resolve, reject) => {
-      databaseaccess.client.db(name).dropDatabase().then((r) => {
-        resolve (this.persistenceService.delete(name));
-      }).catch((e) => {
-        reject( new ErrorResponseInternal(404, e));
-      });
-
+      if (name == reserved) {
+        reject(new ErrorResponseInternal(401, `Access denied, reserved name`));
+      } else {
+        databaseaccess.client.db(name).dropDatabase().then((r) => {
+          resolve(this.persistenceService.delete(name));
+        }).catch((e) => {
+          reject(new ErrorResponseInternal(404, e));
+        });
+      }
     });
 
   }
@@ -44,12 +47,13 @@ export class OrganizationsService {
     return new Promise<Organization>((resolve, reject) => {
       if (body.name == reserved) {
         reject(new ErrorResponseInternal(401, `Access denied, reserved name`));
+      } else {
+        this.persistenceService.create(body.name, body).then((p) => {
+          resolve(p);
+        }).catch((e) => {
+          reject(e);
+        });
       }
-      this.persistenceService.create(body.name, body).then((p) => {
-        resolve(p);
-      }).catch((e) => {
-        reject(e);
-      });
 
     });
   }
@@ -58,11 +62,13 @@ export class OrganizationsService {
     return new Promise<Organization>((resolve, reject) => {
       if (body.name == reserved) {
         reject(new ErrorResponseInternal(401, `Access denied, reserved name`))
-      } this.persistenceService.update(name, body).then((p) => {
-        resolve(p);
-      }).catch((e) => {
-        reject(e);
-      });
+      } else {
+        this.persistenceService.update(name, body).then((p) => {
+          resolve(p);
+        }).catch((e) => {
+          reject(e);
+        });
+      }
     });
   }
 
