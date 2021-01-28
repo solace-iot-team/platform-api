@@ -50,18 +50,18 @@ export default function routes(app: Application, auth: any): void {
   const auditableVerbs: string[] = ['POST', 'PUT', 'DELETE', 'PATCH'];
   router.use('/*', auth, function (req: basicAuth.IBasicAuthedRequest, res, next) {
     res.on("finish", function () {
-      L.info("after");
+      L.info("finish response");
       if (auditableVerbs.indexOf(req.method) > -1) {
         var h: History = {
           at: Date.now(),
           operation: req.method,
           requestBody: req.body,
-          requestURI: req.baseUrl,
-          title: `${req.method} ${req.baseUrl}`,
+          requestURI: `${req.baseUrl}/${req.url}`,
+          title: `${req.method} ${req.baseUrl}/${req.url}`,
           user: req.auth.user
         };
         HistoryService.create(h);
-        L.debug(`auditable request: ${req.method}, ${req.url}, ${res.statusCode}`);
+        L.debug(`auditable request: ${req.method}, ${req.baseUrl}/${req.url}, ${res.statusCode}`);
         C.reset();
       };
     });
