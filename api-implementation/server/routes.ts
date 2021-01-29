@@ -42,7 +42,6 @@ export default function routes(app: Application, auth: any): void {
     }).catch(e => {
       L.debug(`no org matching URI ${req.baseUrl} ${e}`);
       next(new ErrorResponseInternal(404, `Not found`));
-      //res.status(404).end();
     });
   });
 
