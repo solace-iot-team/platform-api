@@ -5,16 +5,21 @@ import { ErrorResponseInternal } from '../../middlewares/error.handler';
 
 export class Controller {
   all(req: Request, res: Response, next: NextFunction): void {
-    OrganizationsService.all().then((r) => res.json(r)).catch((e) => next(e));
+    OrganizationsService.all().then((r) => {
+      res.json(r).status(200).send();
+      next();
+    }
+    ).catch((e) => next(e));
     ;
   }
 
   create(req: Request, res: Response, next: NextFunction): void {
     OrganizationsService.create(req.body).then((r) => {
       if (r) {
-        res.status(201).json(r);
+        res.status(201).json(r).send();
+        next();
       }
-      else 
+      else
         next(new ErrorResponseInternal(500, `No response`));
     }).catch((e) => next(e));
 
@@ -24,7 +29,8 @@ export class Controller {
   update(req: Request, res: Response, next: NextFunction): void {
     OrganizationsService.update(req.params['name'], req.body).then((r) => {
       if (r) {
-        res.status(200).json(r);
+        res.status(200).json(r).send();
+        next();
       }
       else next(new ErrorResponseInternal(500, `No response`));
     }).catch((e) => next(e));
@@ -32,9 +38,10 @@ export class Controller {
   }
   byName(req: Request, res: Response, next: NextFunction): void {
     OrganizationsService.byName(req.params['name']).then((r) => {
-      if (r) 
-        res.status(200).json(r);
-      else 
+      if (r) {
+        res.status(200).json(r).send();
+        next();
+      } else
         next(new ErrorResponseInternal(404, `No response`));
     }).catch((e) => {
       L.debug(e);
@@ -45,7 +52,7 @@ export class Controller {
 
   delete(req: Request, res: Response, next: NextFunction): void {
     OrganizationsService.delete(req.params['name']).then((r) => {
-      res.status(r).end();
+      res.status(r).send();
     }).catch((e) => next(e));
 
   }

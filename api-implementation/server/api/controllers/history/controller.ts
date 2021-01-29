@@ -9,7 +9,7 @@ export class Controller {
       pageNumber: parseInt(req.query.pageNumber as string),
       pageSize: parseInt(req.query.pageSize as string)
     };
-    HistoryService.all(p).then((r) => res.json(r)).catch ((e)=> next(e));
+    HistoryService.all(p).then((r) => res.json(r).send()).catch ((e)=> next(e));
 ;
   }
 

@@ -9,8 +9,8 @@ export class Controller {
 
   byName(req: Request, res: Response): void {
     EventPortalApisService.byName(req.params['name']).then((r) => {
-      if (r) res.json(r);
-      else res.status(404).json(new ErrorResponseInternal(404, "Not found")).send();
+      if (r) res.json(r).send();
+      else res.status(404).json(new ErrorResponseInternal(404, "Not found"));
     });
   }
 
@@ -21,8 +21,8 @@ export class Controller {
       asyncAPIVersion = asyncAPIVersionParam.toString();
     }
     EventPortalApisService.specByName(req.params['name'], asyncAPIVersion).then((r) => {
-      if (r) res.json(r);
-      else res.status(404).json(new ErrorResponseInternal(404, "Not found")).send();
+      if (r) res.json(r).send();
+      else res.status(404).json(new ErrorResponseInternal(404, "Not found"));
     }).catch ((e)=> next(e));
   }
 
