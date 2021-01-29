@@ -327,7 +327,8 @@ declare namespace Components {
             /**
              * callback url for webhooks
              */
-            callbackUrl?: string;
+            callbackUrl?: string; // uri
+            webHook?: WebHook;
             credentials: /* Credentials object associated with an app */ Credentials;
         }
         /**
@@ -342,6 +343,7 @@ declare namespace Components {
              * callback url for webhooks
              */
             callbackUrl?: string;
+            webHook?: WebHook;
             credentials?: /* Credentials object associated with an app */ Credentials;
             status?: AppStatus;
         }
@@ -361,6 +363,7 @@ declare namespace Components {
              * callback url for webhooks
              */
             callbackUrl?: string;
+            webHook?: WebHook;
             credentials: /* Credentials object associated with an app */ Credentials;
             messagingProtocols?: Endpoint[];
             permissions?: /* lists all the publish and subscribe topics an app has access to. Restrictions on   topic elements are taken into account. */ Permissions;
@@ -679,6 +682,18 @@ declare namespace Components {
                  * 100
                  */
                 pageSize?: number;
+            };
+        }
+        export interface WebHook {
+            uri: string; // uri
+            method: "POST" | "PUT";
+            tlsTrustedCommonNames?: string[];
+            authentication?: {
+                username?: string;
+                password?: string;
+            } | {
+                headerName?: string;
+                headerValue?: string;
             };
         }
     }

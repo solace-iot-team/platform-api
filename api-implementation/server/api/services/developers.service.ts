@@ -102,8 +102,8 @@ export class DevelopersService {
         callbackUrl: body.callbackUrl,
         expiresIn: body.expiresIn,
         scopes: body.scopes,
-        credentials: body.credentials
-
+        credentials: body.credentials,
+        webHook: body.webHook
       };
       try {
         const approvalCheck = await this.validateAPIProducts(app);
@@ -161,6 +161,8 @@ export class DevelopersService {
           app.callbackUrl = body.callbackUrl;
         if (body.status)
           app.status = body.status;
+        if (body.webHook)
+          app.webHook = body.webHook;
 
         L.info(`App patch request ${JSON.stringify(app)}`);
         // don't care about approval check - we accept whatever status we get. but need to make sure references are valid

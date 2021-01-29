@@ -489,6 +489,9 @@ components:
         callbackUrl:
             description: callback url for webhooks
             type: string
+            format: uri
+        webHook:
+          $ref: '#/components/schemas/WebHook'
         credentials:
           $ref: '#/components/schemas/Credentials'
       required:
@@ -514,6 +517,8 @@ components:
         callbackUrl:
             description: callback url for webhooks
             type: string
+        webHook:
+          $ref: '#/components/schemas/WebHook'
         credentials:
           $ref: '#/components/schemas/Credentials'
         status:
@@ -545,6 +550,8 @@ components:
         callbackUrl:
             description: callback url for webhooks
             type: string
+        webHook:
+          $ref: '#/components/schemas/WebHook'
         credentials:
           $ref: '#/components/schemas/Credentials'
         messagingProtocols:
@@ -986,6 +993,40 @@ components:
           - smfs
         version:
           type: string
+    WebHook:
+      type: object
+      required:
+      - uri
+      - method
+      properties:
+        uri:
+          type: string
+          format: uri  
+        method:
+          type: string
+          enum:
+          - POST
+          - PUT
+        tlsTrustedCommonNames:
+          type: array
+          items: 
+            type: string
+        authentication:
+          anyOf:
+          - type: object
+            properties: 
+              username: 
+                type: string
+              password: 
+                type: string
+          - type: object
+            description: A HTTP header used for authentication
+            properties: 
+              headerName: 
+                type: string
+              headerValue: 
+                type: string
+
     Endpoint:
       type: object
       properties:
