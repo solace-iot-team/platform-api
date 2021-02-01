@@ -799,8 +799,15 @@ declare namespace Paths {
             }
         }
         namespace Get {
+            namespace Parameters {
+                export type Format = "application/json" | "application/x-yaml";
+            }
+            export interface QueryParameters {
+                format?: Parameters.Format;
+            }
             namespace Responses {
-                export type $200 = string;
+                export interface $200 {
+                }
                 export type $400 = Components.Schemas.ErrorResponse;
                 export type $401 = Components.Schemas.ErrorResponse;
                 export type $403 = Components.Schemas.ErrorResponse;
