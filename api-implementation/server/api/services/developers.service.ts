@@ -72,13 +72,15 @@ export class DevelopersService {
       const d = await this.byName(developer);
       L.info(d);
       if (!d) {
-        reject(new ErrorResponseInternal(404, `Entity ${developer} does not exist`))
+        reject(new ErrorResponseInternal(404, `Entity ${developer} does not exist`));
       }
-      var promise: Promise<any> = this.appPersistenceService.byName(name, { ownerId: developer });
-      promise.then(async (app) => {
-        await BrokerService.deprovisionApp(app);
-      }).catch((e) => reject(e));
-      resolve(this.appPersistenceService.delete(name, { ownerId: developer }));
+      try {
+        var app: App = await this.appPersistenceService.byName(name, { ownerId: developer });
+        var x = await BrokerService.deprovisionApp(app);
+        resolve(this.appPersistenceService.delete(name, { ownerId: developer }));
+      } catch (e) {
+        reject(new ErrorResponseInternal(500, e));
+      }
     });
   }
 
@@ -190,7 +192,7 @@ export class DevelopersService {
     return new Promise<boolean>((resolve, reject) => {
       var isApproved: boolean = true;
       var results: Promise<boolean>[] = [];
-      if (!app.apiProducts){
+      if (!app.apiProducts) {
         resolve(true);
       }
       app.apiProducts.forEach((product) => {

@@ -111,31 +111,37 @@ class BrokerService {
 		});
 	}
 
-	async deprovisionApp(app: App) {
-		var environmentNames: string[] = [];
+	deprovisionApp(app: App) {
+		return new Promise<any>((resolve, reject) => {
+			var environmentNames: string[] = [];
 
-		var apiProductPromises: Promise<APIProduct>[] = [];
-		app.apiProducts.forEach((productName: string) => {
-			L.info(productName);
-			apiProductPromises.push(ApiProductsService.byName(productName));
-		});
-
-		Promise.all(apiProductPromises).then(async (products: APIProduct[]) => {
-			products.forEach((product: APIProduct) => {
-				product.environments.forEach((e: string) => {
-					environmentNames.push(e);
-				})
-				L.info(`env: ${product.environments}`);
+			var apiProductPromises: Promise<APIProduct>[] = [];
+			app.apiProducts.forEach((productName: string) => {
+				L.info(productName);
+				apiProductPromises.push(ApiProductsService.byName(productName));
 			});
-			environmentNames = Array.from(new Set(environmentNames));
 
-			try {
-				const services = await this.getServices(environmentNames);
-				var b = await this.deleteClientUsernames(app, services);
-				var a = await this.deleteACLs(app, services);
-			} catch {
-				L.error("De-Provisioninig error");
-			}
+			Promise.all(apiProductPromises).then(async (products: APIProduct[]) => {
+				products.forEach((product: APIProduct) => {
+					product.environments.forEach((e: string) => {
+						environmentNames.push(e);
+					})
+					L.info(`env: ${product.environments}`);
+				});
+				environmentNames = Array.from(new Set(environmentNames));
+
+				try {
+					const services = await this.getServices(environmentNames);
+					var b = await this.deleteClientUsernames(app, services);
+					var a = await this.deleteACLs(app, services);
+					var d = await this.deleteRDPs(app, services);
+					var c = await this.deleteQueues(app, services);
+					resolve(null);
+				} catch (e) {
+					L.error("De-Provisioninig error");
+					reject(new ErrorResponseInternal(500, e));
+				}
+			});
 		});
 
 	}
@@ -235,21 +241,43 @@ class BrokerService {
 
 	private deleteACLs(app: App, services: Service[]) {
 		return new Promise<any>(async (resolve, reject) => {
-			var allACLResponses: Promise<MsgVpnAclProfileResponse>[] = [];
 			for (var service of services) {
-
 				var sempv2Client = this.getSEMPv2Client(service);
-				var aclProfile: MsgVpnAclProfile = {
-					aclProfileName: app.credentials.secret.consumerKey,
-					clientConnectDefaultAction: MsgVpnAclProfile.clientConnectDefaultAction.ALLOW,
-					publishTopicDefaultAction: MsgVpnAclProfile.publishTopicDefaultAction.DISALLOW,
-					subscribeTopicDefaultAction: MsgVpnAclProfile.subscribeTopicDefaultAction.DISALLOW,
-					msgVpnName: service.msgVpnName
-
-				};
 				try {
 					var getResponse = await AllService.deleteMsgVpnAclProfile(service.msgVpnName, app.credentials.secret.consumerKey);
-					L.info("ACL Looked up");
+					L.info("ACL deleted");
+				} catch (e) {
+
+					reject(e);
+				}
+			};
+			resolve();
+		});
+	}
+
+	private deleteQueues(app: App, services: Service[]) {
+		return new Promise<any>(async (resolve, reject) => {
+			for (var service of services) {
+				var sempv2Client = this.getSEMPv2Client(service);
+				try {
+					var getResponse = await AllService.deleteMsgVpnQueue(service.msgVpnName, app.credentials.secret.consumerKey);
+					L.info('Queue deleted');
+				} catch (e) {
+
+					reject(e);
+				}
+			};
+			resolve();
+		});
+	}
+
+	private deleteRDPs(app: App, services: Service[]) {
+		return new Promise<any>(async (resolve, reject) => {
+			for (var service of services) {
+				var sempv2Client = this.getSEMPv2Client(service);
+				try {
+					var getResponse = await AllService.deleteMsgVpnRestDeliveryPoint(service.msgVpnName, app.credentials.secret.consumerKey);
+					L.info("RDP deleted");
 				} catch (e) {
 
 					reject(e);
@@ -406,7 +434,7 @@ class BrokerService {
 						return;
 					}
 				}
-				var authScheme = app.webHook.authentication&&app.webHook.authentication['username']? MsgVpnRestDeliveryPointRestConsumer.authenticationScheme.HTTP_BASIC : MsgVpnRestDeliveryPointRestConsumer.authenticationScheme.NONE;
+				var authScheme = app.webHook.authentication && app.webHook.authentication['username'] ? MsgVpnRestDeliveryPointRestConsumer.authenticationScheme.HTTP_BASIC : MsgVpnRestDeliveryPointRestConsumer.authenticationScheme.NONE;
 				var newRDPConsumer: MsgVpnRestDeliveryPointRestConsumer = {
 					msgVpnName: service.msgVpnName,
 					restDeliveryPointName: app.credentials.secret.consumerKey,
@@ -417,7 +445,7 @@ class BrokerService {
 					enabled: false,
 					authenticationScheme: authScheme
 				};
-				if (authScheme == MsgVpnRestDeliveryPointRestConsumer.authenticationScheme.HTTP_BASIC){
+				if (authScheme == MsgVpnRestDeliveryPointRestConsumer.authenticationScheme.HTTP_BASIC) {
 					newRDPConsumer.authenticationHttpBasicUsername = app.webHook.authentication['username'];
 					newRDPConsumer.authenticationHttpBasicPassword = app.webHook.authentication['password'];
 				}
