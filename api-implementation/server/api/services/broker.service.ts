@@ -97,7 +97,7 @@ class BrokerService {
 					L.info(`created acl exceptions ${app.name}`);
 					// no webhook - no RDP
 					if (app.webHook) {
-						var d = await this.createQueues(app, services, products);
+						var d = await this.createQueues(app, services, products, developer);
 						L.info(`created queues ${app.name}`);
 						var d = await this.createRDP(app, services, products);
 					}
@@ -541,7 +541,7 @@ class BrokerService {
 	}
 
 
-	private createQueues(app: App, services: Service[], apiProducts: APIProduct[]): Promise<void> {
+	private createQueues(app: App, services: Service[], apiProducts: APIProduct[], developer: Developer): Promise<void> {
 		return new Promise<any>(async (resolve, reject) => {
 			L.info(`createQueueSubscriptions services: ${services}`);
 			var subscribeExceptions: string[] = [];
@@ -555,6 +555,12 @@ class BrokerService {
 				resolve();
 				return;
 			}
+			// inject attribute values into parameters within subscriptions
+			var attributes: any[] = this.getAttributes(app, developer, apiProducts);
+			subscribeExceptions = this.enrichTopics(subscribeExceptions, attributes);
+			subscribeExceptions.forEach((s, index, arr) => {
+				arr[index] = this.scrubDestination(s);
+			});
 
 			// loop over services
 			for (var service of services) {
