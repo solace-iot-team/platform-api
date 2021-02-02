@@ -1,11 +1,11 @@
 import L from '../../common/logger';
 
 import App = Components.Schemas.App;
+import Developer = Components.Schemas.Developer;
 import APIProduct = Components.Schemas.APIProduct;
 import Environment = Components.Schemas.Environment;
 import Permissions = Components.Schemas.Permissions;
 import Endpoint = Components.Schemas.Endpoint;
-import Protocol = Components.Schemas.Protocol;
 
 import ApiProductsService from './apiProducts.service';
 import ApisService from './apis.service';
@@ -17,8 +17,7 @@ import SolaceCloudFacade from '../../../src/solacecloudfacade';
 import { Sempv2Client } from '../../../src/sempv2-client';
 
 import parser from '@asyncapi/parser';
-import { resolve } from 'path';
-import { prototype } from 'module';
+
 import { ErrorResponseInternal } from '../middlewares/error.handler';
 
 enum Direction {
@@ -39,7 +38,7 @@ interface SolaceProtocolIdentifiers {
 class BrokerService {
 
 
-	getPermissions(app: App): Promise<Permissions> {
+	getPermissions(app: App, developer: Developer): Promise<Permissions> {
 		return new Promise<Permissions>((resolve, reject) => {
 			var environmentNames: string[] = [];
 
@@ -59,7 +58,7 @@ class BrokerService {
 				environmentNames = Array.from(new Set(environmentNames));
 
 				try {
-					var c: Permissions = await this.getClientACLExceptions(app, products);
+					var c: Permissions = await this.getClientACLExceptions(app, products, developer);
 					resolve(c);
 
 				} catch (e) {
@@ -69,7 +68,7 @@ class BrokerService {
 			});
 		});
 	}
-	provisionApp(app: App): Promise<any> {
+	provisionApp(app: App, developer: Developer): Promise<any> {
 		return new Promise<any>((resolve, reject) => {
 			var environmentNames: string[] = [];
 
@@ -94,7 +93,7 @@ class BrokerService {
 					L.info(`created acl profile ${app.name}`);
 					var b = await this.createClientUsernames(app, services);
 					L.info(`created client username ${app.name}`);
-					var c = await this.createClientACLExceptions(app, services, products);
+					var c = await this.createClientACLExceptions(app, services, products, developer);
 					L.info(`created acl exceptions ${app.name}`);
 					// no webhook - no RDP
 					if (app.webHook) {
@@ -341,7 +340,7 @@ class BrokerService {
 			resolve();
 		});
 	}
-	private createClientACLExceptions(app: App, services: Service[], apiProducts: APIProduct[]): Promise<void> {
+	private createClientACLExceptions(app: App, services: Service[], apiProducts: APIProduct[], developer: Developer): Promise<void> {
 		return new Promise<any>(async (resolve, reject) => {
 			L.info(` services: ${services}`);
 			var publishExceptions: string[] = [];
@@ -359,10 +358,17 @@ class BrokerService {
 					publishExceptions.push(s);
 				}
 			}
-			L.info("******** createClientACLExceptions");
-			L.info(publishExceptions);
-			L.info(subscribeExceptions);
-			L.info("******** createClientACLExceptions");
+
+			// inject attribute values into parameters within subscriptions
+			var attributes: any[] = this.getAttributes(app, developer, apiProducts);
+			subscribeExceptions = this.enrichTopics(subscribeExceptions, attributes);
+			publishExceptions = this.enrichTopics(publishExceptions, attributes);
+			publishExceptions.forEach((s, index, arr) => {
+				arr[index] = this.scrubDestination(s);
+			});
+			subscribeExceptions.forEach((s, index, arr) => {
+				arr[index] = this.scrubDestination(s);
+			});
 			try {
 				var q = await this.addPublishTopicExceptions(app, services, publishExceptions);
 				var r = await this.addSubscribeTopicExceptions(app, services, subscribeExceptions);
@@ -374,6 +380,25 @@ class BrokerService {
 			}
 		});
 	}
+
+
+	private getAttributes(app: App, developer: Developer, products: APIProduct[]) {
+		var attributes = [];
+		if (app.attributes) {
+			attributes = attributes.concat(app.attributes);
+		}
+		if (developer.attributes) {
+			attributes = attributes.concat(developer.attributes);
+		}
+		products.forEach(p => {
+			if (p.attributes) {
+				attributes = attributes.concat(p.attributes);
+			}
+		});
+		return attributes;
+
+	}
+
 	private createRDP(app: App, services: Service[], apiProducts: APIProduct[]): Promise<void> {
 		return new Promise<any>(async (resolve, reject) => {
 			L.info(`createRDP services: ${services}`);
@@ -583,7 +608,7 @@ class BrokerService {
 		});
 	}
 
-	public getClientACLExceptions(app: App, apiProducts: APIProduct[]): Promise<Permissions> {
+	public getClientACLExceptions(app: App, apiProducts: APIProduct[], developer: Developer): Promise<Permissions> {
 		return new Promise<Permissions>(async (resolve, reject) => {
 
 			var publishExceptions: string[] = [];
@@ -601,8 +626,18 @@ class BrokerService {
 					publishExceptions.push(s);
 				}
 			}
-			L.info(publishExceptions);
-			L.info(subscribeExceptions);
+			var attributes: any[] = this.getAttributes(app, developer, apiProducts);
+			subscribeExceptions = this.enrichTopics(subscribeExceptions, attributes);
+			publishExceptions = this.enrichTopics(publishExceptions, attributes);
+			publishExceptions.forEach((s, index, arr) => {
+				arr[index] = this.scrubDestination(s);
+			});
+			subscribeExceptions.forEach((s, index, arr) => {
+				arr[index] = this.scrubDestination(s);
+			});
+
+			L.debug(publishExceptions);
+			L.debug(subscribeExceptions);
 			var permissions: Permissions = {
 				publish: publishExceptions,
 				subscribe: subscribeExceptions
@@ -704,11 +739,11 @@ class BrokerService {
 
 									if (direction == Direction.Subscribe && channel.hasSubscribe()) {
 										L.info(`Subscribe ${s}`)
-										resources.push(this.scrubDestination(s));
+										resources.push(s);
 									}
 									if (direction == Direction.Publish && channel.hasPublish()) {
 										L.info(`Publish ${s}`)
-										resources.push(this.scrubDestination(s));
+										resources.push(s);
 									}
 								});
 							}
@@ -748,7 +783,7 @@ class BrokerService {
 
 									if (channel.hasSubscribe() && (channel.subscribe().hasBinding('http') || channel.subscribe().hasBinding('https'))) {
 										L.info(`getRDPSubscriptionsFromAsyncAPIs subscribe ${s}`)
-										resources.push(this.scrubDestination(s));
+										resources.push(s);
 									}
 								});
 							}
@@ -856,13 +891,54 @@ class BrokerService {
 
 	private getResources(resources: string[]): string[] {
 		var returnResources: string[] = [];
-		resources.forEach((resource: string) => returnResources.push(this.scrubDestination(resource)))
+		resources.forEach((resource: string) => returnResources.push(resource));
 		L.info(returnResources);
 		return returnResources;
 	}
 
 	private scrubDestination(destination: string) {
 		return destination.replace(/\{[^\/]*\}(?!$)/g, "*").replace(/\{[^\/]*\}$/, ">");
+	}
+
+	private enrichTopics(destinations: string[], attributes: any[]): string[] {
+		var enrichedDestinations: string[] = [];
+		destinations.forEach(d => {
+			var result = this.enrichDestination(d, attributes);
+			enrichedDestinations = enrichedDestinations.concat(result);
+		});
+		return enrichedDestinations;
+	}
+
+	private enrichDestination(destination: string, attributes: any[]): string[] {
+		L.error(destination);
+		var x = destination.match(/(?<=\{)[^}]*(?=\})/g);
+		var destinations: string[] = [];
+		destinations.push(destination);
+		L.error(x);
+		if (x) {
+			x.forEach(match => {
+				var newDestinations: string[] = [];
+				L.info(match);
+				var att = attributes.find(element => element.name == match);
+				if (att) {
+					var values = att.value.split(",");
+					L.debug(values);
+					for (var d of destinations) {
+						values.forEach((s: string) => {
+							s = s.trim();
+							var newD = d.replace(`{${match}}`, s);
+							L.debug(newD);
+							newDestinations.push(newD);
+						});
+					}
+					destinations = Array.from(newDestinations);
+				}
+
+			});
+		} else {
+			destinations.push(destination);
+		}
+		return destinations;
 	}
 
 	private getSEMPv2Client(service: Service): Sempv2Client {
