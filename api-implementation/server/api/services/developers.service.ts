@@ -49,8 +49,9 @@ export class DevelopersService {
   async appByName(developer: string, name: string): Promise<AppResponse> {
     try {
       var app: AppResponse = await this.appPersistenceService.byName(name, { ownerId: developer });
+      var dev: Developer = await this.persistenceService.byName(developer);
       if (app) {
-        var permissions = await BrokerService.getPermissions(app);
+        var permissions = await BrokerService.getPermissions(app, dev);
         var endpoints = await BrokerService.getMessagingProtocols(app);
         app.permissions = permissions;
         app.messagingProtocols = endpoints;
@@ -128,7 +129,7 @@ export class DevelopersService {
         var promise: Promise<any> = this.appPersistenceService.create(body.name, app);
         promise.then(async (val) => {
           if (app.status == 'approved')
-            await BrokerService.provisionApp(app);
+            await BrokerService.provisionApp(app, d);
         }).catch((e) => reject(e));
         resolve(promise);
       } catch (e) {
@@ -173,7 +174,7 @@ export class DevelopersService {
           promise.then((val: App) => {
             if (app.status == 'approved') {
               L.info(`provisioning app ${app.name}`);
-              BrokerService.provisionApp(val).then((r) => resolve(promise)).catch((e) => reject(e));
+              BrokerService.provisionApp(val, d).then((r) => resolve(promise)).catch((e) => reject(e));
             } else {
               resolve(promise);
             }
