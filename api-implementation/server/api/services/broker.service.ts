@@ -568,7 +568,11 @@ class BrokerService {
 				var sempV2Client = this.getSEMPv2Client(service);
 				var newQ: MsgVpnQueue = {
 					queueName: app.credentials.secret.consumerKey,
-					msgVpnName: service.msgVpnName
+					msgVpnName: service.msgVpnName,
+					ingressEnabled: true,
+					egressEnabled: true,
+					owner: app.credentials.secret.consumerKey,
+					permission: MsgVpnQueue.permission.CONSUME
 				};
 				try {
 					var q = await AllService.getMsgVpnQueue(service.msgVpnName, app.credentials.secret.consumerKey);
