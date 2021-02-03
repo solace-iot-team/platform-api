@@ -7,7 +7,7 @@ export interface MsgVpnDmrBridge {
      */
     msgVpnName?: string;
     /**
-     * The remote Message VPN of the DMR Bridge. The default is to have no `remoteMsgVpnName`.
+     * The remote Message VPN of the DMR Bridge. The default value is `""`.
      */
     remoteMsgVpnName?: string;
     /**

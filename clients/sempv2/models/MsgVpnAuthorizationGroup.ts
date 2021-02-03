@@ -23,11 +23,11 @@ export interface MsgVpnAuthorizationGroup {
      */
     msgVpnName?: string;
     /**
-     * Lower the priority to be less than this group. This attribute is absent from a GET and not updated when absent in a PUT. The default is not applicable.
+     * Lower the priority to be less than this group. This attribute is absent from a GET and not updated when absent in a PUT, subject to the exceptions in note 4. The default is not applicable.
      */
     orderAfterAuthorizationGroupName?: string;
     /**
-     * Raise the priority to be greater than this group. This attribute is absent from a GET and not updated when absent in a PUT. The default is not applicable.
+     * Raise the priority to be greater than this group. This attribute is absent from a GET and not updated when absent in a PUT, subject to the exceptions in note 4. The default is not applicable.
      */
     orderBeforeAuthorizationGroupName?: string;
 }

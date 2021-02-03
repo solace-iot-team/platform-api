@@ -34,15 +34,15 @@ export interface MsgVpnBridge {
      */
     remoteAuthenticationBasicClientUsername?: string;
     /**
-     * The password for the Client Username. This attribute is absent from a GET and not updated when absent in a PUT. The default is to have no `remoteAuthenticationBasicPassword`.
+     * The password for the Client Username. This attribute is absent from a GET and not updated when absent in a PUT, subject to the exceptions in note 4. The default value is `""`.
      */
     remoteAuthenticationBasicPassword?: string;
     /**
-     * The PEM formatted content for the client certificate used by the Bridge to login to the remote Message VPN. It must consist of a private key and between one and three certificates comprising the certificate trust chain. This attribute is absent from a GET and not updated when absent in a PUT. Changing this attribute requires an HTTPS connection. The default value is `""`. Available since 2.9.
+     * The PEM formatted content for the client certificate used by the Bridge to login to the remote Message VPN. It must consist of a private key and between one and three certificates comprising the certificate trust chain. This attribute is absent from a GET and not updated when absent in a PUT, subject to the exceptions in note 4. Changing this attribute requires an HTTPS connection. The default value is `""`. Available since 2.9.
      */
     remoteAuthenticationClientCertContent?: string;
     /**
-     * The password for the client certificate. This attribute is absent from a GET and not updated when absent in a PUT. Changing this attribute requires an HTTPS connection. The default value is `""`. Available since 2.9.
+     * The password for the client certificate. This attribute is absent from a GET and not updated when absent in a PUT, subject to the exceptions in note 4. Changing this attribute requires an HTTPS connection. The default value is `""`. Available since 2.9.
      */
     remoteAuthenticationClientCertPassword?: string;
     /**
@@ -60,7 +60,7 @@ export interface MsgVpnBridge {
      */
     remoteConnectionRetryCount?: number;
     /**
-     * The number of seconds to delay before retrying to connect to the remote Message VPN. The default value is `3`.
+     * The number of seconds the broker waits for the bridge connection to be established before attempting a new connection. The default value is `3`.
      */
     remoteConnectionRetryDelay?: number;
     /**

@@ -11,7 +11,7 @@ export interface MsgVpnBridgeLinks {
      */
     remoteSubscriptionsUri?: string;
     /**
-     * The URI of this Bridge's collection of Trusted Common Name objects.
+     * The URI of this Bridge's collection of Trusted Common Name objects. Deprecated since 2.18. Common Name validation has been replaced by Server Certificate Name validation.
      */
     tlsTrustedCommonNamesUri?: string;
     /**

@@ -6,6 +6,12 @@ import type { EventThresholdByValue } from './EventThresholdByValue';
 
 export interface MsgVpn {
     /**
+     * The name of another Message VPN which this Message VPN is an alias for. When this Message VPN is enabled, the alias has no effect. When this Message VPN is disabled, Clients (but not Bridges and routing Links) logging into this Message VPN are automatically logged in to the other Message VPN, and authentication and authorization take place in the context of the other Message VPN.
+     *
+     * Aliases may form a non-circular chain, cascading one to the next. The default value is `""`. Available since 2.14.
+     */
+    alias?: string;
+    /**
      * Enable or disable basic authentication for clients connecting to the Message VPN. Basic authentication is authentication that involves the use of a username and password to prove identity. If a user provides credentials for a different authentication scheme, this setting is not applicable. The default value is `true`.
      */
     authenticationBasicEnabled?: boolean;
@@ -105,7 +111,7 @@ export interface MsgVpn {
      */
     authorizationType?: MsgVpn.authorizationType;
     /**
-     * Enable or disable validation of the Common Name (CN) in the server certificate from the remote broker. If enabled, the Common Name is checked against the list of Trusted Common Names configured for the Bridge. The default value is `true`.
+     * Enable or disable validation of the Common Name (CN) in the server certificate from the remote broker. If enabled, the Common Name is checked against the list of Trusted Common Names configured for the Bridge. Common Name validation is not performed if Server Certificate Name Validation is enabled, even if Common Name validation is enabled. The default value is `true`. Deprecated since 2.18. Common Name validation has been replaced by Server Certificate Name validation.
      */
     bridgingTlsServerCertEnforceTrustedCommonNameEnabled?: boolean;
     /**
@@ -116,6 +122,10 @@ export interface MsgVpn {
      * Enable or disable validation of the "Not Before" and "Not After" validity dates in the server certificate. When disabled, a certificate will be accepted even if the certificate is not valid based on these dates. The default value is `true`.
      */
     bridgingTlsServerCertValidateDateEnabled?: boolean;
+    /**
+     * Enable or disable the standard TLS authentication mechanism of verifying the name used to connect to the bridge. If enabled, the name used to connect to the bridge is checked against the names specified in the certificate returned by the remote router. Legacy Common Name validation is not performed if Server Certificate Name Validation is enabled, even if Common Name validation is also enabled. The default value is `true`. Available since 2.18.
+     */
+    bridgingTlsServerCertValidateNameEnabled?: boolean;
     /**
      * Enable or disable managing of cache instances over the message bus. The default value is `true`.
      */
@@ -209,7 +219,7 @@ export interface MsgVpn {
      */
     maxMsgSpoolUsage?: number;
     /**
-     * The maximum number of local client subscriptions (both primary and backup) that can be added to the Message VPN. The default varies by platform.
+     * The maximum number of local client subscriptions that can be added to the Message VPN. This limit is not enforced when a subscription is added using a management interface, such as CLI or SEMP. The default varies by platform.
      */
     maxSubscriptionCount?: number;
     /**
@@ -237,15 +247,15 @@ export interface MsgVpn {
      */
     replicationBridgeAuthenticationBasicClientUsername?: string;
     /**
-     * The password for the Client Username. This attribute is absent from a GET and not updated when absent in a PUT. The default is to have no `replicationBridgeAuthenticationBasicPassword`.
+     * The password for the Client Username. This attribute is absent from a GET and not updated when absent in a PUT, subject to the exceptions in note 4. The default value is `""`.
      */
     replicationBridgeAuthenticationBasicPassword?: string;
     /**
-     * The PEM formatted content for the client certificate used by this bridge to login to the Remote Message VPN. It must consist of a private key and between one and three certificates comprising the certificate trust chain. This attribute is absent from a GET and not updated when absent in a PUT. Changing this attribute requires an HTTPS connection. The default value is `""`. Available since 2.9.
+     * The PEM formatted content for the client certificate used by this bridge to login to the Remote Message VPN. It must consist of a private key and between one and three certificates comprising the certificate trust chain. This attribute is absent from a GET and not updated when absent in a PUT, subject to the exceptions in note 4. Changing this attribute requires an HTTPS connection. The default value is `""`. Available since 2.9.
      */
     replicationBridgeAuthenticationClientCertContent?: string;
     /**
-     * The password for the client certificate. This attribute is absent from a GET and not updated when absent in a PUT. Changing this attribute requires an HTTPS connection. The default value is `""`. Available since 2.9.
+     * The password for the client certificate. This attribute is absent from a GET and not updated when absent in a PUT, subject to the exceptions in note 4. Changing this attribute requires an HTTPS connection. The default value is `""`. Available since 2.9.
      */
     replicationBridgeAuthenticationClientCertPassword?: string;
     /**
@@ -283,7 +293,7 @@ export interface MsgVpn {
      */
     replicationEnabled?: boolean;
     /**
-     * The behavior to take when enabling replication for the Message VPN, depending on the existence of the replication Queue. This attribute is absent from a GET and not updated when absent in a PUT. The default value is `"fail-on-existing-queue"`. The allowed values and their meaning are:
+     * The behavior to take when enabling replication for the Message VPN, depending on the existence of the replication Queue. This attribute is absent from a GET and not updated when absent in a PUT, subject to the exceptions in note 4. The default value is `"fail-on-existing-queue"`. The allowed values and their meaning are:
      *
      * <pre>
      * "fail-on-existing-queue" - The data replication queue must not already exist.
@@ -326,7 +336,7 @@ export interface MsgVpn {
      */
     replicationTransactionMode?: MsgVpn.replicationTransactionMode;
     /**
-     * Enable or disable validation of the Common Name (CN) in the server certificate from the remote REST Consumer. If enabled, the Common Name is checked against the list of Trusted Common Names configured for the REST Consumer. The default value is `true`.
+     * Enable or disable validation of the Common Name (CN) in the server certificate from the remote REST Consumer. If enabled, the Common Name is checked against the list of Trusted Common Names configured for the REST Consumer. Common Name validation is not performed if Server Certificate Name Validation is enabled, even if Common Name validation is enabled. The default value is `true`. Deprecated since 2.17. Common Name validation has been replaced by Server Certificate Name validation.
      */
     restTlsServerCertEnforceTrustedCommonNameEnabled?: boolean;
     /**
@@ -337,6 +347,10 @@ export interface MsgVpn {
      * Enable or disable validation of the "Not Before" and "Not After" validity dates in the REST Consumer server certificate. The default value is `true`.
      */
     restTlsServerCertValidateDateEnabled?: boolean;
+    /**
+     * Enable or disable the standard TLS authentication mechanism of verifying the name used to connect to the remote REST Consumer. If enabled, the name used to connect to the remote REST Consumer is checked against the names specified in the certificate returned by the remote router. Legacy Common Name validation is not performed if Server Certificate Name Validation is enabled, even if Common Name validation is also enabled. The default value is `true`. Available since 2.17.
+     */
+    restTlsServerCertValidateNameEnabled?: boolean;
     /**
      * Enable or disable "admin client" SEMP over the message bus commands for the current Message VPN. The default value is `false`.
      */
@@ -414,6 +428,17 @@ export interface MsgVpn {
      */
     serviceMqttWebSocketListenPort?: number;
     /**
+     * The handling of Authorization headers for incoming REST connections. The default value is `"drop"`. The allowed values and their meaning are:
+     *
+     * <pre>
+     * "drop" - Do not attach the Authorization header to the message as a user property. This configuration is most secure.
+     * "forward" - Forward the Authorization header, attaching it to the message as a user property in the same way as other headers. For best security, use the drop setting.
+     * "legacy" - If the Authorization header was used for authentication to the broker, do not attach it to the message. If the Authorization header was not used for authentication to the broker, attach it to the message as a user property in the same way as other headers. For best security, use the drop setting.
+     * </pre>
+     * Available since 2.19.
+     */
+    serviceRestIncomingAuthorizationHeaderHandling?: MsgVpn.serviceRestIncomingAuthorizationHeaderHandling;
+    /**
      * The maximum number of REST incoming client connections that can be simultaneously connected to the Message VPN. This value may be higher than supported by the platform. The default is the maximum value supported by the platform.
      */
     serviceRestIncomingMaxConnectionCount?: number;
@@ -448,7 +473,7 @@ export interface MsgVpn {
      */
     serviceRestOutgoingMaxConnectionCount?: number;
     /**
-     * The maximum number of SMF client connections that can be simultaneously connected to the Message VPN. This value may be higher than supported by the platform. The default is the maximum value supported by the platform.
+     * The maximum number of SMF client connections that can be simultaneously connected to the Message VPN. This value may be higher than supported by the platform. The default varies by platform.
      */
     serviceSmfMaxConnectionCount?: number;
     /**
@@ -576,7 +601,7 @@ export namespace MsgVpn {
     }
 
     /**
-     * The behavior to take when enabling replication for the Message VPN, depending on the existence of the replication Queue. This attribute is absent from a GET and not updated when absent in a PUT. The default value is `"fail-on-existing-queue"`. The allowed values and their meaning are:
+     * The behavior to take when enabling replication for the Message VPN, depending on the existence of the replication Queue. This attribute is absent from a GET and not updated when absent in a PUT, subject to the exceptions in note 4. The default value is `"fail-on-existing-queue"`. The allowed values and their meaning are:
      *
      * <pre>
      * "fail-on-existing-queue" - The data replication queue must not already exist.
@@ -617,6 +642,22 @@ export namespace MsgVpn {
     export enum replicationTransactionMode {
         SYNC = 'sync',
         ASYNC = 'async',
+    }
+
+    /**
+     * The handling of Authorization headers for incoming REST connections. The default value is `"drop"`. The allowed values and their meaning are:
+     *
+     * <pre>
+     * "drop" - Do not attach the Authorization header to the message as a user property. This configuration is most secure.
+     * "forward" - Forward the Authorization header, attaching it to the message as a user property in the same way as other headers. For best security, use the drop setting.
+     * "legacy" - If the Authorization header was used for authentication to the broker, do not attach it to the message. If the Authorization header was not used for authentication to the broker, attach it to the message as a user property in the same way as other headers. For best security, use the drop setting.
+     * </pre>
+     * Available since 2.19.
+     */
+    export enum serviceRestIncomingAuthorizationHeaderHandling {
+        DROP = 'drop',
+        FORWARD = 'forward',
+        LEGACY = 'legacy',
     }
 
     /**

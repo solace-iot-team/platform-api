@@ -6,6 +6,10 @@ import type { SempPaging } from './SempPaging';
 import type { SempRequest } from './SempRequest';
 
 export interface SempMeta {
+    /**
+     * The total number of objects requested, irrespective of page size. This may be a count of all objects in a collection or a filtered subset. It represents a snapshot in time and may change when paging through results.
+     */
+    count?: number;
     error?: SempError;
     paging?: SempPaging;
     request: SempRequest;

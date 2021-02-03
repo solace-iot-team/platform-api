@@ -10,7 +10,7 @@ interface Config {
 
 export const OpenAPI: Config = {
     BASE: 'http://www.solace.com/SEMP/v2/config',
-    VERSION: '2.13',
+    VERSION: '2.19',
     WITH_CREDENTIALS: false,
     TOKEN: '',
 };

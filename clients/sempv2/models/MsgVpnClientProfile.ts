@@ -14,6 +14,17 @@ export interface MsgVpnClientProfile {
      */
     allowCutThroughForwardingEnabled?: boolean;
     /**
+     * The types of Queues and Topic Endpoints that clients using the client-profile can create. Changing this value does not affect existing client connections. The default value is `"all"`. The allowed values and their meaning are:
+     *
+     * <pre>
+     * "all" - Client can create any type of endpoint.
+     * "durable" - Client can create only durable endpoints.
+     * "non-durable" - Client can create only non-durable endpoints.
+     * </pre>
+     * Available since 2.14.
+     */
+    allowGuaranteedEndpointCreateDurability?: MsgVpnClientProfile.allowGuaranteedEndpointCreateDurability;
+    /**
      * Enable or disable allowing clients using the Client Profile to create topic endponts or queues. Changing this value does not affect existing client connections. The default value is `false`.
      */
     allowGuaranteedEndpointCreateEnabled?: boolean;
@@ -34,13 +45,21 @@ export interface MsgVpnClientProfile {
      */
     allowTransactedSessionsEnabled?: boolean;
     /**
-     * The name of a queue to copy settings from when a new queue is created by a client using the Client Profile. The referenced queue must exist in the Message VPN. The default value is `""`.
+     * The name of a queue to copy settings from when a new queue is created by a client using the Client Profile. The referenced queue must exist in the Message VPN. The default value is `""`. Deprecated since 2.14. This attribute has been replaced with `apiQueueManagementCopyFromOnCreateTemplateName`.
      */
     apiQueueManagementCopyFromOnCreateName?: string;
     /**
-     * The name of a topic endpoint to copy settings from when a new topic endpoint is created by a client using the Client Profile. The referenced topic endpoint must exist in the Message VPN. The default value is `""`.
+     * The name of a queue template to copy settings from when a new queue is created by a client using the Client Profile. If the referenced queue template does not exist, queue creation will fail when it tries to resolve this template. The default value is `""`. Available since 2.14.
+     */
+    apiQueueManagementCopyFromOnCreateTemplateName?: string;
+    /**
+     * The name of a topic endpoint to copy settings from when a new topic endpoint is created by a client using the Client Profile. The referenced topic endpoint must exist in the Message VPN. The default value is `""`. Deprecated since 2.14. This attribute has been replaced with `apiTopicEndpointManagementCopyFromOnCreateTemplateName`.
      */
     apiTopicEndpointManagementCopyFromOnCreateName?: string;
+    /**
+     * The name of a topic endpoint template to copy settings from when a new topic endpoint is created by a client using the Client Profile. If the referenced topic endpoint template does not exist, topic endpoint creation will fail when it tries to resolve this template. The default value is `""`. Available since 2.14.
+     */
+    apiTopicEndpointManagementCopyFromOnCreateTemplateName?: string;
     /**
      * The name of the Client Profile.
      */
@@ -88,7 +107,7 @@ export interface MsgVpnClientProfile {
      */
     maxIngressFlowCount?: number;
     /**
-     * The maximum number of subscriptions per client using the Client Profile. The default varies by platform.
+     * The maximum number of subscriptions per client using the Client Profile. This limit is not enforced when a client adds a subscription to an endpoint, except for MQTT QoS 1 subscriptions. In addition, this limit is not enforced when a subscription is added using a management interface, such as CLI or SEMP. The default varies by platform.
      */
     maxSubscriptionCount?: number;
     /**
@@ -152,9 +171,17 @@ export interface MsgVpnClientProfile {
      */
     replicationAllowClientConnectWhenStandbyEnabled?: boolean;
     /**
+     * The minimum client keepalive timeout which will be enforced for client connections. The default value is `30`. Available since 2.19.
+     */
+    serviceMinKeepaliveTimeout?: number;
+    /**
      * The maximum number of SMF client connections per Client Username using the Client Profile. The default is the maximum value supported by the platform.
      */
     serviceSmfMaxConnectionCountPerClientUsername?: number;
+    /**
+     * Enable or disable the enforcement of a minimum keepalive timeout for SMF clients. The default value is `false`. Available since 2.19.
+     */
+    serviceSmfMinKeepaliveEnabled?: boolean;
     /**
      * The timeout for inactive Web Transport client sessions using the Client Profile, in seconds. The default value is `30`.
      */
@@ -184,7 +211,7 @@ export interface MsgVpnClientProfile {
      */
     tcpKeepaliveInterval?: number;
     /**
-     * The TCP maximum segment size for clients using the Client Profile, in kilobytes. Changes are applied to all existing connections. The default value is `1460`.
+     * The TCP maximum segment size for clients using the Client Profile, in bytes. Changes are applied to all existing connections. The default value is `1460`.
      */
     tcpMaxSegmentSize?: number;
     /**
@@ -195,4 +222,25 @@ export interface MsgVpnClientProfile {
      * Enable or disable allowing a client using the Client Profile to downgrade an encrypted connection to plain text. The default value is `true`. Available since 2.8.
      */
     tlsAllowDowngradeToPlainTextEnabled?: boolean;
+}
+
+export namespace MsgVpnClientProfile {
+
+    /**
+     * The types of Queues and Topic Endpoints that clients using the client-profile can create. Changing this value does not affect existing client connections. The default value is `"all"`. The allowed values and their meaning are:
+     *
+     * <pre>
+     * "all" - Client can create any type of endpoint.
+     * "durable" - Client can create only durable endpoints.
+     * "non-durable" - Client can create only non-durable endpoints.
+     * </pre>
+     * Available since 2.14.
+     */
+    export enum allowGuaranteedEndpointCreateDurability {
+        ALL = 'all',
+        DURABLE = 'durable',
+        NON_DURABLE = 'non-durable',
+    }
+
+
 }

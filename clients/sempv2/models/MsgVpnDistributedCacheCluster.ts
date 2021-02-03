@@ -57,7 +57,7 @@ export interface MsgVpnDistributedCacheCluster {
      */
     maxTopicCount?: number;
     /**
-     * The message lifetime, in seconds. If a message remains cached for the duration of its lifetime, the Cache Instance will remove the message. A lifetime of 0 results in the message being retained indefinitely. The default is to have no `msgLifetime`.
+     * The message lifetime, in seconds. If a message remains cached for the duration of its lifetime, the Cache Instance will remove the message. A lifetime of 0 results in the message being retained indefinitely. The default value is `0`.
      */
     msgLifetime?: number;
     /**

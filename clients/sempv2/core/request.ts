@@ -3,7 +3,7 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
-import * as FormData from 'form-data';
+import FormData from 'form-data';
 import fetch, { BodyInit, Headers, RequestInit, Response } from 'node-fetch';
 import { types } from 'util';
 
@@ -83,7 +83,7 @@ async function getHeaders(options: ApiRequestOptions): Promise<Headers> {
 
     const token = await getToken();
     if (isDefined(token) && token !== '') {
-        headers.append('Authorization', `Bearer ${token}`);
+        headers.append('Authorization', `Basic ${token}`);
     }
 
     if (options.body) {

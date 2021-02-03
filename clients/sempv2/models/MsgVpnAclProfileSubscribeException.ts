@@ -3,15 +3,15 @@
 /* eslint-disable */
 export interface MsgVpnAclProfileSubscribeException {
     /**
-     * The name of the ACL Profile.
+     * The name of the ACL Profile. Deprecated since 2.14. Replaced by subscribeTopicExceptions.
      */
     aclProfileName?: string;
     /**
-     * The name of the Message VPN.
+     * The name of the Message VPN. Deprecated since 2.14. Replaced by subscribeTopicExceptions.
      */
     msgVpnName?: string;
     /**
-     * The topic for the exception to the default action taken. May include wildcard characters.
+     * The topic for the exception to the default action taken. May include wildcard characters. Deprecated since 2.14. Replaced by subscribeTopicExceptions.
      */
     subscribeExceptionTopic?: string;
     /**
@@ -21,7 +21,7 @@ export interface MsgVpnAclProfileSubscribeException {
      * "smf" - Topic uses SMF syntax.
      * "mqtt" - Topic uses MQTT syntax.
      * </pre>
-     *
+     * Deprecated since 2.14. Replaced by subscribeTopicExceptions.
      */
     topicSyntax?: MsgVpnAclProfileSubscribeException.topicSyntax;
 }
@@ -35,7 +35,7 @@ export namespace MsgVpnAclProfileSubscribeException {
      * "smf" - Topic uses SMF syntax.
      * "mqtt" - Topic uses MQTT syntax.
      * </pre>
-     *
+     * Deprecated since 2.14. Replaced by subscribeTopicExceptions.
      */
     export enum topicSyntax {
         SMF = 'smf',

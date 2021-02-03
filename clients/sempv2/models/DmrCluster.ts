@@ -7,7 +7,7 @@ export interface DmrCluster {
      */
     authenticationBasicEnabled?: boolean;
     /**
-     * The password used to authenticate incoming Cluster Links when using basic internal authentication. The same password is also used by outgoing Cluster Links if a per-Link password is not configured. This attribute is absent from a GET and not updated when absent in a PUT. The default is to have no `authenticationBasicPassword`.
+     * The password used to authenticate incoming Cluster Links when using basic internal authentication. The same password is also used by outgoing Cluster Links if a per-Link password is not configured. This attribute is absent from a GET and not updated when absent in a PUT, subject to the exceptions in note 4. The default value is `""`.
      */
     authenticationBasicPassword?: string;
     /**
@@ -21,7 +21,7 @@ export interface DmrCluster {
      */
     authenticationBasicType?: DmrCluster.authenticationBasicType;
     /**
-     * The PEM formatted content for the client certificate used to login to the remote node. It must consist of a private key and between one and three certificates comprising the certificate trust chain. This attribute is absent from a GET and not updated when absent in a PUT. Changing this attribute requires an HTTPS connection. The default value is `""`.
+     * The PEM formatted content for the client certificate used to login to the remote node. It must consist of a private key and between one and three certificates comprising the certificate trust chain. This attribute is absent from a GET and not updated when absent in a PUT, subject to the exceptions in note 4. Changing this attribute requires an HTTPS connection. The default value is `""`.
      */
     authenticationClientCertContent?: string;
     /**
@@ -29,7 +29,7 @@ export interface DmrCluster {
      */
     authenticationClientCertEnabled?: boolean;
     /**
-     * The password for the client certificate. This attribute is absent from a GET and not updated when absent in a PUT. Changing this attribute requires an HTTPS connection. The default value is `""`.
+     * The password for the client certificate. This attribute is absent from a GET and not updated when absent in a PUT, subject to the exceptions in note 4. Changing this attribute requires an HTTPS connection. The default value is `""`.
      */
     authenticationClientCertPassword?: string;
     /**
@@ -49,7 +49,7 @@ export interface DmrCluster {
      */
     nodeName?: string;
     /**
-     * Enable or disable the enforcing of the common name provided by the remote broker against the list of trusted common names configured for the Link. If enabled, the certificate's common name must match one of the trusted common names for the Link to be accepted. The default value is `true`.
+     * Enable or disable the enforcing of the common name provided by the remote broker against the list of trusted common names configured for the Link. If enabled, the certificate's common name must match one of the trusted common names for the Link to be accepted. Common Name validation is not performed if Server Certificate Name Validation is enabled, even if Common Name validation is enabled. The default value is `true`. Deprecated since 2.18. Common Name validation has been replaced by Server Certificate Name validation.
      */
     tlsServerCertEnforceTrustedCommonNameEnabled?: boolean;
     /**
@@ -60,6 +60,10 @@ export interface DmrCluster {
      * Enable or disable the validation of the "Not Before" and "Not After" validity dates in the certificate. When disabled, the certificate is accepted even if the certificate is not valid based on these dates. The default value is `true`.
      */
     tlsServerCertValidateDateEnabled?: boolean;
+    /**
+     * Enable or disable the standard TLS authentication mechanism of verifying the name used to connect to the bridge. If enabled, the name used to connect to the bridge is checked against the names specified in the certificate returned by the remote router. Legacy Common Name validation is not performed if Server Certificate Name Validation is enabled, even if Common Name validation is also enabled. The default value is `true`. Available since 2.18.
+     */
+    tlsServerCertValidateNameEnabled?: boolean;
 }
 
 export namespace DmrCluster {

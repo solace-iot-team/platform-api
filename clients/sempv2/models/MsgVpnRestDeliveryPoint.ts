@@ -18,4 +18,12 @@ export interface MsgVpnRestDeliveryPoint {
      * The name of the REST Delivery Point.
      */
     restDeliveryPointName?: string;
+    /**
+     * The name of the service that this REST Delivery Point connects to. Internally the broker does not use this value; it is informational only. The default value is `""`. Available since 2.19.
+     */
+    service?: string;
+    /**
+     * The name of the vendor that this REST Delivery Point connects to. Internally the broker does not use this value; it is informational only. The default value is `""`. Available since 2.19.
+     */
+    vendor?: string;
 }

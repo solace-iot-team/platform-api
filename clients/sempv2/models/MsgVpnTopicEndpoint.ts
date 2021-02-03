@@ -23,6 +23,10 @@ export interface MsgVpnTopicEndpoint {
      */
     deadMsgQueue?: string;
     /**
+     * Enable or disable the ability for client applications to query the message delivery count of messages received from the Topic Endpoint. This is a controlled availability feature. Please contact Solace to find out if this feature is supported for your use case. The default value is `false`. Available since 2.19.
+     */
+    deliveryCountEnabled?: boolean;
+    /**
      * Enable or disable the transmission of messages from the Topic Endpoint. The default value is `false`.
      */
     egressEnabled?: boolean;
@@ -38,7 +42,7 @@ export interface MsgVpnTopicEndpoint {
      */
     maxBindCount?: number;
     /**
-     * The maximum number of messages delivered but not acknowledged per flow for the Topic Endpoint. The default is the maximum value supported by the platform.
+     * The maximum number of messages delivered but not acknowledged per flow for the Topic Endpoint. The default value is `10000`.
      */
     maxDeliveredUnackedMsgsPerFlow?: number;
     /**
@@ -50,7 +54,7 @@ export interface MsgVpnTopicEndpoint {
      */
     maxRedeliveryCount?: number;
     /**
-     * The maximum message spool usage allowed by the Topic Endpoint, in megabytes (MB). A value of 0 only allows spooling of the last message received and disables quota checking. The default varies by platform.
+     * The maximum message spool usage allowed by the Topic Endpoint, in megabytes (MB). A value of 0 only allows spooling of the last message received and disables quota checking. The default value is `1500`.
      */
     maxSpoolUsage?: number;
     /**
@@ -78,6 +82,10 @@ export interface MsgVpnTopicEndpoint {
      *
      */
     permission?: MsgVpnTopicEndpoint.permission;
+    /**
+     * Enable or disable message redelivery. When enabled, the number of redelivery attempts is controlled by maxRedeliveryCount. When disabled, the message will never be delivered from the topic-endpoint more than once. The default value is `true`. Available since 2.18.
+     */
+    redeliveryEnabled?: boolean;
     /**
      * Enable or disable the checking of low priority messages against the `rejectLowPriorityMsgLimit`. This may only be enabled if `rejectMsgToSenderOnDiscardBehavior` does not have a value of `"never"`. The default value is `false`.
      */

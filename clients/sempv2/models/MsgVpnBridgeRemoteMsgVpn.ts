@@ -42,7 +42,7 @@ export interface MsgVpnBridgeRemoteMsgVpn {
      */
     msgVpnName?: string;
     /**
-     * The password for the Client Username. This attribute is absent from a GET and not updated when absent in a PUT. The default is to have no `password`.
+     * The password for the Client Username. This attribute is absent from a GET and not updated when absent in a PUT, subject to the exceptions in note 4. The default value is `""`.
      */
     password?: string;
     /**

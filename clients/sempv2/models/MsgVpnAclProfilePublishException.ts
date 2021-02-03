@@ -3,15 +3,15 @@
 /* eslint-disable */
 export interface MsgVpnAclProfilePublishException {
     /**
-     * The name of the ACL Profile.
+     * The name of the ACL Profile. Deprecated since 2.14. Replaced by publishTopicExceptions.
      */
     aclProfileName?: string;
     /**
-     * The name of the Message VPN.
+     * The name of the Message VPN. Deprecated since 2.14. Replaced by publishTopicExceptions.
      */
     msgVpnName?: string;
     /**
-     * The topic for the exception to the default action taken. May include wildcard characters.
+     * The topic for the exception to the default action taken. May include wildcard characters. Deprecated since 2.14. Replaced by publishTopicExceptions.
      */
     publishExceptionTopic?: string;
     /**
@@ -21,7 +21,7 @@ export interface MsgVpnAclProfilePublishException {
      * "smf" - Topic uses SMF syntax.
      * "mqtt" - Topic uses MQTT syntax.
      * </pre>
-     *
+     * Deprecated since 2.14. Replaced by publishTopicExceptions.
      */
     topicSyntax?: MsgVpnAclProfilePublishException.topicSyntax;
 }
@@ -35,7 +35,7 @@ export namespace MsgVpnAclProfilePublishException {
      * "smf" - Topic uses SMF syntax.
      * "mqtt" - Topic uses MQTT syntax.
      * </pre>
-     *
+     * Deprecated since 2.14. Replaced by publishTopicExceptions.
      */
     export enum topicSyntax {
         SMF = 'smf',

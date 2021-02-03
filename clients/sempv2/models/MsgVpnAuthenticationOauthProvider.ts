@@ -10,9 +10,9 @@ export interface MsgVpnAuthenticationOauthProvider {
      * The audience claim source, indicating where to search for the audience value. The default value is `"id-token"`. The allowed values and their meaning are:
      *
      * <pre>
-     * "access-token" - Search the access type JWT for the audience value.
-     * "id-token" - Search the ID type JWT for the audience value.
-     * "introspection" - Introspect the access token and search the result for the audience value.
+     * "access-token" - The OAuth v2 access_token.
+     * "id-token" - The OpenID Connect id_token.
+     * "introspection" - The result of introspecting the OAuth v2 access_token.
      * </pre>
      *
      */
@@ -33,9 +33,9 @@ export interface MsgVpnAuthenticationOauthProvider {
      * The authorization group claim source, indicating where to search for the authorization group name. The default value is `"id-token"`. The allowed values and their meaning are:
      *
      * <pre>
-     * "access-token" - Search the access type JWT for the authorization group name.
-     * "id-token" - Search the ID type JWT for the authorization group name.
-     * "introspection" - Introspect the access token and search the result for the authorization group name.
+     * "access-token" - The OAuth v2 access_token.
+     * "id-token" - The OpenID Connect id_token.
+     * "introspection" - The result of introspecting the OAuth v2 access_token.
      * </pre>
      *
      */
@@ -77,7 +77,7 @@ export interface MsgVpnAuthenticationOauthProvider {
      */
     tokenIntrospectionParameterName?: string;
     /**
-     * The password to use when logging into the token introspection URI. This attribute is absent from a GET and not updated when absent in a PUT. The default value is `""`.
+     * The password to use when logging into the token introspection URI. This attribute is absent from a GET and not updated when absent in a PUT, subject to the exceptions in note 4. The default value is `""`.
      */
     tokenIntrospectionPassword?: string;
     /**
@@ -100,15 +100,15 @@ export interface MsgVpnAuthenticationOauthProvider {
      * The username claim source, indicating where to search for the username value. The default value is `"id-token"`. The allowed values and their meaning are:
      *
      * <pre>
-     * "access-token" - Search the access type JWT for the username value.
-     * "id-token" - Search the ID type JWT for the username value.
-     * "introspection" - Introspect the access token and search the result for the username value.
+     * "access-token" - The OAuth v2 access_token.
+     * "id-token" - The OpenID Connect id_token.
+     * "introspection" - The result of introspecting the OAuth v2 access_token.
      * </pre>
      *
      */
     usernameClaimSource?: MsgVpnAuthenticationOauthProvider.usernameClaimSource;
     /**
-     * Enable or disable whether the API provided username will be validated against the username calculated from the token(s). The default value is `false`.
+     * Enable or disable whether the API provided username will be validated against the username calculated from the token(s); the connection attempt is rejected if they differ. The default value is `false`.
      */
     usernameValidateEnabled?: boolean;
 }
@@ -119,9 +119,9 @@ export namespace MsgVpnAuthenticationOauthProvider {
      * The audience claim source, indicating where to search for the audience value. The default value is `"id-token"`. The allowed values and their meaning are:
      *
      * <pre>
-     * "access-token" - Search the access type JWT for the audience value.
-     * "id-token" - Search the ID type JWT for the audience value.
-     * "introspection" - Introspect the access token and search the result for the audience value.
+     * "access-token" - The OAuth v2 access_token.
+     * "id-token" - The OpenID Connect id_token.
+     * "introspection" - The result of introspecting the OAuth v2 access_token.
      * </pre>
      *
      */
@@ -135,9 +135,9 @@ export namespace MsgVpnAuthenticationOauthProvider {
      * The authorization group claim source, indicating where to search for the authorization group name. The default value is `"id-token"`. The allowed values and their meaning are:
      *
      * <pre>
-     * "access-token" - Search the access type JWT for the authorization group name.
-     * "id-token" - Search the ID type JWT for the authorization group name.
-     * "introspection" - Introspect the access token and search the result for the authorization group name.
+     * "access-token" - The OAuth v2 access_token.
+     * "id-token" - The OpenID Connect id_token.
+     * "introspection" - The result of introspecting the OAuth v2 access_token.
      * </pre>
      *
      */
@@ -151,9 +151,9 @@ export namespace MsgVpnAuthenticationOauthProvider {
      * The username claim source, indicating where to search for the username value. The default value is `"id-token"`. The allowed values and their meaning are:
      *
      * <pre>
-     * "access-token" - Search the access type JWT for the username value.
-     * "id-token" - Search the ID type JWT for the username value.
-     * "introspection" - Introspect the access token and search the result for the username value.
+     * "access-token" - The OAuth v2 access_token.
+     * "id-token" - The OpenID Connect id_token.
+     * "introspection" - The result of introspecting the OAuth v2 access_token.
      * </pre>
      *
      */
