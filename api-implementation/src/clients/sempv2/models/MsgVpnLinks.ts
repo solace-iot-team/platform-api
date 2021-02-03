@@ -55,6 +55,10 @@ export interface MsgVpnLinks {
      */
     mqttSessionsUri?: string;
     /**
+     * The URI of this Message VPN's collection of Queue Template objects. Available since 2.14.
+     */
+    queueTemplatesUri?: string;
+    /**
      * The URI of this Message VPN's collection of Queue objects.
      */
     queuesUri?: string;
@@ -74,6 +78,10 @@ export interface MsgVpnLinks {
      * The URI of this Message VPN's collection of Sequenced Topic objects.
      */
     sequencedTopicsUri?: string;
+    /**
+     * The URI of this Message VPN's collection of Topic Endpoint Template objects. Available since 2.14.
+     */
+    topicEndpointTemplatesUri?: string;
     /**
      * The URI of this Message VPN's collection of Topic Endpoint objects. Available since 2.1.
      */

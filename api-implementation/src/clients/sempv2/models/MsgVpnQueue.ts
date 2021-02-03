@@ -23,6 +23,10 @@ export interface MsgVpnQueue {
      */
     deadMsgQueue?: string;
     /**
+     * Enable or disable the ability for client applications to query the message delivery count of messages received from the Queue. This is a controlled availability feature. Please contact Solace to find out if this feature is supported for your use case. The default value is `false`. Available since 2.19.
+     */
+    deliveryCountEnabled?: boolean;
+    /**
      * Enable or disable the transmission of messages from the Queue. The default value is `false`.
      */
     egressEnabled?: boolean;
@@ -38,7 +42,7 @@ export interface MsgVpnQueue {
      */
     maxBindCount?: number;
     /**
-     * The maximum number of messages delivered but not acknowledged per flow for the Queue. The default is the maximum value supported by the platform.
+     * The maximum number of messages delivered but not acknowledged per flow for the Queue. The default value is `10000`.
      */
     maxDeliveredUnackedMsgsPerFlow?: number;
     /**
@@ -46,7 +50,7 @@ export interface MsgVpnQueue {
      */
     maxMsgSize?: number;
     /**
-     * The maximum message spool usage allowed by the Queue, in megabytes (MB). A value of 0 only allows spooling of the last message received and disables quota checking. The default varies by platform.
+     * The maximum message spool usage allowed by the Queue, in megabytes (MB). A value of 0 only allows spooling of the last message received and disables quota checking. The default value is `1500`.
      */
     maxMsgSpoolUsage?: number;
     /**
@@ -82,6 +86,10 @@ export interface MsgVpnQueue {
      * The name of the Queue.
      */
     queueName?: string;
+    /**
+     * Enable or disable message redelivery. When enabled, the number of redelivery attempts is controlled by maxRedeliveryCount. When disabled, the message will never be delivered from the queue more than once. The default value is `true`. Available since 2.18.
+     */
+    redeliveryEnabled?: boolean;
     /**
      * Enable or disable the checking of low priority messages against the `rejectLowPriorityMsgLimit`. This may only be enabled if `rejectMsgToSenderOnDiscardBehavior` does not have a value of `"never"`. The default value is `false`.
      */

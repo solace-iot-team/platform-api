@@ -47,6 +47,14 @@ export interface MsgVpnJndiConnectionFactory {
      */
     guaranteedReceiveAckTimeout?: number;
     /**
+     * The maximum number of attempts to reconnect to the host or list of hosts after the guaranteed  messaging connection has been lost. The value "-1" means to retry forever. The default value is `-1`. Available since 2.14.
+     */
+    guaranteedReceiveReconnectRetryCount?: number;
+    /**
+     * The amount of time to wait before making another attempt to connect or reconnect to the host after the guaranteed messaging connection has been lost, in milliseconds. The default value is `3000`. Available since 2.14.
+     */
+    guaranteedReceiveReconnectRetryWait?: number;
+    /**
      * The size of the window for guaranteed messages received by the Subscriber (Consumer), in messages. The default value is `18`.
      */
     guaranteedReceiveWindowSize?: number;

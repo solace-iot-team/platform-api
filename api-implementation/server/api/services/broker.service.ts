@@ -460,6 +460,10 @@ class BrokerService {
 					}
 				}
 				var authScheme = app.webHook.authentication && app.webHook.authentication['username'] ? MsgVpnRestDeliveryPointRestConsumer.authenticationScheme.HTTP_BASIC : MsgVpnRestDeliveryPointRestConsumer.authenticationScheme.NONE;
+				if (authScheme == MsgVpnRestDeliveryPointRestConsumer.authenticationScheme.NONE){
+					authScheme =  app.webHook.authentication && app.webHook.authentication['headerName'] ? MsgVpnRestDeliveryPointRestConsumer.authenticationScheme.HTTP_HEADER:MsgVpnRestDeliveryPointRestConsumer.authenticationScheme.NONE;
+				}
+				var method = app.webHook.method=='PUT'?MsgVpnRestDeliveryPointRestConsumer.httpMethod.PUT:MsgVpnRestDeliveryPointRestConsumer.httpMethod.POST;
 				var newRDPConsumer: MsgVpnRestDeliveryPointRestConsumer = {
 					msgVpnName: service.msgVpnName,
 					restDeliveryPointName: app.credentials.secret.consumerKey,
@@ -468,11 +472,18 @@ class BrokerService {
 					remoteHost: rdpUrl.hostname,
 					tlsEnabled: useTls,
 					enabled: false,
-					authenticationScheme: authScheme
+					authenticationScheme: authScheme,
+					httpMethod: method
 				};
+
+				MsgVpnRestDeliveryPointRestConsumer.httpMethod.POST
 				if (authScheme == MsgVpnRestDeliveryPointRestConsumer.authenticationScheme.HTTP_BASIC) {
 					newRDPConsumer.authenticationHttpBasicUsername = app.webHook.authentication['username'];
 					newRDPConsumer.authenticationHttpBasicPassword = app.webHook.authentication['password'];
+				}
+				if (authScheme == MsgVpnRestDeliveryPointRestConsumer.authenticationScheme.HTTP_HEADER) {
+					newRDPConsumer.authenticationHttpHeaderName= app.webHook.authentication['headerName'];
+					newRDPConsumer.authenticationHttpHeaderValue = app.webHook.authentication['headerValue'];
 				}
 
 				try {

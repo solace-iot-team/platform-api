@@ -31,6 +31,16 @@ export interface MsgVpnAclProfile {
      */
     publishTopicDefaultAction?: MsgVpnAclProfile.publishTopicDefaultAction;
     /**
+     * The default action to take when a client using the ACL Profile subscribes to a share-name subscription in the Message VPN. The default value is `"allow"`. The allowed values and their meaning are:
+     *
+     * <pre>
+     * "allow" - Allow topic unless an exception is found for it.
+     * "disallow" - Disallow topic unless an exception is found for it.
+     * </pre>
+     * Available since 2.14.
+     */
+    subscribeShareNameDefaultAction?: MsgVpnAclProfile.subscribeShareNameDefaultAction;
+    /**
      * The default action to take when a client using the ACL Profile subscribes to a topic in the Message VPN. The default value is `"disallow"`. The allowed values and their meaning are:
      *
      * <pre>
@@ -68,6 +78,20 @@ export namespace MsgVpnAclProfile {
      *
      */
     export enum publishTopicDefaultAction {
+        ALLOW = 'allow',
+        DISALLOW = 'disallow',
+    }
+
+    /**
+     * The default action to take when a client using the ACL Profile subscribes to a share-name subscription in the Message VPN. The default value is `"allow"`. The allowed values and their meaning are:
+     *
+     * <pre>
+     * "allow" - Allow topic unless an exception is found for it.
+     * "disallow" - Disallow topic unless an exception is found for it.
+     * </pre>
+     * Available since 2.14.
+     */
+    export enum subscribeShareNameDefaultAction {
         ALLOW = 'allow',
         DISALLOW = 'disallow',
     }

@@ -5,7 +5,7 @@ import type { EventThreshold } from './EventThreshold';
 
 export interface DmrClusterLink {
     /**
-     * The password used to authenticate with the remote node when using basic internal authentication. If this per-Link password is not configured, the Cluster's password is used instead. This attribute is absent from a GET and not updated when absent in a PUT. The default is to have no `authenticationBasicPassword`.
+     * The password used to authenticate with the remote node when using basic internal authentication. If this per-Link password is not configured, the Cluster's password is used instead. This attribute is absent from a GET and not updated when absent in a PUT, subject to the exceptions in note 4. The default value is `""`.
      */
     authenticationBasicPassword?: string;
     /**
@@ -75,7 +75,7 @@ export interface DmrClusterLink {
      */
     clientProfileTcpKeepaliveInterval?: number;
     /**
-     * The TCP maximum segment size, in kilobytes. Changes are applied to all existing connections. The default value is `1460`.
+     * The TCP maximum segment size, in bytes. Changes are applied to all existing connections. The default value is `1460`.
      */
     clientProfileTcpMaxSegmentSize?: number;
     /**
@@ -111,7 +111,7 @@ export interface DmrClusterLink {
     queueDeadMsgQueue?: string;
     queueEventSpoolUsageThreshold?: EventThreshold;
     /**
-     * The maximum number of messages delivered but not acknowledged per flow for the Queue. The default is the maximum value supported by the platform.
+     * The maximum number of messages delivered but not acknowledged per flow for the Queue. The default value is `1000000`.
      */
     queueMaxDeliveredUnackedMsgsPerFlow?: number;
     /**

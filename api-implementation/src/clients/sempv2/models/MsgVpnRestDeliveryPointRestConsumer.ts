@@ -3,15 +3,15 @@
 /* eslint-disable */
 export interface MsgVpnRestDeliveryPointRestConsumer {
     /**
-     * The PEM formatted content for the client certificate that the REST Consumer will present to the REST host. It must consist of a private key and between one and three certificates comprising the certificate trust chain. This attribute is absent from a GET and not updated when absent in a PUT. Changing this attribute requires an HTTPS connection. The default value is `""`. Available since 2.9.
+     * The PEM formatted content for the client certificate that the REST Consumer will present to the REST host. It must consist of a private key and between one and three certificates comprising the certificate trust chain. This attribute is absent from a GET and not updated when absent in a PUT, subject to the exceptions in note 4. Changing this attribute requires an HTTPS connection. The default value is `""`. Available since 2.9.
      */
     authenticationClientCertContent?: string;
     /**
-     * The password for the client certificate. This attribute is absent from a GET and not updated when absent in a PUT. Changing this attribute requires an HTTPS connection. The default value is `""`. Available since 2.9.
+     * The password for the client certificate. This attribute is absent from a GET and not updated when absent in a PUT, subject to the exceptions in note 4. Changing this attribute requires an HTTPS connection. The default value is `""`. Available since 2.9.
      */
     authenticationClientCertPassword?: string;
     /**
-     * The password for the username. This attribute is absent from a GET and not updated when absent in a PUT. The default value is `""`.
+     * The password for the username. This attribute is absent from a GET and not updated when absent in a PUT, subject to the exceptions in note 4. The default value is `""`.
      */
     authenticationHttpBasicPassword?: string;
     /**
@@ -19,12 +19,39 @@ export interface MsgVpnRestDeliveryPointRestConsumer {
      */
     authenticationHttpBasicUsername?: string;
     /**
+     * The authentication header name. The default value is `""`. Available since 2.15.
+     */
+    authenticationHttpHeaderName?: string;
+    /**
+     * The authentication header value. This attribute is absent from a GET and not updated when absent in a PUT, subject to the exceptions in note 4. The default value is `""`. Available since 2.15.
+     */
+    authenticationHttpHeaderValue?: string;
+    /**
+     * The OAuth client ID. The default value is `""`. Available since 2.19.
+     */
+    authenticationOauthClientId?: string;
+    /**
+     * The OAuth scope. The default value is `""`. Available since 2.19.
+     */
+    authenticationOauthClientScope?: string;
+    /**
+     * The OAuth client secret. This attribute is absent from a GET and not updated when absent in a PUT, subject to the exceptions in note 4. The default value is `""`. Available since 2.19.
+     */
+    authenticationOauthClientSecret?: string;
+    /**
+     * The OAuth token endpoint URL that the REST Consumer will use to request a token for login to the REST host. Must begin with "https". The default value is `""`. Available since 2.19.
+     */
+    authenticationOauthClientTokenEndpoint?: string;
+    /**
      * The authentication scheme used by the REST Consumer to login to the REST host. The default value is `"none"`. The allowed values and their meaning are:
      *
      * <pre>
      * "none" - Login with no authentication. This may be useful for anonymous connections or when a REST Consumer does not require authentication.
      * "http-basic" - Login with a username and optional password according to HTTP Basic authentication as per RFC2616.
      * "client-certificate" - Login with a client TLS certificate as per RFC5246. Client certificate authentication is only available on TLS connections.
+     * "http-header" - Login with a specified HTTP header.
+     * "oauth-client" - Login with OAuth 2.0 client credentials.
+     * "transparent" - Login using the Authorization header from the message properties, if present. Transparent authentication passes along existing Authorization header metadata instead of discarding it. Note that if the message is coming from a REST producer, the REST service must be configured to forward the Authorization header.
      * </pre>
      *
      */
@@ -33,6 +60,16 @@ export interface MsgVpnRestDeliveryPointRestConsumer {
      * Enable or disable the REST Consumer. When disabled, no connections are initiated or messages delivered to this particular REST Consumer. The default value is `false`.
      */
     enabled?: boolean;
+    /**
+     * The HTTP method to use (POST or PUT). This is used only when operating in the REST service "messaging" mode and is ignored in "gateway" mode. The default value is `"post"`. The allowed values and their meaning are:
+     *
+     * <pre>
+     * "post" - Use the POST HTTP method.
+     * "put" - Use the PUT HTTP method.
+     * </pre>
+     * Available since 2.17.
+     */
+    httpMethod?: MsgVpnRestDeliveryPointRestConsumer.httpMethod;
     /**
      * The interface that will be used for all outgoing connections associated with the REST Consumer. When unspecified, an interface is automatically chosen. The default value is `""`.
      */
@@ -88,6 +125,9 @@ export namespace MsgVpnRestDeliveryPointRestConsumer {
      * "none" - Login with no authentication. This may be useful for anonymous connections or when a REST Consumer does not require authentication.
      * "http-basic" - Login with a username and optional password according to HTTP Basic authentication as per RFC2616.
      * "client-certificate" - Login with a client TLS certificate as per RFC5246. Client certificate authentication is only available on TLS connections.
+     * "http-header" - Login with a specified HTTP header.
+     * "oauth-client" - Login with OAuth 2.0 client credentials.
+     * "transparent" - Login using the Authorization header from the message properties, if present. Transparent authentication passes along existing Authorization header metadata instead of discarding it. Note that if the message is coming from a REST producer, the REST service must be configured to forward the Authorization header.
      * </pre>
      *
      */
@@ -95,6 +135,23 @@ export namespace MsgVpnRestDeliveryPointRestConsumer {
         NONE = 'none',
         HTTP_BASIC = 'http-basic',
         CLIENT_CERTIFICATE = 'client-certificate',
+        HTTP_HEADER = 'http-header',
+        OAUTH_CLIENT = 'oauth-client',
+        TRANSPARENT = 'transparent',
+    }
+
+    /**
+     * The HTTP method to use (POST or PUT). This is used only when operating in the REST service "messaging" mode and is ignored in "gateway" mode. The default value is `"post"`. The allowed values and their meaning are:
+     *
+     * <pre>
+     * "post" - Use the POST HTTP method.
+     * "put" - Use the PUT HTTP method.
+     * </pre>
+     * Available since 2.17.
+     */
+    export enum httpMethod {
+        POST = 'post',
+        PUT = 'put',
     }
 
 

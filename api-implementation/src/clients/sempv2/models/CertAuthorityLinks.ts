@@ -3,7 +3,7 @@
 /* eslint-disable */
 export interface CertAuthorityLinks {
     /**
-     * The URI of this Certificate Authority's collection of OCSP Responder Trusted Common Name objects.
+     * The URI of this Certificate Authority's collection of OCSP Responder Trusted Common Name objects. Deprecated since 2.19. Replaced by clientCertAuthorities.
      */
     ocspTlsTrustedCommonNamesUri?: string;
     /**
