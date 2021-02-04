@@ -171,7 +171,7 @@ export class DevelopersService {
         this.validateAPIProducts(app).then((v) => {
           var promise: Promise<any> = this.appPersistenceService.update(name, app);
           promise.then((val: App) => {
-            if (app.status == 'approved') {
+            if (val[status] == 'approved') {
               L.info(`provisioning app ${app.name}`);
               BrokerService.provisionApp(val, d).then((r) => resolve(promise)).catch((e) => reject(e));
             } else {
