@@ -464,6 +464,11 @@ class BrokerService {
 					authScheme =  app.webHook.authentication && app.webHook.authentication['headerName'] ? MsgVpnRestDeliveryPointRestConsumer.authenticationScheme.HTTP_HEADER:MsgVpnRestDeliveryPointRestConsumer.authenticationScheme.NONE;
 				}
 				var method = app.webHook.method=='PUT'?MsgVpnRestDeliveryPointRestConsumer.httpMethod.PUT:MsgVpnRestDeliveryPointRestConsumer.httpMethod.POST;
+				
+				var connectionCount: number = 3;
+				if (app.webHook.mode=='serial'){
+					connectionCount  = 1;
+				}
 				var newRDPConsumer: MsgVpnRestDeliveryPointRestConsumer = {
 					msgVpnName: service.msgVpnName,
 					restDeliveryPointName: app.credentials.secret.consumerKey,
@@ -473,7 +478,10 @@ class BrokerService {
 					tlsEnabled: useTls,
 					enabled: false,
 					authenticationScheme: authScheme,
-					httpMethod: method
+					httpMethod: method, 
+					maxPostWaitTime: 90,
+					outgoingConnectionCount: connectionCount,
+					retryDelay: 10
 				};
 
 				MsgVpnRestDeliveryPointRestConsumer.httpMethod.POST
@@ -500,7 +508,6 @@ class BrokerService {
 						return;
 					}
 				}
-
 				var newRDPQueueBinding: MsgVpnRestDeliveryPointQueueBinding = {
 					msgVpnName: service.msgVpnName,
 					restDeliveryPointName: app.credentials.secret.consumerKey,

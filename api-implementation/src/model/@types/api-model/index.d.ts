@@ -325,7 +325,7 @@ declare namespace Components {
             attributes?: Attributes;
             scopes?: string[];
             /**
-             * callback url for webhooks
+             * callback url
              */
             callbackUrl?: string; // uri
             webHook?: WebHook;
@@ -340,7 +340,7 @@ declare namespace Components {
             attributes?: Attributes;
             scopes?: string[];
             /**
-             * callback url for webhooks
+             * callback url
              */
             callbackUrl?: string;
             webHook?: WebHook;
@@ -360,7 +360,7 @@ declare namespace Components {
             attributes?: Attributes;
             scopes?: string[];
             /**
-             * callback url for webhooks
+             * callback url
              */
             callbackUrl?: string;
             webHook?: WebHook;
@@ -687,7 +687,7 @@ declare namespace Components {
         export interface WebHook {
             uri: string; // uri
             method: "POST" | "PUT";
-            tlsTrustedCommonNames?: string[];
+            mode?: "parallel" | "serial";
             authentication?: {
                 username?: string;
                 password?: string;
