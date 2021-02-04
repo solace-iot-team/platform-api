@@ -974,7 +974,7 @@ components:
       properties:
         uri:
           type: string
-          format: uri  
+          pattern: "https?:\\/\\/[A-Za-z\\.:0-9\\-]*.{0,200}$"
         method:
           type: string
           enum:
