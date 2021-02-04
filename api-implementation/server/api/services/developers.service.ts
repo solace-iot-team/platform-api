@@ -70,15 +70,15 @@ export class DevelopersService {
 
   deleteApp(developer: string, name: string): Promise<number> {
     return new Promise<number>(async (resolve, reject) => {
-      const d = await this.byName(developer);
-      L.info(d);
-      if (!d) {
-        reject(new ErrorResponseInternal(404, `Entity ${developer} does not exist`));
-      }
       try {
-        var app: App = await this.appPersistenceService.byName(name, { ownerId: developer });
-        var x = await BrokerService.deprovisionApp(app);
-        resolve(this.appPersistenceService.delete(name, { ownerId: developer }));
+        const d = await this.byName(developer);
+        try {
+          var app: App = await this.appPersistenceService.byName(name, { ownerId: developer });
+          var x = await BrokerService.deprovisionApp(app);
+          resolve(this.appPersistenceService.delete(name, { ownerId: developer }));
+        } catch (e) {
+          reject(e);
+        }
       } catch (e) {
         reject(e);
       }
@@ -127,7 +127,7 @@ export class DevelopersService {
         }
         var promise: Promise<any> = this.appPersistenceService.create(body.name, app);
         promise.then(async (val) => {
-          if (app.status == 'approved'){
+          if (app.status == 'approved') {
             await BrokerService.provisionApp(app, d);
           }
           resolve(promise);
