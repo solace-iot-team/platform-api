@@ -80,7 +80,7 @@ export class DevelopersService {
         var x = await BrokerService.deprovisionApp(app);
         resolve(this.appPersistenceService.delete(name, { ownerId: developer }));
       } catch (e) {
-        reject(new ErrorResponseInternal(500, e));
+        reject(e);
       }
     });
   }
@@ -127,10 +127,11 @@ export class DevelopersService {
         }
         var promise: Promise<any> = this.appPersistenceService.create(body.name, app);
         promise.then(async (val) => {
-          if (app.status == 'approved')
+          if (app.status == 'approved'){
             await BrokerService.provisionApp(app, d);
+          }
+          resolve(promise);
         }).catch((e) => reject(e));
-        resolve(promise);
       } catch (e) {
         L.error(`createApp ${e}`);
         reject(e);
@@ -170,10 +171,10 @@ export class DevelopersService {
         // don't care about approval check - we accept whatever status we get. but need to make sure references are valid
         this.validateAPIProducts(app).then((v) => {
           var promise: Promise<any> = this.appPersistenceService.update(name, app);
-          promise.then((val: App) => {
-            if (val[status] == 'approved') {
+          promise.then((val: AppPatch) => {
+            if (val.status == 'approved') {
               L.info(`provisioning app ${app.name}`);
-              BrokerService.provisionApp(val, d).then((r) => resolve(promise)).catch((e) => reject(e));
+              BrokerService.provisionApp(val as App, d).then((r) => resolve(promise)).catch((e) => reject(e));
             } else {
               resolve(promise);
             }

@@ -2,7 +2,7 @@ import L from '../../common/logger';
 import { databaseaccess } from '../../../src/databaseaccess';
 import mongodb, { DeleteWriteOpResultObject, MongoError } from 'mongodb';
 import C from 'continuation-local-storage';
-import {ErrorResponseInternal} from '../middlewares/error.handler';
+import { ErrorResponseInternal } from '../middlewares/error.handler';
 
 export interface Paging {
   pageNumber: number,
@@ -74,15 +74,16 @@ export class PersistenceService {
       L.debug(`PersistenceService.byName the query ${JSON.stringify(q)}, ${collection.collectionName}, ${collection.namespace}`);
       collection.findOne(q).then(
         (item) => {
-          //L.debug(item);
+          L.debug(item);
           if (!item) {
-            resolve(null);
+            reject(new ErrorResponseInternal(404, `Object ${name} not found`));
+          } else {
+            delete item._id;
+            resolve(item);
           }
-          delete item._id;
-          resolve(item);
         }
 
-      ).catch((e:MongoError) => {
+      ).catch((e: MongoError) => {
         L.warn(`PersistenceService.byName ${e}`);
         reject(new ErrorResponseInternal(500, e.message));
       });
@@ -125,7 +126,7 @@ export class PersistenceService {
         resolve(body);
       }).catch((e: MongoError) => {
         L.error(`insert into ${collection.namespace} failed ${e}`);
-        reject (new ErrorResponseInternal(422, e.message));
+        reject(new ErrorResponseInternal(422, e.message));
       });
     });
   }
