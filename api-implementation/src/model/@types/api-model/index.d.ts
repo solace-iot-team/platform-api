@@ -237,10 +237,6 @@ declare namespace Components {
              */
             pubResources: string[];
             /**
-             * A comma separated list of scopes. These must map to the scopes defined in an Oauth policy associated with the API Product. Any scope mismatch between an Acces Token presented and the API Product results in auth failure.
-             */
-            scopes?: string[];
-            /**
              * A comma separated list of Publish API resources to be bundled in the API Product.
              */
             subResources: string[];
@@ -304,10 +300,6 @@ declare namespace Components {
              */
             pubResources?: string[];
             /**
-             * A comma separated list of scopes. These must map to the scopes defined in an Oauth policy associated with the API Product. Any scope mismatch between an Acces Token presented and the API Product results in auth failure.
-             */
-            scopes?: string[];
-            /**
              * A comma separated list of Publish API resources to be bundled in the API Product.
              */
             subResources?: string[];
@@ -323,7 +315,6 @@ declare namespace Components {
             expiresIn?: number;
             apiProducts: string[];
             attributes?: Attributes;
-            scopes?: string[];
             /**
              * callback url
              */
@@ -338,7 +329,6 @@ declare namespace Components {
             name?: string;
             apiProducts?: string[];
             attributes?: Attributes;
-            scopes?: string[];
             /**
              * callback url
              */
@@ -358,7 +348,6 @@ declare namespace Components {
             expiresIn?: number;
             apiProducts: string[];
             attributes?: Attributes;
-            scopes?: string[];
             /**
              * callback url
              */

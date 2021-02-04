@@ -104,7 +104,6 @@ export class DevelopersService {
         attributes: body.attributes,
         callbackUrl: body.callbackUrl,
         expiresIn: body.expiresIn,
-        scopes: body.scopes,
         credentials: body.credentials,
         webHook: body.webHook
       };

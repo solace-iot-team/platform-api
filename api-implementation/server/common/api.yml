@@ -2,7 +2,7 @@ openapi: 3.0.0
 info:
   title: Solace Platform API
   description: Solace Platform API
-  version: 0.0.3
+  version: 0.0.4
 servers:
   - url: /v1
 
@@ -321,13 +321,6 @@ components:
                   '{/resource1}'
                 type: string
               type: array
-          scopes:
-              description: A comma separated list of scopes. These must map to the scopes defined in an Oauth policy associated with the API Product. Any scope mismatch between an Acces Token presented and the API Product results in auth failure.
-              items:
-                example:
-                  '{scope2}'
-                type: string
-              type: array
           subResources:
               description: A comma separated list of Publish API resources to be bundled in the API Product.
               items:
@@ -405,14 +398,6 @@ components:
                   '{/resource2}'
                 type: string
               type: array
-          scopes:
-              description: A comma separated list of scopes. These must map to the scopes defined in an Oauth policy associated with the API Product. Any scope mismatch between an Acces Token presented and the API Product results in auth failure.
-              items:
-                description: An explanation about the purpose of this instance.
-                example:
-                  '{scope2}'
-                type: string
-              type: array
           subResources:
               description: A comma separated list of Publish API resources to be bundled in the API Product.
               items:
@@ -482,10 +467,6 @@ components:
             type: string
         attributes:
           $ref: '#/components/schemas/attributes'
-        scopes:
-          type: array
-          items:
-            type: string
         callbackUrl:
             description: callback url
             type: string
@@ -510,10 +491,6 @@ components:
             type: string
         attributes:
           $ref: '#/components/schemas/attributes'
-        scopes:
-          type: array
-          items:
-            type: string
         callbackUrl:
             description: callback url
             type: string
@@ -543,10 +520,6 @@ components:
             type: string
         attributes:
           $ref: '#/components/schemas/attributes'
-        scopes:
-          type: array
-          items:
-            type: string
         callbackUrl:
             description: callback url 
             type: string
