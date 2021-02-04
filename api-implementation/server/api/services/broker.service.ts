@@ -408,11 +408,18 @@ class BrokerService {
 		return new Promise<any>(async (resolve, reject) => {
 			L.info(`createRDP services: ${services}`);
 			var subscribeExceptions: string[] = [];
+			var useTls: boolean = false;
 			for (var product of apiProducts) {
 				var strs: string[] = await this.getRDPSubscriptionsFromAsyncAPIs(product.apis);
 				for (var s of strs) {
 					subscribeExceptions.push(s);
 				}
+				for (var p of product.protocols){
+					if (p.name == "https"){
+						useTls = true;
+					}
+				}
+				
 			}
 			if (subscribeExceptions.length < 1) {
 				resolve();
@@ -429,13 +436,12 @@ class BrokerService {
 			}
 			var protocol = rdpUrl.protocol.toUpperCase();
 			var port = rdpUrl.port;
-			var useTls: boolean = false;
 			if (protocol == "HTTPS:") {
 				useTls = true;
 			}
 			L.debug(`protocol is ${protocol}`);
 			if (port == "") {
-				if (protocol == "HTTPS:") {
+				if (useTls) {
 					port = '443';
 				} else {
 					port = '80';
