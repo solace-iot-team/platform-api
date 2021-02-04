@@ -246,8 +246,9 @@ class BrokerService {
 					var getResponse = await AllService.deleteMsgVpnAclProfile(service.msgVpnName, app.credentials.secret.consumerKey);
 					L.info("ACL deleted");
 				} catch (e) {
-
-					reject(e);
+					if (!(e.body.meta.error.status == "NOT_FOUND")) {
+						reject(e);
+					}
 				}
 			};
 			resolve();
@@ -262,8 +263,10 @@ class BrokerService {
 					var getResponse = await AllService.deleteMsgVpnQueue(service.msgVpnName, app.credentials.secret.consumerKey);
 					L.info('Queue deleted');
 				} catch (e) {
+					if (!(e.body.meta.error.status == "NOT_FOUND")) {
+						reject(e);
+					}
 
-					reject(e);
 				}
 			};
 			resolve();
@@ -278,14 +281,14 @@ class BrokerService {
 					var getResponse = await AllService.deleteMsgVpnRestDeliveryPoint(service.msgVpnName, app.credentials.secret.consumerKey);
 					L.info("RDP deleted");
 				} catch (e) {
-
-					reject(e);
+					if (!(e.body.meta.error.status == "NOT_FOUND"))
+						reject(e);
 				}
-			};
-			resolve();
+
+				resolve();
+			}
 		});
 	}
-
 	private createClientUsernames(app: App, services: Service[]): Promise<any> {
 		return new Promise<any>(async (resolve, reject) => {
 			for (var service of services) {
@@ -334,7 +337,9 @@ class BrokerService {
 				try {
 					var getResponse = await AllService.deleteMsgVpnClientUsername(service.msgVpnName, app.credentials.secret.consumerKey);
 				} catch (e) {
-					reject(e);
+					if (!(e.body.meta.error.status == "NOT_FOUND")) {
+						reject(e);
+					}
 				}
 			}
 			resolve();
@@ -460,14 +465,14 @@ class BrokerService {
 					}
 				}
 				var authScheme = app.webHook.authentication && app.webHook.authentication['username'] ? MsgVpnRestDeliveryPointRestConsumer.authenticationScheme.HTTP_BASIC : MsgVpnRestDeliveryPointRestConsumer.authenticationScheme.NONE;
-				if (authScheme == MsgVpnRestDeliveryPointRestConsumer.authenticationScheme.NONE){
-					authScheme =  app.webHook.authentication && app.webHook.authentication['headerName'] ? MsgVpnRestDeliveryPointRestConsumer.authenticationScheme.HTTP_HEADER:MsgVpnRestDeliveryPointRestConsumer.authenticationScheme.NONE;
+				if (authScheme == MsgVpnRestDeliveryPointRestConsumer.authenticationScheme.NONE) {
+					authScheme = app.webHook.authentication && app.webHook.authentication['headerName'] ? MsgVpnRestDeliveryPointRestConsumer.authenticationScheme.HTTP_HEADER : MsgVpnRestDeliveryPointRestConsumer.authenticationScheme.NONE;
 				}
-				var method = app.webHook.method=='PUT'?MsgVpnRestDeliveryPointRestConsumer.httpMethod.PUT:MsgVpnRestDeliveryPointRestConsumer.httpMethod.POST;
-				
+				var method = app.webHook.method == 'PUT' ? MsgVpnRestDeliveryPointRestConsumer.httpMethod.PUT : MsgVpnRestDeliveryPointRestConsumer.httpMethod.POST;
+
 				var connectionCount: number = 3;
-				if (app.webHook.mode=='serial'){
-					connectionCount  = 1;
+				if (app.webHook.mode == 'serial') {
+					connectionCount = 1;
 				}
 				var newRDPConsumer: MsgVpnRestDeliveryPointRestConsumer = {
 					msgVpnName: service.msgVpnName,
@@ -478,7 +483,7 @@ class BrokerService {
 					tlsEnabled: useTls,
 					enabled: false,
 					authenticationScheme: authScheme,
-					httpMethod: method, 
+					httpMethod: method,
 					maxPostWaitTime: 90,
 					outgoingConnectionCount: connectionCount,
 					retryDelay: 10
@@ -490,7 +495,7 @@ class BrokerService {
 					newRDPConsumer.authenticationHttpBasicPassword = app.webHook.authentication['password'];
 				}
 				if (authScheme == MsgVpnRestDeliveryPointRestConsumer.authenticationScheme.HTTP_HEADER) {
-					newRDPConsumer.authenticationHttpHeaderName= app.webHook.authentication['headerName'];
+					newRDPConsumer.authenticationHttpHeaderName = app.webHook.authentication['headerName'];
 					newRDPConsumer.authenticationHttpHeaderValue = app.webHook.authentication['headerValue'];
 				}
 
