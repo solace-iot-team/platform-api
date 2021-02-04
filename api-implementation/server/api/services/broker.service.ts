@@ -431,9 +431,10 @@ class BrokerService {
 			try {
 				rdpUrl = new URL(app.webHook.uri);
 			} catch (e) {
-				reject(new ErrorResponseInternal(400, "Callback URL not provided or invalid"));
+				reject(new ErrorResponseInternal(400, "Webhook URL not provided or invalid"));
 				return;
 			}
+			
 			var protocol = rdpUrl.protocol.toUpperCase();
 			var port = rdpUrl.port;
 			if (protocol == "HTTPS:") {
@@ -522,7 +523,7 @@ class BrokerService {
 				var newRDPQueueBinding: MsgVpnRestDeliveryPointQueueBinding = {
 					msgVpnName: service.msgVpnName,
 					restDeliveryPointName: app.credentials.secret.consumerKey,
-					postRequestTarget: rdpUrl.pathname,
+					postRequestTarget: `${rdpUrl.pathname}${rdpUrl.search}`,
 					queueBindingName: app.credentials.secret.consumerKey
 				};
 				try {
