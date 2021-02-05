@@ -51,10 +51,14 @@ export class DevelopersService {
       var app: AppResponse = await this.appPersistenceService.byName(name, { ownerId: developer });
       var dev: Developer = await this.persistenceService.byName(developer);
       if (app) {
-        var permissions = await BrokerService.getPermissions(app, dev);
+
+        
         var endpoints = await BrokerService.getMessagingProtocols(app);
-        app.permissions = permissions;
-        app.messagingProtocols = endpoints;
+        app.environments = endpoints;
+        for (var appEnv of app.environments){
+          var permissions = await BrokerService.getPermissions(app, dev, appEnv.name);
+          appEnv.permissions = permissions;
+        }
       } else {
         throw (404);
       }

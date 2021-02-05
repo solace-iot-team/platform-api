@@ -2,7 +2,7 @@ openapi: 3.0.0
 info:
   title: Solace Platform API
   description: Solace Platform API
-  version: 0.0.4
+  version: 0.0.5
 servers:
   - url: /v1
 
@@ -527,17 +527,28 @@ components:
           $ref: '#/components/schemas/WebHook'
         credentials:
           $ref: '#/components/schemas/Credentials'
-        messagingProtocols:
+        environments:
           type: array
           items:
-            $ref: '#/components/schemas/Endpoint'
-        permissions:
-          $ref: '#/components/schemas/Permissions'
+            $ref: '#/components/schemas/AppEnvironment'
       required:
       - name
       - apiProducts
       - credentials
           
+
+    AppEnvironment:
+          type: object
+          properties:
+            name: 
+              type: string
+              example: dev
+            messagingProtocols:
+              type: array
+              items:
+                $ref: '#/components/schemas/Endpoint'
+            permissions:
+              $ref: '#/components/schemas/Permissions'
     Permissions:
       description: lists all the publish and subscribe topics an app has access to. Restrictions on   topic elements are taken into account.
       type: object
@@ -1029,11 +1040,7 @@ components:
           type: string
           format: uri
           example: "smf://1234abc.messaging.solace.cloud:55555"
-        environment:
-          type: string
-          description: environment name
-          example: dev
-        
+
           
 security:
   - BasicAuth: []

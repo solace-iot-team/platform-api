@@ -322,6 +322,15 @@ declare namespace Components {
             webHook?: WebHook;
             credentials: /* Credentials object associated with an app */ Credentials;
         }
+        export interface AppEnvironment {
+            /**
+             * example:
+             * dev
+             */
+            name?: string;
+            messagingProtocols?: Endpoint[];
+            permissions?: /* lists all the publish and subscribe topics an app has access to. Restrictions on   topic elements are taken into account. */ Permissions;
+        }
         /**
          * Used for PATCH operation. An app associated with a developer. Associates the app with an API product, and auto-generates an API credentials for the app to use
          */
@@ -354,8 +363,7 @@ declare namespace Components {
             callbackUrl?: string;
             webHook?: WebHook;
             credentials: /* Credentials object associated with an app */ Credentials;
-            messagingProtocols?: Endpoint[];
-            permissions?: /* lists all the publish and subscribe topics an app has access to. Restrictions on   topic elements are taken into account. */ Permissions;
+            environments?: AppEnvironment[];
         }
         export type AppStatus = "approved" | "pending";
         export type Attributes = {
@@ -408,12 +416,6 @@ declare namespace Components {
              * smf://1234abc.messaging.solace.cloud:55555
              */
             uri?: string; // uri
-            /**
-             * environment name
-             * example:
-             * dev
-             */
-            environment?: string;
         }
         /**
          * an environment
@@ -674,7 +676,7 @@ declare namespace Components {
             };
         }
         export interface WebHook {
-            uri: string; // uri
+            uri: string; // https?:\/\/[A-Za-z\.:0-9\-]*.{0,200}$
             method: "POST" | "PUT";
             mode?: "parallel" | "serial";
             authentication?: {

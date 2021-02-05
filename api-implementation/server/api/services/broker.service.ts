@@ -6,6 +6,7 @@ import APIProduct = Components.Schemas.APIProduct;
 import Environment = Components.Schemas.Environment;
 import Permissions = Components.Schemas.Permissions;
 import Endpoint = Components.Schemas.Endpoint;
+import AppEnvironment = Components.Schemas.AppEnvironment;
 
 import ApiProductsService from './apiProducts.service';
 import ApisService from './apis.service';
@@ -38,7 +39,7 @@ interface SolaceProtocolIdentifiers {
 class BrokerService {
 
 
-	getPermissions(app: App, developer: Developer): Promise<Permissions> {
+	getPermissions(app: App, developer: Developer, envName: string): Promise<Permissions> {
 		return new Promise<Permissions>((resolve, reject) => {
 			var environmentNames: string[] = [];
 
@@ -58,7 +59,7 @@ class BrokerService {
 				environmentNames = Array.from(new Set(environmentNames));
 
 				try {
-					var c: Permissions = await this.getClientACLExceptions(app, products, developer);
+					var c: Permissions = await this.getClientACLExceptions(app, products, developer, envName);
 					resolve(c);
 
 				} catch (e) {
@@ -414,12 +415,12 @@ class BrokerService {
 				for (var s of strs) {
 					subscribeExceptions.push(s);
 				}
-				for (var p of product.protocols){
-					if (p.name == "https"){
+				for (var p of product.protocols) {
+					if (p.name == "https") {
 						useTls = true;
 					}
 				}
-				
+
 			}
 			if (subscribeExceptions.length < 1) {
 				resolve();
@@ -434,7 +435,7 @@ class BrokerService {
 				reject(new ErrorResponseInternal(400, "Webhook URL not provided or invalid"));
 				return;
 			}
-			
+
 			var protocol = rdpUrl.protocol.toUpperCase();
 			var port = rdpUrl.port;
 			if (protocol == "HTTPS:") {
@@ -648,22 +649,26 @@ class BrokerService {
 		});
 	}
 
-	public getClientACLExceptions(app: App, apiProducts: APIProduct[], developer: Developer): Promise<Permissions> {
+	public getClientACLExceptions(app: App, apiProducts: APIProduct[], developer: Developer, envName: string): Promise<Permissions> {
 		return new Promise<Permissions>(async (resolve, reject) => {
 
 			var publishExceptions: string[] = [];
 			var subscribeExceptions: string[] = [];
 			// compile list of event destinations sub / pub separately
 			for (var product of apiProducts) {
-				publishExceptions = this.getResources(product.pubResources).concat(publishExceptions);
-				subscribeExceptions = this.getResources(product.subResources).concat(subscribeExceptions);
-				var strs: string[] = await this.getResourcesFromAsyncAPIs(product.apis, Direction.Subscribe);
-				for (var s of strs) {
-					subscribeExceptions.push(s);
-				}
-				strs = await this.getResourcesFromAsyncAPIs(product.apis, Direction.Publish);
-				for (var s of strs) {
-					publishExceptions.push(s);
+				for (var env of product.environments) {
+					if (env == envName) {
+						publishExceptions = this.getResources(product.pubResources).concat(publishExceptions);
+						subscribeExceptions = this.getResources(product.subResources).concat(subscribeExceptions);
+						var strs: string[] = await this.getResourcesFromAsyncAPIs(product.apis, Direction.Subscribe);
+						for (var s of strs) {
+							subscribeExceptions.push(s);
+						}
+						strs = await this.getResourcesFromAsyncAPIs(product.apis, Direction.Publish);
+						for (var s of strs) {
+							publishExceptions.push(s);
+						}
+					}
 				}
 			}
 			var attributes: any[] = this.getAttributes(app, developer, apiProducts);
@@ -842,9 +847,10 @@ class BrokerService {
 		);
 	}
 
-	public async getMessagingProtocols(app: App): Promise<Endpoint[]> {
+	public async getMessagingProtocols(app: App): Promise<AppEnvironment[]> {
 
-		return new Promise<Endpoint[]>((resolve, reject) => {
+		return new Promise<AppEnvironment[]>((resolve, reject) => {
+			var appEnvironments: AppEnvironment[] = [];
 			var endpoints: Endpoint[] = [];
 
 			var apiProductPromises: Promise<APIProduct>[] = [];
@@ -857,6 +863,13 @@ class BrokerService {
 				for (var product of products) {
 					L.info(`getMessagingProtocols ${product.name}`);
 					for (var envName of product.environments) {
+						var appEnv = appEnvironments.find(ae => ae.name == envName);
+						if (!appEnv) {
+							appEnv = {
+								name: envName
+							};
+							appEnvironments.push(appEnv);
+						}
 						const service = await this.getServiceByEnv(envName);
 						for (var protocol of product.protocols) {
 							L.info(`getMessagingProtocols ${protocol.name}`);
@@ -864,19 +877,22 @@ class BrokerService {
 							L.info(`getMessagingProtocols ${keys.name} ${keys.protocol}`);
 							var endpoint = service.messagingProtocols.find(mp => mp.name == keys.name).endPoints.find(ep => ep.transport == keys.protocol);
 							L.info(endpoint);
-							var newEndpoint: Endpoint = {
-								compressed: endpoint.compressed == 'yes' ? 'yes' : 'no',
-								environment: envName,
-								secure: endpoint.secured == 'yes' ? 'yes' : 'no',
-								protocol: protocol,
-								transport: endpoint.transport,
-								uri: endpoint.uris[0]
-							};
-							endpoints.push(newEndpoint);
+							var newEndpoint: Endpoint = endpoints.find(ep => ep.uri == endpoint.uris[0]);
+							if (!newEndpoint) {
+								newEndpoint = {
+									compressed: endpoint.compressed == 'yes' ? 'yes' : 'no',
+									secure: endpoint.secured == 'yes' ? 'yes' : 'no',
+									protocol: protocol,
+									transport: endpoint.transport,
+									uri: endpoint.uris[0]
+								};
+								endpoints.push(newEndpoint);
+							}
 						}
+						appEnv.messagingProtocols = endpoints;
 					}
 				}
-				resolve(endpoints);
+				resolve(appEnvironments);
 
 			});
 
