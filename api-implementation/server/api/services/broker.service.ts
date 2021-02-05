@@ -71,36 +71,42 @@ class BrokerService {
 	}
 	provisionApp(app: App, developer: Developer): Promise<any> {
 		return new Promise<any>((resolve, reject) => {
-			var environmentNames: string[] = [];
-
 			var apiProductPromises: Promise<APIProduct>[] = [];
 			app.apiProducts.forEach((productName: string) => {
 				L.info(productName);
 				apiProductPromises.push(ApiProductsService.byName(productName));
 			});
 
-			Promise.all(apiProductPromises).then(async (products: APIProduct[]) => {
-				products.forEach((product: APIProduct) => {
-					product.environments.forEach((e: string) => {
-						environmentNames.push(e);
-					})
-					L.info(`env: ${product.environments}`);
-				});
-				environmentNames = Array.from(new Set(environmentNames));
-
+			Promise.all(apiProductPromises).then(async (productResults: APIProduct[]) => {
 				try {
-					const services = await this.getServices(environmentNames);
-					var a = await this.createACLs(app, services);
-					L.info(`created acl profile ${app.name}`);
-					var b = await this.createClientUsernames(app, services);
-					L.info(`created client username ${app.name}`);
-					var c = await this.createClientACLExceptions(app, services, products, developer);
-					L.info(`created acl exceptions ${app.name}`);
-					// no webhook - no RDP
-					if (app.webHook) {
-						var d = await this.createQueues(app, services, products, developer);
-						L.info(`created queues ${app.name}`);
-						var d = await this.createRDP(app, services, products);
+					
+					for (var product of productResults) {
+						var environmentNames: string[] = [];
+						product.environments.forEach((e: string) => {
+							environmentNames.push(e);
+						})
+						L.info(`env: ${product.environments}`);
+						var products: APIProduct[] = [];
+						products.push(product);
+						environmentNames = Array.from(new Set(environmentNames));
+						L.info(`provisioning product ${product.name} to ${JSON.stringify(environmentNames)}`);
+						const services = await this.getServices(environmentNames);
+						var a = await this.createACLs(app, services);
+						L.info(`created acl profile ${app.name}`);
+						var b = await this.createClientUsernames(app, services);
+						L.info(`created client username ${app.name}`);
+						var c = await this.createClientACLExceptions(app, services, products, developer);
+						L.info(`created acl exceptions ${app.name}`);
+						// no webhook - no RDP
+						L.info(app.webHook);
+						if (app.webHook) {
+							L.info("creating webhook");
+							var d = await this.createQueues(app, services, products, developer);
+							L.info(`created queues ${app.name}`);
+							var d = await this.createRDP(app, services, products);
+							L.info(`created rdps ${app.name}`);
+						}
+
 					}
 					resolve(null);
 				} catch (e) {
@@ -348,7 +354,6 @@ class BrokerService {
 	}
 	private createClientACLExceptions(app: App, services: Service[], apiProducts: APIProduct[], developer: Developer): Promise<void> {
 		return new Promise<any>(async (resolve, reject) => {
-			L.info(` services: ${services}`);
 			var publishExceptions: string[] = [];
 			var subscribeExceptions: string[] = [];
 			// compile list of event destinations sub / pub separately
@@ -703,8 +708,8 @@ class BrokerService {
 						publishExceptionTopic: exception,
 						topicSyntax: MsgVpnAclProfilePublishException.topicSyntax.SMF
 					};
-					L.info("createMsgVpnAclProfilePublishException");
-					L.info(aclException);
+					//L.debug("createMsgVpnAclProfilePublishException");
+					//L.debug(aclException);
 					try {
 
 						var getResponse = await AllService.getMsgVpnAclProfilePublishException(service.msgVpnName, app.credentials.secret.consumerKey, MsgVpnAclProfilePublishException.topicSyntax.SMF, encodeURIComponent(exception));
@@ -738,18 +743,18 @@ class BrokerService {
 						subscribeExceptionTopic: exception,
 						topicSyntax: MsgVpnAclProfileSubscribeException.topicSyntax.SMF
 					};
-					L.info("createMsgVpnAclProfileSubscribeException");
-					L.info(aclException);
+					//L.debug("createMsgVpnAclProfileSubscribeException");
+					//L.debug(aclException);
 					try {
 						var getResponse = await AllService.getMsgVpnAclProfileSubscribeException(service.msgVpnName, app.credentials.secret.consumerKey, MsgVpnAclProfileSubscribeException.topicSyntax.SMF, encodeURIComponent(exception));
 						L.info("addSubscribeTopicExceptions: exception exists");
 					} catch (e) {
-						L.info(`addSubscribeTopicExceptions lookup  failed ${JSON.stringify(e)}`);
+						L.warn(`addSubscribeTopicExceptions lookup  failed ${JSON.stringify(e)}`);
 						try {
 							let response = await AllService.createMsgVpnAclProfileSubscribeException(service.msgVpnName, app.credentials.secret.consumerKey, aclException);
-							L.info("created  SubscribeException");
+							//L.debug("created  SubscribeException");
 						} catch (e) {
-							L.info(`addSubscribeTopicExceptions add failed ${e}`);
+							L.error(`addSubscribeTopicExceptions add failed ${e}`);
 							reject(e);
 						}
 
@@ -783,11 +788,11 @@ class BrokerService {
 									var channel = spec.channel(s);
 
 									if (direction == Direction.Subscribe && channel.hasSubscribe()) {
-										L.info(`Subscribe ${s}`)
+										//L.debug(`Subscribe ${s}`)
 										resources.push(s);
 									}
 									if (direction == Direction.Publish && channel.hasPublish()) {
-										L.info(`Publish ${s}`)
+										//L.debug(`Publish ${s}`)
 										resources.push(s);
 									}
 								});
@@ -966,24 +971,22 @@ class BrokerService {
 	}
 
 	private enrichDestination(destination: string, attributes: any[]): string[] {
-		L.error(destination);
 		var x = destination.match(/(?<=\{)[^}]*(?=\})/g);
 		var destinations: string[] = [];
 		destinations.push(destination);
-		L.error(x);
 		if (x) {
 			x.forEach(match => {
 				var newDestinations: string[] = [];
-				L.info(match);
+				//L.debug(match);
 				var att = attributes.find(element => element.name == match);
 				if (att) {
 					var values = att.value.split(",");
-					L.debug(values);
+					//L.debug(values);
 					for (var d of destinations) {
 						values.forEach((s: string) => {
 							s = s.trim();
 							var newD = d.replace(`{${match}}`, s);
-							L.debug(newD);
+							//L.debug(newD);
 							newDestinations.push(newD);
 						});
 					}
