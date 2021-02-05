@@ -74,7 +74,7 @@ export class PersistenceService {
       L.debug(`PersistenceService.byName the query ${JSON.stringify(q)}, ${collection.collectionName}, ${collection.namespace}`);
       collection.findOne(q).then(
         (item) => {
-          L.debug(item);
+          L.trace(item);
           if (!item) {
             reject(new ErrorResponseInternal(404, `Object ${name} not found`));
           } else {
