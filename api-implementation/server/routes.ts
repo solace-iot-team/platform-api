@@ -13,7 +13,7 @@ import HistoryService from './api/services/history.service';
 import express from 'express';
 import L from './common/logger';
 import { Request, Response } from 'express';
-import C from 'continuation-local-storage';
+import C from 'cls-hooked';
 import Organization = Components.Schemas.Organization;
 import History = Components.Schemas.History;
 import * as basicAuth from 'express-basic-auth'

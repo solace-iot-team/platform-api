@@ -1,10 +1,12 @@
 import L from '../../common/logger';
 import Organization = Components.Schemas.Organization;
 import { PersistenceService } from './persistence.service';
-import C from 'continuation-local-storage';
 import { ErrorResponseInternal } from '../middlewares/error.handler';
 import { databaseaccess } from '../../../src/databaseaccess';
-
+import AppsService from './apps.service';
+import BrokerService from './broker.service';
+import C from 'cls-hooked';
+import App = Components.Schemas.App;
 const reserved: string = "platform";
 
 export class OrganizationsService {
@@ -24,18 +26,48 @@ export class OrganizationsService {
     return this.persistenceService.byName(name);
   }
 
-  delete(name: string): Promise<number> {
-    return new Promise<number>((resolve, reject) => {
-      if (name == reserved) {
-        reject(new ErrorResponseInternal(401, `Access denied, reserved name`));
-      } else {
-        databaseaccess.client.db(name).dropDatabase().then((r) => {
-          resolve(this.persistenceService.delete(name));
-        }).catch((e) => {
-          reject(new ErrorResponseInternal(404, `Organization not found`));
+  async delete(name: string): Promise<number> {
+
+    if (name == reserved) {
+      throw new ErrorResponseInternal(401, `Access denied, reserved name`);
+    }
+    var org = await this.byName(name);
+
+    if (org == null) {
+      throw new ErrorResponseInternal(404, `Organization not found`);
+    }
+
+    var p = new Promise<number>((resolve, reject) => {
+      var ns = C.createNamespace('platform-api');
+      var x = ns.run(function () {
+        ns.set('org', name);
+        ns.set('cloud-token', org["cloud-token"]);
+        AppsService.all().then(apps => {
+          var deprovisionPromises: Promise<any>[] = [];
+          L.info(`cleaning up apps ${apps.length}`);
+          apps.forEach(async app => {
+            L.info(app);
+            deprovisionPromises.push(BrokerService.deprovisionApp(app));
+          });
+          Promise.all(deprovisionPromises).then(res => {
+            ns.set('org', null);
+            databaseaccess.client.db(name).dropDatabase().then((r) => {
+              resolve(this.persistenceService.delete(name));
+            }).catch((e) => {
+              L.error(e);
+              reject(new ErrorResponseInternal(404, `Organization not found`));
+            });
+          }).catch(e => {
+            L.info(e);
+            reject(e);
+          });
+        }).catch(e => {
+          L.info(e);
+          reject(e);
         });
-      }
+      }.bind(this));
     });
+    return p;
 
   }
 

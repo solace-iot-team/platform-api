@@ -1,7 +1,7 @@
 import L from '../../common/logger';
 import { databaseaccess } from '../../../src/databaseaccess';
 import mongodb, { DeleteWriteOpResultObject, MongoError } from 'mongodb';
-import C from 'continuation-local-storage';
+import C from 'cls-hooked';
 import { ErrorResponseInternal } from '../middlewares/error.handler';
 
 export interface Paging {
@@ -15,12 +15,13 @@ export class PersistenceService {
     var namespace = C.getNamespace('platform-api');
     var db: string = "platform";
     var org: string = null;
-    if (namespace) {
+    if (namespace!=null) {
+      L.debug(`PersistenceService: Found namespace ${namespace}`);
       namespace.run(function () {
         org = namespace.get('org');
       });
     }
-    if (org) {
+    if (org!=null) {
       db = org;
     }
     L.info(`db is ${db}`);
