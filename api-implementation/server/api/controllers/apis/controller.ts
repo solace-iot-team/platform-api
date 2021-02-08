@@ -27,7 +27,7 @@ export class Controller {
 
   create(req: Request, res: Response, next: NextFunction): void {
     ApisService.create(req.params['name'], req.body).then((r) => {
-      Controller.handleResponse(r, req, res, next);
+      Controller.handleResponse(r, req, res, next, 201);
     }).catch((e) => next(e));
   }
 
@@ -44,24 +44,25 @@ export class Controller {
     }).catch((e) => next(e));
   }
 
-  static handleResponse(r, req, res, next) {
+  static handleResponse(r, req, res, next, statusCode: number = 200) {
+
     if (r) {
       var contentType: Format = req.query['format'] as Format;
       L.info(contentType);
       if (contentType == "application/json") {
         if (AsyncAPIHelper.getContentType(r) == "application/json") {
-          res.status(200).contentType(contentType).send(r);
+          res.status(statusCode).contentType(contentType).send(r);
         } else {
-          res.status(200).contentType(contentType).send(AsyncAPIHelper.YAMLtoJSON(r));
+          res.status(statusCode).contentType(contentType).send(AsyncAPIHelper.YAMLtoJSON(r));
         }
       } else if (contentType == "application/x-yaml") {
         if (AsyncAPIHelper.getContentType(r) == "application/x-yaml") {
-          res.status(200).contentType(contentType).send(r);
+          res.status(statusCode).contentType(contentType).send(r);
         } else {
-          res.status(200).contentType(contentType).send(AsyncAPIHelper.JSONtoYAML(r));
+          res.status(statusCode).contentType(contentType).send(AsyncAPIHelper.JSONtoYAML(r));
         }
       } else {
-        res.status(200).contentType(AsyncAPIHelper.getContentType(r)).send(r);
+        res.status(statusCode).contentType(AsyncAPIHelper.getContentType(r)).send(r);
       }
     } else {
       next(new ErrorResponseInternal(404, `Not found`));
