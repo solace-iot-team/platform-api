@@ -471,8 +471,10 @@ components:
             description: callback url
             type: string
             format: uri
-        webHook:
-          $ref: '#/components/schemas/WebHook'
+        webHooks:
+          type: array
+          items:
+            $ref: '#/components/schemas/WebHook'
         credentials:
           $ref: '#/components/schemas/Credentials'
       required:
@@ -494,8 +496,10 @@ components:
         callbackUrl:
             description: callback url
             type: string
-        webHook:
-          $ref: '#/components/schemas/WebHook'
+        webHooks:
+          type: array
+          items:
+            $ref: '#/components/schemas/WebHook'
         credentials:
           $ref: '#/components/schemas/Credentials'
         status:
@@ -523,8 +527,10 @@ components:
         callbackUrl:
             description: callback url 
             type: string
-        webHook:
-          $ref: '#/components/schemas/WebHook'
+        webHooks:
+          type: array
+          items:
+            $ref: '#/components/schemas/WebHook'
         credentials:
           $ref: '#/components/schemas/Credentials'
         environments:
@@ -986,6 +992,11 @@ components:
         uri:
           type: string
           pattern: "https?:\\/\\/[A-Za-z\\.:0-9\\-]*.{0,200}$"
+        environments:
+          type: array
+          description: environments that this webhook serves, if absent webhook will be used for all environments 
+          items: 
+            type: string
         method:
           type: string
           enum:

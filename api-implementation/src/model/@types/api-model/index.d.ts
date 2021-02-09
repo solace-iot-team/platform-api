@@ -319,7 +319,7 @@ declare namespace Components {
              * callback url
              */
             callbackUrl?: string; // uri
-            webHook?: WebHook;
+            webHooks?: WebHook[];
             credentials: /* Credentials object associated with an app */ Credentials;
         }
         export interface AppEnvironment {
@@ -342,7 +342,7 @@ declare namespace Components {
              * callback url
              */
             callbackUrl?: string;
-            webHook?: WebHook;
+            webHooks?: WebHook[];
             credentials?: /* Credentials object associated with an app */ Credentials;
             status?: AppStatus;
         }
@@ -361,7 +361,7 @@ declare namespace Components {
              * callback url
              */
             callbackUrl?: string;
-            webHook?: WebHook;
+            webHooks?: WebHook[];
             credentials: /* Credentials object associated with an app */ Credentials;
             environments?: AppEnvironment[];
         }
@@ -677,6 +677,10 @@ declare namespace Components {
         }
         export interface WebHook {
             uri: string; // https?:\/\/[A-Za-z\.:0-9\-]*.{0,200}$
+            /**
+             * environments that this webhook serves, if absent webhook will be used for all environments
+             */
+            environments?: string[];
             method: "POST" | "PUT";
             mode?: "parallel" | "serial";
             authentication?: {

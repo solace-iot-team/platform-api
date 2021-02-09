@@ -7,6 +7,7 @@ import Environment = Components.Schemas.Environment;
 import Permissions = Components.Schemas.Permissions;
 import Endpoint = Components.Schemas.Endpoint;
 import AppEnvironment = Components.Schemas.AppEnvironment;
+import WebHook = Components.Schemas.WebHook;
 
 import ApiProductsService from './apiProducts.service';
 import ApisService from './apis.service';
@@ -79,7 +80,7 @@ class BrokerService {
 
 			Promise.all(apiProductPromises).then(async (productResults: APIProduct[]) => {
 				try {
-					
+
 					for (var product of productResults) {
 						var environmentNames: string[] = [];
 						product.environments.forEach((e: string) => {
@@ -98,8 +99,8 @@ class BrokerService {
 						var c = await this.createClientACLExceptions(app, services, products, developer);
 						L.info(`created acl exceptions ${app.name}`);
 						// no webhook - no RDP
-						L.info(app.webHook);
-						if (app.webHook) {
+						L.info(app.webHooks);
+						if (app.webHooks) {
 							L.info("creating webhook");
 							var d = await this.createQueues(app, services, products, developer);
 							L.info(`created queues ${app.name}`);
@@ -167,6 +168,7 @@ class BrokerService {
 					var r = SolaceCloudFacade.getServiceByEnvironment(env);
 					servicePromises.push(r);
 					r.then((service: Service) => {
+						service['environment'] = env.name;
 						returnServices.push(service);
 					}).catch((e) => {
 						L.error(e);
@@ -432,29 +434,38 @@ class BrokerService {
 				return;
 			}
 			// loop over services
-			var restConsumerName = `Consumer`;
-			var rdpUrl: URL;
-			try {
-				rdpUrl = new URL(app.webHook.uri);
-			} catch (e) {
-				reject(new ErrorResponseInternal(400, "Webhook URL not provided or invalid"));
-				return;
-			}
-
-			var protocol = rdpUrl.protocol.toUpperCase();
-			var port = rdpUrl.port;
-			if (protocol == "HTTPS:") {
-				useTls = true;
-			}
-			L.debug(`protocol is ${protocol}`);
-			if (port == "") {
-				if (useTls) {
-					port = '443';
-				} else {
-					port = '80';
-				}
-			}
 			for (var service of services) {
+				var restConsumerName = `Consumer`;
+				var rdpUrl: URL;
+				var webHooks: WebHook[] = [];
+				webHooks = app.webHooks.filter(w => w.environments == null || w.environments.find(e => e == service['environment']));
+				if(webHooks.length!=1){
+					var msg: string = `Invalid webhook configuration for ${service['environment']}, found ${webHooks.length} matching configurations`;
+					L.warn(msg);
+					reject (new ErrorResponseInternal(400, msg))
+					return;
+				}
+				var webHook = webHooks[0];
+				try {
+					rdpUrl = new URL(webHook.uri);
+				} catch (e) {
+					reject(new ErrorResponseInternal(400, "Webhook URL not provided or invalid"));
+					return;
+				}
+
+				var protocol = rdpUrl.protocol.toUpperCase();
+				var port = rdpUrl.port;
+				if (protocol == "HTTPS:") {
+					useTls = true;
+				}
+				L.debug(`protocol is ${protocol}`);
+				if (port == "") {
+					if (useTls) {
+						port = '443';
+					} else {
+						port = '80';
+					}
+				}
 				//create RDPs
 				var sempV2Client = this.getSEMPv2Client(service);
 				var newRDP: MsgVpnRestDeliveryPoint = {
@@ -477,14 +488,14 @@ class BrokerService {
 						return;
 					}
 				}
-				var authScheme = app.webHook.authentication && app.webHook.authentication['username'] ? MsgVpnRestDeliveryPointRestConsumer.authenticationScheme.HTTP_BASIC : MsgVpnRestDeliveryPointRestConsumer.authenticationScheme.NONE;
+				var authScheme = webHook.authentication && webHook.authentication['username'] ? MsgVpnRestDeliveryPointRestConsumer.authenticationScheme.HTTP_BASIC : MsgVpnRestDeliveryPointRestConsumer.authenticationScheme.NONE;
 				if (authScheme == MsgVpnRestDeliveryPointRestConsumer.authenticationScheme.NONE) {
-					authScheme = app.webHook.authentication && app.webHook.authentication['headerName'] ? MsgVpnRestDeliveryPointRestConsumer.authenticationScheme.HTTP_HEADER : MsgVpnRestDeliveryPointRestConsumer.authenticationScheme.NONE;
+					authScheme = webHook.authentication && webHook.authentication['headerName'] ? MsgVpnRestDeliveryPointRestConsumer.authenticationScheme.HTTP_HEADER : MsgVpnRestDeliveryPointRestConsumer.authenticationScheme.NONE;
 				}
-				var method = app.webHook.method == 'PUT' ? MsgVpnRestDeliveryPointRestConsumer.httpMethod.PUT : MsgVpnRestDeliveryPointRestConsumer.httpMethod.POST;
+				var method = webHook.method == 'PUT' ? MsgVpnRestDeliveryPointRestConsumer.httpMethod.PUT : MsgVpnRestDeliveryPointRestConsumer.httpMethod.POST;
 
 				var connectionCount: number = 3;
-				if (app.webHook.mode == 'serial') {
+				if (webHook.mode == 'serial') {
 					connectionCount = 1;
 				}
 				var newRDPConsumer: MsgVpnRestDeliveryPointRestConsumer = {
@@ -504,12 +515,12 @@ class BrokerService {
 
 				MsgVpnRestDeliveryPointRestConsumer.httpMethod.POST
 				if (authScheme == MsgVpnRestDeliveryPointRestConsumer.authenticationScheme.HTTP_BASIC) {
-					newRDPConsumer.authenticationHttpBasicUsername = app.webHook.authentication['username'];
-					newRDPConsumer.authenticationHttpBasicPassword = app.webHook.authentication['password'];
+					newRDPConsumer.authenticationHttpBasicUsername = webHook.authentication['username'];
+					newRDPConsumer.authenticationHttpBasicPassword = webHook.authentication['password'];
 				}
 				if (authScheme == MsgVpnRestDeliveryPointRestConsumer.authenticationScheme.HTTP_HEADER) {
-					newRDPConsumer.authenticationHttpHeaderName = app.webHook.authentication['headerName'];
-					newRDPConsumer.authenticationHttpHeaderValue = app.webHook.authentication['headerValue'];
+					newRDPConsumer.authenticationHttpHeaderName = webHook.authentication['headerName'];
+					newRDPConsumer.authenticationHttpHeaderValue = webHook.authentication['headerValue'];
 				}
 
 				try {
