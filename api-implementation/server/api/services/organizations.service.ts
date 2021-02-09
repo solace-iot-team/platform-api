@@ -3,6 +3,7 @@ import Organization = Components.Schemas.Organization;
 import { PersistenceService } from './persistence.service';
 import { ErrorResponseInternal } from '../middlewares/error.handler';
 import { databaseaccess } from '../../../src/databaseaccess';
+import AppsService from './apps.service';
 import BrokerService from './broker.service';
 import C from 'cls-hooked';
 import App = Components.Schemas.App;
