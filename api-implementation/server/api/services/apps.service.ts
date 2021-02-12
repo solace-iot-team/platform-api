@@ -1,7 +1,14 @@
 import L from '../../common/logger';
 import { ErrorResponseInternal } from '../middlewares/error.handler';
-import { PersistenceService } from './persistence.service';
+import DevelopersService from './developers.service';
+import ApiProductsService from './apiProducts.service';
+import ApisService from './apis.service';
+import { Paging, PersistenceService } from './persistence.service';
 import App = Components.Schemas.App;
+import AppListItem = Components.Schemas.AppListItem;
+import AppResponse = Components.Schemas.AppResponse;
+import AppPatch = Components.Schemas.AppPatch;
+import ApiProduct = Components.Schemas.APIProduct;
 
 
 export interface APISpecification {
@@ -22,23 +29,39 @@ export class AppsService {
     return this.persistenceService.all();
   }
 
-  byName(name: string): Promise<App> {
-    return this.persistenceService.byName(name);
+  async list(paging: Paging, query: any): Promise<AppListItem[]> {
+    var apps = await this.persistenceService.all(query, {}, paging);
+    var appList: AppListItem[] = [];
+    apps.forEach((app: AppPatch) => {
+      var listItem: AppListItem = {
+        name: app.name,
+        apiProducts: app.apiProducts,
+        appType: app["appType"],
+        status: app.status
+      };
+      appList.push(listItem);
+    });
+    return appList;
   }
 
-  delete(name: string): Promise<any> {
-    return this.persistenceService.delete(name);
+   async apiList(appName: string): Promise<string[]> {
+    var app = await this.persistenceService.byName(appName);
+    var apiList: string[] = [];
+    app.apiProducts.forEach(async (productName: string) => {
+      var apiProduct: ApiProduct = await ApiProductsService.byName(productName);
+      apiList = apiList.concat(apiProduct.apis);
+    });
+    return apiList;
   }
-
-  async create(name: string, body: App): Promise<string> {
-    return this.persistenceService.create(name, body);
+ 
+  async byName(name: string): Promise<AppResponse> {
+    var app: App = await this.persistenceService.byName(name);
+    
+    return DevelopersService.appByName(app["ownerId"], app.name);
   }
-
-  update(name: string, body: App): Promise<string> {
-    return this.persistenceService.update(name, body);
+  async apiByName(name: string): Promise<string> {
+    return ApisService.byName(name);
   }
-
-
 }
 
 export default new AppsService();

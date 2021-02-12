@@ -1,6 +1,7 @@
 import { Application } from 'express';
 import eventPortalApisRouter from './api/controllers/eventPortalApis/router';
 import apisRouter from './api/controllers/apis/router';
+import appsRouter from './api/controllers/apps/router';
 import apiDomainsRouter from './api/controllers/apiDomains/router';
 import apiProductsRouter from './api/controllers/apiProducts/router';
 import developersRouter from './api/controllers/developers/router';
@@ -79,7 +80,7 @@ export default function routes(app: Application, auth: any): void {
   router.use('/:org/environments', auth, environmentsRouter);
   router.use('/:org/services', auth, accountRouter);
   router.use('/:org/history', auth, historyRouter);
-
+  router.use('/:org/apps', auth, appsRouter);
 
   app.use('/v1', router);
 

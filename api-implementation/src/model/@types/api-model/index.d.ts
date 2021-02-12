@@ -331,6 +331,12 @@ declare namespace Components {
             messagingProtocols?: Endpoint[];
             permissions?: /* lists all the publish and subscribe topics an app has access to. Restrictions on   topic elements are taken into account. */ Permissions;
         }
+        export interface AppListItem {
+            name?: string;
+            appType?: "developer";
+            apiProducts?: string[];
+            status?: AppStatus;
+        }
         /**
          * Used for PATCH operation. An app associated with a developer. Associates the app with an API product, and auto-generates an API credentials for the app to use
          */
@@ -364,6 +370,7 @@ declare namespace Components {
             webHooks?: WebHook[];
             credentials: /* Credentials object associated with an app */ Credentials;
             environments?: AppEnvironment[];
+            status?: AppStatus;
         }
         export type AppStatus = "approved" | "pending";
         export type Attributes = {
@@ -835,6 +842,75 @@ declare namespace Paths {
                 export type $403 = Components.Schemas.ErrorResponse;
                 export type $404 = Components.Schemas.ErrorResponse;
                 export type $422 = Components.Schemas.ErrorResponse;
+                export type $500 = Components.Schemas.ErrorResponse;
+                export type $503 = Components.Schemas.ErrorResponse;
+                export type $504 = Components.Schemas.ErrorResponse;
+            }
+        }
+    }
+    namespace $OrganizationApps {
+        namespace Get {
+            namespace Responses {
+                export type $200 = Components.Schemas.AppListItem[];
+                export type $400 = Components.Schemas.ErrorResponse;
+                export type $401 = Components.Schemas.ErrorResponse;
+                export type $403 = Components.Schemas.ErrorResponse;
+                export type $404 = Components.Schemas.ErrorResponse;
+                export type $500 = Components.Schemas.ErrorResponse;
+                export type $503 = Components.Schemas.ErrorResponse;
+                export type $504 = Components.Schemas.ErrorResponse;
+            }
+        }
+        namespace Parameters {
+            export type Status = Components.Schemas.AppStatus;
+        }
+        export interface QueryParameters {
+            status?: Parameters.Status;
+        }
+    }
+    namespace $OrganizationApps$AppName {
+        namespace Get {
+            namespace Responses {
+                export type $200 = /* App Response Object - includes protocol binding information and app premissions. An app associated with a developer. Associates the app with an API product, and auto-generates an API credentials for the app to use. */ Components.Schemas.AppResponse;
+                export type $400 = Components.Schemas.ErrorResponse;
+                export type $401 = Components.Schemas.ErrorResponse;
+                export type $403 = Components.Schemas.ErrorResponse;
+                export type $404 = Components.Schemas.ErrorResponse;
+                export type $500 = Components.Schemas.ErrorResponse;
+                export type $503 = Components.Schemas.ErrorResponse;
+                export type $504 = Components.Schemas.ErrorResponse;
+            }
+        }
+    }
+    namespace $OrganizationApps$AppNameApis {
+        namespace Get {
+            namespace Responses {
+                export type $200 = string[];
+                export type $400 = Components.Schemas.ErrorResponse;
+                export type $401 = Components.Schemas.ErrorResponse;
+                export type $403 = Components.Schemas.ErrorResponse;
+                export type $404 = Components.Schemas.ErrorResponse;
+                export type $500 = Components.Schemas.ErrorResponse;
+                export type $503 = Components.Schemas.ErrorResponse;
+                export type $504 = Components.Schemas.ErrorResponse;
+            }
+        }
+    }
+    namespace $OrganizationApps$AppNameApis$ApiName {
+        namespace Get {
+            namespace Parameters {
+                export type Format = "application/json" | "application/x-yaml";
+            }
+            export interface QueryParameters {
+                format?: Parameters.Format;
+            }
+            namespace Responses {
+                export interface $200 {
+                }
+                export type $400 = Components.Schemas.ErrorResponse;
+                export type $401 = Components.Schemas.ErrorResponse;
+                export type $403 = Components.Schemas.ErrorResponse;
+                export type $404 = Components.Schemas.ErrorResponse;
                 export type $500 = Components.Schemas.ErrorResponse;
                 export type $503 = Components.Schemas.ErrorResponse;
                 export type $504 = Components.Schemas.ErrorResponse;
