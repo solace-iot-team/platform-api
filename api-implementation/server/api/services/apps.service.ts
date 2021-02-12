@@ -77,6 +77,11 @@ export class AppsService {
         if (env.messagingProtocols.length > 1) {
           serverKey = `${env.name}-${protocol.protocol.name}`;
         }
+        if (protocol.protocol.name.toUpperCase().startsWith("HTTP")){
+          server.security = [{httpBasic:[]}];
+        } else {
+          server.security = [{userPassword:[]}];
+        }
         servers[serverKey] = server;
       }
     }
@@ -90,6 +95,10 @@ export class AppsService {
       specModel = JSON.parse(AsyncAPIHelper.YAMLtoJSON(spec));
     }
     specModel.servers = servers;
+    // add the username password security scheme
+    specModel.components.securitySchemes = {};
+    specModel.components.securitySchemes.userPassword= {type: "userPassword", description: "Username Password"};
+    specModel.components.securitySchemes.httpBasic= {type: "http", description: "HTTP Basic", scheme: "basic"};
     return JSON.stringify(specModel);
   }
 }

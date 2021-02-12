@@ -3,4 +3,5 @@ export interface AsyncAPIServer {
 	protocol: string,
 	protocolVersion: string
 	description?: string,
+	security?: any
 }
