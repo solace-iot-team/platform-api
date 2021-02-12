@@ -48,10 +48,10 @@ export class AppsService {
    async apiList(appName: string): Promise<string[]> {
     var app = await this.persistenceService.byName(appName);
     var apiList: string[] = [];
-    app.apiProducts.forEach(async (productName: string) => {
+    for (var productName of app.apiProducts){
       var apiProduct: ApiProduct = await ApiProductsService.byName(productName);
       apiList = apiList.concat(apiProduct.apis);
-    });
+    }
     return apiList;
   }
  

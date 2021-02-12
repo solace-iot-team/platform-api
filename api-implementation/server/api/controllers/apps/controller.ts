@@ -27,7 +27,7 @@ export class Controller {
   }
 
   allApis(req: Request, res: Response, next: NextFunction): void {
-    AppsService.apiList(req.params['name']).then((r) => res.json(r)).catch(e => {
+    AppsService.apiList(req.params['app']).then((r) => res.json(r)).catch(e => {
       L.error(e);
       next(e);
     });
