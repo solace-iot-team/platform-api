@@ -863,7 +863,7 @@ class BrokerService {
 		);
 	}
 
-	public async getMessagingProtocols(app: App): Promise<AppEnvironment[]> {
+	public getMessagingProtocols(app: App): Promise<AppEnvironment[]> {
 
 		return new Promise<AppEnvironment[]>((resolve, reject) => {
 			var appEnvironments: AppEnvironment[] = [];

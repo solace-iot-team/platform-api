@@ -3,6 +3,7 @@ import { ErrorResponseInternal } from '../middlewares/error.handler';
 import DevelopersService from './developers.service';
 import ApiProductsService from './apiProducts.service';
 import ApisService from './apis.service';
+import BrokerService from './broker.service';
 import { Paging, PersistenceService } from './persistence.service';
 import App = Components.Schemas.App;
 import AppListItem = Components.Schemas.AppListItem;
@@ -59,7 +60,9 @@ export class AppsService {
     
     return DevelopersService.appByName(app["ownerId"], app.name);
   }
-  async apiByName(name: string): Promise<string> {
+  async apiByName(appName: string, name: string): Promise<string> {
+    var app = await this.persistenceService.byName(appName);
+    var envs = await BrokerService.getMessagingProtocols(app);
     return ApisService.byName(name);
   }
 }

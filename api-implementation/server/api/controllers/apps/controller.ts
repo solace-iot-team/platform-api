@@ -27,7 +27,7 @@ export class Controller {
   }
 
   allApis(req: Request, res: Response, next: NextFunction): void {
-    ApisService.all().then((r) => res.json(r)).catch(e => {
+    AppsService.apiList(req.params['name']).then((r) => res.json(r)).catch(e => {
       L.error(e);
       next(e);
     });
@@ -35,7 +35,7 @@ export class Controller {
 
   async apiByName(req: Request, res: Response, next: NextFunction): Promise<void> {
     return new Promise<any>(async (reject, resolve) => {
-      var r: string = await AppsService.apiByName(req.params['name']);
+      var r: string = await AppsService.apiByName(req.params['app'], req.params['name']);
       Controller.handleResponse(r, req, res, next);
       resolve();
     }).catch((e) => {
