@@ -439,10 +439,10 @@ class BrokerService {
 				var rdpUrl: URL;
 				var webHooks: WebHook[] = [];
 				webHooks = app.webHooks.filter(w => w.environments == null || w.environments.find(e => e == service['environment']));
-				if(webHooks.length!=1){
+				if (webHooks.length != 1) {
 					var msg: string = `Invalid webhook configuration for ${service['environment']}, found ${webHooks.length} matching configurations`;
 					L.warn(msg);
-					reject (new ErrorResponseInternal(400, msg))
+					reject(new ErrorResponseInternal(400, msg))
 					return;
 				}
 				var webHook = webHooks[0];
@@ -697,8 +697,8 @@ class BrokerService {
 				arr[index] = this.scrubDestination(s);
 			});
 
-			L.debug(publishExceptions);
-			L.debug(subscribeExceptions);
+			//L.debug(publishExceptions);
+			//L.debug(subscribeExceptions);
 			var permissions: Permissions = {
 				publish: publishExceptions,
 				subscribe: subscribeExceptions
@@ -867,7 +867,6 @@ class BrokerService {
 
 		return new Promise<AppEnvironment[]>((resolve, reject) => {
 			var appEnvironments: AppEnvironment[] = [];
-			var endpoints: Endpoint[] = [];
 
 			var apiProductPromises: Promise<APIProduct>[] = [];
 			app.apiProducts.forEach((productName: string) => {
@@ -880,13 +879,14 @@ class BrokerService {
 					L.info(`getMessagingProtocols ${product.name}`);
 					for (var envName of product.environments) {
 						var appEnv = appEnvironments.find(ae => ae.name == envName);
-						if (!appEnv) {
+						if (appEnv === undefined) {
 							appEnv = {
 								name: envName
 							};
 							appEnvironments.push(appEnv);
 						}
 						const service = await this.getServiceByEnv(envName);
+						var endpoints: Endpoint[] = [];
 						for (var protocol of product.protocols) {
 							L.info(`getMessagingProtocols ${protocol.name}`);
 							var keys = this.getProtocolMappings().find(element => element.name == protocol.name).protocolKeys;
@@ -894,7 +894,8 @@ class BrokerService {
 							var endpoint = service.messagingProtocols.find(mp => mp.name == keys.name).endPoints.find(ep => ep.transport == keys.protocol);
 							L.info(endpoint);
 							var newEndpoint: Endpoint = endpoints.find(ep => ep.uri == endpoint.uris[0]);
-							if (!newEndpoint) {
+							L.info(newEndpoint);
+							if (newEndpoint === undefined) {
 								newEndpoint = {
 									compressed: endpoint.compressed == 'yes' ? 'yes' : 'no',
 									secure: endpoint.secured == 'yes' ? 'yes' : 'no',

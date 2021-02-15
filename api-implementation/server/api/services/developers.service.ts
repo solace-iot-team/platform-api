@@ -52,6 +52,7 @@ export class DevelopersService {
 
         
         var endpoints = await BrokerService.getMessagingProtocols(app);
+       
         app.environments = endpoints;
         for (var appEnv of app.environments){
           var permissions = await BrokerService.getPermissions(app, dev, appEnv.name);

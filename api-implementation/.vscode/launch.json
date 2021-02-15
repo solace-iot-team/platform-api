@@ -4,6 +4,7 @@
 {
   "version": "0.2.0",
   "configurations": [
+
     {
       "name": "Launch eventportalfacade.ts",
       "type": "node",
@@ -11,6 +12,13 @@
       "request": "launch",
       "program": "${workspaceFolder}/src/eventportalfacade.ts",
       "cwd": "${workspaceFolder}/src"
-    }
-  ]
+    },
+    {
+      "name": "Launch build.ts",
+      "type": "node",
+      "console": "integratedTerminal",
+      "request": "launch",
+      "program": "${workspaceFolder}/build.ts",
+      "cwd": "${workspaceFolder}/"
+    }  ]
 }
