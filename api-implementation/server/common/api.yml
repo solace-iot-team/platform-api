@@ -636,6 +636,104 @@ components:
           type: string
           example: xm7dc2dfas4
 
+    EnvironmentResponse:
+      description: an environment
+      type: object
+      required:
+      - name
+      - description
+      - serviceId
+      properties:
+        name:
+          type: string
+          example: dev
+        description:
+          type: string
+          example: development environment
+        serviceId:
+          type: string
+          example: xm7dc2dfas4
+        msgVpnName:
+          type: string
+        datacenterId:
+          type: string
+        datacenterProvider:
+          type: string
+        serviceTypeId:
+          type: string
+        serviceClassId:
+          type: string
+        creationState:
+          type: string
+        messagingProtocols:
+          type: array
+          items:
+            type: object
+            properties:
+              name:
+                type: string
+              username:
+                type: string
+              password:
+                type: string
+              endPoints:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    name:
+                      type: string
+                    transport:
+                      type: string
+                    uris:
+                      type: array
+                      items:
+                        type: string
+                    secured:
+                      type: string
+                    compressed:
+                      type: string
+                  required:
+                  - name
+                  - transport
+                  - uris
+                  - secured
+                  - compressed
+              limits:
+                type: object
+            required:
+            - name
+            - username
+            - password
+            - endPoints
+            - limits
+        serviceClassDisplayedAttributes:
+          type: object
+          properties:
+            High Availability:
+              type: string
+            Network Speed:
+              type: string
+            Storage:
+              type: string
+            Message Broker Tenancy:
+              type: string
+            Queues:
+              type: string
+            Clients:
+              type: string
+            Network Usage:
+              type: string
+          required:
+          - High Availability
+          - Network Speed
+          - Storage
+          - Message Broker Tenancy
+          - Queues
+          - Clients
+          - Network Usage
+        
+
     EnvironmentPatch:
       description: used for PATCH operation, an environment
       type: object
@@ -3141,7 +3239,7 @@ paths:
          content: 
            application/json:
              schema:
-               $ref: '#/components/schemas/Environment'
+               $ref: '#/components/schemas/EnvironmentResponse'
        '400': 
          description: "Bad Request."
          content: 

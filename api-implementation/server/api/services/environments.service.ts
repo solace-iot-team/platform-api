@@ -1,7 +1,9 @@
 import L from '../../common/logger';
 import Environment = Components.Schemas.Environment;
 import EnvironmentPatch = Components.Schemas.EnvironmentPatch;
+import EnvironmentResponse = Components.Schemas.EnvironmentResponse;
 import { PersistenceService } from './persistence.service';
+import SolaceCloudFacade from '../../../src/solacecloudfacade';
 
 export class EnvironmentsService {
 
@@ -14,8 +16,24 @@ export class EnvironmentsService {
     return this.persistenceService.all(query);
   }
 
-  byName(name: string): Promise<Environment> {
-    return this.persistenceService.byName(name);
+  async byName(name: string): Promise<EnvironmentResponse> {
+    var env = await this.persistenceService.byName(name);
+    var service = await SolaceCloudFacade.getServiceByEnvironment(env);
+    var response: EnvironmentResponse = {
+        description: env.description,
+        name: env.name,
+        serviceId: env.serviceId,
+        creationState: service.creationState,
+        datacenterId: service.datacenterId,
+        datacenterProvider: service.datacenterProvider,
+        messagingProtocols: service.messagingProtocols,
+        msgVpnName: service.msgVpnName,
+        serviceClassDisplayedAttributes: service.serviceClassDisplayedAttributes,
+        serviceClassId: service.serviceClassId,
+        serviceTypeId: service.serviceTypeId
+        
+    };
+    return response;
   }
 
   delete(name: string): Promise<number> {

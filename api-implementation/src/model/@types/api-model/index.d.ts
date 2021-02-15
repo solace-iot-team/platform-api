@@ -459,6 +459,54 @@ declare namespace Components {
              */
             description?: string;
         }
+        /**
+         * an environment
+         */
+        export interface EnvironmentResponse {
+            /**
+             * example:
+             * dev
+             */
+            name: string;
+            /**
+             * example:
+             * development environment
+             */
+            description: string;
+            /**
+             * example:
+             * xm7dc2dfas4
+             */
+            serviceId: string;
+            msgVpnName?: string;
+            datacenterId?: string;
+            datacenterProvider?: string;
+            serviceTypeId?: string;
+            serviceClassId?: string;
+            creationState?: string;
+            messagingProtocols?: {
+                name: string;
+                username: string;
+                password: string;
+                endPoints: {
+                    name: string;
+                    transport: string;
+                    uris: string[];
+                    secured: string;
+                    compressed: string;
+                }[];
+                limits: unknown;
+            }[];
+            serviceClassDisplayedAttributes?: {
+                "High Availability": string;
+                "Network Speed": string;
+                Storage: string;
+                "Message Broker Tenancy": string;
+                Queues: string;
+                Clients: string;
+                "Network Usage": string;
+            };
+        }
         export interface ErrorResponse {
             /**
              * example:
@@ -1113,7 +1161,7 @@ declare namespace Paths {
         }
         namespace Get {
             namespace Responses {
-                export type $200 = /* an environment */ Components.Schemas.Environment;
+                export type $200 = /* an environment */ Components.Schemas.EnvironmentResponse;
                 export type $400 = Components.Schemas.ErrorResponse;
                 export type $401 = Components.Schemas.ErrorResponse;
                 export type $403 = Components.Schemas.ErrorResponse;
