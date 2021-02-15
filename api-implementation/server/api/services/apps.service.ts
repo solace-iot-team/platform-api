@@ -60,8 +60,9 @@ export class AppsService {
 
   async byName(name: string): Promise<AppResponse> {
     var app: App = await this.persistenceService.byName(name);
-
-    return DevelopersService.appByName(app["ownerId"], app.name);
+    var devApp = await DevelopersService.appByName(app["ownerId"], app.name);
+    devApp["ownerId"]=app["ownerId"];
+    return devApp;
   }
   async apiByName(appName: string, name: string): Promise<string> {
     var app = await this.persistenceService.byName(appName);
