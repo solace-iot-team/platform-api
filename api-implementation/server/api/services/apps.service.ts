@@ -40,7 +40,8 @@ export class AppsService {
         name: app.name,
         apiProducts: app.apiProducts,
         appType: app["appType"],
-        status: app.status
+        status: app.status,
+        ownerId: app["ownerId"]  
       };
       appList.push(listItem);
     });

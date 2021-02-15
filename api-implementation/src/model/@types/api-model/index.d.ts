@@ -334,6 +334,11 @@ declare namespace Components {
         export interface AppListItem {
             name?: string;
             appType?: "developer";
+            /**
+             * example:
+             * Developer-1
+             */
+            ownerId?: string;
             apiProducts?: string[];
             status?: AppStatus;
         }

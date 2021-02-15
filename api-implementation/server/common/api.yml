@@ -553,6 +553,9 @@ components:
             type: string
             enum:
             - developer
+          ownerId:
+            type: string
+            example: "Developer-1"
           apiProducts:
             type: array 
             items:
