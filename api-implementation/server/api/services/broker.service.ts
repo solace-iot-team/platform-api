@@ -1040,6 +1040,25 @@ class BrokerService {
 		};
 		map.push(mqtts);
 
+		var wsMqtt: ProtocolMapping = {
+			name: 'ws-mqtt',
+			protocolKeys: {
+				name: 'MQTT',
+				protocol: "WS"
+			}
+		};
+		map.push(wsMqtt);
+
+		var wssMqtt: ProtocolMapping = {
+			name: 'wss-mqtt',
+			protocolKeys: {
+				name: 'MQTT',
+				protocol: "WSS"
+			}
+		};
+		map.push(wssMqtt);
+
+
 		var amqp: ProtocolMapping = {
 			name: 'amqp',
 			protocolKeys: {

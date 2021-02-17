@@ -34,9 +34,20 @@ export class DevelopersService {
     return this.persistenceService.all();
   }
 
-  allDevelopersApps(name: string, paging: Paging, query: any): Promise<App[]> {
+  async allDevelopersApps(name: string, paging: Paging, query: any): Promise<App[]> {
     query.ownerId = name;
     query.appType = 'developer';
+    try {
+      var dev: Developer = await this.persistenceService.byName(name);
+      if (dev === null) {
+        return new Promise<App[]>((resolve, reject) => {
+          reject(new ErrorResponseInternal(404, `Object ${name} not found`));
+        });
+      }
+    } catch (e) {
+      L.error(e);
+      throw e;
+    }
     return this.appPersistenceService.all(query, {}, paging);
   }
 
@@ -50,11 +61,11 @@ export class DevelopersService {
       var dev: Developer = await this.persistenceService.byName(developer);
       if (app) {
 
-        
+
         var endpoints = await BrokerService.getMessagingProtocols(app);
-       
+
         app.environments = endpoints;
-        for (var appEnv of app.environments){
+        for (var appEnv of app.environments) {
           var permissions = await BrokerService.getPermissions(app, dev, appEnv.name);
           appEnv.permissions = permissions;
         }
@@ -92,102 +103,104 @@ export class DevelopersService {
     return this.persistenceService.create(body.userName, body);
   }
 
-  createApp(developer: string, body: App): Promise<App> {
-    return new Promise<App>(async (resolve, reject) => {
-      const d = await this.byName(developer);
-      L.info(d);
-      if (!d) {
-        reject(new ErrorResponseInternal(404, `Entity ${developer} does not exist`))
+  async createApp(developer: string, body: App): Promise<App> {
+    var dev = null;
+    try {
+      dev = await this.persistenceService.byName(developer)
+    } catch (e) {
+      // do nothing
+    }
+    if (dev === null) {
+      throw new ErrorResponseInternal(404, `Entity ${developer} does not exist`);
+    }
+    L.info(dev);
+    var app: DeveloperApp = {
+      ownerId: developer,
+      appType: "developer",
+      name: body.name,
+      apiProducts: body.apiProducts,
+      credentials: body.credentials
+    };
+    if (body.attributes)
+      app.attributes = body.attributes;
+    if (body.callbackUrl)
+      app.callbackUrl = body.callbackUrl;
+    if (body.webHooks)
+      app.webHooks = body.webHooks;
+
+    L.info(`App create request ${JSON.stringify(app)}`);
+    try {
+      var validated = await this.validateAPIProducts(app);
+      if (validated) {
+        app.status = 'approved';
+      } else {
+        app.status = 'pending';
       }
-      var app: DeveloperApp = {
-        appType: 'developer',
-        ownerId: developer,
-        apiProducts: body.apiProducts,
-        name: body.name,
-        attributes: body.attributes,
-        callbackUrl: body.callbackUrl,
-        expiresIn: body.expiresIn,
-        credentials: body.credentials,
-        webHooks: body.webHooks
-      };
-      try {
-        const approvalCheck = await this.validateAPIProducts(app);
-        if (approvalCheck) {
-          app.status = 'approved';
-        } else {
-          app.status = 'pending';
-        }
-        if (!body.credentials.secret) {
-          var consumerCredentials = {
-            consumerKey: passwordGenerator.generate({
-              length: 32, numbers: true, strict: true
-            }),
-            consumerSecret: passwordGenerator.generate({
-              length: 16, numbers: true, strict: true
-            })
-          };
-          body.credentials.secret = consumerCredentials;
-        }
-        var promise: Promise<any> = this.appPersistenceService.create(body.name, app);
-        promise.then(async (val) => {
-          if (app.status == 'approved') {
-            await BrokerService.provisionApp(app, d);
-          }
-          resolve(promise);
-        }).catch((e) => reject(e));
-      } catch (e) {
-        L.error(`createApp ${e}`);
-        reject(e);
+
+      if (!app.credentials.secret) {
+        var consumerCredentials = {
+          consumerKey: passwordGenerator.generate({
+            length: 32, numbers: true, strict: true
+          }),
+          consumerSecret: passwordGenerator.generate({
+            length: 16, numbers: true, strict: true
+          })
+        };
+        app.credentials.secret = consumerCredentials;
       }
-    });
+
+      var newApp: DeveloperApp = await this.appPersistenceService.create(app.name, app);
+      if (newApp.status == 'approved') {
+        L.info(`provisioning app ${app.name}`);
+        var r = await BrokerService.provisionApp(newApp as App, dev);
+      }
+      return newApp;
+    } catch (e) {
+      L.error(e);
+      throw e;
+    }
   }
 
   update(name: string, body: Developer): Promise<Developer> {
     return this.persistenceService.update(name, body);
   }
 
-  updateApp(developer: string, name: string, body: AppPatch): Promise<AppPatch> {
-    return new Promise<App>((resolve, reject) => {
-      this.byName(developer).then((d) => {
-        L.info(d);
-        if (!d) {
-          reject(new ErrorResponseInternal(404, `Entity ${developer} does not exist`));
-        }
-        var app: DeveloperAppPatch = {
-          ownerId: developer,
-          appType: "developer",
-          name: name
-        };
+  async updateApp(developer: string, name: string, body: AppPatch): Promise<AppPatch> {
+    var dev = null;
+    try {
+      dev = await this.persistenceService.byName(developer)
+    } catch (e) {
+      // do nothing
+    }
+    if (dev === null) {
+      throw new ErrorResponseInternal(404, `Entity ${developer} does not exist`);
+    }
+    L.info(dev);
+    var app: DeveloperAppPatch = {
+      ownerId: developer,
+      appType: "developer",
+      name: name
+    };
 
-        if (body.apiProducts)
-          app.apiProducts = body.apiProducts;
-        if (body.attributes)
-          app.attributes = body.attributes;
-        if (body.callbackUrl)
-          app.callbackUrl = body.callbackUrl;
-        if (body.status)
-          app.status = body.status;
-        if (body.webHooks)
-          app.webHooks = body.webHooks;
+    if (body.apiProducts)
+      app.apiProducts = body.apiProducts;
+    if (body.attributes)
+      app.attributes = body.attributes;
+    if (body.callbackUrl)
+      app.callbackUrl = body.callbackUrl;
+    if (body.status)
+      app.status = body.status;
+    if (body.webHooks)
+      app.webHooks = body.webHooks;
 
-        L.info(`App patch request ${JSON.stringify(app)}`);
-        // don't care about approval check - we accept whatever status we get. but need to make sure references are valid
-        this.validateAPIProducts(app).then((v) => {
-          var promise: Promise<any> = this.appPersistenceService.update(name, app);
-          promise.then((val: AppPatch) => {
-            if (val.status == 'approved') {
-              L.info(`provisioning app ${app.name}`);
-              BrokerService.provisionApp(val as App, d).then((r) => resolve(promise)).catch((e) => reject(e));
-            } else {
-              resolve(promise);
-            }
-          }).catch((e) => reject(e));
-
-        }).catch(e => {
-          reject(e);
-        });
-      });
-    });
+    L.info(`App patch request ${JSON.stringify(app)}`);
+    var validated = await this.validateAPIProducts(app);
+    var appPatch: AppPatch = await this.appPersistenceService.update(name, app);
+    if (appPatch.status == 'approved') {
+      L.info(`provisioning app ${app.name}`);
+      var r = await BrokerService.provisionApp(appPatch as App, dev);
+    }
+    return appPatch;
   }
 
   // private methods
