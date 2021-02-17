@@ -593,7 +593,7 @@ declare namespace Components {
             publish?: string[];
         }
         export interface Protocol {
-            name: "amqp" | "amqps" | "http" | "https" | "jms" | "mqtt" | "secure-mqtt" | "ws" | "wss" | "smf" | "smfs";
+            name: "amqp" | "amqps" | "http" | "https" | "jms" | "mqtt" | "secure-mqtt" | "ws-mqtt" | "wss-mqtt" | "ws" | "wss" | "smf" | "smfs";
             version?: string;
         }
         /**
