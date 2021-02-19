@@ -84,7 +84,7 @@ components:
     page_size:
      name: pageSize
      in: query
-     description: "Currently not honoured. The number of itesm to get per page. Min: 1 Max: 100"
+     description: "The number of items to get per page. Min: 1 Max: 100"
      required: false
      schema: 
       type: integer
@@ -93,7 +93,7 @@ components:
     page_number:
      name: pageNumber
      in: query
-     description: "Currently not honoured. The page number to get. Min: 1"
+     description: "The page number to get. Min: 1"
      required: false
      schema: 
        type: integer
