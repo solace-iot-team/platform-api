@@ -1080,6 +1080,9 @@ components:
           description: the request URI
         requestBody:
           type: string
+        responseCode:
+          type: integer
+          example: 200
     Protocol:
       type: object
       required: 

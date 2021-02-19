@@ -553,6 +553,11 @@ declare namespace Components {
              */
             requestURI?: string;
             requestBody?: string;
+            /**
+             * example:
+             * 200
+             */
+            responseCode?: number;
         }
         export interface Organization {
             /**

@@ -15,13 +15,13 @@ export class PersistenceService {
     var namespace = C.getNamespace('platform-api');
     var db: string = "platform";
     var org: string = null;
-    if (namespace!=null) {
+    if (namespace != null) {
       L.debug(`PersistenceService: Found namespace ${namespace}`);
       namespace.run(function () {
         org = namespace.get('org');
       });
     }
-    if (org!=null) {
+    if (org != null) {
       db = org;
     }
     L.info(`db is ${db}`);
@@ -32,16 +32,27 @@ export class PersistenceService {
   }
 
   all(query?: object, sort?: object, paging?: Paging): Promise<any[]> {
-    if (!query) {
+    if (query == null) {
       query = {};
     }
-    if (!sort) {
+    if (sort == null) {
       sort = {};
+    }
+    // attempt to retrieve paging from context/namespace
+    if (paging == null) {
+      var namespace = C.getNamespace('platform-api');
+      if (namespace != null) {
+        L.debug(`PersistenceService: Found namespace ${namespace}`);
+        namespace.run(function () {
+          paging = namespace.get('paging');
+        });
+        L.debug(`paging ${paging}`);
+      }
     }
     return new Promise<any[]>((resolve, reject) => {
       const collection: mongodb.Collection = this.getCollection();
       var x: mongodb.Cursor<any> = null;
-      if (paging) {
+      if (paging !== null && paging !== undefined) {
         x = collection.find(query).sort(sort).skip((paging.pageNumber - 1) * paging.pageSize).limit(paging.pageSize);
       } else {
         x = collection.find(query).sort(sort);
@@ -76,7 +87,7 @@ export class PersistenceService {
       collection.findOne(q).then(
         (item) => {
           L.trace(item);
-          if (item===null) {
+          if (item === null) {
             L.debug(`Object ${name} not found`);
             reject(new ErrorResponseInternal(404, `Object ${name} not found`));
           } else {

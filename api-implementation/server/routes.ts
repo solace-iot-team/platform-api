@@ -17,24 +17,25 @@ import { Request, Response } from 'express';
 import C from 'cls-hooked';
 import Organization = Components.Schemas.Organization;
 import History = Components.Schemas.History;
-import * as basicAuth from 'express-basic-auth'
+import basicAuth from 'express-basic-auth';
 import { ErrorResponseInternal } from './api/middlewares/error.handler';
+import pagingHandler from './api/middlewares/paging.handler';
+import contextHandler from './api/middlewares/context.handler';
+
 
 export default function routes(app: Application, auth: any): void {
   var router = express.Router();
+  router.use(contextHandler);
+  router.use(pagingHandler);
 
   router.get('/', (req: Request, res: Response) => {
     res.status(404).end();
   });
-
   router.param('org', function (req, res, next, org) {
-    //var org: string = req.params['org'];
-    var ns = C.createNamespace('platform-api');
+    var ns = C.getNamespace('platform-api');
     L.info(`org in namespace is ${ns.get('org')}`);
     L.debug("org param is " + org);
     OrganizationsService.byName(org).then((r: Organization) => {
-      //var namespace = C.getNamespace('platform-api');
-
       ns.run(function () {
         ns.set('org', org);
         ns.set('cloud-token', r["cloud-token"]);
@@ -45,10 +46,13 @@ export default function routes(app: Application, auth: any): void {
       next(new ErrorResponseInternal(404, `Not found`));
     });
   });
-
+  const authAdmin = basicAuth({
+    users: { 'admin': 'p3zvZFF7ka4Wrj4p' },
+    challenge: true
+  });
 
   const auditableVerbs: string[] = ['POST', 'PUT', 'DELETE', 'PATCH'];
-  router.use('/*', auth, function (req: basicAuth.IBasicAuthedRequest, res, next) {
+  router.use('/*', function (req: basicAuth.IBasicAuthedRequest, res, next) {
     res.on("finish", function () {
       L.info("finish response");
       if (auditableVerbs.indexOf(req.method) > -1) {
@@ -58,14 +62,17 @@ export default function routes(app: Application, auth: any): void {
           requestBody: req.body,
           requestURI: `${req.baseUrl}/${req.url}`,
           title: `${req.method} ${req.baseUrl}/${req.url}`,
-          user: req.auth.user
+          user: req.auth.user,
+          responseCode: res.statusCode
         };
         HistoryService.create(h);
         L.debug(`auditable request: ${req.method}, ${req.baseUrl}/${req.url}, ${res.statusCode}`);
         C.reset();
       };
+      
     });
     next();
+    
   });
 
 

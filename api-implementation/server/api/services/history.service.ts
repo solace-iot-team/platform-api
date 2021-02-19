@@ -12,8 +12,8 @@ export class ApisService {
 
   }
 
-  async all(paging: Paging): Promise<History[]> {
-    return this.persistenceService.all({}, {at: -1}, paging);
+  async all(): Promise<History[]> {
+    return this.persistenceService.all({}, {at: -1});
   }
   create(body: History): Promise<History> {
     return this.persistenceService.create(v4(), body);

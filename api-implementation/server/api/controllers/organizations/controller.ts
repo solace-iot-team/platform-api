@@ -6,7 +6,7 @@ import { ErrorResponseInternal } from '../../middlewares/error.handler';
 export class Controller {
   all(req: Request, res: Response, next: NextFunction): void {
     OrganizationsService.all().then((r) => {
-      res.json(r).status(200).send();
+      res.json(r).status(200).end();
       next();
     }
     ).catch((e) => next(e));
