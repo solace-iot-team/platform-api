@@ -78,7 +78,7 @@ export default function routes(app: Application, auth: any): void {
 
 
 
-  router.use('/organizations', auth, organizationsRouter);
+  router.use('/organizations',authAdmin , organizationsRouter);
   router.use('/:org/apis', auth, apisRouter);
   router.use('/:org/event-portal/apis', auth, eventPortalApisRouter);
   router.use('/:org/apiDomains', auth, apiDomainsRouter);

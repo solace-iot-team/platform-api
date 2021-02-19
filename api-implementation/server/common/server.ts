@@ -8,6 +8,7 @@ import cookieParser from 'cookie-parser';
 import l from './logger';
 
 import errorHandler from '../api/middlewares/error.handler';
+import fileAuthorizer from '../api/middlewares/file.authorizer';
 import * as OpenApiValidator from 'express-openapi-validator';
 
 import basicAuth from 'express-basic-auth';
@@ -45,8 +46,9 @@ export default class ExpressServer {
   }
 
   router(routes: (app: Application, auth: any) => void): ExpressServer {
+    
     const auth = basicAuth({
-      users: { 'api-user': 'Solace123!' },
+      authorizer: fileAuthorizer,
       challenge: true,
       realm: 'platform-api'
     });
