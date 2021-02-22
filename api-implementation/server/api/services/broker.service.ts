@@ -1144,7 +1144,7 @@ class BrokerService {
 		map.push(smf);
 
 		var smfs: ProtocolMapping = {
-			name: 'https',
+			name: 'smfs',
 			protocolKeys: {
 				name: 'SMF',
 				protocol: "TLS"
