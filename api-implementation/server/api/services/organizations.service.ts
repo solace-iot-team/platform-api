@@ -7,6 +7,10 @@ import AppsService from './apps.service';
 import BrokerService from './broker.service';
 import C from 'cls-hooked';
 import App = Components.Schemas.App;
+import SolaceCloudFacade from '../../../src/solacecloudfacade';
+import EventPortalFacade from '../../../src/eventportalfacade';
+
+
 const reserved: string = "platform";
 
 export class OrganizationsService {
@@ -72,34 +76,53 @@ export class OrganizationsService {
   }
 
   create(body: Organization): Promise<Organization> {
-    return new Promise<Organization>((resolve, reject) => {
+    return new Promise<Organization>(async (resolve, reject) => {
       if (body.name == reserved) {
         reject(new ErrorResponseInternal(401, `Access denied, reserved name`));
       } else {
-        this.persistenceService.create(body.name, body).then((p) => {
-          resolve(p);
-        }).catch((e) => {
-          reject(e);
-        });
+        if (await this.validateCloudToken(body["cloud-token"])) {
+          this.persistenceService.create(body.name, body).then((p) => {
+            resolve(p);
+          }).catch((e) => {
+            reject(e);
+          });
+        } else {
+          reject(new ErrorResponseInternal(400, `Invalid cloud token provided`));
+        }
       }
 
     });
   }
 
   update(name: string, body: Organization): Promise<Organization> {
-    return new Promise<Organization>((resolve, reject) => {
+    return new Promise<Organization>(async (resolve, reject) => {
       if (body.name == reserved) {
         reject(new ErrorResponseInternal(401, `Access denied, reserved name`))
       } else {
-        this.persistenceService.update(name, body).then((p) => {
-          resolve(p);
-        }).catch((e) => {
-          reject(e);
-        });
+        if (await this.validateCloudToken(body["cloud-token"])) {
+          this.persistenceService.update(name, body).then((p) => {
+            resolve(p);
+          }).catch((e) => {
+            reject(e);
+          });
+        } else {
+          reject(new ErrorResponseInternal(400, `Invalid cloud token provided`));
+        }
       }
     });
   }
 
+
+  async validateCloudToken(token: string): Promise<boolean> {
+    try {
+      var isServiceToken: boolean = await SolaceCloudFacade.validate(token);
+      var isPortalToken: boolean = await EventPortalFacade.validate(token);
+      return isServiceToken && isPortalToken;
+    } catch (e) {
+      L.warn(e);
+      return false;
+    }
+  }
 }
 
 export default new OrganizationsService();
