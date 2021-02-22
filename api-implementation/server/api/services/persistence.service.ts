@@ -60,9 +60,7 @@ export class PersistenceService {
       x.toArray(
         (err: MongoError, items) => {
           if (err) {
-            L.error('Caught error', err);
-
-            reject(new ErrorResponseInternal(500, err.message));
+            reject(new ErrorResponseInternal(500, this.createPublicErrorMessage(err)));
           } else {
             items.forEach((item) => {
               delete item._id;
@@ -97,8 +95,7 @@ export class PersistenceService {
         }
 
       ).catch((e: MongoError) => {
-        L.warn(`PersistenceService.byName ${e}`);
-        reject(new ErrorResponseInternal(500, e.message));
+        reject(new ErrorResponseInternal(500, this.createPublicErrorMessage(e)));
       });
     });
   }
@@ -124,7 +121,7 @@ export class PersistenceService {
         }
 
       ).catch((e: MongoError) => {
-        reject(new ErrorResponseInternal(422, e.message));
+        reject(new ErrorResponseInternal(422, this.createPublicErrorMessage(e)));
       });
     });
   }
@@ -138,8 +135,7 @@ export class PersistenceService {
         delete body._id;
         resolve(body);
       }).catch((e: MongoError) => {
-        L.error(`insert into ${collection.namespace} failed ${e}`);
-        reject(new ErrorResponseInternal(422, e.message));
+        reject(new ErrorResponseInternal(422, this.createPublicErrorMessage(e)));
       });
     });
   }
@@ -168,7 +164,7 @@ export class PersistenceService {
         });
 
       }).catch((e: MongoError) => {
-        reject(new ErrorResponseInternal(422, e.message));
+        reject(new ErrorResponseInternal(422, this.createPublicErrorMessage(e)));
       });
     });
   }
@@ -197,6 +193,16 @@ export class PersistenceService {
     }
 
     );
+  }
+
+  private createPublicErrorMessage(error: MongoError): string{
+    L.debug(`Initial mongo error ${error.message}`);
+    var errorCode = "E" + error.code;
+    var msg = error.message.replace(errorCode, "");
+    msg = msg.substring(0, msg.indexOf("error")).trim();
+    msg = `${msg} (${error.code.toString(16)})`;
+    L.debug(`public error message ${msg}`);
+    return msg;
   }
 
 }
