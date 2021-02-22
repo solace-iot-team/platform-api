@@ -30,6 +30,7 @@ enum Direction {
 
 interface ProtocolMapping {
 	name: string,
+	version?: string,
 	protocolKeys: SolaceProtocolIdentifiers
 }
 
@@ -1043,7 +1044,10 @@ class BrokerService {
 						newEndpoint = {
 							compressed: endpoint.compressed == 'yes' ? 'yes' : 'no',
 							secure: endpoint.secured == 'yes' ? 'yes' : 'no',
-							protocol: { name: mapping.name as Protocol["name"] },
+							protocol: {
+								name: mapping.name as Protocol["name"],
+								version: mapping.version
+							},
 							transport: endpoint.transport,
 							uri: endpoint.uris[0]
 						};
@@ -1063,6 +1067,7 @@ class BrokerService {
 		var map: ProtocolMapping[] = [];
 		var mqtt: ProtocolMapping = {
 			name: 'mqtt',
+			version: '3.1.1',
 			protocolKeys: {
 				name: 'MQTT',
 				protocol: "TCP"
@@ -1072,6 +1077,7 @@ class BrokerService {
 
 		var mqtts: ProtocolMapping = {
 			name: 'secure-mqtt',
+			version: '3.1.1',
 			protocolKeys: {
 				name: 'MQTT',
 				protocol: "SSL"
@@ -1081,6 +1087,7 @@ class BrokerService {
 
 		var wsMqtt: ProtocolMapping = {
 			name: 'ws-mqtt',
+			version: '3.1.1',
 			protocolKeys: {
 				name: 'MQTT',
 				protocol: "WS"
@@ -1090,6 +1097,7 @@ class BrokerService {
 
 		var wssMqtt: ProtocolMapping = {
 			name: 'wss-mqtt',
+			version: '3.1.1',
 			protocolKeys: {
 				name: 'MQTT',
 				protocol: "WSS"
@@ -1100,6 +1108,7 @@ class BrokerService {
 
 		var amqp: ProtocolMapping = {
 			name: 'amqp',
+			version: '1.0.0',
 			protocolKeys: {
 				name: 'AMQP',
 				protocol: "AMQP"
@@ -1109,6 +1118,7 @@ class BrokerService {
 
 		var amqps: ProtocolMapping = {
 			name: 'amqps',
+			version: '1.0.0',
 			protocolKeys: {
 				name: 'AMQP',
 				protocol: "AMQPS"
@@ -1118,6 +1128,7 @@ class BrokerService {
 
 		var http: ProtocolMapping = {
 			name: 'http',
+			version: '1.1',
 			protocolKeys: {
 				name: 'REST',
 				protocol: "HTTP"
@@ -1127,6 +1138,7 @@ class BrokerService {
 
 		var https: ProtocolMapping = {
 			name: 'https',
+			version: '1.1',
 			protocolKeys: {
 				name: 'REST',
 				protocol: "HTTPS"
@@ -1136,6 +1148,7 @@ class BrokerService {
 
 		var smf: ProtocolMapping = {
 			name: 'smf',
+			version: 'smf',
 			protocolKeys: {
 				name: 'SMF',
 				protocol: "TCP"
@@ -1145,6 +1158,7 @@ class BrokerService {
 
 		var smfs: ProtocolMapping = {
 			name: 'smfs',
+			version: 'smfs',
 			protocolKeys: {
 				name: 'SMF',
 				protocol: "TLS"
@@ -1154,6 +1168,7 @@ class BrokerService {
 
 		var jms: ProtocolMapping = {
 			name: 'jms',
+			version: '1.1',
 			protocolKeys: {
 				name: 'JMS',
 				protocol: "TCP"
