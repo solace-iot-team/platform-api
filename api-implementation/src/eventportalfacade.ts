@@ -5,14 +5,39 @@ import APIDomain = Components.Schemas.APIDomain;
 import API = Components.Schemas.API;
 import { ApiError, AsyncApiService, Application, ApplicationDomainsResponse, ApplicationDomainsService, ApplicationResponse, ApplicationsService, OpenAPI, GenerateAsyncAPIRequest } from "./clients/eventportal";
 import { ErrorResponseInternal } from '../server/api/middlewares/error.handler';
-
+import C from 'cls-hooked';
 
 class EventPortalFacade {
 	constructor() {
-		OpenAPI.TOKEN = 'eyJhbGciOiJSUzI1NiIsImtpZCI6Im1hYXNfcHJvZF8yMDIwMDMyNiIsInR5cCI6IkpXVCJ9.eyJvcmciOiJzb2xhY2Vpb3R0ZWFtIiwib3JnVHlwZSI6IkVOVEVSUFJJU0UiLCJzdWIiOiIzZTJvY214MTA1IiwicGVybWlzc2lvbnMiOiJBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQXdBQU09IiwiYXBpVG9rZW5JZCI6Inlhb2wzc2ZveG03IiwiaXNzIjoiU29sYWNlIENvcnBvcmF0aW9uIiwiaWF0IjoxNjAzODA3NzQ1fQ.QIBpi5_U6b1DnAwbDbJiFIT0pomqa4AyOLtmSOEF6zhoxKMm4Y27WbILZnxnh_gpdX-tvt18YcuNk4xs3T5JjFfU3qrczRHSuj2vEdsCpDQWdyZTPV4NQ-zPxRvigTjaTlcdXin8XwMGh8nZdylgRMlRQjvotomnXQxgbUol0Kl1ziFFMybqeD10qCDsUW6Jv-PKibBN3cnCsWwPZX6d_XYUECs1AHjgs5pk-A8v3DHcnxbXiAP4XXrry6ztopAWKMc5rVFoB_WFY4yi0reuTYjn6Sf0g7vZxFifRZZHZmqZtNQUiX6S80eQG4kF3YDKlr5PfLDNp4iRQe0-3svIPw';
+		//OpenAPI.TOKEN = 'eyJhbGciOiJSUzI1NiIsImtpZCI6Im1hYXNfcHJvZF8yMDIwMDMyNiIsInR5cCI6IkpXVCJ9.eyJvcmciOiJzb2xhY2Vpb3R0ZWFtIiwib3JnVHlwZSI6IkVOVEVSUFJJU0UiLCJzdWIiOiIzZTJvY214MTA1IiwicGVybWlzc2lvbnMiOiJBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQXdBQU09IiwiYXBpVG9rZW5JZCI6Inlhb2wzc2ZveG03IiwiaXNzIjoiU29sYWNlIENvcnBvcmF0aW9uIiwiaWF0IjoxNjAzODA3NzQ1fQ.QIBpi5_U6b1DnAwbDbJiFIT0pomqa4AyOLtmSOEF6zhoxKMm4Y27WbILZnxnh_gpdX-tvt18YcuNk4xs3T5JjFfU3qrczRHSuj2vEdsCpDQWdyZTPV4NQ-zPxRvigTjaTlcdXin8XwMGh8nZdylgRMlRQjvotomnXQxgbUol0Kl1ziFFMybqeD10qCDsUW6Jv-PKibBN3cnCsWwPZX6d_XYUECs1AHjgs5pk-A8v3DHcnxbXiAP4XXrry6ztopAWKMc5rVFoB_WFY4yi0reuTYjn6Sf0g7vZxFifRZZHZmqZtNQUiX6S80eQG4kF3YDKlr5PfLDNp4iRQe0-3svIPw';
+	}
+
+	private getToken(): string {
+		var namespace = C.getNamespace('platform-api');
+		var token: string = null;
+		namespace.run(function () {
+			token = namespace.get('cloud-token');
+		});
+		L.info(`token is ${token}`);
+		return token;
+	}
+	public async validate(token: string): Promise<boolean> {
+		OpenAPI.TOKEN = token;
+		try {
+			var result: Promise<any> = await ApplicationDomainsService.list(100, 1);
+			if (result != null){
+				return true;
+			} else {
+				return false;
+			}
+
+		} catch (e) {
+			return false;
+		 }
 	}
 	public async getApis(): Promise<APIListItem[]> {
 		return new Promise<APIListItem[]>((resolve, reject) => {
+			OpenAPI.TOKEN = this.getToken();
 			var result: Promise<any> = ApplicationDomainsService.list(100, 1);
 			var apiList: APIListItem[] = [];
 
@@ -42,11 +67,13 @@ class EventPortalFacade {
 		});
 	}
 	public async getAllApiDomains(): Promise<APIDomain[]> {
+		OpenAPI.TOKEN = this.getToken();
 		return this.getApiDomains(null);
 	}
 
 	public async getApiDomains(name: string): Promise<APIDomain[]> {
 		return new Promise<APIDomain[]>((resolve, reject) => {
+			OpenAPI.TOKEN = this.getToken();
 			L.info(`Looking up APIDomain ${name}`);
 			var result: Promise<any> = ApplicationDomainsService.list(100, 1, name);
 			var apiDomainList: APIDomain[] = [];
@@ -99,6 +126,7 @@ class EventPortalFacade {
 	}
 	public async getApi(name: string): Promise<API> {
 		return new Promise<API>((resolve, reject) => {
+			OpenAPI.TOKEN = this.getToken();
 			var result: Promise<any> = ApplicationsService.list2(100, 1, name);
 			result.then(
 				(value: ApplicationResponse) => {
@@ -132,6 +160,7 @@ class EventPortalFacade {
 	}
 	public async getApiSpec(name: string, asyncAPIVersion?: string): Promise<string> {
 		return new Promise<string>((resolve, reject) => {
+			OpenAPI.TOKEN = this.getToken();
 			if (!asyncAPIVersion) {
 				asyncAPIVersion = "2.0.0";
 			}
