@@ -3,6 +3,7 @@ import Environment = Components.Schemas.Environment;
 import EnvironmentPatch = Components.Schemas.EnvironmentPatch;
 import EnvironmentResponse = Components.Schemas.EnvironmentResponse;
 import { PersistenceService } from './persistence.service';
+import BrokerService from './broker.service';
 import SolaceCloudFacade from '../../../src/solacecloudfacade';
 
 export class EnvironmentsService {
@@ -26,7 +27,7 @@ export class EnvironmentsService {
         creationState: service.creationState,
         datacenterId: service.datacenterId,
         datacenterProvider: service.datacenterProvider,
-        messagingProtocols: service.messagingProtocols,
+        messagingProtocols: await BrokerService.mapMessagingProtocols(service.messagingProtocols),
         msgVpnName: service.msgVpnName,
         serviceClassDisplayedAttributes: service.serviceClassDisplayedAttributes,
         serviceClassId: service.serviceClassId,

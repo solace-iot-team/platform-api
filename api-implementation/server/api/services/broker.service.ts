@@ -6,6 +6,7 @@ import APIProduct = Components.Schemas.APIProduct;
 import Environment = Components.Schemas.Environment;
 import Permissions = Components.Schemas.Permissions;
 import Endpoint = Components.Schemas.Endpoint;
+import Protocol = Components.Schemas.Protocol;
 import AppEnvironment = Components.Schemas.AppEnvironment;
 import WebHook = Components.Schemas.WebHook;
 
@@ -889,7 +890,7 @@ class BrokerService {
 						var endpoints: Endpoint[] = [];
 						for (var protocol of product.protocols) {
 							L.info(`getMessagingProtocols ${protocol.name}`);
-							var keys = this.getProtocolMappings().find(element => element.name == protocol.name).protocolKeys;
+							var keys = BrokerService.getProtocolMappings().find(element => element.name == protocol.name).protocolKeys;
 							L.info(`getMessagingProtocols ${keys.name} ${keys.protocol}`);
 							var endpoint = service.messagingProtocols.find(mp => mp.name == keys.name).endPoints.find(ep => ep.transport == keys.protocol);
 							L.info(endpoint);
@@ -1020,7 +1021,45 @@ class BrokerService {
 		return sempv2Client;
 	}
 
-	private getProtocolMappings(): ProtocolMapping[] {
+	public async mapMessagingProtocols(serverProtocols): Promise<Endpoint[]> {
+		var endpoints: Endpoint[] = [];
+		var mappings = BrokerService.getProtocolMappings();
+		L.debug(serverProtocols);
+		for (var protocol of serverProtocols) {
+			L.info(`mapMessagingProtocols ${protocol.name}`);
+			L.info(protocol);
+			for (var serverEndpoint of protocol.endPoints) {
+				var mapping = mappings.find(element => element.protocolKeys.name == protocol.name && element.protocolKeys.protocol == serverEndpoint.transport);
+				if (mapping != null) {
+					var keys = mapping.protocolKeys;
+					L.info(`mapMessagingProtocols ${keys.name} ${keys.protocol}`);
+					L.info(serverEndpoint);
+					// var serverProtocol = serverProtocols.find(mp => mp.name == keys.name)
+					var endpoint = protocol.endPoints.find(ep => ep.transport == serverEndpoint.transport);
+					L.info(endpoint);
+					var newEndpoint: Endpoint = endpoints.find(ep => ep.uri == endpoint.uris[0]);
+					L.info(newEndpoint);
+					if (newEndpoint === undefined) {
+						newEndpoint = {
+							compressed: endpoint.compressed == 'yes' ? 'yes' : 'no',
+							secure: endpoint.secured == 'yes' ? 'yes' : 'no',
+							protocol: { name: mapping.name as Protocol["name"] },
+							transport: endpoint.transport,
+							uri: endpoint.uris[0]
+						};
+						endpoints.push(newEndpoint);
+					}
+
+				} else {
+					L.warn(`No mapping for ${JSON.stringify(protocol)}`);
+				}
+			}
+		}
+		return endpoints;
+	}
+
+
+	private static getProtocolMappings(): ProtocolMapping[] {
 		var map: ProtocolMapping[] = [];
 		var mqtt: ProtocolMapping = {
 			name: 'mqtt',

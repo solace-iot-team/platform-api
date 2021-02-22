@@ -484,19 +484,7 @@ declare namespace Components {
             serviceTypeId?: string;
             serviceClassId?: string;
             creationState?: string;
-            messagingProtocols?: {
-                name: string;
-                username: string;
-                password: string;
-                endPoints: {
-                    name: string;
-                    transport: string;
-                    uris: string[];
-                    secured: string;
-                    compressed: string;
-                }[];
-                limits: unknown;
-            }[];
+            messagingProtocols?: Endpoint[];
             serviceClassDisplayedAttributes?: {
                 "High Availability": string;
                 "Network Speed": string;

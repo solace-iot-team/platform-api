@@ -2,7 +2,7 @@ openapi: 3.0.0
 info:
   title: Solace Platform API
   description: Solace Platform API
-  version: 0.0.6
+  version: 0.0.7
 servers:
   - url: /v1
 
@@ -668,45 +668,7 @@ components:
         messagingProtocols:
           type: array
           items:
-            type: object
-            properties:
-              name:
-                type: string
-              username:
-                type: string
-              password:
-                type: string
-              endPoints:
-                type: array
-                items:
-                  type: object
-                  properties:
-                    name:
-                      type: string
-                    transport:
-                      type: string
-                    uris:
-                      type: array
-                      items:
-                        type: string
-                    secured:
-                      type: string
-                    compressed:
-                      type: string
-                  required:
-                  - name
-                  - transport
-                  - uris
-                  - secured
-                  - compressed
-              limits:
-                type: object
-            required:
-            - name
-            - username
-            - password
-            - endPoints
-            - limits
+            $ref: '#/components/schemas/Endpoint'
         serviceClassDisplayedAttributes:
           type: object
           properties:
