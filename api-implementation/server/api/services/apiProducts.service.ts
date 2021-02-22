@@ -5,6 +5,7 @@ import { PersistenceService } from './persistence.service';
 import EnvironmentsService from './environments.service';
 import ApisService from './apis.service';
 import {ErrorResponseInternal} from '../middlewares/error.handler';
+import { ApiError } from '../../../src/clients/eventportal';
 
 export class ApiProductsService {
 
@@ -98,8 +99,15 @@ export class ApiProductsService {
             }
           }
           ).catch((e) => {
+            var s : string = e as string;
             L.info(`validateReferences ${e} Referenced env ${envName} does not exist`);
-            reject(new ErrorResponseInternal(422, `Referenced environment ${envName} does not exist`));
+            if (s.includes("Not Found")){
+              reject(new ErrorResponseInternal(422, `Referenced environment ${envName} does not exist`));
+            } else {
+              reject(new ErrorResponseInternal(422, e));
+            }
+            
+            
           })
         }));
       });
