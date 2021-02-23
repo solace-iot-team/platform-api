@@ -303,6 +303,7 @@ declare namespace Components {
              * A comma separated list of Publish API resources to be bundled in the API Product.
              */
             subResources?: string[];
+            protocols?: Protocol[];
         }
         /**
          * An app associated with a developer. Associates the app with an API product, and auto-generates an API credentials for the app to use

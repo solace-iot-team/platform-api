@@ -405,6 +405,11 @@ components:
                   '{/resource1}'
                 type: string
               type: array      
+          protocols:
+            type: array
+            items:
+              $ref: '#/components/schemas/Protocol'
+
     Developer:
       description: "A profile for a developer. After the developer is created, they can register an app and receive API credentials"
       type: object
