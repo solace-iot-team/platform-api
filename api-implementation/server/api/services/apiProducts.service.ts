@@ -4,7 +4,7 @@ import { PersistenceService } from './persistence.service';
 
 import EnvironmentsService from './environments.service';
 import ApisService from './apis.service';
-import {ErrorResponseInternal} from '../middlewares/error.handler';
+import { ErrorResponseInternal } from '../middlewares/error.handler';
 import { ApiError } from '../../../src/clients/eventportal';
 
 export class ApiProductsService {
@@ -34,9 +34,9 @@ export class ApiProductsService {
         const apiReferenceCheck: boolean = await this.validateReferences(body);
         L.info(` reference check result ${apiReferenceCheck}`);
         if (!apiReferenceCheck) {
-          L.info( ` reference check failed ${apiReferenceCheck}`);
+          L.info(` reference check failed ${apiReferenceCheck}`);
           reject(new ErrorResponseInternal(422, ` reference check failed ${apiReferenceCheck}`));
-          
+
         }
         this.persistenceService.create(body.name, body).then((p) => {
           resolve(p);
@@ -47,7 +47,7 @@ export class ApiProductsService {
 
       } catch (e) {
         L.error(`APIProductsService.create failure  ${e}`);
-        reject (e);
+        reject(e);
       }
     });
 
@@ -66,14 +66,18 @@ export class ApiProductsService {
           reject(e);
         });
 
-      } catch (e){
+      } catch (e) {
         reject(e);
       }
     });
   }
 
-  private validateReferences(product: APIProduct): Promise<boolean> {
+  private async validateReferences(product: APIProduct): Promise<boolean> {
     return new Promise<boolean>((resolve, reject) => {
+      var protocolPresent = {};
+      for (var protocol of product.protocols) {
+        protocolPresent[protocol.name] = false;
+      }
       var results: Promise<boolean>[] = [];
       product.apis.forEach((n) => {
         results.push(new Promise<boolean>((resolve1, reject1) => {
@@ -92,36 +96,48 @@ export class ApiProductsService {
       product.environments.forEach((envName: string) => {
         results.push(new Promise<boolean>((resolve, reject) => {
           EnvironmentsService.byName(envName).then((p) => {
-            if (p) {
+            if (p != null) {
+              for (var protocol of product.protocols) {
+                protocolPresent[protocol.name] = (p.messagingProtocols.find(e => e.protocol.name == protocol.name) != null);
+              }
               resolve(true);
             } else {
               reject(new ErrorResponseInternal(422, `Referenced environment ${envName} does not exist`));
             }
           }
           ).catch((e) => {
-            var s : string = null;
-            if (typeof s === 'string'){
+            var s: string = null;
+            if (typeof s === 'string') {
               s = e as string;
-            } else if (e.message !== null && e.message !== undefined){
+            } else if (e.message !== null && e.message !== undefined) {
               s = e.message;
             }
-            
+
             L.info(`validateReferences ${e} Referenced env ${envName} does not exist`);
-            if (s.toUpperCase().includes("Not Found".toUpperCase())){
+            if (s.toUpperCase().includes("Not Found".toUpperCase())) {
               reject(new ErrorResponseInternal(422, `Referenced environment ${envName} does not exist`));
             } else {
               reject(new ErrorResponseInternal(422, e));
             }
-            
-            
+
+
           })
         }));
       });
-
-      Promise.all(results).then((r) => { resolve(true) }).catch((e) => {
+      Promise.all(results).then((r) => {
+        Object.keys(protocolPresent).forEach(function (key, index) {
+          if(!protocolPresent[key]){
+              reject(new ErrorResponseInternal(422, `Referenced protocol ${key} does not exist`));
+          }
+        });
+        resolve(true)
+      }).catch((e) => {
         L.info(`validateReferences a rejection occurred ${e}`);
         reject(e);
       });
+
+
+
 
     }
 
