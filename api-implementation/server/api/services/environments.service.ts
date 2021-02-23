@@ -3,8 +3,9 @@ import Environment = Components.Schemas.Environment;
 import EnvironmentPatch = Components.Schemas.EnvironmentPatch;
 import EnvironmentResponse = Components.Schemas.EnvironmentResponse;
 import { PersistenceService } from './persistence.service';
-import BrokerService from './broker.service';
+import { ProtocolMapper } from '../../../src/protocolmapper';
 import SolaceCloudFacade from '../../../src/solacecloudfacade';
+import { ErrorResponseInternal } from '../middlewares/error.handler';
 
 export class EnvironmentsService {
 
@@ -21,18 +22,18 @@ export class EnvironmentsService {
     var env = await this.persistenceService.byName(name);
     var service = await SolaceCloudFacade.getServiceByEnvironment(env);
     var response: EnvironmentResponse = {
-        description: env.description,
-        name: env.name,
-        serviceId: env.serviceId,
-        creationState: service.creationState,
-        datacenterId: service.datacenterId,
-        datacenterProvider: service.datacenterProvider,
-        messagingProtocols: await BrokerService.mapMessagingProtocols(service.messagingProtocols),
-        msgVpnName: service.msgVpnName,
-        serviceClassDisplayedAttributes: service.serviceClassDisplayedAttributes,
-        serviceClassId: service.serviceClassId,
-        serviceTypeId: service.serviceTypeId
-        
+      description: env.description,
+      name: env.name,
+      serviceId: env.serviceId,
+      creationState: service.creationState,
+      datacenterId: service.datacenterId,
+      datacenterProvider: service.datacenterProvider,
+      messagingProtocols: await ProtocolMapper.mapSolaceMessagingProtocolsToAsyncAPI(service.messagingProtocols),
+      msgVpnName: service.msgVpnName,
+      serviceClassDisplayedAttributes: service.serviceClassDisplayedAttributes,
+      serviceClassId: service.serviceClassId,
+      serviceTypeId: service.serviceTypeId
+
     };
     return response;
   }
@@ -42,36 +43,41 @@ export class EnvironmentsService {
   }
 
   create(body: Environment): Promise<Environment> {
-    return new Promise<Environment>((resolve, reject) => {
-      var apiReferenceCheck: Promise<boolean> = this.validateReferences(body.serviceId);
-      apiReferenceCheck.then((b: boolean) => {
+    return new Promise<Environment>(async (resolve, reject) => {
+      var apiReferenceCheck: boolean = await this.validateReferences(body);
+      if (apiReferenceCheck) {
         this.persistenceService.create(body.name, body).then((p) => {
           resolve(p);
         }).catch((e) => {
           reject(e);
         });
-      }).catch((e)=>{
-        reject(e);
-      })
-
+      } else {
+        reject(new ErrorResponseInternal(422, ` reference check failed service ${body.serviceId} does not exist`));
+      }
     });
   }
 
   update(name: string, body: EnvironmentPatch): Promise<Environment> {
-   return new Promise<Environment>((resolve, reject) => {
-        this.persistenceService.update(name, body).then((p) => {
-          resolve(p);
-        }).catch((e) => {
-          reject(e);
-        });
+    return new Promise<Environment>((resolve, reject) => {
+      this.persistenceService.update(name, body).then((p) => {
+        resolve(p);
+      }).catch((e) => {
+        reject(e);
+      });
     });
   }
 
-  private validateReferences(name: string): Promise<boolean> {
-    //TODO - implement service id check against cloud api
-    return new Promise<boolean>((resolve, reject) => {
-            resolve(true);
-      });
+  private async validateReferences(env: Environment): Promise<boolean> {
+    try {
+      var svc = await SolaceCloudFacade.getServiceByEnvironment(env);
+      if (svc !== null) {
+        return true;
+      } else {
+        return false;
+      }
+    } catch (e) {
+      return false;
+    }
   }
 }
 
