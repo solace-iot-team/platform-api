@@ -99,9 +99,15 @@ export class ApiProductsService {
             }
           }
           ).catch((e) => {
-            var s : string = e as string;
+            var s : string = null;
+            if (typeof s === 'string'){
+              s = e as string;
+            } else if (e.message !== null && e.message !== undefined){
+              s = e.message;
+            }
+            
             L.info(`validateReferences ${e} Referenced env ${envName} does not exist`);
-            if (s.includes("Not Found")){
+            if (s.toUpperCase().includes("Not Found".toUpperCase())){
               reject(new ErrorResponseInternal(422, `Referenced environment ${envName} does not exist`));
             } else {
               reject(new ErrorResponseInternal(422, e));
