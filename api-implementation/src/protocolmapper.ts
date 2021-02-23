@@ -135,21 +135,16 @@ export class ProtocolMapper {
 	public static async mapSolaceMessagingProtocolsToAsyncAPI (serverProtocols): Promise<Endpoint[]> {
 		var endpoints: Endpoint[] = [];
 		var mappings = ProtocolMapper.getProtocolMappings();
-		L.debug(serverProtocols);
 		for (var protocol of serverProtocols) {
-			L.info(`mapMessagingProtocols ${protocol.name}`);
-			L.info(protocol);
+			L.debug(`mapMessagingProtocols ${protocol.name}`);
 			for (var serverEndpoint of protocol.endPoints) {
 				var mapping = mappings.find(element => element.protocolKeys.name == protocol.name && element.protocolKeys.protocol == serverEndpoint.transport);
 				if (mapping != null) {
 					var keys = mapping.protocolKeys;
-					L.info(`mapMessagingProtocols ${keys.name} ${keys.protocol}`);
-					L.info(serverEndpoint);
-					// var serverProtocol = serverProtocols.find(mp => mp.name == keys.name)
+					L.debug(`mapMessagingProtocols ${keys.name} ${keys.protocol}`);
 					var endpoint = protocol.endPoints.find(ep => ep.transport == serverEndpoint.transport);
-					L.info(endpoint);
 					var newEndpoint: Endpoint = endpoints.find(ep => ep.uri == endpoint.uris[0]);
-					L.info(newEndpoint);
+					L.debug(newEndpoint);
 					if (newEndpoint === undefined) {
 						newEndpoint = {
 							compressed: endpoint.compressed == 'yes' ? 'yes' : 'no',
@@ -165,7 +160,7 @@ export class ProtocolMapper {
 					}
 
 				} else {
-					L.warn(`No mapping for ${JSON.stringify(protocol)}`);
+					L.warn(`No mapping for ${protocol.name}`);
 				}
 			}
 		}
