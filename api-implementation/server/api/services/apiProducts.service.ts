@@ -3,6 +3,8 @@ import APIProduct = Components.Schemas.APIProduct;
 import { PersistenceService } from './persistence.service';
 
 import EnvironmentsService from './environments.service';
+import AppsService from './apps.service';
+
 import ApisService from './apis.service';
 import { ErrorResponseInternal } from '../middlewares/error.handler';
 import { ApiError } from '../../../src/clients/eventportal';
@@ -24,8 +26,12 @@ export class ApiProductsService {
     return this.persistenceService.byName(name);
   }
 
-  delete(name: string): Promise<number> {
-    return this.persistenceService.delete(name);
+  async delete(name: string): Promise<number> {
+    if (await this.canDelete(name)) {
+      return this.persistenceService.delete(name);
+    } else {
+      throw new ErrorResponseInternal(409, `Can't delete, API Product is still referenced`);
+    }
   }
 
   create(body: APIProduct): Promise<APIProduct> {
@@ -70,6 +76,22 @@ export class ApiProductsService {
         reject(e);
       }
     });
+  }
+
+  private async canDelete(name: string): Promise<boolean> {
+    var q: any = {
+      apiProducts: {
+        $elemMatch: {
+          $eq: name
+        }
+      }
+    }
+    var apps = await AppsService.list(q);
+    if (apps == null || apps.length == 0) {
+      return true;
+    } else {
+      return false;
+    }
   }
 
   private async validateReferences(product: APIProduct): Promise<boolean> {
@@ -126,8 +148,8 @@ export class ApiProductsService {
       });
       Promise.all(results).then((r) => {
         Object.keys(protocolPresent).forEach(function (key, index) {
-          if(!protocolPresent[key]){
-              reject(new ErrorResponseInternal(422, `Referenced protocol ${key} does not exist`));
+          if (!protocolPresent[key]) {
+            reject(new ErrorResponseInternal(422, `Referenced protocol ${key} does not exist`));
           }
         });
         resolve(true)
