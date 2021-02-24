@@ -78,9 +78,13 @@ export class DevelopersService {
     }
   }
 
-  delete(name: string): Promise<number> {
-    return this.persistenceService.delete(name);
-  }
+  async delete(name: string): Promise<number> {
+    if (await this.canDeleteDeveloper(name)) {
+      return this.persistenceService.delete(name);
+    } else {
+      throw new ErrorResponseInternal(409, `Can't delete, developer is still referenced`);
+    }
+  }  
 
   deleteApp(developer: string, name: string): Promise<number> {
     return new Promise<number>(async (resolve, reject) => {
@@ -232,6 +236,20 @@ export class DevelopersService {
     }
 
     );
+  }
+
+  private async canDeleteDeveloper(name: string): Promise<boolean> {
+    var q: any = {
+      ownerId: {
+        $eq: name
+      }
+    };
+    var devs = await this.appPersistenceService.all(q);
+    if (devs == null || devs.length==0) {
+      return true;
+    } else {
+      return false;
+    }
   }
 }
 

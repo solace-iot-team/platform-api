@@ -94,7 +94,7 @@ export class EnvironmentsService {
       }
     };
     var products = await APIProductsService.all(q);
-    if (products == null || products.length) {
+    if (products == null || products.length == 0) {
       return true;
     } else {
       return false;
