@@ -6,6 +6,7 @@ import { PersistenceService } from './persistence.service';
 import { ProtocolMapper } from '../../../src/protocolmapper';
 import SolaceCloudFacade from '../../../src/solacecloudfacade';
 import { ErrorResponseInternal } from '../middlewares/error.handler';
+import APIProductsService from './apiProducts.service';
 
 export class EnvironmentsService {
 
@@ -38,8 +39,12 @@ export class EnvironmentsService {
     return response;
   }
 
-  delete(name: string): Promise<number> {
-    return this.persistenceService.delete(name);
+  async delete(name: string): Promise<number> {
+    if (await this.canDelete(name)) {
+      return this.persistenceService.delete(name);
+    } else {
+      throw new ErrorResponseInternal(409, `Can't delete, environment is still referenced`);
+    }
   }
 
   create(body: Environment): Promise<Environment> {
@@ -79,6 +84,23 @@ export class EnvironmentsService {
       return false;
     }
   }
+
+  private async canDelete(name: string): Promise<boolean> {
+    var q: any = {
+      apis: {
+        $elemMatch: {
+          $eq: `"${name}"`
+        }
+      }
+    };
+    var products = await APIProductsService.all(q);
+    if (products == null || products.length) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
 }
 
 export default new EnvironmentsService();
