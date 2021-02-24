@@ -32,8 +32,8 @@ export class AppsService {
     return this.persistenceService.all();
   }
 
-  async list(paging: Paging, query: any): Promise<AppListItem[]> {
-    var apps = await this.persistenceService.all(query, {}, paging);
+  async list(query: any): Promise<AppListItem[]> {
+    var apps = await this.persistenceService.all(query);
     var appList: AppListItem[] = [];
     apps.forEach((app: AppPatch) => {
       var listItem: AppListItem = {

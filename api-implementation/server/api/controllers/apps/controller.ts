@@ -6,21 +6,16 @@ import { ErrorResponseInternal } from '../../middlewares/error.handler';
 import Format = Paths.$OrganizationApis$ApiName.Get.Parameters.Format;
 import AsyncAPIHelper from '../../../../src/asyncapihelper'
 import { resolve } from 'path';
-import { Paging } from '../../services/persistence.service';
 
 export class Controller {
   all(req: Request, res: Response, next: NextFunction): void {
-    var p: Paging = {
-      pageNumber: parseInt(req.query.pageNumber as string),
-      pageSize: parseInt(req.query.pageSize as string)
-    };
     var q: any = {
 
     }
     if (req.query.status) {
       q.status = req.query.status;
     }
-    AppsService.list(p, q).then((r) => res.json(r)).catch(e => {
+    AppsService.list(q).then((r) => res.json(r)).catch(e => {
       L.error(e);
       next(e);
     });
