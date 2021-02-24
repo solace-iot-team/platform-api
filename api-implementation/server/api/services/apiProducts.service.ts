@@ -18,8 +18,8 @@ export class ApiProductsService {
 
   }
 
-  all(): Promise<APIProduct[]> {
-    return this.persistenceService.all();
+  all(query?: any): Promise<APIProduct[]> {
+    return this.persistenceService.all(query);
   }
 
   byName(name: string): Promise<APIProduct> {
@@ -82,7 +82,7 @@ export class ApiProductsService {
     var q: any = {
       apiProducts: {
         $elemMatch: {
-          $eq: name
+          $eq: `${name}`
         }
       }
     }

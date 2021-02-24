@@ -1,6 +1,7 @@
 import L from '../../common/logger';
 import { ErrorResponseInternal } from '../middlewares/error.handler';
 import { PersistenceService } from './persistence.service';
+import APIProductsService from './apiProducts.service';
 
 const parser = require('@asyncapi/parser');
 
@@ -46,8 +47,12 @@ export class ApisService {
     });
   }
 
-  delete(name: string): Promise<number> {
-    return this.persistenceService.delete(name);
+  async delete(name: string): Promise<number> {
+    if (await this.canDelete(name)) {
+      return this.persistenceService.delete(name);
+    } else {
+      throw new ErrorResponseInternal(409, `Can't delete, API is still referenced`);
+    }
   }
 
   async create(name: string, body: string): Promise<string> {
@@ -90,6 +95,22 @@ export class ApisService {
         reject(new ErrorResponseInternal(400, e));
       }
     });
+  }
+
+  private async canDelete(name: string): Promise<boolean> {
+    var q: any = {
+      apis: {
+        $elemMatch: {
+          $eq: `"${name}"`
+        }
+      }
+    };
+    var products = await APIProductsService.all(q);
+    if (products == null || products.length) {
+      return true;
+    } else {
+      return false;
+    }
   }
 
   private async isValidSpec(spec: string): Promise<boolean> {
