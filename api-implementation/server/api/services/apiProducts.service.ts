@@ -82,10 +82,11 @@ export class ApiProductsService {
     var q: any = {
       apiProducts: {
         $elemMatch: {
-          $eq: `${name}`
+          $eq: name
         }
       }
     }
+    L.info(q);
     var apps = await AppsService.list(q);
     if (apps == null || apps.length == 0) {
       return true;

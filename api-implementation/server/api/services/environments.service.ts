@@ -87,9 +87,9 @@ export class EnvironmentsService {
 
   private async canDelete(name: string): Promise<boolean> {
     var q: any = {
-      apis: {
+      environments: {
         $elemMatch: {
-          $eq: `"${name}"`
+          $eq: name
         }
       }
     };

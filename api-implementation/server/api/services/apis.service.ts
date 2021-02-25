@@ -101,7 +101,7 @@ export class ApisService {
     var q: any = {
       apis: {
         $elemMatch: {
-          $eq: `"${name}"`
+          $eq: name
         }
       }
     };
