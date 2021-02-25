@@ -3,6 +3,7 @@ import Developer = Components.Schemas.Developer;
 import App = Components.Schemas.App;
 import AppPatch = Components.Schemas.AppPatch;
 import AppResponse = Components.Schemas.AppResponse;
+import WebHook = Components.Schemas.WebHook;
 import ApiProductsService from './apiProducts.service';
 import BrokerService from './broker.service';
 
@@ -84,7 +85,7 @@ export class DevelopersService {
     } else {
       throw new ErrorResponseInternal(409, `Can't delete, developer is still referenced`);
     }
-  }  
+  }
 
   deleteApp(developer: string, name: string): Promise<number> {
     return new Promise<number>(async (resolve, reject) => {
@@ -134,7 +135,7 @@ export class DevelopersService {
 
     L.info(`App create request ${JSON.stringify(app)}`);
     try {
-      var validated = await this.validateAPIProducts(app);
+      var validated = await this.validate(app);
       if (validated) {
         app.status = 'approved';
       } else {
@@ -198,7 +199,7 @@ export class DevelopersService {
       app.webHooks = body.webHooks;
 
     L.info(`App patch request ${JSON.stringify(app)}`);
-    var validated = await this.validateAPIProducts(app);
+    var validated = await this.validate(app);
     var appPatch: AppPatch = await this.appPersistenceService.update(name, app);
     if (appPatch.status == 'approved') {
       L.info(`provisioning app ${app.name}`);
@@ -209,33 +210,45 @@ export class DevelopersService {
 
   // private methods
 
-  private validateAPIProducts(app: any): Promise<boolean> {
-    return new Promise<boolean>((resolve, reject) => {
-      var isApproved: boolean = true;
-      var results: Promise<boolean>[] = [];
-      if (!app.apiProducts) {
-        resolve(true);
-      }
-      app.apiProducts.forEach((product) => {
-        results.push(new Promise<boolean>((resolve, reject) => {
-          ApiProductsService.byName(product).then((p) => {
-            if (p.approvalType == 'manual')
-              isApproved = false;
-            resolve(true);
-          }
-          ).catch((e) => {
-            reject(`Referenced API Product ${product} does not exist`);
-          })
-        }));
-      });
-      Promise.all(results).then((r) => { resolve(isApproved) }).catch((e) => {
-        L.info(e);
-        reject(new ErrorResponseInternal(422, e));
-      });
+  private async validate(app: any): Promise<boolean> {
 
+    var isApproved: boolean = true;
+    var environments: Set<string> = new Set;
+    if (!app.apiProducts) {
+      return isApproved;
     }
 
-    );
+    // validate api products exist and find out if any  require approval
+    for (var product of app.apiProducts) {
+      try {
+        var apiProduct = await ApiProductsService.byName(product);
+        apiProduct.environments.forEach(envName => {
+          environments.add(envName);
+        });
+        if (apiProduct.approvalType == 'manual')
+          isApproved = false;
+      } catch (e) {
+        throw new ErrorResponseInternal(422, `Referenced API Product ${product} does not exist`);
+      }
+    }
+
+    if (app.webHooks !== null) {
+      var webHooks: WebHook[] = app.webHooks as WebHook[];
+
+      webHooks.forEach(webHook => {
+        if (webHook.environments !== null && webHook.environments !== undefined) {
+      L.info(webHook.environments);          
+          webHook.environments.forEach(envName => {
+            var hasEnv = environments.has(envName);
+            if (!hasEnv) {
+              throw new ErrorResponseInternal(422, `Referenced environment ${envName} is not associated with any API Product`);
+            }
+          });
+        }
+      });
+    }
+
+    return isApproved;
   }
 
   private async canDeleteDeveloper(name: string): Promise<boolean> {
@@ -245,7 +258,7 @@ export class DevelopersService {
       }
     };
     var devs = await this.appPersistenceService.all(q);
-    if (devs == null || devs.length==0) {
+    if (devs == null || devs.length == 0) {
       return true;
     } else {
       return false;
