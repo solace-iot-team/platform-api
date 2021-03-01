@@ -232,7 +232,7 @@ export class DevelopersService {
       }
     }
 
-    if (app.webHooks !== null) {
+    if (app.webHooks != null) {
       var webHooks: WebHook[] = app.webHooks as WebHook[];
 
       webHooks.forEach(webHook => {
