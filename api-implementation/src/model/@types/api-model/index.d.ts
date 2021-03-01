@@ -553,7 +553,7 @@ declare namespace Components {
              * example:
              * myorg
              */
-            name?: string;
+            name: string;
             /**
              * a Solace Cloud API Token, requires "get services" and "event portal read" permissions
              * example:
@@ -1295,6 +1295,28 @@ declare namespace Paths {
                 export type $500 = Components.Schemas.ErrorResponse;
                 export type $503 = Components.Schemas.ErrorResponse;
                 export type $504 = Components.Schemas.ErrorResponse;
+            }
+        }
+    }
+    namespace $OrganizationToken {
+        namespace Get {
+            namespace Responses {
+                export type $200 = string;
+                export type $400 = Components.Schemas.ErrorResponse;
+                export type $401 = Components.Schemas.ErrorResponse;
+                export type $403 = Components.Schemas.ErrorResponse;
+                export type $404 = Components.Schemas.ErrorResponse;
+                export type $500 = Components.Schemas.ErrorResponse;
+                export type $503 = Components.Schemas.ErrorResponse;
+                export type $504 = Components.Schemas.ErrorResponse;
+            }
+        }
+        namespace Put {
+            export type RequestBody = string;
+            namespace Responses {
+                export type $201 = string;
+                export type $400 = Components.Schemas.ErrorResponse;
+                export type $401 = Components.Schemas.ErrorResponse;
             }
         }
     }

@@ -9,6 +9,7 @@ import environmentsRouter from './api/controllers/environments/router';
 import accountRouter from './api/controllers/account/router';
 import organizationsRouter from './api/controllers/organizations/router';
 import historyRouter from './api/controllers/history/router';
+import tokenRouter from './api/controllers/token/router';
 import OrganizationsService from './api/services/organizations.service';
 import HistoryService from './api/services/history.service';
 import express from 'express';
@@ -87,6 +88,7 @@ export default function routes(app: Application, auth: any): void {
   router.use('/:org/environments', auth, environmentsRouter);
   router.use('/:org/services', auth, accountRouter);
   router.use('/:org/history', auth, historyRouter);
+  router.use('/:org/token', auth, tokenRouter);
   router.use('/:org/apps', auth, appsRouter);
 
   app.use('/v1', router);

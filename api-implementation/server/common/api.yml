@@ -1017,6 +1017,8 @@ components:
     
     Organization:
       type: object
+      required:
+      - name
       properties:
         name:
           type: string
@@ -1158,14 +1160,16 @@ tags:
   - name: environments
     description: "An environment provides a runtime execution context for APIs. Each environment is associated with a specific Service in the associated Solace Cloud account. Typical environments are dev, stage, prod ..."
   - name: management
-    description: "Manage organizations / tenants"
+    description: "Manage organization settings, audit history"
+  - name: platformManagement
+    description: "Manage platform - tenants/orga. Requires admin access level."
   - name: eventPortal
     description: "Provides read-only access to the Solace Event Portal associated with the account. Currently provided as a utility resource so existing Async API stubs can be exported from the portal. Currently these specifications are not necessarily compliant and information such as binding is missing."
 paths:
   /organizations:
     get:
       tags: 
-      - management
+      - platformManagement
       responses:
        '200':
          description: list of APIs
@@ -1222,7 +1226,7 @@ paths:
             "$ref": "#/components/schemas/ErrorResponse"
     post:
      tags:
-     - management
+     - platformManagement
      requestBody: 
        description: "Organization"
        content: 
@@ -1292,7 +1296,7 @@ paths:
     - $ref: '#/components/parameters/organization'
     get:
       tags: 
-      - management
+      - platformManagement
       responses:
        '200':
          description: list of APIs
@@ -1347,7 +1351,7 @@ paths:
             "$ref": "#/components/schemas/ErrorResponse"
     patch:
      tags:
-     - management
+     - platformManagement
      requestBody: 
        description: "Organization"
        content: 
@@ -1414,7 +1418,7 @@ paths:
             "$ref": "#/components/schemas/ErrorResponse"
     delete:
      tags:
-     - management
+     - platformManagement
      responses:
        '204':
          description: No content
@@ -1487,6 +1491,95 @@ paths:
               type: array
               items:
                "$ref": "#/components/schemas/History"
+       '400': 
+         description: "Bad Request."
+         content: 
+          "application/json": 
+           schema: 
+            "$ref": "#/components/schemas/ErrorResponse"
+          "*/*": 
+           schema: 
+            "$ref": "#/components/schemas/ErrorResponse"
+       '401': 
+         description: "Unauthorized."
+         content: 
+          "application/json": 
+           schema: 
+            "$ref": "#/components/schemas/ErrorResponse"
+       '403': 
+         description: "Forbidden."
+         content: 
+          "application/json": 
+           schema: 
+            "$ref": "#/components/schemas/ErrorResponse"
+       '404': 
+         description: "Not Found."
+         content: 
+          "application/json": 
+           schema: 
+            "$ref": "#/components/schemas/ErrorResponse"
+       '500': 
+         description: "Internal Server Error."
+         content: 
+          "application/json": 
+           schema: 
+            "$ref": "#/components/schemas/ErrorResponse"
+       '503': 
+         description: "Service Unavailable."
+         content: 
+          "application/json": 
+           schema: 
+            "$ref": "#/components/schemas/ErrorResponse"
+       '504': 
+         description: "Gateway Timeout."
+         content: 
+          "application/json": 
+           schema: 
+            "$ref": "#/components/schemas/ErrorResponse"
+  /{organization}/token:
+    parameters:
+    - $ref: '#/components/parameters/organization'
+    put:
+      tags: 
+      - management
+      requestBody: 
+       description: "Solace Cloud Token"
+       content: 
+         "text/plain": 
+           schema: 
+            type: string    
+      responses:
+       '201':
+         description: The cloud token
+         content: 
+           application/json:
+             schema:
+               type: string
+       '400': 
+         description: "Bad Request."
+         content: 
+          "application/json": 
+           schema: 
+            "$ref": "#/components/schemas/ErrorResponse"
+          "*/*": 
+           schema: 
+            "$ref": "#/components/schemas/ErrorResponse"
+       '401': 
+         description: "Unauthorized."
+         content: 
+          "application/json": 
+           schema: 
+            "$ref": "#/components/schemas/ErrorResponse"
+    get:
+     tags:
+     - management
+     responses:
+       '200':
+         description:  cloud token
+         content: 
+           "text/plain": 
+             schema: 
+              type: string    
        '400': 
          description: "Bad Request."
          content: 
