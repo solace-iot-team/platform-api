@@ -80,7 +80,7 @@ export class OrganizationsService {
       if (body.name == reserved) {
         reject(new ErrorResponseInternal(401, `Access denied, reserved name`));
       } else {
-        if (await this.validateCloudToken(body["cloud-token"])) {
+        if (body["cloud-token"] === undefined || body["cloud-token"] === null || await this.validateCloudToken(body["cloud-token"])) {
           this.persistenceService.create(body.name, body).then((p) => {
             resolve(p);
           }).catch((e) => {
@@ -99,7 +99,7 @@ export class OrganizationsService {
       if (body.name == reserved) {
         reject(new ErrorResponseInternal(401, `Access denied, reserved name`))
       } else {
-        if (await this.validateCloudToken(body["cloud-token"])) {
+        if (body["cloud-token"] === undefined || body["cloud-token"] === null || await this.validateCloudToken(body["cloud-token"])) {
           this.persistenceService.update(name, body).then((p) => {
             resolve(p);
           }).catch((e) => {
