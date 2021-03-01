@@ -1,6 +1,6 @@
 import L from '../../common/logger';
 import { databaseaccess } from '../../../src/databaseaccess';
-import mongodb, { DeleteWriteOpResultObject, MongoError } from 'mongodb';
+import mongodb, { DeleteWriteOpResultObject, MongoError, CollectionInsertOneOptions, UpdateOneOptions } from 'mongodb';
 import C from 'cls-hooked';
 import { ErrorResponseInternal } from '../middlewares/error.handler';
 
@@ -131,7 +131,11 @@ export class PersistenceService {
       L.info(`adding ${this.collection} with _id ${_id}`);
       const collection: mongodb.Collection = this.getCollection();
       body._id = _id;
-      collection.insertOne(body).then((v: mongodb.InsertOneWriteOpResult<any>) => {
+      var opts: CollectionInsertOneOptions = {
+        w: 1,
+        j: true
+      };
+      collection.insertOne(body, opts).then((v: mongodb.InsertOneWriteOpResult<any>) => {
         delete body._id;
         resolve(body);
       }).catch((e: MongoError) => {
@@ -150,7 +154,11 @@ export class PersistenceService {
       } else {
         q = { _id: _id };
       }
-      collection.updateOne(q, { $set: body }).then((v: mongodb.UpdateWriteOpResult) => {
+      var opts: UpdateOneOptions = {
+        w: 1,
+        j: true
+      };      
+      collection.updateOne(q, { $set: body }, opts).then((v: mongodb.UpdateWriteOpResult) => {
         //L.info(v);
         if (v.matchedCount == 0) {
           reject(new ErrorResponseInternal(404, `No entity ${_id} found `));
@@ -195,7 +203,7 @@ export class PersistenceService {
     );
   }
 
-  private createPublicErrorMessage(error: MongoError): string{
+  private createPublicErrorMessage(error: MongoError): string {
     L.debug(`Initial mongo error ${error.message}`);
     var errorCode = "E" + error.code;
     var msg = error.message.replace(errorCode, "");
