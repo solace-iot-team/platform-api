@@ -147,6 +147,18 @@ export class PersistenceService {
   update(_id: string, body: any, query?: any): Promise<any> {
     return new Promise<any>((resolve, reject) => {
       L.info(`patching ${this.collection} with _id ${_id}`);
+      var id = body.name;
+      if (id == null){
+        id = body.id;
+      }
+      if (id == null){
+        id = body._id;
+      }
+      if (id != _id){
+          reject(new ErrorResponseInternal(400, `Can not change entity identifier `));
+          return;
+      }
+      
       const collection: mongodb.Collection = this.getCollection();
       var q = query;
       if (q) {

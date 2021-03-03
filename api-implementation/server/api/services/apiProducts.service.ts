@@ -62,6 +62,9 @@ export class ApiProductsService {
   update(name: string, body: APIProduct): Promise<APIProduct> {
     return new Promise<APIProduct>(async (resolve, reject) => {
       try {
+        if(name != body.name){
+          reject(new ErrorResponseInternal(400, ` Can not rename an API product ${name}`));
+        }
         const apiReferenceCheck = await this.validateReferences(body);
         L.info(` reference check result ${apiReferenceCheck}`);
         if (!apiReferenceCheck)
