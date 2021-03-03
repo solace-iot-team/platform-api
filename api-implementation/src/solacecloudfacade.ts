@@ -26,9 +26,13 @@ class SolaceCloudFacade {
 			var result: Promise<any> = ServicesService.getService(e.serviceId);
 
 			result.then((value: ServiceResponse) => {
-				if (!value)
+				if (!value) {
 					reject(404);
-				resolve(value.data);
+				} else if (value.data == null) {
+					reject(400);
+				} else {
+					resolve(value.data);
+				}
 			});
 			result.catch((val) => {
 				L.error(val);
@@ -57,7 +61,7 @@ class SolaceCloudFacade {
 		OpenAPI.TOKEN = token;
 		try {
 			var x = await ServicesService.listServices();
-			if (x != null){
+			if (x != null) {
 				return true;
 			} else {
 				return false;
