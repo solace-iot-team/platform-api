@@ -56,6 +56,10 @@ export default function routes(app: Application, auth: any): void {
   router.use('/*', function (req: basicAuth.IBasicAuthedRequest, res, next) {
     res.on("finish", function () {
       L.info("finish response");
+      let user: string = req.auth.user;
+      if (user==null){
+        user = "unknown";
+      }
       if (auditableVerbs.indexOf(req.method) > -1) {
         var h: History = {
           at: Date.now(),
@@ -63,7 +67,7 @@ export default function routes(app: Application, auth: any): void {
           requestBody: req.body,
           requestURI: `${req.baseUrl}/${req.url}`,
           title: `${req.method} ${req.baseUrl}/${req.url}`,
-          user: req.auth.user,
+          user: user,
           responseCode: res.statusCode
         };
         HistoryService.create(h);
