@@ -56,9 +56,12 @@ export default function routes(app: Application, auth: any): void {
   router.use('/*', function (req: basicAuth.IBasicAuthedRequest, res, next) {
     res.on("finish", function () {
       L.info("finish response");
-      let user: string = req.auth.user;
-      if (user==null){
+      let auth = req.auth;
+      let user: string = "";
+      if (!auth || auth==null){
         user = "unknown";
+      } else {
+        user = req.auth.user;
       }
       if (auditableVerbs.indexOf(req.method) > -1) {
         var h: History = {
