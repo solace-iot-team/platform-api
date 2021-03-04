@@ -24,8 +24,10 @@ export class ErrorResponseInternal extends Error implements ErrorResponse {
   errorId: string;
 
   constructor(statusCode: number, message: string) {
-
-    super();
+    if (!message){
+      message = "";
+    }
+    super(message);
     this.errorId = String(statusCode);
     this.statusCode = statusCode;
     this.message = message;
