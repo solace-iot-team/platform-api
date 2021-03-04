@@ -9,11 +9,11 @@ export default function errorHandler(
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   next: NextFunction
 ): void {
-    var theError: ErrorResponseInternal = err;
-    L.debug(err);
-    var statusCode : number = theError.statusCode;
-    delete theError.statusCode;
-    res.status(statusCode || 500).json( theError);
+  var theError: ErrorResponseInternal = err;
+  L.debug(err);
+  var statusCode: number = theError.statusCode;
+  delete theError.statusCode;
+  res.status(statusCode || 500).json(theError);
 }
 
 
@@ -24,13 +24,17 @@ export class ErrorResponseInternal extends Error implements ErrorResponse {
   errorId: string;
 
   constructor(statusCode: number, message: string) {
-    if (!message){
-      message = "";
+    try {
+      if (!message) {
+        message = "";
+      }
+      super(message);
+      this.errorId = String(statusCode);
+      this.statusCode = statusCode;
+      this.message = message;
+    } catch (e) {
+
     }
-    super(message);
-    this.errorId = String(statusCode);
-    this.statusCode = statusCode;
-    this.message = message;
   }
 }
 
