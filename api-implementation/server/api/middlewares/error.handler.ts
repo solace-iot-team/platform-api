@@ -28,7 +28,7 @@ export class ErrorResponseInternal extends Error implements ErrorResponse {
       if (!message) {
         message = "";
       }
-      super(message);
+      super();
       this.errorId = String(statusCode);
       this.statusCode = statusCode;
       this.message = message;
