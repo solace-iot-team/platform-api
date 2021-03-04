@@ -12,13 +12,33 @@ import fileAuthorizer from '../api/middlewares/file.authorizer';
 import * as OpenApiValidator from 'express-openapi-validator';
 
 import basicAuth from 'express-basic-auth';
+import cors from 'cors';
+
 const app = express();
+
+const corsOptionsStrict: cors.CorsOptions = {
+  allowedHeaders: [
+    'Origin',
+    'X-Requested-With',
+    'Content-Type',
+    'Accept',
+    'X-Access-Token',
+  ],
+  credentials: true,
+  methods: 'GET,HEAD,OPTIONS,PUT,PATCH,POST,DELETE',
+  preflightContinue: true,
+};
+
+const corsOptions: cors.CorsOptions = {
+ 
+};
 
 export default class ExpressServer {
   private routes: (app: Application) => void;
   constructor() {
     const root = path.normalize(__dirname + '/../..');
     app.set('appPath', root + 'client');
+    app.use(cors(corsOptions));
     app.use(
       bodyParser.urlencoded({
         extended: true,
@@ -46,7 +66,7 @@ export default class ExpressServer {
   }
 
   router(routes: (app: Application, auth: any) => void): ExpressServer {
-    
+
     const auth = basicAuth({
       authorizer: fileAuthorizer,
       challenge: true,
@@ -54,6 +74,7 @@ export default class ExpressServer {
     });
     routes(app, auth);
     app.use(errorHandler);
+    app.options('*', cors(corsOptions));
     return this;
   }
 

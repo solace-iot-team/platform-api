@@ -17,7 +17,7 @@ const callback: serverCallback = async () => {
 
 };
 
-const port = parseInt(process.env.PORT);
+const port = parseInt(process.env.PLATFORM_PORT) || 3000;
 var server = new Server().router(routes).listenWithCallback(port, callback);
 export default server;
 
