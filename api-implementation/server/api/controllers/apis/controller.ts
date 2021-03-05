@@ -13,15 +13,13 @@ export class Controller {
   }
 
   async byName(req: Request, res: Response, next: NextFunction): Promise<void> {
-    return new Promise<any>(async (reject, resolve) => {
+    try {
       var r: string = await ApisService.byName(req.params['name']);
       Controller.handleResponse(r, req, res, next);
-      resolve();
-    }).catch((e) => {
+    } catch (e){
       L.error(e);
-      next(e);
-      resolve();
-    });
+      next(e);      
+    }
   };
 
 

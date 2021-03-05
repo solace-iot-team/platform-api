@@ -86,8 +86,10 @@ export class PersistenceService {
         (item) => {
           L.trace(item);
           if (item === null) {
-            L.debug(`Object ${name} not found`);
-            reject(new ErrorResponseInternal(404, `Object not found`));
+            var msg = `Object ${name} not found`;
+            L.debug(msg);            
+            reject(new ErrorResponseInternal(404, msg));
+
           } else {
             delete item._id;
             resolve(item);

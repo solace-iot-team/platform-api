@@ -10,7 +10,7 @@ export default function errorHandler(
   next: NextFunction
 ): void {
   var theError: ErrorResponseInternal = err;
-  L.debug(err);
+  //L.debug(err);
   var statusCode: number = theError.statusCode;
   delete theError.statusCode;
   res.status(statusCode || 500).json(theError);
@@ -24,6 +24,7 @@ export class ErrorResponseInternal extends Error implements ErrorResponse {
   errorId: string;
 
   constructor(statusCode: number, message: string) {
+    L.debug(`creating error ${message}`);
     try {
       if (!message) {
         message = "";
