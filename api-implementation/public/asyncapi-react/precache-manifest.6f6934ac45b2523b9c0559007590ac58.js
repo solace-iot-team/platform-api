@@ -1,6 +1,6 @@
 self.__precacheManifest = (self.__precacheManifest || []).concat([
   {
-    "revision": "6400570473a808018472b0f6d6fe2fb0",
+    "revision": "3a0fc918e0b61718a421c637bbbab51b",
     "url": "/asyncapi-react/index.html"
   },
   {
@@ -8,16 +8,16 @@ self.__precacheManifest = (self.__precacheManifest || []).concat([
     "url": "/asyncapi-react/static/css/2.e1357af2.chunk.css"
   },
   {
-    "revision": "6de799645536a4eeb1dd",
-    "url": "/asyncapi-react/static/css/main.e06b3bf1.chunk.css"
+    "revision": "cb9de501c6dd628d4e9a",
+    "url": "/asyncapi-react/static/css/main.3ac0d71e.chunk.css"
   },
   {
     "revision": "df05e6a05741b93388d9",
     "url": "/asyncapi-react/static/js/2.f4c8271d.chunk.js"
   },
   {
-    "revision": "6de799645536a4eeb1dd",
-    "url": "/asyncapi-react/static/js/main.4aec0cf6.chunk.js"
+    "revision": "cb9de501c6dd628d4e9a",
+    "url": "/asyncapi-react/static/js/main.7286fbb5.chunk.js"
   },
   {
     "revision": "bcc2546346e07761c6d7",
