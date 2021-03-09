@@ -62,7 +62,7 @@ export class ApiProductsService {
   update(name: string, body: APIProduct): Promise<APIProduct> {
     return new Promise<APIProduct>(async (resolve, reject) => {
       try {
-        if(name != body.name){
+        if (name != body.name) {
           reject(new ErrorResponseInternal(400, ` Can not rename an API product ${name}`));
         }
         const apiReferenceCheck = await this.validateReferences(body);
@@ -99,76 +99,48 @@ export class ApiProductsService {
   }
 
   private async validateReferences(product: APIProduct): Promise<boolean> {
-    return new Promise<boolean>((resolve, reject) => {
-      var protocolPresent = {};
-      for (var protocol of product.protocols) {
-        protocolPresent[protocol.name] = false;
+    var protocolPresent = {};
+    for (var protocol of product.protocols) {
+      protocolPresent[protocol.name] = false;
+    }
+    for (var apiName of product.apis) {
+      const errMsg = `Referenced API ${apiName} does not exist`;
+      try {
+        var api = await ApisService.byName(apiName);
+        if (api == null) {
+          throw new ErrorResponseInternal(422, errMsg);
+        }
+      } catch (e) {
+        throw new ErrorResponseInternal(422, errMsg);
       }
-      var results: Promise<boolean>[] = [];
-      product.apis.forEach((n) => {
-        results.push(new Promise<boolean>((resolve1, reject1) => {
-          ApisService.byName(n).then((p) => {
-            if (!p) {
-              reject1(`Referenced API ${n} does not exist`)
-            }
-            resolve1(true);
-          }
-          ).catch((e) => {
-            L.info(`validateReferences ${e} Referenced API ${n} does not exist`);
-            reject1(new ErrorResponseInternal(422, `Referenced API ${n} does not exist`));
-          })
-        }));
-      });
-      product.environments.forEach((envName: string) => {
-        results.push(new Promise<boolean>((resolve, reject) => {
-          EnvironmentsService.byName(envName).then((p) => {
-            if (p != null) {
-              for (var protocol of product.protocols) {
-                protocolPresent[protocol.name] = (p.messagingProtocols.find(e => e.protocol.name == protocol.name) != null);
-              }
-              resolve(true);
-            } else {
-              reject(new ErrorResponseInternal(422, `Referenced environment ${envName} does not exist`));
-            }
-          }
-          ).catch((e) => {
-            var s: string = null;
-            if (typeof s === 'string') {
-              s = e as string;
-            } else if (e.message !== null && e.message !== undefined) {
-              s = e.message;
-            }
-
-            L.info(`validateReferences ${e} Referenced env ${envName} does not exist`);
-            if (s.toUpperCase().includes("Not Found".toUpperCase())) {
-              reject(new ErrorResponseInternal(422, `Referenced environment ${envName} does not exist`));
-            } else {
-              reject(new ErrorResponseInternal(422, e));
-            }
-
-
-          })
-        }));
-      });
-      Promise.all(results).then((r) => {
-        Object.keys(protocolPresent).forEach(function (key, index) {
-          if (!protocolPresent[key]) {
-            reject(new ErrorResponseInternal(422, `Referenced protocol ${key} does not exist`));
-          }
-        });
-        resolve(true)
-      }).catch((e) => {
-        L.info(`validateReferences a rejection occurred ${e}`);
-        reject(e);
-      });
-
-
-
-
     }
 
-    );
+    // all apis exist, now check environments
+    for (var envName of product.environments) {
+      const errMsg = `Referenced environment ${envName} does not exist`;
+      try {
+        var env = await EnvironmentsService.byName(envName);
+        if (env == null) {
+          throw new ErrorResponseInternal(422, errMsg);
+        } else {
+          for (var protocol of product.protocols) {
+            protocolPresent[protocol.name] = (env.messagingProtocols.find(e => e.protocol.name == protocol.name) != null);
+          }
+        }
+      } catch (e) {
+        throw new ErrorResponseInternal(422, errMsg);
+      }
+    }
+
+    // throw error if protocol is missing from all environments, can not be used
+    Object.keys(protocolPresent).forEach(function (key, index) {
+      if (!protocolPresent[key]) {
+        throw new ErrorResponseInternal(422, `Referenced protocol ${key} does not exist in any environment`);
+      }
+    });
+    return true;
   }
+
 }
 
 export default new ApiProductsService();
