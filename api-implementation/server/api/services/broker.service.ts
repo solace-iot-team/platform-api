@@ -92,7 +92,7 @@ class BrokerService {
 						L.info(`created acl exceptions ${app.name}`);
 						// no webhook - no RDP
 						L.info(app.webHooks);
-						if (app.webHooks) {
+						if (app.webHooks != null && app.webHooks.length>0) {
 							L.info("creating webhook");
 							var d = await this.createQueues(app, services, products, developer);
 							L.info(`created queues ${app.name}`);
