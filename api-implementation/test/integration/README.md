@@ -32,7 +32,7 @@ source source.env.sh
 
 ## start mongo in docker
 ````bash
-./start.mongo.sh
+mongodb/start.mongo.sh
 
 # check if user is automatically set-up / login ok
 docker exec -it integration-mongodb bash
@@ -42,11 +42,18 @@ docker logs integration-mongodb
 ````
 ### stop mongo
 ````bash
-./stop.mongo.sh
+mongodb/stop.mongo.sh
 ````
-## local integration test
 
+## start server
 ````bash
+# in foreground
+npm run dev
+# in background
+./start.server.sh
+# kill the processes
+ps -ef | grep server/index.ts
+kill -9 <all pids>
 
 ````
 
