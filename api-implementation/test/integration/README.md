@@ -1,8 +1,12 @@
 # integration-test
 
 ## prerequisites
+
+* **node**
+* **npm**
+* **docker**
+
 ````bash
-# install docker
 cd {root}/platform-api/api-implementation
 npm install
 # npm run compile

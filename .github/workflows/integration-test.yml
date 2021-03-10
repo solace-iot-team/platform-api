@@ -19,13 +19,10 @@ on:
   #     - main
 env:
   DEBUG_FLAG: ${{ true }}
-  TEST_PLATFORM_DIR: "api-implementation"
   # DEBUG_FLAG: ${{ false }}
-  # TEST_SOLACE_INTEGRATION_AZURE_PROJECT_NAME: "wft-solace-int-rdp-az-funcs"
-  # TEST_SOLACE_INTEGRATION_AZURE_LOCATION: "West Europe"
-  # TEST_TEST_RUNNER_SCRIPT: "test/run.sh"
-  # TEST_TEST_RUNNER_LOGS_DIR: "tmp/logs"
-  # TEST_OUTPUT_LOGS_NAME: "solace-int-rdp-az-funcs-test-logs"
+  TEST_PLATFORM_DIR: "api-implementation"
+  TEST_TEST_RUNNER_OUTPUT_DIR: "tmp"
+  TEST_OUTPUT_NAME: "platform-api-test-output"
 jobs:
   run_tests:
     runs-on: ubuntu-18.04
@@ -54,20 +51,20 @@ jobs:
           echo ">>> environment: TEST_* "
           env | grep TEST
 
-      - name: bootstrap project
-        run: |
-          sudo apt-get update
-          sudo apt-get -y upgrade
-          echo ">>> docker =================================================="
-          sudo apt-get install apt-transport-https ca-certificates curl software-properties-common -y
-          curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
-          sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu bionic stable"
-          apt-cache policy docker-ce
-          sudo apt-get install --upgrade docker-ce -y
-          sudo apt-get update
-          sudo apt-get -y upgrade
+      # - name: bootstrap with docker
+      #   run: |
+      #     sudo apt-get update
+      #     sudo apt-get -y upgrade
+      #     echo ">>> docker =================================================="
+      #     sudo apt-get install apt-transport-https ca-certificates curl software-properties-common -y
+      #     curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
+      #     sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu bionic stable"
+      #     apt-cache policy docker-ce
+      #     sudo apt-get install --upgrade docker-ce -y
+      #     sudo apt-get update
+      #     sudo apt-get -y upgrade
 
-      - name: bootstrap project
+      - name: bootstrap node
         run: |
           cd "${TEST_PLATFORM_DIR}"
           sudo npm install -g npm
@@ -79,14 +76,28 @@ jobs:
           echo "bash --version: "; bash --version
           echo "node --version: "; node --version
           echo "npm --version: "; npm --version
-          echo "python3 --version: "; python3 --version
-          echo "jq --version: "; jq --version
-          echo "ansible --version: "; ansible --version
-          echo "ansible-galaxy --version: "; ansible-galaxy --version
-          echo "ansible-solace version::"; ansible-galaxy collection list | grep solace
+          echo "docker --version"; docker --version
+
+      - name: Run Tests
+        run: |
+          cd "${TEST_PLATFORM_DIR}"
+          export APIM_INTEGRATION_TEST_PLATFORM_ADMIN_USER=${{ secrets.PLATFORM_ADMIN_USER }}
+          export APIM_INTEGRATION_TEST_PLATFORM_ADMIN_PASSWORD=${{ secrets.PLATFORM_ADMIN_PASSWORD }}
+          env | grep APIM
 
 
+          # export SOLACE_INTEGRATION_AZURE_PROJECT_NAME="${TEST_SOLACE_INTEGRATION_AZURE_PROJECT_NAME}"
+          # export SOLACE_INTEGRATION_AZURE_LOCATION="${TEST_SOLACE_INTEGRATION_AZURE_LOCATION}"
+          # ./${TEST_TEST_RUNNER_SCRIPT}
 
+      - name: Archive logs
+        if: ${{ (failure() && !cancelled()) || (always() && github.event_name == 'workflow_dispatch') }}
+        uses: actions/upload-artifact@v2
+        with:
+          name: ${{ env.TEST_OUTPUT_NAME }}
+          path: ${{ github.workspace }}/${{ env.TEST_TEST_RUNNER_OUTPUT_DIR }}
+          if-no-files-found: error
+          
       # - name: Set up Python
       #   uses: actions/setup-python@v2
       #   with:
@@ -120,20 +131,6 @@ jobs:
       #   with:
       #     creds: ${{secrets.AZURE_CREDENTIALS}}
       #
-      # - name: Run Tests
-      #   run: |
-      #     export SOLACE_INTEGRATION_PROJECT_HOME="$GITHUB_WORKSPACE"
-      #     export SOLACE_INTEGRATION_AZURE_PROJECT_NAME="${TEST_SOLACE_INTEGRATION_AZURE_PROJECT_NAME}"
-      #     export SOLACE_INTEGRATION_AZURE_LOCATION="${TEST_SOLACE_INTEGRATION_AZURE_LOCATION}"
-      #     ./${TEST_TEST_RUNNER_SCRIPT}
-      #
-      # - name: Archive logs
-      #   if: ${{ (failure() && !cancelled()) || (always() && github.event_name == 'workflow_dispatch') }}
-      #   uses: actions/upload-artifact@v2
-      #   with:
-      #     name: ${{ env.TEST_OUTPUT_LOGS_NAME }}
-      #     path: ${{ github.workspace }}/${{ env.TEST_TEST_RUNNER_LOGS_DIR }}
-      #     if-no-files-found: error
 
 ###
 # The End.
