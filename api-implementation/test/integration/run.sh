@@ -25,7 +25,7 @@ scriptName=$(basename $(test -L "$0" && readlink "$0" || echo "$0"));
 testScripts=(
   "mongodb/start.mongo.sh"
   "start.server.sh"
-  # "run.npm.integration-tests.sh"
+  "run.npm.integration-tests.sh"
   #   "run.npm.unit-tests.sh"
   # "azure/create.az.blob-storage.sh"
   # "generate.local.settings.sh"

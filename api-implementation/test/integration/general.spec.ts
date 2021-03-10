@@ -1,13 +1,11 @@
 import "mocha";
 import * as chai from "chai";
-// import chaiAsPromised from "chai-as-promised";
-// chai.use(chaiAsPromised);
 const expect = chai.expect;
 import path = require("path");
 import fetch, { RequestInit, Response } from "node-fetch";
 import { UserRegistry, getEnvVarValueAssert, getBaseUrl, getRequestAuthHeader, logResponse } from "../lib/test.helpers";
 
-// globals
+// move to lib?
 const scriptName: string = path.basename(__filename);
 const testEnv = {
   SCRIPT_NAME: scriptName,
@@ -101,9 +99,9 @@ describe('general test', () => {
 
   context("tests platformManagement", () => {
 
-    beforeEach(()=>{
-      expect(false, "TODO: helper: delete all orgs").to.be.true;
-    });
+    // beforeEach(()=>{
+    //   expect(false, "TODO: helper: delete all orgs").to.be.true;
+    // });
 
     it("should create/get/patch/get/delete/get an org", async() => {
       const uri = getBaseUrl() + "organizations";
@@ -134,7 +132,7 @@ describe('general test', () => {
       };
       response = await fetch(uri, request);
       await logResponse("get org1", response);
-      expect(response.status, "get org1").to.equal(401);
+      expect(response.status, "get org1").to.equal(200);
 
       expect(false, "TODO: continue here").to.be.true;
 

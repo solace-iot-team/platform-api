@@ -10,7 +10,7 @@ if [ -z "$APIM_SOLACE_PLATFORM_API_PROJECT_HOME" ]; then
   fi
 else
   projectHome=$APIM_SOLACE_PLATFORM_API_PROJECT_HOME
-fi  
+fi
 
 export APIM_SOLACE_PLATFORM_API_PROJECT_HOME="$projectHome"
 export APIM_INTEGRATION_TEST_HOME="$APIM_SOLACE_PLATFORM_API_PROJECT_HOME/api-implementation/test/integration"
@@ -32,3 +32,5 @@ export APIM_INTEGRATION_TEST_LOG_LEVEL="debug"
 export APIM_INTEGRATION_TEST_FILE_USER_REGISTRY="$APIM_INTEGRATION_TEST_RESOURCES_HOME/organization_users.json"
 
 env | grep APIM
+
+###

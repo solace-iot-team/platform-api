@@ -47,17 +47,29 @@ mongodb/stop.mongo.sh
 
 ## start server
 ````bash
-# in foreground
-npm run dev
-# in background
+# in foreground for development
+./start.server.sh dev
+
+# in background with log file for test
 ./start.server.sh
+````
+### stop background server
+````bash
 # kill the processes
 ps -ef | grep server/index.ts
 kill -9 <all pids>
-
 ````
 
+## tests
 
+````bash
+# development: output to console
+./run.npm.integration-tests.sh dev
+
+# test: output to log file
+./run.npm.integration-tests.sh
+
+````
 
 
 
