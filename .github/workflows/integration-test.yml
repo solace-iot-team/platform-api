@@ -51,7 +51,7 @@ jobs:
           echo ">>> environment: TEST_* "
           env | grep TEST
 
-      # - name: bootstrap with docker
+      # - name: Bootstrap docker
       #   run: |
       #     sudo apt-get update
       #     sudo apt-get -y upgrade
@@ -64,7 +64,7 @@ jobs:
       #     sudo apt-get update
       #     sudo apt-get -y upgrade
 
-      - name: bootstrap node
+      - name: Bootstrap node
         run: |
           cd "${TEST_PLATFORM_DIR}"
           sudo npm install -g npm
@@ -83,12 +83,7 @@ jobs:
           cd "${TEST_PLATFORM_DIR}"
           export APIM_INTEGRATION_TEST_PLATFORM_ADMIN_USER=${{ secrets.PLATFORM_ADMIN_USER }}
           export APIM_INTEGRATION_TEST_PLATFORM_ADMIN_PASSWORD=${{ secrets.PLATFORM_ADMIN_PASSWORD }}
-          env | grep APIM
-
-
-          # export SOLACE_INTEGRATION_AZURE_PROJECT_NAME="${TEST_SOLACE_INTEGRATION_AZURE_PROJECT_NAME}"
-          # export SOLACE_INTEGRATION_AZURE_LOCATION="${TEST_SOLACE_INTEGRATION_AZURE_LOCATION}"
-          # ./${TEST_TEST_RUNNER_SCRIPT}
+          test/integration/run.sh
 
       - name: Archive logs
         if: ${{ (failure() && !cancelled()) || (always() && github.event_name == 'workflow_dispatch') }}
@@ -97,7 +92,7 @@ jobs:
           name: ${{ env.TEST_OUTPUT_NAME }}
           path: ${{ github.workspace }}/${{ env.TEST_TEST_RUNNER_OUTPUT_DIR }}
           if-no-files-found: error
-          
+
       # - name: Set up Python
       #   uses: actions/setup-python@v2
       #   with:

@@ -8,31 +8,23 @@ scriptName=$(basename $(test -L "$0" && readlink "$0" || echo "$0"));
 
   source "$scriptDir/source.env.sh"
 
-
-echo "TODO: fix me"; exit 1;
-
-
   if [ -z "$APIM_SOLACE_PLATFORM_API_PROJECT_HOME" ]; then echo ">>> ERROR: - $scriptName - missing env var: APIM_SOLACE_PLATFORM_API_PROJECT_HOME"; exit 1; fi
-  if [ -z "$WORKING_DIR" ]; then export WORKING_DIR="$APIM_SOLACE_PLATFORM_API_PROJECT_HOME/tmp"; mkdir -p $WORKING_DIR; fi
-  if [ -z "$LOG_DIR" ]; then export LOG_DIR="$WORKING_DIR/logs"; mkdir -p $LOG_DIR; fi
+  if [ -z "$APIM_INTEGRATION_TEST_WORKING_DIR" ]; then echo ">>> ERROR: - $scriptName - missing env var: APIM_INTEGRATION_TEST_WORKING_DIR"; exit 1; fi
+  if [ -z "$APIM_INTEGRATION_TEST_LOG_DIR" ]; then echo ">>> ERROR: - $scriptName - missing env var: APIM_INTEGRATION_TEST_LOG_DIR"; exit 1; fi
+  if [ -z "$APIM_INTEGRATION_TEST_HOME" ]; then echo ">>> ERROR: - $scriptName - missing env var: APIM_INTEGRATION_TEST_HOME"; exit 1; fi
   if [ -z "$RUN_FG" ]; then export RUN_FG="false"; fi
-
-  # if [ -z "$APIM_INTEGRATION_TEST_PLATFORM_ADMIN_USER" ]; then echo ">>> ERROR: - $scriptName - missing env var: APIM_INTEGRATION_TEST_PLATFORM_ADMIN_USER"; exit 1; fi
-  # if [ -z "$APIM_INTEGRATION_TEST_PLATFORM_ADMIN_PASSWORD" ]; then echo ">>> ERROR: - $scriptName - missing env var: APIM_INTEGRATION_TEST_PLATFORM_ADMIN_PASSWORD"; exit 1; fi
 
 ############################################################################################################################
 # Prepare
 
-  mkdir -p $LOG_DIR; rm -rf $LOG_DIR/*
-  mkdir -p $WORKING_DIR;
-  # rm -rf $WORKING_DIR/*
+  LOG_DIR=$APIM_INTEGRATION_TEST_LOG_DIR; mkdir -p $LOG_DIR; rm -rf $LOG_DIR/*;
 
 ############################################################################################################################
 # Scripts
 
 testScripts=(
-  "mongodb/create.mongo.sh"
-  "start.server.sh"
+  "mongodb/start.mongo.sh"
+  # "start.server.sh"
   # "run.npm.integration-tests.sh"
   #   "run.npm.unit-tests.sh"
   # "azure/create.az.blob-storage.sh"
@@ -67,7 +59,6 @@ testScripts=(
         $runScript
       fi
       code=$?; if [[ $code != 0 ]]; then echo ">>> ERROR - code=$code - runScript='$runScript' - $scriptName"; FAILED=1; fi
-      echo "success"
     fi
   done
 

@@ -2,8 +2,8 @@
 #  usage:
 # source source.env.sh
 
-scriptDir=$(pwd)
-projectHome=${scriptDir%/platform-api/*}
+_scriptDir=$(pwd)
+projectHome=${_scriptDir%/platform-api/*}
 if [[ ! $projectHome =~ "platform-api" ]]; then
   projectHome=$projectHome/platform-api
 fi
