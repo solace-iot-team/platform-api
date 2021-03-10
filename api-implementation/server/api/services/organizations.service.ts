@@ -10,7 +10,6 @@ import App = Components.Schemas.App;
 import SolaceCloudFacade from '../../../src/solacecloudfacade';
 import EventPortalFacade from '../../../src/eventportalfacade';
 
-
 const reserved: string = "platform";
 
 export class OrganizationsService {

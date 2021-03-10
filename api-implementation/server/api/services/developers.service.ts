@@ -10,17 +10,17 @@ import BrokerService from './broker.service';
 import { Paging, PersistenceService } from './persistence.service';
 import { ErrorResponseInternal } from '../middlewares/error.handler';
 
-var passwordGenerator = require('generate-password');
+import passwordGenerator from 'generate-password';
 
 interface DeveloperApp extends App {
-  appType?: string,
-  ownerId?: string,
-  status?: string
+  appType?: string;
+  ownerId?: string;
+  status?: string;
 }
 
 interface DeveloperAppPatch extends AppPatch {
-  appType?: string,
-  ownerId?: string
+  appType?: string;
+  ownerId?: string;
 }
 
 export class DevelopersService {
@@ -35,11 +35,15 @@ export class DevelopersService {
     return this.persistenceService.all();
   }
 
-  async allDevelopersApps(name: string, paging: Paging, query: any): Promise<App[]> {
+  async allDevelopersApps(
+    name: string,
+    paging: Paging,
+    query: any
+  ): Promise<App[]> {
     query.ownerId = name;
     query.appType = 'developer';
     try {
-      var dev: Developer = await this.persistenceService.byName(name);
+      const dev: Developer = await this.persistenceService.byName(name);
       if (dev === null) {
         return new Promise<App[]>((resolve, reject) => {
           reject(new ErrorResponseInternal(404, `Object ${name} not found`));
@@ -58,24 +62,31 @@ export class DevelopersService {
 
   async appByName(developer: string, name: string): Promise<AppResponse> {
     try {
-      var app: AppResponse = await this.appPersistenceService.byName(name, { ownerId: developer });
-      var dev: Developer = await this.persistenceService.byName(developer);
+      const ownerId = {
+        ownerId: developer,
+      };
+      const app: AppResponse = await this.appPersistenceService.byName(
+        name,
+        ownerId
+      );
+      const dev: Developer = await this.persistenceService.byName(developer);
       if (app) {
-
-
-        var endpoints = await BrokerService.getMessagingProtocols(app);
-
+        const endpoints = await BrokerService.getMessagingProtocols(app);
         app.environments = endpoints;
-        for (var appEnv of app.environments) {
-          var permissions = await BrokerService.getPermissions(app, dev, appEnv.name);
+        for (const appEnv of app.environments) {
+          const permissions = await BrokerService.getPermissions(
+            app,
+            dev,
+            appEnv.name
+          );
           appEnv.permissions = permissions;
         }
       } else {
-        throw (404);
+        throw 404;
       }
       return app;
     } catch (e) {
-
+      throw new ErrorResponseInternal(500, e);
     }
   }
 
@@ -83,7 +94,10 @@ export class DevelopersService {
     if (await this.canDeleteDeveloper(name)) {
       return this.persistenceService.delete(name);
     } else {
-      throw new ErrorResponseInternal(409, `Can't delete, developer is still referenced`);
+      throw new ErrorResponseInternal(
+        409,
+        `Can't delete, developer is still referenced`
+      );
     }
   }
 
@@ -92,9 +106,12 @@ export class DevelopersService {
       try {
         const d = await this.byName(developer);
         try {
-          var app: App = await this.appPersistenceService.byName(name, { ownerId: developer });
-          var x = await BrokerService.deprovisionApp(app);
-          resolve(this.appPersistenceService.delete(name, { ownerId: developer }));
+          const q = {
+            ownerId: developer,
+          };
+          const app: App = await this.appPersistenceService.byName(name, q);
+          const x = await BrokerService.deprovisionApp(app);
+          resolve(this.appPersistenceService.delete(name, q));
         } catch (e) {
           reject(e);
         }
@@ -109,33 +126,39 @@ export class DevelopersService {
   }
 
   async createApp(developer: string, body: App): Promise<App> {
-    var dev = null;
+    let dev = null;
     try {
-      dev = await this.persistenceService.byName(developer)
+      dev = await this.persistenceService.byName(developer);
     } catch (e) {
       // do nothing
     }
     if (dev === null) {
-      throw new ErrorResponseInternal(404, `Entity ${developer} does not exist`);
+      throw new ErrorResponseInternal(
+        404,
+        `Entity ${developer} does not exist`
+      );
     }
     L.info(dev);
-    var app: DeveloperApp = {
+    const app: DeveloperApp = {
       ownerId: developer,
-      appType: "developer",
+      appType: 'developer',
       name: body.name,
       apiProducts: body.apiProducts,
-      credentials: body.credentials
+      credentials: body.credentials,
     };
-    if (body.attributes)
+    if (body.attributes) {
       app.attributes = body.attributes;
-    if (body.callbackUrl)
+    }
+    if (body.callbackUrl) {
       app.callbackUrl = body.callbackUrl;
-    if (body.webHooks)
+    }
+    if (body.webHooks) {
       app.webHooks = body.webHooks;
+    }
 
     L.info(`App create request ${JSON.stringify(app)}`);
     try {
-      var validated = await this.validate(app);
+      const validated = await this.validate(app);
       if (validated) {
         app.status = 'approved';
       } else {
@@ -143,21 +166,28 @@ export class DevelopersService {
       }
 
       if (!app.credentials.secret) {
-        var consumerCredentials = {
+        const consumerCredentials = {
           consumerKey: passwordGenerator.generate({
-            length: 32, numbers: true, strict: true
+            length: 32,
+            numbers: true,
+            strict: true,
           }),
           consumerSecret: passwordGenerator.generate({
-            length: 16, numbers: true, strict: true
-          })
+            length: 16,
+            numbers: true,
+            strict: true,
+          }),
         };
         app.credentials.secret = consumerCredentials;
       }
 
-      var newApp: DeveloperApp = await this.appPersistenceService.create(app.name, app);
+      const newApp: DeveloperApp = await this.appPersistenceService.create(
+        app.name,
+        app
+      );
       if (newApp.status == 'approved') {
         L.info(`provisioning app ${app.name}`);
-        var r = await BrokerService.provisionApp(newApp as App, dev);
+        const r = await BrokerService.provisionApp(newApp as App, dev);
       }
       return newApp;
     } catch (e) {
@@ -170,40 +200,55 @@ export class DevelopersService {
     return this.persistenceService.update(name, body);
   }
 
-  async updateApp(developer: string, name: string, body: AppPatch): Promise<AppPatch> {
-    var dev = null;
+  async updateApp(
+    developer: string,
+    name: string,
+    body: AppPatch
+  ): Promise<AppPatch> {
+    let dev = null;
     try {
-      dev = await this.persistenceService.byName(developer)
+      dev = await this.persistenceService.byName(developer);
     } catch (e) {
       // do nothing
     }
     if (dev === null) {
-      throw new ErrorResponseInternal(404, `Entity ${developer} does not exist`);
+      throw new ErrorResponseInternal(
+        404,
+        `Entity ${developer} does not exist`
+      );
     }
     L.info(dev);
-    var app: DeveloperAppPatch = {
+    const app: DeveloperAppPatch = {
       ownerId: developer,
-      appType: "developer",
-      name: name
+      appType: 'developer',
+      name: name,
     };
 
-    if (body.apiProducts)
+    if (body.apiProducts) {
       app.apiProducts = body.apiProducts;
-    if (body.attributes)
+    }
+    if (body.attributes) {
       app.attributes = body.attributes;
-    if (body.callbackUrl)
+    }
+    if (body.callbackUrl) {
       app.callbackUrl = body.callbackUrl;
-    if (body.status)
+    }
+    if (body.status) {
       app.status = body.status;
-    if (body.webHooks)
+    }
+    if (body.webHooks) {
       app.webHooks = body.webHooks;
+    }
 
     L.info(`App patch request ${JSON.stringify(app)}`);
-    var validated = await this.validate(app);
-    var appPatch: AppPatch = await this.appPersistenceService.update(name, app);
+    const validated = await this.validate(app);
+    const appPatch: AppPatch = await this.appPersistenceService.update(
+      name,
+      app
+    );
     if (appPatch.status == 'approved') {
       L.info(`provisioning app ${app.name}`);
-      var r = await BrokerService.provisionApp(appPatch as App, dev);
+      const r = await BrokerService.provisionApp(appPatch as App, dev);
     }
     return appPatch;
   }
@@ -211,37 +256,46 @@ export class DevelopersService {
   // private methods
 
   private async validate(app: any): Promise<boolean> {
-
-    var isApproved: boolean = true;
-    var environments: Set<string> = new Set;
+    let isApproved = true;
+    const environments: Set<string> = new Set();
     if (!app.apiProducts) {
       return isApproved;
     }
 
     // validate api products exist and find out if any  require approval
-    for (var product of app.apiProducts) {
+    for (const product of app.apiProducts) {
       try {
-        var apiProduct = await ApiProductsService.byName(product);
-        apiProduct.environments.forEach(envName => {
+        const apiProduct = await ApiProductsService.byName(product);
+        apiProduct.environments.forEach((envName) => {
           environments.add(envName);
         });
-        if (apiProduct.approvalType == 'manual')
+        if (apiProduct.approvalType == 'manual') {
           isApproved = false;
+        }
       } catch (e) {
-        throw new ErrorResponseInternal(422, `Referenced API Product ${product} does not exist`);
+        throw new ErrorResponseInternal(
+          422,
+          `Referenced API Product ${product} does not exist`
+        );
       }
     }
 
     if (app.webHooks != null) {
-      var webHooks: WebHook[] = app.webHooks as WebHook[];
+      const webHooks: WebHook[] = app.webHooks as WebHook[];
 
-      webHooks.forEach(webHook => {
-        if (webHook.environments !== null && webHook.environments !== undefined) {
-      L.info(webHook.environments);          
-          webHook.environments.forEach(envName => {
-            var hasEnv = environments.has(envName);
+      webHooks.forEach((webHook) => {
+        if (
+          webHook.environments !== null &&
+          webHook.environments !== undefined
+        ) {
+          L.info(webHook.environments);
+          webHook.environments.forEach((envName) => {
+            const hasEnv = environments.has(envName);
             if (!hasEnv) {
-              throw new ErrorResponseInternal(422, `Referenced environment ${envName} is not associated with any API Product`);
+              throw new ErrorResponseInternal(
+                422,
+                `Referenced environment ${envName} is not associated with any API Product`
+              );
             }
           });
         }
@@ -252,12 +306,12 @@ export class DevelopersService {
   }
 
   private async canDeleteDeveloper(name: string): Promise<boolean> {
-    var q: any = {
+    const q = {
       ownerId: {
-        $eq: name
-      }
+        $eq: name,
+      },
     };
-    var devs = await this.appPersistenceService.all(q);
+    const devs = await this.appPersistenceService.all(q);
     if (devs == null || devs.length == 0) {
       return true;
     } else {

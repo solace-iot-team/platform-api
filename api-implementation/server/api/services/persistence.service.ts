@@ -3,6 +3,7 @@ import { databaseaccess } from '../../../src/databaseaccess';
 import mongodb, { DeleteWriteOpResultObject, MongoError, CollectionInsertOneOptions, UpdateOneOptions } from 'mongodb';
 import C from 'cls-hooked';
 import { ErrorResponseInternal } from '../middlewares/error.handler';
+import { stat } from 'fs';
 
 export interface Paging {
   pageNumber: number,
@@ -60,7 +61,7 @@ export class PersistenceService {
       x.toArray(
         (err: MongoError, items) => {
           if (err) {
-            reject(new ErrorResponseInternal(500, this.createPublicErrorMessage(err)));
+            reject(this.createPublicErrorMessage(err));
           } else {
             items.forEach((item) => {
               delete item._id;
@@ -72,7 +73,32 @@ export class PersistenceService {
     });
   }
 
-  byName(name: string, query?: any): Promise<any> {
+  async byName(name: string, query?: any): Promise<any> {
+    const collection: mongodb.Collection = this.getCollection();
+    var q = query;
+    if (q) {
+      q._id = name;
+    } else {
+      q = { _id: name };
+    }
+    L.debug(`PersistenceService.byName the query ${JSON.stringify(q)}, ${collection.collectionName}, ${collection.namespace}`);
+    try {
+      const item = await collection.findOne(q);
+      L.trace(item);
+      if (item == null) {
+        var msg = `Object ${name} not found`;
+        L.debug(msg);
+        throw new ErrorResponseInternal(404, msg);
+      } else {
+        delete item._id;
+        return item;
+      }
+    } catch (e) {
+      throw this.createPublicErrorMessage(e);
+    }
+
+  }
+  async byNameOld(name: string, query?: any): Promise<any> {
     return new Promise<any>((resolve, reject) => {
       const collection: mongodb.Collection = this.getCollection();
       var q = query;
@@ -87,7 +113,7 @@ export class PersistenceService {
           L.trace(item);
           if (item === null) {
             var msg = `Object ${name} not found`;
-            L.debug(msg);            
+            L.debug(msg);
             reject(new ErrorResponseInternal(404, msg));
 
           } else {
@@ -97,7 +123,7 @@ export class PersistenceService {
         }
 
       ).catch((e: MongoError) => {
-        reject(new ErrorResponseInternal(500, this.createPublicErrorMessage(e)));
+        reject(this.createPublicErrorMessage(e));
       });
     });
   }
@@ -123,7 +149,7 @@ export class PersistenceService {
         }
 
       ).catch((e: MongoError) => {
-        reject(new ErrorResponseInternal(422, this.createPublicErrorMessage(e)));
+        reject(this.createPublicErrorMessage(e));
       });
     });
   }
@@ -141,7 +167,7 @@ export class PersistenceService {
         delete body._id;
         resolve(body);
       }).catch((e: MongoError) => {
-        reject(new ErrorResponseInternal(422, this.createPublicErrorMessage(e)));
+        reject(this.createPublicErrorMessage(e));
       });
     });
   }
@@ -150,17 +176,17 @@ export class PersistenceService {
     return new Promise<any>((resolve, reject) => {
       L.info(`patching ${this.collection} with _id ${_id}`);
       var id = body.name;
-      if (id == null){
+      if (id == null) {
         id = body.id;
       }
-      if (id == null){
+      if (id == null) {
         id = body._id;
       }
-      if (id != _id){
-          reject(new ErrorResponseInternal(400, `Can not change entity identifier `));
-          return;
+      if (id != _id) {
+        reject(new ErrorResponseInternal(400, `Can not change entity identifier `));
+        return;
       }
-      
+
       const collection: mongodb.Collection = this.getCollection();
       var q = query;
       if (q) {
@@ -171,7 +197,7 @@ export class PersistenceService {
       var opts: UpdateOneOptions = {
         w: 1,
         j: true
-      };      
+      };
       collection.updateOne(q, { $set: body }, opts).then((v: mongodb.UpdateWriteOpResult) => {
         //L.info(v);
         if (v.matchedCount == 0) {
@@ -186,7 +212,7 @@ export class PersistenceService {
         });
 
       }).catch((e: MongoError) => {
-        reject(new ErrorResponseInternal(422, this.createPublicErrorMessage(e)));
+        reject(this.createPublicErrorMessage(e));
       });
     });
   }
@@ -217,14 +243,19 @@ export class PersistenceService {
     );
   }
 
-  private createPublicErrorMessage(error: MongoError): string {
+  private createPublicErrorMessage(error: MongoError): ErrorResponseInternal {
     L.debug(`Initial mongo error ${error.message}`);
     var errorCode = "E" + error.code;
     var msg = error.message.replace(errorCode, "");
+    var statusCode = 422;
     msg = msg.substring(0, msg.indexOf("error")).trim();
     msg = `${msg} (${error.code.toString(16)})`;
+    if (error.code == null) {
+      msg = error.message;
+      statusCode = 500;
+    }
     L.debug(`public error message ${msg}`);
-    return msg;
+    return new ErrorResponseInternal(statusCode, msg);
   }
 
 }
