@@ -2,6 +2,7 @@
 
 ## prerequisites
 ````bash
+# install docker
 cd {root}/platform-api/api-implementation
 npm install
 # npm run compile
@@ -15,33 +16,34 @@ npm install
 
 ## environment variables
 
-TODO: get the full set, example?
-could use source.evn.sh - any secrets in there?
-
+[Add your secrets - see instructions here](./template.source.secrets.env.sh).
 ````bash
-export APIM_SOLACE_PLATFORM_API_PROJECT_HOME="$projectHome"
+source source.secrets.env.sh
+````
 
-export APIM_INTEGRATION_TEST_MONGO_ROOT_USERNAME={username}
-export APIM_INTEGRATION_TEST_MONGO_ROOT_PASSWORD={password}
+[Standard environment:](./source.env.sh)
+````bash
+source source.env.sh
+````
+
+## start mongo in docker
+````bash
+./start.mongo.sh
+
+# check if user is automatically set-up / login ok
+docker exec -it integration-mongodb bash
+mongo -u platform-user -p platform-user-password --authenticationDatabase platform
+# docker logs
+docker logs integration-mongodb
+````
+### stop mongo
+````bash
+./stop.mongo.sh
 ````
 ## local integration test
 
 ````bash
 
-docker-compose -f mongodb/docker-compose.yml up -d
-
-# check
-docker ps
-docker volume ls | grep mongo
-# login
-docker exec -ti integration-mongodb bash
-
-  mongo admin -u root -p mongo
-  show dbs
-  use xxx?
-  show collections
-
-docker-compose -f mongodb/docker-compose.yml down
 ````
 
 

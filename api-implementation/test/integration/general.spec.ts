@@ -101,6 +101,10 @@ describe('general test', () => {
 
   context("tests platformManagement", () => {
 
+    beforeEach(()=>{
+      expect(false, "TODO: helper: delete all orgs").to.be.true;
+    });
+
     it("should create/get/patch/get/delete/get an org", async() => {
       const uri = getBaseUrl() + "organizations";
       const headers = {
@@ -110,7 +114,9 @@ describe('general test', () => {
       // src/model/@types/api-model/index.d.ts 
       let request: RequestInit = null;
       let response: Response = null;
-      let body = {
+      let body = null;
+      // create org
+      body = {
         name: "org1"
       }
       request = {
@@ -120,74 +126,20 @@ describe('general test', () => {
       };
       response = await fetch(uri, request);
       await logResponse("create org1", response);
-      expect(response.status, "create org1").to.equal(401);
+      expect(response.status, "create org1").to.equal(201);
+      // get org
+      request = {
+        method: "GET",
+        headers: headers
+      };
+      response = await fetch(uri, request);
+      await logResponse("get org1", response);
+      expect(response.status, "get org1").to.equal(401);
 
-      // get the 
+      expect(false, "TODO: continue here").to.be.true;
 
-      // expect(false, "TODO: continue here").to.be.true;
-
-      // let getRequest: RequestInit = null;
-      // let response: Response = null;
-      // const uri = getBaseUrl() + "organizations";
-      // getRequest = {
-      //   method: "GET"
-      // };
-      // response = await fetch(uri, getRequest);
-      // await logResponse("get organizations no auth header", response);
-      // expect(response.status, "get organizations no auth header").to.equal(401);
-
-      // getRequest = {
-      //   method: "GET",
-      //   headers: {
-      //     Authorization: getRequestAuthHeader("not", 'valid')
-      //   }
-      // };
-      // response = await fetch(uri, getRequest);
-      // await logResponse("get organizations unauthorized", response);
-      // expect(response.status, "get organizations unauthorized").to.equal(401);
     });
 
-    // xit("should handle unauthorized requests for populated DB", async() => {
-    //   let getRequest: RequestInit = null;
-    //   let response: Response = null;
-    //   const uri = getBaseUrl() + "organizations";
-    //   getRequest = {
-    //     method: "GET"
-    //   };
-    //   response = await fetch(uri, getRequest);
-    //   await logResponse("get organizations no auth header", response);
-    //   expect(response.status, "get organizations no auth header").to.equal(401);
-
-    //   getRequest = {
-    //     method: "GET",
-    //     headers: {
-    //       Authorization: getRequestAuthHeader("not", 'valid')
-    //     }
-    //   };
-    //   response = await fetch(uri, getRequest);
-    //   await logResponse("get organizations unauthorized", response);
-    //   expect(response.status, "get organizations unauthorized").to.equal(401);
-    // });
-
-
   });
-
-  // context("solace-rdp-2-blob: azure.integration", ()=>{
-
-  //   it("should create container", async()=>{
-  //       await deleteContainerIfExists(containerClient);
-
-  //       let topic = AzureFunctionCall.topic_1;
-  //       let query_params: Array<string> = [`path=${topic}`]
-  //       const response: Response = await azureFunctionCall.postMessage(query_params, azureFunctionCall.generatePayload(topic));
-  //       expect(response.status, "error creating container & storing 1 message").to.equal(200);
-
-  //       let containerExists = await containerClient.exists();
-  //       expect(containerExists, "container does not exist, but it should now").to.be.true;
-
-  //       let blobCount: BlobCount = await countBlobs(containerClient);
-  //       expect(blobCount.fileCount, "fileCount is not equal 1").to.equal(1);
-  //   });
-
 
 });

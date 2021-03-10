@@ -8,6 +8,10 @@ scriptName=$(basename $(test -L "$0" && readlink "$0" || echo "$0"));
 
   source "$scriptDir/source.env.sh"
 
+
+echo "TODO: fix me"; exit 1;
+
+
   if [ -z "$APIM_SOLACE_PLATFORM_API_PROJECT_HOME" ]; then echo ">>> ERROR: - $scriptName - missing env var: APIM_SOLACE_PLATFORM_API_PROJECT_HOME"; exit 1; fi
   if [ -z "$WORKING_DIR" ]; then export WORKING_DIR="$APIM_SOLACE_PLATFORM_API_PROJECT_HOME/tmp"; mkdir -p $WORKING_DIR; fi
   if [ -z "$LOG_DIR" ]; then export LOG_DIR="$WORKING_DIR/logs"; mkdir -p $LOG_DIR; fi

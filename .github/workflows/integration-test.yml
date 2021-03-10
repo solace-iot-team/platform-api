@@ -54,11 +54,37 @@ jobs:
           echo ">>> environment: TEST_* "
           env | grep TEST
 
-      - name: bootstrap
+      - name: bootstrap project
+        run: |
+          sudo apt-get update
+          sudo apt-get -y upgrade
+          echo ">>> docker =================================================="
+          sudo apt-get install apt-transport-https ca-certificates curl software-properties-common -y
+          curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
+          sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu bionic stable"
+          apt-cache policy docker-ce
+          sudo apt-get install --upgrade docker-ce -y
+          sudo apt-get update
+          sudo apt-get -y upgrade
+
+      - name: bootstrap project
         run: |
           cd "${TEST_PLATFORM_DIR}"
           sudo npm install -g npm
           npm install
+
+      - name: env after install
+        if: env.DEBUG_FLAG == 'true'
+        run: |
+          echo "bash --version: "; bash --version
+          echo "node --version: "; node --version
+          echo "npm --version: "; npm --version
+          echo "python3 --version: "; python3 --version
+          echo "jq --version: "; jq --version
+          echo "ansible --version: "; ansible --version
+          echo "ansible-galaxy --version: "; ansible-galaxy --version
+          echo "ansible-solace version::"; ansible-galaxy collection list | grep solace
+
 
 
       # - name: Set up Python
