@@ -11,6 +11,7 @@
     "lint": "eslint -c .eslintrc.js \"{server, test}/**/*.{js,ts,tsx}\" --quiet",
     "lint:fix": "eslint -c .eslintrc.js \"{server, test}/**/*.{js,ts,tsx}\" --quiet --fix",
     "test": "mocha -r ts-node/register test/**/*.ts --exit",
+    "test:integration": "mocha -r ts-node/register test/integration/**/*.spec.ts --exit",
     "test:debug": "mocha -r ts-node/register --inspect-brk test/**/*.ts --exit"
   },
   "author": "",
@@ -63,7 +64,6 @@
     "pino-pretty": "^4.3.0",
     "prettier": "^2.1.2",
     "shelljs": "^0.8.4",
-    "supertest": "^5.0.0",
     "ts-node": "^9.0.0",
     "typescript": "^4.0.5",
     "util": "^0.12.3"

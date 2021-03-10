@@ -2,3 +2,5 @@ api-implementation/node_modules
 api-implementation/src/clients/.DS_Store
 **/.DS_Store
 api-implementation/dist
+tmp
+save*

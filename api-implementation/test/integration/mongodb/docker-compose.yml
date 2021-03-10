@@ -1,0 +1,17 @@
+version: "3.7"
+services:
+  mongodb:
+    container_name: integration-mongodb
+    image : mongo:latest
+    # volumes:
+    #   - mongodb_data_container:/database
+    ports:
+      - ${APIM_INTEGRATION_TEST_MONGO_INITDB_PORT}:${APIM_INTEGRATION_TEST_MONGO_INITDB_PORT}
+    restart: unless-stopped
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: "${APIM_INTEGRATION_TEST_MONGO_ROOT_USERNAME}"
+      MONGO_INITDB_ROOT_PASSWORD: "${APIM_INTEGRATION_TEST_MONGO_ROOT_PASSWORD}"
+    # - PUID=1000
+    # - PGID=1000
+# volumes:
+#   mongodb_data_container:
