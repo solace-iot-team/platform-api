@@ -51,6 +51,7 @@ jobs:
           echo ">>> environment: TEST_* "
           env | grep TEST
 
+      # already pre-installed
       # - name: Bootstrap docker
       #   run: |
       #     sudo apt-get update
@@ -80,9 +81,10 @@ jobs:
 
       - name: Run Tests
         run: |
-          cd "${TEST_PLATFORM_DIR}"
           export APIM_INTEGRATION_TEST_PLATFORM_ADMIN_USER=${{ secrets.PLATFORM_ADMIN_USER }}
           export APIM_INTEGRATION_TEST_PLATFORM_ADMIN_PASSWORD=${{ secrets.PLATFORM_ADMIN_PASSWORD }}
+          export APIM_SOLACE_PLATFORM_API_PROJECT_HOME="$GITHUB_WORKSPACE"
+          cd "$APIM_SOLACE_PLATFORM_API_PROJECT_HOME/${TEST_PLATFORM_DIR}"
           test/integration/run.sh
 
       - name: Archive logs

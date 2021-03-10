@@ -2,11 +2,15 @@
 #  usage:
 # source source.env.sh
 
-_scriptDir=$(pwd)
-projectHome=${_scriptDir%/platform-api/*}
-if [[ ! $projectHome =~ "platform-api" ]]; then
-  projectHome=$projectHome/platform-api
-fi
+if [ -z "$APIM_SOLACE_PLATFORM_API_PROJECT_HOME" ]; then
+  _scriptDir=$(pwd)
+  projectHome=${_scriptDir%/platform-api/*}
+  if [[ ! $projectHome =~ "platform-api" ]]; then
+    projectHome=$projectHome/platform-api
+  fi
+else
+  projectHome=$APIM_SOLACE_PLATFORM_API_PROJECT_HOME
+fi  
 
 export APIM_SOLACE_PLATFORM_API_PROJECT_HOME="$projectHome"
 export APIM_INTEGRATION_TEST_HOME="$APIM_SOLACE_PLATFORM_API_PROJECT_HOME/api-implementation/test/integration"
