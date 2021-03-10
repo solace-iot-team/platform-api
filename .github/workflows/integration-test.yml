@@ -57,7 +57,7 @@ jobs:
       - name: bootstrap
         run: |
           cd "${TEST_PLATFORM_DIR}"
-          npm install -g npm
+          sudo npm install -g npm
           npm install
 
 
