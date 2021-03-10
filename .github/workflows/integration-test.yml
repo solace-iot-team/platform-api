@@ -86,7 +86,7 @@ jobs:
           test/integration/run.sh
 
       - name: Archive logs
-        if: ${{ (failure() && !cancelled()) || (always() && github.event_name == 'workflow_dispatch') }}
+        if: ${{ (failure() && !cancelled()) || (always() && (github.event_name=='workflow_dispatch' || env.DEBUG_FLAG=='true') ) }}
         uses: actions/upload-artifact@v2
         with:
           name: ${{ env.TEST_OUTPUT_NAME }}
