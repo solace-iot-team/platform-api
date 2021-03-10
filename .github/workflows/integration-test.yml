@@ -19,6 +19,7 @@ on:
   #     - main
 env:
   DEBUG_FLAG: ${{ true }}
+  TEST_PLATFORM_DIR: "api-implementation"
   # DEBUG_FLAG: ${{ false }}
   # TEST_SOLACE_INTEGRATION_AZURE_PROJECT_NAME: "wft-solace-int-rdp-az-funcs"
   # TEST_SOLACE_INTEGRATION_AZURE_LOCATION: "West Europe"
@@ -50,8 +51,14 @@ jobs:
           echo "bash --version: "; bash --version
           echo "node --version: "; node --version
           echo "npm --version: "; npm --version
-          # echo "environment: TEST_* "
-          # env | grep TEST
+          echo ">>> environment: TEST_* "
+          env | grep TEST
+
+      - name: bootstrap
+        run: |
+          cd "${TEST_PLATFORM_DIR}"
+          npm install
+
 
       # - name: Set up Python
       #   uses: actions/setup-python@v2
