@@ -22,10 +22,10 @@ scriptName=$(basename $(test -L "$0" && readlink "$0" || echo "$0"));
 ############################################################################################################################
 # Scripts
 
-testScripts=(
-  # "mongodb/start.mongo.sh"
-  "start.server.sh background"
-  # "run.npm.integration-tests.sh logfile"
+declare -a testScripts=(
+  "mongodb/start.mongo.sh"
+  "start.server.background.sh"
+  "run.npm.integration-tests.sh logfile"
 )
 
 ############################################################################################################################
@@ -42,9 +42,9 @@ testScripts=(
       echo "starting: $runScript ..."
       if [[ "$RUN_FG" == "false" ]]; then
         logFile="$LOG_DIR/$testScript.out"; mkdir -p "$(dirname "$logFile")";
-        $runScript > $logFile 2>&1
+        "$runScript" > $logFile 2>&1
       else
-        $runScript
+        "$runScript"
       fi
       code=$?; if [[ $code != 0 ]]; then echo ">>> ERROR - code=$code - runScript='$runScript' - $scriptName"; FAILED=1; fi
     fi

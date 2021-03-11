@@ -51,7 +51,7 @@ mongodb/stop.mongo.sh
 ./start.server.sh
 
 # in background with log file for test
-./start.server.sh background
+./start.server.background.sh
 ````
 ### stop background server
 ````bash
