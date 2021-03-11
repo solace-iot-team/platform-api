@@ -12,7 +12,8 @@
     "lint": "eslint -c .eslintrc.js \"{server, test}/**/*.{js,ts,tsx}\" --quiet",
     "lint:fix": "eslint -c .eslintrc.js \"{server, test}/**/*.{js,ts,tsx}\" --quiet --fix",
     "test": "mocha -r ts-node/register test/**/*.ts --exit",
-    "test:integration": "mocha -r ts-node/register test/integration/**/*.spec.ts --exit",
+    "test:integration": "mocha --timeout 180000 -r ts-node/register test/integration/**/*.spec.ts --exit",
+    "t-dev": "mocha --timeout 180000 -r ts-node/register test/integration/**/operations.spec.ts --exit",
     "test:debug": "mocha -r ts-node/register --inspect-brk test/**/*.ts --exit"
   },
   "author": "",

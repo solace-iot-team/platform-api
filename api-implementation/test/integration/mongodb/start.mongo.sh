@@ -20,31 +20,53 @@ scriptName=$(basename $(test -L "$0" && readlink "$0" || echo "$0"));
 ############################################################################################################################
 # Run
 
-MY_WORKING_DIR="$APIM_INTEGRATION_TEST_WORKING_DIR/mongo"; mkdir -p $MY_WORKING_DIR;
-
-echo " >>> Generating init-mongo.js ..."
-  database=$APIM_INTEGRATION_TEST_MONGO_DATABASE
-  username=$APIM_INTEGRATION_TEST_MONGO_DATABASE_USER
-  password=$APIM_INTEGRATION_TEST_MONGO_DATABASE_PASSWORD
-
-  initMongo='
-    db.createUser(
-      {
-        user: "'"$username"'",
-        pwd: "'"$password"'",
-        roles: [
-          {
-            role: "readWrite",
-            db: "'"$database"'"
-          }
-        ]
-      }
-    )
-  '
-  export initMongoFile="$MY_WORKING_DIR/init-mongo.js"
-  echo $initMongo > $initMongoFile
-  cat $initMongoFile
-echo " >>> Success."
+# MY_WORKING_DIR="$APIM_INTEGRATION_TEST_WORKING_DIR/mongo"; mkdir -p $MY_WORKING_DIR;
+#
+# echo " >>> Generating init-mongo.js ..."
+#   database=$APIM_INTEGRATION_TEST_MONGO_DATABASE
+#   username=$APIM_INTEGRATION_TEST_MONGO_DATABASE_USER
+#   password=$APIM_INTEGRATION_TEST_MONGO_DATABASE_PASSWORD
+#
+#   # initMongo='
+#   #   db.createUser(
+#   #     {
+#   #       user: "'"$username"'",
+#   #       pwd: "'"$password"'",
+#   #       roles: [
+#   #         {
+#   #           role: "readWrite",
+#   #           db: "'"$database"'"
+#   #         }
+#   #       ]
+#   #     }
+#   #   )
+#   # '
+#
+#   # initMongo='
+#   #   use admin;
+#   #   db.createRole(
+#   #     {
+#   #       role: "readWriteAnyDatabase",
+#   #       privileges: [
+#   #         { resource: { db: "", collection: "" }, actions: ["find", "update", "insert", "remove"] }
+#   #       ]
+#   #     }
+#   #   );
+#   #   db.createUser(
+#   #     {
+#   #       user: "'"$username"'",
+#   #       pwd: "'"$password"'",
+#   #       roles: [
+#   #         "readWriteAnyDatabase"
+#   #       ]
+#   #     }
+#   #   );
+#   # '
+#
+#   export initMongoFile="$MY_WORKING_DIR/init-mongo.js"
+#   echo $initMongo > $initMongoFile
+#   cat $initMongoFile
+# echo " >>> Success."
 
 echo " >>> Starting mongo in docker..."
   docker-compose -f "$scriptDir/docker-compose.yml" up -d

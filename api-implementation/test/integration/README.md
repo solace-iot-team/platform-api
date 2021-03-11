@@ -48,10 +48,10 @@ mongodb/stop.mongo.sh
 ## start server
 ````bash
 # in foreground for development
-./start.server.sh dev
+./start.server.sh
 
 # in background with log file for test
-./start.server.sh
+./start.server.sh background
 ````
 ### stop background server
 ````bash
@@ -64,10 +64,10 @@ kill -9 <all pids>
 
 ````bash
 # development: output to console
-./run.npm.integration-tests.sh dev
+./run.npm.integration-tests.sh
 
 # test: output to log file
-./run.npm.integration-tests.sh
+./run.npm.integration-tests.sh logfile
 
 ````
 

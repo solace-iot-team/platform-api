@@ -10,11 +10,11 @@ scriptName=$(basename $(test -L "$0" && readlink "$0" || echo "$0"));
 ############################################################################################################################
 # Run
 
-IS_DEV=$1
+IS_BACKGROUND=$1
 
 echo " >>> Starting integration tests ..."
   runScript="npm run test:integration"
-  if [ ! -z "$IS_DEV" ]; then
+  if [ -z "$IS_BACKGROUND" ]; then
     $runScript
   else
     logFile="$APIM_INTEGRATION_TEST_LOG_DIR/$scriptName.out"; mkdir -p "$(dirname "$logFile")";
