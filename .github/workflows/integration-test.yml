@@ -1,0 +1,100 @@
+# ---------------------------------------------------------------------------------------------
+# MIT License
+# Copyright (c) 2021, Solace Corporation, Ricardo Gomez-Ulmke (ricardo.gomez-ulmke@solace.com)
+# ---------------------------------------------------------------------------------------------
+
+name: integration-test
+on:
+  # for testing
+  workflow_dispatch:
+  push:
+    branches:
+      integration-test
+  # # production
+  # schedule:
+  # #   # - cron: '0 7 * * MON'
+  #   - cron: '0 7 * * *'
+  # pull_request:
+  #   branches:
+  #     - main
+env:
+  DEBUG_FLAG: ${{ true }}
+  # DEBUG_FLAG: ${{ false }}
+  TEST_PLATFORM_DIR: "api-implementation"
+  TEST_TEST_RUNNER_OUTPUT_DIR: "tmp"
+  TEST_OUTPUT_NAME: "platform-api-test-output"
+jobs:
+  run_tests:
+    runs-on: ubuntu-18.04
+    steps:
+      - name: Check Auth
+        if: github.event_name == 'workflow_dispatch' && (github.actor != 'ricardojosegomezulmke' || github.actor != '195858')
+        run: |
+          echo "not authorized"
+          echo '::set-output name=IS_AUTHORIZED::false'
+        id: auth
+      - name: Cancel Workflow
+        if: ${{ always() && steps.auth.outputs.IS_AUTHORIZED == 'false' }}
+        uses: andymckay/cancel-action@0.2
+
+      - name: Checkout Current Branch
+        uses: actions/checkout@master
+        with:
+          ref: ${{ github.ref }}
+
+      - name: env before install
+        if: env.DEBUG_FLAG == 'true'
+        run: |
+          echo "bash --version: "; bash --version
+          echo "node --version: "; node --version
+          echo "npm --version: "; npm --version
+          echo ">>> environment: TEST_* "
+          env | grep TEST
+
+      # already pre-installed
+      # - name: Bootstrap docker
+      #   run: |
+      #     sudo apt-get update
+      #     sudo apt-get -y upgrade
+      #     echo ">>> docker =================================================="
+      #     sudo apt-get install apt-transport-https ca-certificates curl software-properties-common -y
+      #     curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
+      #     sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu bionic stable"
+      #     apt-cache policy docker-ce
+      #     sudo apt-get install --upgrade docker-ce -y
+      #     sudo apt-get update
+      #     sudo apt-get -y upgrade
+
+      - name: Bootstrap node
+        run: |
+          cd "${TEST_PLATFORM_DIR}"
+          sudo npm install -g npm
+          npm install
+
+      - name: env after install
+        if: env.DEBUG_FLAG == 'true'
+        run: |
+          echo "bash --version: "; bash --version
+          echo "node --version: "; node --version
+          echo "npm --version: "; npm --version
+          echo "docker --version"; docker --version
+
+      - name: Run Tests
+        run: |
+          export APIM_INTEGRATION_TEST_SOLACE_CLOUD_TOKEN=${{ secrets.SOLACE_CLOUD_TOKEN }}
+          export APIM_INTEGRATION_TEST_PLATFORM_ADMIN_USER=${{ secrets.PLATFORM_ADMIN_USER }}
+          export APIM_INTEGRATION_TEST_PLATFORM_ADMIN_PASSWORD=${{ secrets.PLATFORM_ADMIN_PASSWORD }}
+          export APIM_SOLACE_PLATFORM_API_PROJECT_HOME="$GITHUB_WORKSPACE"
+          cd "$APIM_SOLACE_PLATFORM_API_PROJECT_HOME/${TEST_PLATFORM_DIR}"
+          test/integration/run.sh
+
+      - name: Archive logs
+        if: ${{ (failure() && !cancelled()) || (always() && (github.event_name=='workflow_dispatch' || env.DEBUG_FLAG=='true') ) }}
+        uses: actions/upload-artifact@v2
+        with:
+          name: ${{ env.TEST_OUTPUT_NAME }}
+          path: ${{ github.workspace }}/${{ env.TEST_TEST_RUNNER_OUTPUT_DIR }}
+          if-no-files-found: error
+
+###
+# The End.

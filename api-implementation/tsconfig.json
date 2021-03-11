@@ -1,7 +1,7 @@
 {
   "compileOnSave": false,
   "compilerOptions": {
-    "outDir": "./dist/out-tsc",
+    "outDir": "./dist",
     "module": "commonjs",
     "esModuleInterop": true,
     "sourceMap": true,
@@ -22,4 +22,3 @@
   "include": ["typings.d.ts", "server/**/*.ts", "src/**/*.ts"],
   "exclude": ["node_modules"]
 }
-
