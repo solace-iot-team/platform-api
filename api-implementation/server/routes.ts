@@ -12,7 +12,7 @@ import historyRouter from './api/controllers/history/router';
 import tokenRouter from './api/controllers/token/router';
 import OrganizationsService from './api/services/organizations.service';
 import HistoryService from './api/services/history.service';
-import express from 'express';
+
 import L from './common/logger';
 import { Request, Response } from 'express';
 import C from 'cls-hooked';
@@ -22,10 +22,10 @@ import basicAuth from 'express-basic-auth';
 import { ErrorResponseInternal } from './api/middlewares/error.handler';
 import pagingHandler from './api/middlewares/paging.handler';
 import contextHandler from './api/middlewares/context.handler';
-
+import Router from 'express';
 
 export default function routes(app: Application, auth: any): void {
-  var router = express.Router();
+  const router = Router();
   router.use(contextHandler);
   router.use(pagingHandler);
 
