@@ -1023,6 +1023,7 @@ components:
         name:
           type: string
           example: myorg
+          pattern: ^[^\/\\\.\s"\$]{4,64}$
         cloud-token:
           type: string
           description: a Solace Cloud API Token, requires "get services" and "event portal read" permissions
