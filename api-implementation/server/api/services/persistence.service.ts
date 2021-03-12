@@ -249,7 +249,11 @@ export class PersistenceService {
     var msg = error.message.replace(errorCode, "");
     var statusCode = 422;
     msg = msg.substring(0, msg.indexOf("error")).trim();
-    msg = `${msg} (${error.code.toString(16)})`;
+    let hexCode = '';
+    if (error.code) {
+      hexCode = error.code.toString(16);
+    }
+    msg = `${msg} ${hexCode}`;
     if (error.code == null) {
       msg = error.message;
       statusCode = 500;
