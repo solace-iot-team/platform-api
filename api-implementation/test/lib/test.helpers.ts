@@ -14,8 +14,8 @@ export function getMandatoryEnvVarValue(scriptName: string, envVar: string): str
     if (value == null) throw new Error(`>>> ERROR: ${scriptName} - missing env var: ${envVar}`);
     return value;
 }
-export function getBaseUrl(): string {
-    return "http://localhost:3000/v1";
+export function getBaseUrl(platformProtocol: string, platformHost: string, platformPort: string): string {
+    return `${platformProtocol}://${platformHost}:${platformPort}/v1`;
 }
 export function getRequestAuthHeader(usr: string, pwd: string): string {
     return "Basic " + Buffer.from(usr + ":" + pwd).toString("base64");
@@ -45,14 +45,17 @@ export class PlatformResponseHelper {
         this.body = body;
     }
     public static create = async(fetchResponse: Response) => {
+        let isContentTypeJson: boolean = (fetchResponse.headers.has('content-type') && fetchResponse.headers.get('content-type').toLowerCase().includes('json') ? true : false);
         let bodyText: string = await fetchResponse.text();
         let bodyJson: string = null;
-        if (bodyText) {
+        if (isContentTypeJson && bodyText) {
             try {
                 bodyJson = JSON.parse(bodyText);
             } catch (err) {
                 throw new Error(`error parsing response text as json: ${err}, text=${bodyText}`);
             }
+        } else {
+            bodyJson = JSON.parse(JSON.stringify({ raw: bodyText }));
         }
         return new PlatformResponseHelper(fetchResponse, bodyJson);
     }
@@ -66,8 +69,8 @@ export class PlatformRequestHelper {
 
     private baseUrl: string;
     private headers: HeadersInit;
-    constructor(platformAdminUser: string, platformAdminPassword: string) {
-        this.baseUrl = getBaseUrl();
+    constructor(platformProtocol: string, platformHost: string, platformPort: string, platformAdminUser: string, platformAdminPassword: string) {
+        this.baseUrl = getBaseUrl(platformProtocol, platformHost, platformPort);
         this.headers = {
             Authorization: getRequestAuthHeader(platformAdminUser, platformAdminPassword)
             // "Content-Type": "application/json"

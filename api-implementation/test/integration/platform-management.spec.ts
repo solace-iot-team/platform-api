@@ -15,6 +15,9 @@ const testEnv = {
   SCRIPT_NAME: scriptName,
   PROJECT_HOME: getMandatoryEnvVarValue(scriptName, 'APIM_SOLACE_PLATFORM_API_PROJECT_HOME'),
   WORKING_DIR: getMandatoryEnvVarValue(scriptName, 'APIM_INTEGRATION_TEST_WORKING_DIR'),
+  PLATFORM_PROTOCOL: getMandatoryEnvVarValue(scriptName, 'APIM_INTEGRATION_TEST_PLATFORM_PROTOCOL'),
+  PLATFORM_HOST: getMandatoryEnvVarValue(scriptName, 'APIM_INTEGRATION_TEST_PLATFORM_HOST'),
+  PLATFORM_PORT: getMandatoryEnvVarValue(scriptName, 'APIM_INTEGRATION_TEST_PLATFORM_PORT'),
   PLATFORM_ADMIN_USER: getMandatoryEnvVarValue(scriptName, 'APIM_INTEGRATION_TEST_PLATFORM_ADMIN_USER'),
   PLATFORM_ADMIN_PASSWORD: getMandatoryEnvVarValue(scriptName, 'APIM_INTEGRATION_TEST_PLATFORM_ADMIN_PASSWORD'),
   FILE_USER_REGISTRY: getMandatoryEnvVarValue(scriptName, 'APIM_INTEGRATION_TEST_FILE_USER_REGISTRY'),
@@ -36,13 +39,13 @@ describe('platformManagement test', () => {
   // });
 
   context("tests platformManagement", () => {
-    const platformManagementRequest: PlatformRequestHelper = new PlatformRequestHelper(testEnv.PLATFORM_ADMIN_USER, testEnv.PLATFORM_ADMIN_PASSWORD);
+    const platformManagementRequest: PlatformRequestHelper = new PlatformRequestHelper(testEnv.PLATFORM_PROTOCOL, testEnv.PLATFORM_HOST, testEnv.PLATFORM_PORT, testEnv.PLATFORM_ADMIN_USER, testEnv.PLATFORM_ADMIN_PASSWORD);
     const platformManagement: PlatformManagementHelper = new PlatformManagementHelper(platformManagementRequest, logging);
+    const apiPath: string = "organizations";
     let request: RequestInit = null;
     let response: PlatformResponseHelper = null;
     let body = null;
     const orgName = "org-1";
-
 
     beforeEach(async() => {
       let success: boolean = await platformManagement.deleteAllOrgs();
@@ -50,11 +53,6 @@ describe('platformManagement test', () => {
     });
 
     it("should create/get/delete/get an org", async() => {
-      const apiPath: string = "organizations";
-      let request: RequestInit = null;
-      let response: PlatformResponseHelper = null;
-      let body = null;
-      const orgName = "org-1";
       // create org
       body = {
         name: orgName
@@ -87,48 +85,6 @@ describe('platformManagement test', () => {
       response = await platformManagementRequest.fetch(apiPath + "/" + orgName, request);
       logging.logResponse(`get org: ${orgName}`, response);
       expect(response.status, `get org ${orgName}`).to.equal(404);
-    });
-    it("should not patch an org with bad token", async() => {
-      let success = await platformManagement.createOrg(orgName);
-      expect(success).to.be.true;      
-      body = {
-        name: orgName,
-        token: ""
-      }
-      request = {
-        method: "PATCH",
-        body: JSON.stringify(body)
-      };
-      response = await platformManagementRequest.fetch("organizations/" + orgName, request);
-      logging.logResponse(`patch org with empty token`, response);
-      expect(response.status, `patch org with empty token`).to.equal(400);
-
-      body = {
-        name: orgName,
-        token: "xx"
-      }
-      request = {
-        method: "PATCH",
-        body: JSON.stringify(body)
-      };
-      response = await platformManagementRequest.fetch("organizations/" + orgName, request);
-      logging.logResponse(`patch org with bad token`, response);
-      expect(response.status, `patch org with bad token`).to.equal(400);
-    });
-    it("should patch an org with good token", async() => {
-      let success = await platformManagement.createOrg(orgName);
-      expect(success).to.be.true;      
-      body = {
-        name: orgName,
-        token: testEnv.SOLACE_CLOUD_TOKEN
-      }
-      request = {
-        method: "PATCH",
-        body: JSON.stringify(body)
-      };
-      response = await platformManagementRequest.fetch("organizations/" + orgName, request);
-      logging.logResponse(`patch org with good token`, response);
-      expect(response.status).to.equal(200);
     });
 
   });
