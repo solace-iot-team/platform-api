@@ -10,11 +10,11 @@ export default function errorHandler(
   next: NextFunction
 ): void {
   var theError: ErrorResponseInternal = err;
-  L.debug(err);
   var statusCode: number = theError.statusCode;
   if (!statusCode){
     statusCode = err['status'];
   }
+  L.debug(`${statusCode} - ${err.message}`);
   delete theError.statusCode;
   res.status(statusCode || 500).json(theError);
 }
