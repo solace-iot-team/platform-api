@@ -29,6 +29,8 @@ source source.secrets.env.sh
 ````bash
 source source.env.sh
 ````
+* Outputs: `APIM_INTEGRATION_TEST_WORKING_DIR`
+* Logfiles: `APIM_INTEGRATION_TEST_LOG_DIR`
 
 ## start mongo in docker
 ````bash
@@ -53,11 +55,9 @@ mongodb/stop.mongo.sh
 # in background with log file for test
 ./start.server.background.sh
 ````
-### stop background server
+### stop server
 ````bash
-# kill the processes
-ps -ef | grep server/index.ts
-kill -9 <all pids>
+./stop.server.sh
 ````
 
 ## tests
@@ -67,7 +67,8 @@ kill -9 <all pids>
 ./run.npm.integration-tests.sh
 
 # test: output to log file
-./run.npm.integration-tests.sh logfile
+./run.npm.integration-tests.logfile.sh
+# log file:
 
 ````
 

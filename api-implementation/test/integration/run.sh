@@ -25,7 +25,7 @@ scriptName=$(basename $(test -L "$0" && readlink "$0" || echo "$0"));
 declare -a testScripts=(
   "mongodb/start.mongo.sh"
   "start.server.background.sh"
-  "run.npm.integration-tests.sh logfile"
+  "run.npm.integration-tests.logfile.sh"
 )
 
 ############################################################################################################################
