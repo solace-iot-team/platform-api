@@ -4,6 +4,7 @@ import mongodb, { DeleteWriteOpResultObject, MongoError, CollectionInsertOneOpti
 import C from 'cls-hooked';
 import { ErrorResponseInternal } from '../middlewares/error.handler';
 import { stat } from 'fs';
+import e from 'express';
 
 export interface Paging {
   pageNumber: number,
@@ -244,22 +245,26 @@ export class PersistenceService {
   }
 
   private createPublicErrorMessage(error: MongoError): ErrorResponseInternal {
-    L.debug(`Initial mongo error ${error.message}`);
-    var errorCode = "E" + error.code;
-    var msg = error.message.replace(errorCode, "");
-    var statusCode = 422;
-    msg = msg.substring(0, msg.indexOf("error")).trim();
-    let hexCode = '';
-    if (error.code) {
-      hexCode = error.code.toString(16);
+    if (error instanceof MongoError) {
+      L.debug(`Initial mongo error ${error.message}`);
+      var errorCode = "E" + error.code;
+      var msg = error.message.replace(errorCode, "");
+      var statusCode = 422;
+      msg = msg.substring(0, msg.indexOf("error")).trim();
+      let hexCode = '';
+      if (error.code) {
+        hexCode = error.code.toString(16);
+      }
+      msg = `${msg} ${hexCode}`;
+      if (error.code == null) {
+        msg = error.message;
+        statusCode = 500;
+      }
+      L.debug(`public error message ${msg}`);
+      return new ErrorResponseInternal(statusCode, msg);
+    } else {
+      return error;
     }
-    msg = `${msg} ${hexCode}`;
-    if (error.code == null) {
-      msg = error.message;
-      statusCode = 500;
-    }
-    L.debug(`public error message ${msg}`);
-    return new ErrorResponseInternal(statusCode, msg);
   }
 
 }
