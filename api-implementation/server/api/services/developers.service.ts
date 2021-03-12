@@ -37,7 +37,6 @@ export class DevelopersService {
 
   async allDevelopersApps(
     name: string,
-    paging: Paging,
     query: any
   ): Promise<App[]> {
     query.ownerId = name;
@@ -53,7 +52,7 @@ export class DevelopersService {
       L.error(e);
       throw e;
     }
-    return this.appPersistenceService.all(query, {}, paging);
+    return this.appPersistenceService.all(query, {});
   }
 
   byName(name: string): Promise<Developer> {
