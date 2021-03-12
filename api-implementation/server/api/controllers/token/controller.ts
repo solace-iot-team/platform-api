@@ -18,39 +18,36 @@ export class Controller {
     return org;
   }
 
-  async get(req: Request, res: Response, next: NextFunction): Promise<void> {
-    try {
-      var orgName: string = Controller.getOrg();
-      var ns = C.getNamespace('platform-api');
-      var x = ns.run(async function () {
-        ns.set('org', null);
-        var org = await OrganizationsService.byName(orgName);
-        res.status(200).contentType("text/plain").send(org["cloud-token"]);
-      });
-    } catch (e) {
-      next(e);
-    }
-  };
-
-
-  async create(req: Request, res: Response, next: NextFunction): Promise<void> {
+  get(req: Request, res: Response, next: NextFunction): void {
     var orgName: string = Controller.getOrg();
     var ns = C.getNamespace('platform-api');
-    var x = ns.run(async function () {
-      try {
-        ns.set('org', null);
-        var org = await OrganizationsService.byName(orgName);
-        org["cloud-token"] = req.body;
-        org = await OrganizationsService.update(org.name, org);
-        res.status(201).contentType("text/plain").send(org["cloud-token"]);
-      } catch (e) {
-        next(e);
-      }
+    var x = ns.run(function () {
+      ns.set('org', null);
+      OrganizationsService.byName(orgName)
+        .then((org) => {
+          res.status(200).contentType("text/plain").send(org["cloud-token"]);
+        })
+        .catch((e) => next(e));
+    });
+  };
+
+  create(req: Request, res: Response, next: NextFunction): void {
+    var orgName: string = Controller.getOrg();
+    var ns = C.getNamespace('platform-api');
+    var x = ns.run(function () {
+
+      ns.set('org', null);
+      OrganizationsService.byName(orgName)
+        .then((org) => {
+          org["cloud-token"] = req.body;
+          OrganizationsService.update(org.name, org)
+            .then((org) => {
+              res.status(201).contentType("text/plain").send(org["cloud-token"]);
+            })
+            .catch((e) => next(e));
+        })
+        .catch((e) => next(e));
     });
   }
-
-
-
-
 }
 export default new Controller();

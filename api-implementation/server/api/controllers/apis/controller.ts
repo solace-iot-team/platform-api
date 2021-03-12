@@ -3,7 +3,7 @@ import { NextFunction, Request, Response } from 'express';
 import { ErrorResponseInternal } from '../../middlewares/error.handler';
 import Format = Paths.$OrganizationApis$ApiName.Get.Parameters.Format;
 import AsyncAPIHelper from '../../../../src/asyncapihelper'
-import { resolve } from 'path';
+
 export class Controller {
   all(req: Request, res: Response, next: NextFunction): void {
     ApisService.all().then((r) => res.json(r)).catch(e => {
@@ -12,34 +12,41 @@ export class Controller {
     });
   }
 
-  async byName(req: Request, res: Response, next: NextFunction): Promise<void> {
-    try {
-      var r: string = await ApisService.byName(req.params['name']);
-      Controller.handleResponse(r, req, res, next);
-    } catch (e){
-      L.error(e);
-      next(e);      
-    }
+  byName(req: Request, res: Response, next: NextFunction): void {
+    ApisService.byName(req.params['name'])
+      .then((r) => {
+        Controller.handleResponse(r, req, res, next);
+      })
+      .catch((e) => {
+        L.error(e);
+        next(e);
+      });
   };
 
 
   create(req: Request, res: Response, next: NextFunction): void {
-    ApisService.create(req.params['name'], req.body).then((r) => {
-      Controller.handleResponse(r, req, res, next, 201);
-    }).catch((e) => next(e));
+    ApisService.create(req.params['name'], req.body)
+      .then((r) => {
+        Controller.handleResponse(r, req, res, next, 201);
+      })
+      .catch((e) => next(e));
   }
 
 
   update(req: Request, res: Response, next: NextFunction): void {
-    ApisService.update(req.params['name'], req.body).then((r) => {
-      Controller.handleResponse(r, req, res, next);
-    }).catch((e) => next(e));
+    ApisService.update(req.params['name'], req.body)
+      .then((r) => {
+        Controller.handleResponse(r, req, res, next);
+      })
+      .catch((e) => next(e));
   }
 
   delete(req: Request, res: Response, next: NextFunction): void {
-    ApisService.delete(req.params['name']).then((r) => {
-      res.status(r).send();
-    }).catch((e) => next(e));
+    ApisService.delete(req.params['name'])
+      .then((r) => {
+        res.status(r).send();
+      })
+      .catch((e) => next(e));
   }
 
   static handleResponse(r, req, res, next, statusCode: number = 200) {

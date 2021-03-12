@@ -5,12 +5,7 @@ export class Controller {
   all(req: Request, res: Response, next: NextFunction): void {
 
     HistoryService.all().then((r) => {
-      try {
-        res.status(200).json(r).end();
-      } catch (e) {
-        L.error(e);
-        next(e);
-      }
+      res.status(200).json(r).end();
     }).catch((e) => {
       next(e)
     });

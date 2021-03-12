@@ -11,84 +11,106 @@ export class Controller {
   }
 
   create(req: Request, res: Response, next: NextFunction): void {
-    DevelopersService.create(req.body).then((r) => {
-      if (r) {
-        res.status(201).json(r).send();
-      }
-      else
-        next(new ErrorResponseInternal(500, `No response`));
-    }).catch((e) => next(e));
+    DevelopersService.create(req.body)
+      .then((r) => {
+        if (r) {
+          res.status(201).json(r).send();
+        }
+        else
+          next(new ErrorResponseInternal(500, `No response`));
+      })
+      .catch((e) => next(e));
   }
 
 
   update(req: Request, res: Response, next: NextFunction): void {
-    DevelopersService.update(req.params['name'], req.body).then((r) => {
-      if (r) {
-        res.status(200).json(r).send();
-      }
-      else
-        next(new ErrorResponseInternal(500, `No response`));
-    }).catch((e) => next(e));
+    DevelopersService.update(req.params['name'], req.body)
+      .then((r) => {
+        if (r) {
+          res.status(200).json(r).send();
+        }
+        else
+          next(new ErrorResponseInternal(500, `No response`));
+      })
+      .catch((e) => next(e));
   }
   byName(req: Request, res: Response, next: NextFunction): void {
-    DevelopersService.byName(req.params['name']).then((r) => {
-      if (r) res.json(r).send();
-      else next(new ErrorResponseInternal(404, `Not found`));
-    }).catch((e) => next(e));
+    L.info("dev by name");
+    DevelopersService
+      .byName(req.params['name'])
+      .then((r) => {
+        if (r) {
+          res.json(r).send();
+        } else {
+          next(new ErrorResponseInternal(404, `Not found`));
+        }
+      })
+      .catch((e) => {
+        next(e)
+      });
   }
 
   delete(req: Request, res: Response, next: NextFunction): void {
-    DevelopersService.delete(req.params['name']).then((r) => {
-      res.status(r).send();
-    }).catch((e) => next(e));
+    DevelopersService.delete(req.params['name'])
+      .then((r) => {
+        res.status(r).send();
+      })
+      .catch((e) => next(e));
   }
 
 
   // developer apps
   allApps(req: Request, res: Response, next: NextFunction): void {
-    var p: Paging = {
-      pageNumber: parseInt(req.query.pageNumber as string),
-      pageSize: parseInt(req.query.pageSize as string)
-    };
     var q: any = {
-
-    }
+    };
     if (req.query.status) {
       q.status = req.query.status;
     }
-    DevelopersService.allDevelopersApps(req.params['developer'], p, q).then((r) => res.json(r).send()).catch((e) => next(e));
+    DevelopersService.allDevelopersApps(req.params['developer'], q)
+      .then((r) => {
+        res.json(r).send();
+      })
+      .catch((e) => next(e));
     ;
   }
   appByName(req: Request, res: Response, next: NextFunction): void {
-    DevelopersService.appByName(req.params['developer'], req.params['name']).then((r) => {
-      if (r) res.json(r).send();
-      else next(new ErrorResponseInternal(404, `Not found`));
-    }).catch((e) => next(e));
+    DevelopersService.appByName(req.params['developer'], req.params['name'])
+      .then((r) => {
+        if (r) res.json(r).end();
+        else next(new ErrorResponseInternal(404, `Not found`));
+      })
+      .catch((e) => next(e));
   }
   createApp(req: Request, res: Response, next: NextFunction): void {
-    DevelopersService.createApp(req.params['developer'], req.body).then((r) => {
-      if (r) {
-        res.status(201).json(r).send();
-      }
-      else
-        next(new ErrorResponseInternal(500, `No response`));
-    }).catch((e) => next(e));
+    DevelopersService.createApp(req.params['developer'], req.body)
+      .then((r) => {
+        if (r) {
+          res.status(201).json(r).send();
+        }
+        else
+          next(new ErrorResponseInternal(500, `No response`));
+      })
+      .catch((e) => next(e));
   }
 
   updateApp(req: Request, res: Response, next: NextFunction): void {
-    DevelopersService.updateApp(req.params['developer'], req.params['name'], req.body).then((r) => {
-      if (r) {
-        res.status(200).json(r).send();
-      }
-      else
-        next(new ErrorResponseInternal(500, `No response`));
-    }).catch((e) => next(e));
+    DevelopersService.updateApp(req.params['developer'], req.params['name'], req.body)
+      .then((r) => {
+        if (r) {
+          res.status(200).json(r).send();
+        }
+        else
+          next(new ErrorResponseInternal(500, `No response`));
+      })
+      .catch((e) => next(e));
   }
 
   deleteApp(req: Request, res: Response, next: NextFunction): void {
-    DevelopersService.deleteApp(req.params['developer'], req.params['name']).then((r) => {
-      res.status(r).send();
-    }).catch((e) => next(e));
+    DevelopersService.deleteApp(req.params['developer'], req.params['name'])
+      .then((r) => {
+        res.status(r).send();
+      })
+      .catch((e) => next(e));
   }
 }
 export default new Controller();

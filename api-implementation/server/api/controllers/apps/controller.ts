@@ -1,59 +1,57 @@
 import L from '../../../common/logger';
-import ApisService from '../../services/apis.service';
 import AppsService from '../../services/apps.service';
 import { NextFunction, Request, Response } from 'express';
 import { ErrorResponseInternal } from '../../middlewares/error.handler';
 import Format = Paths.$OrganizationApis$ApiName.Get.Parameters.Format;
 import AsyncAPIHelper from '../../../../src/asyncapihelper'
-import { resolve } from 'path';
 
 export class Controller {
   all(req: Request, res: Response, next: NextFunction): void {
     var q: any = {
-
-    }
+    };
     if (req.query.status) {
       q.status = req.query.status;
     }
-    AppsService.list(q).then((r) => res.json(r)).catch(e => {
-      L.error(e);
-      next(e);
-    });
+    AppsService.list(q)
+      .then((r) => res.json(r))
+      .catch(e => {
+        L.error(e);
+        next(e);
+      });
   }
 
   allApis(req: Request, res: Response, next: NextFunction): void {
-    AppsService.apiList(req.params['app']).then((r) => res.json(r)).catch(e => {
-      L.error(e);
-      next(e);
-    });
+    AppsService.apiList(req.params['app'])
+      .then((r) => res.json(r))
+      .catch(e => {
+        L.error(e);
+        next(e);
+      });
   }
 
-  async apiByName(req: Request, res: Response, next: NextFunction): Promise<void> {
-    return new Promise<any>(async (reject, resolve) => {
-      var r: string = await AppsService.apiByName(req.params['app'], req.params['name']);
-      Controller.handleResponse(r, req, res, next);
-      resolve();
-    }).catch((e) => {
-      L.error(e);
-      next(e);
-      resolve();
-    });
+  apiByName(req: Request, res: Response, next: NextFunction): void {
+    AppsService.apiByName(req.params['app'], req.params['name'])
+      .then((r) => {
+        Controller.handleResponse(r, req, res, next);
+      })
+      .catch((e) => {
+        L.error(e);
+        next(e);
+      });
   };
 
-  async byName(req: Request, res: Response, next: NextFunction): Promise<void> {
-    return new Promise<any>(async (reject, resolve) => {
-      var r = await AppsService.byName(req.params['name']);
-      if (r != null) {
-        res.json(r).send();
-      } else {
-        next(new ErrorResponseInternal(404, `Not found`));
-      }
-      resolve();
-    }).catch((e) => {
-      L.error(e);
-      next(e);
-      resolve();
-    });
+  byName(req: Request, res: Response, next: NextFunction): void {
+    AppsService.byName(req.params['name'])
+      .then((r) => {
+        if (r != null) {
+          res.json(r).end();
+        } else {
+          next(new ErrorResponseInternal(404, `Not found`));
+        }
+      }).catch((e) => {
+        L.error(e);
+        next(e);
+      });
   };
   static handleResponse(r, req, res, next, statusCode: number = 200) {
 
