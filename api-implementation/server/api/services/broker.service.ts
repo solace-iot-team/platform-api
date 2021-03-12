@@ -357,8 +357,10 @@ class BrokerService {
         arr[index] = this.scrubDestination(s);
       });
       try {
-        var q = await this.addPublishTopicExceptions(app, services, publishExceptions);
-        var r = await this.addSubscribeTopicExceptions(app, services, subscribeExceptions);
+
+        // need to reverse pubish->subscrobe due to Async API terminology
+        var q = await this.addPublishTopicExceptions(app, services, subscribeExceptions);
+        var r = await this.addSubscribeTopicExceptions(app, services, publishExceptions);
         resolve();
       } catch (e) {
 
