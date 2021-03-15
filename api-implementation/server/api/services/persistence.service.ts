@@ -3,8 +3,6 @@ import { databaseaccess } from '../../../src/databaseaccess';
 import mongodb, { DeleteWriteOpResultObject, MongoError, CollectionInsertOneOptions, UpdateOneOptions } from 'mongodb';
 import C from 'cls-hooked';
 import { ErrorResponseInternal } from '../middlewares/error.handler';
-import { stat } from 'fs';
-import e from 'express';
 
 export interface Paging {
   pageNumber: number,
