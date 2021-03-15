@@ -1169,11 +1169,12 @@ tags:
 paths:
   /organizations:
     get:
+      operationId: listOrganizations
       tags: 
       - platformManagement
       responses:
        '200':
-         description: list of APIs
+         description: list of organizations
          content: 
            application/json:
              schema:
@@ -1226,6 +1227,7 @@ paths:
            schema: 
             "$ref": "#/components/schemas/ErrorResponse"
     post:
+     operationId: createOrganization
      tags:
      - platformManagement
      requestBody: 
@@ -1296,11 +1298,12 @@ paths:
     parameters:
     - $ref: '#/components/parameters/organization'
     get:
+      operationId: getOrganization
       tags: 
       - platformManagement
       responses:
        '200':
-         description: list of APIs
+         description: the organization
          content: 
            application/json:
              schema:
@@ -1351,6 +1354,7 @@ paths:
            schema: 
             "$ref": "#/components/schemas/ErrorResponse"
     patch:
+     operationId: updateOrganization
      tags:
      - platformManagement
      requestBody: 
@@ -1418,6 +1422,7 @@ paths:
            schema: 
             "$ref": "#/components/schemas/ErrorResponse"
     delete:
+     operationId: deleteOrganization
      tags:
      - platformManagement
      responses:
@@ -1478,6 +1483,7 @@ paths:
     parameters:
     - $ref: '#/components/parameters/organization'
     get:
+     operationId: listHistory
      tags:
       - management
      parameters:
@@ -1541,6 +1547,7 @@ paths:
     parameters:
     - $ref: '#/components/parameters/organization'
     put:
+      operationId: updateToken
       tags: 
       - management
       requestBody: 
@@ -1572,6 +1579,7 @@ paths:
            schema: 
             "$ref": "#/components/schemas/ErrorResponse"
     get:
+     operationId: getToken
      tags:
      - management
      responses:
@@ -1631,6 +1639,7 @@ paths:
     parameters:
     - $ref: '#/components/parameters/organization'
     get:
+     operationId: listApis
      tags:
       - apis
      parameters:
@@ -1695,6 +1704,7 @@ paths:
     - $ref: '#/components/parameters/organization'
     - $ref: '#/components/parameters/api_name'
     put:
+      operationId: createApi
       tags: 
       - apis
       requestBody: 
@@ -1762,6 +1772,7 @@ paths:
            schema: 
             "$ref": "#/components/schemas/ErrorResponse"
     get:
+     operationId: getApi
      tags:
      - apis
      parameters:
@@ -1828,6 +1839,7 @@ paths:
            schema: 
             "$ref": "#/components/schemas/ErrorResponse"
     patch:
+     operationId: updateApi
      tags:
      - apis
      requestBody: 
@@ -1895,6 +1907,7 @@ paths:
            schema: 
             "$ref": "#/components/schemas/ErrorResponse"
     delete:
+     operationId: deleteApi
      tags:
      - apis
      responses:
@@ -1955,6 +1968,7 @@ paths:
     parameters:
     - $ref: '#/components/parameters/organization'
     post:
+     operationId: createApiProduct
      tags:
      - apiProducts
      requestBody: 
@@ -2022,6 +2036,7 @@ paths:
            schema: 
             "$ref": "#/components/schemas/ErrorResponse"
     get:
+     operationId: listApiProducts
      tags:
       - apiProducts
      parameters:
@@ -2086,6 +2101,7 @@ paths:
     - $ref: '#/components/parameters/organization'
     - $ref: '#/components/parameters/api_product_name'
     get:
+     operationId: getApiProduct
      tags:
      - apiProducts
      responses:
@@ -2141,6 +2157,7 @@ paths:
            schema: 
             "$ref": "#/components/schemas/ErrorResponse"
     patch:
+     operationId: updateApiProduct
      tags:
      - apiProducts
      requestBody: 
@@ -2208,6 +2225,7 @@ paths:
            schema: 
             "$ref": "#/components/schemas/ErrorResponse"
     delete:
+     operationId: deleteApiProduct
      tags:
      - apiProducts
      responses:
@@ -2268,6 +2286,7 @@ paths:
     parameters:
     - $ref: '#/components/parameters/organization'
     post:
+     operationId: createDeveloper    
      tags:
      - developers
      requestBody: 
@@ -2278,7 +2297,7 @@ paths:
             "$ref": "#/components/schemas/Developer"    
      responses:
        '201':
-         description: New API Product
+         description: New developer
          content: 
            application/json:
              schema:
@@ -2335,6 +2354,7 @@ paths:
            schema: 
             "$ref": "#/components/schemas/ErrorResponse"
     get:
+     operationId: listDevelopers
      tags:
       - developers
      parameters:
@@ -2399,6 +2419,7 @@ paths:
     - $ref: '#/components/parameters/organization'
     - $ref: '#/components/parameters/developer_username'
     get:
+     operationId: getDeveloper
      tags:
      - developers
      responses:
@@ -2454,6 +2475,7 @@ paths:
            schema: 
             "$ref": "#/components/schemas/ErrorResponse"
     patch:
+     operationId: updateDeveloper
      tags:
      - developers
      requestBody: 
@@ -2521,11 +2543,12 @@ paths:
            schema: 
             "$ref": "#/components/schemas/ErrorResponse"
     delete:
+     operationId: deleteDeveloper
      tags:
      - developers
      responses:
        '204':
-         description: No contentt
+         description: No content
        '400': 
          description: "Bad Request."
          content: 
@@ -2587,6 +2610,7 @@ paths:
         "$ref": "#/components/schemas/AppStatus"    
         
     post:
+     operationId: createDeveloperApp
      tags:
      - apps
      - developers
@@ -2655,6 +2679,7 @@ paths:
            schema: 
             "$ref": "#/components/schemas/ErrorResponse"
     get:
+     operationId: listDeveloperApps
      tags:
       - apps
       - developers
@@ -2721,6 +2746,7 @@ paths:
     - $ref: '#/components/parameters/developer_username'
     - $ref: '#/components/parameters/app_name'
     get:
+     operationId: getDeveloperApp
      tags:
      - apps
      - developers
@@ -2777,6 +2803,7 @@ paths:
            schema: 
             "$ref": "#/components/schemas/ErrorResponse"
     patch:
+     operationId: updateDeveloperApp
      tags:
      - apps
      - developers
@@ -2845,6 +2872,7 @@ paths:
            schema: 
             "$ref": "#/components/schemas/ErrorResponse"
     delete:
+     operationId: deleteDeveloperApp
      tags:
      - apps
      - developers
@@ -2911,6 +2939,7 @@ paths:
       schema:
         "$ref": "#/components/schemas/AppStatus"    
     get:
+     operationId: listApps
      tags:
       - apps
      parameters:
@@ -2975,6 +3004,7 @@ paths:
     - $ref: '#/components/parameters/organization'
     - $ref: '#/components/parameters/app_name'
     get:
+     operationId: getApp
      tags:
      - apps
      responses:
@@ -3034,6 +3064,7 @@ paths:
     - $ref: '#/components/parameters/organization'
     - $ref: '#/components/parameters/app_name'
     get:
+     operationId: listAppApiSpecifications
      tags:
      - apps
      responses:
@@ -3096,6 +3127,7 @@ paths:
     - $ref: '#/components/parameters/organization'
     - $ref: '#/components/parameters/api_name'
     get:
+     operationId: getAppApiSpecification
      tags:
      - apps
      parameters:
@@ -3166,6 +3198,7 @@ paths:
     parameters:
     - $ref: '#/components/parameters/organization'
     post:
+     operationId: createEnvironment
      tags:
      - environments
      requestBody: 
@@ -3233,6 +3266,7 @@ paths:
            schema: 
             "$ref": "#/components/schemas/ErrorResponse"
     get:
+     operationId: listEnvironments
      tags:
       - environments
      parameters:
@@ -3297,6 +3331,7 @@ paths:
     - $ref: '#/components/parameters/organization'
     - $ref: '#/components/parameters/env_name'
     get:
+     operationId: getEnvironment
      tags:
      - environments
      responses:
@@ -3352,6 +3387,7 @@ paths:
            schema: 
             "$ref": "#/components/schemas/ErrorResponse"
     patch:
+     operationId: updateEnvironment
      tags:
      - environments
      requestBody: 
@@ -3419,6 +3455,7 @@ paths:
            schema: 
             "$ref": "#/components/schemas/ErrorResponse"
     delete:
+     operationId: deleteEnvironment
      tags:
      - environments
      responses:
@@ -3479,6 +3516,7 @@ paths:
     parameters:
     - $ref: '#/components/parameters/organization'
     get:
+     operationId: listServices
      tags:
       - environments
      parameters:
@@ -3542,6 +3580,7 @@ paths:
     parameters:
     - $ref: '#/components/parameters/organization'
     get:
+     operationId: listEventPortalApis
      tags:
       - eventPortal
      description: Returns a list of apps, maps to underlying event portal api /api/v1/eventPortal/applications
@@ -3614,6 +3653,7 @@ paths:
     - $ref: '#/components/parameters/organization'
     - $ref: '#/components/parameters/api_name'
     get:
+     operationId: getEventPortalApi
      tags:
      - eventPortal
      responses:
@@ -3675,6 +3715,7 @@ paths:
     - $ref: '#/components/parameters/organization'
     - $ref: '#/components/parameters/api_name'
     get:
+     operationId: getEventPortalAsyncApiSpecification
      tags:
      - eventPortal
      parameters:
@@ -3741,6 +3782,7 @@ paths:
     parameters:
     - $ref: '#/components/parameters/organization'
     get:
+     operationId: listEventPortalApiDomains
      tags:
       - eventPortal
      parameters:
@@ -3805,6 +3847,7 @@ paths:
     - $ref: '#/components/parameters/organization'
     - $ref: '#/components/parameters/api_domain_name'
     get:
+     operationId: getEventPortalApiDomain
      tags:
      - eventPortal
      responses:
