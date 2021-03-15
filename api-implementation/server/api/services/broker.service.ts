@@ -201,25 +201,21 @@ class BrokerService {
       };
   }
 
-  private deleteACLs(app: App, services: Service[]) {
-    return new Promise<void>(async (resolve, reject) => {
+  private async deleteACLs(app: App, services: Service[]) {
       for (var service of services) {
         var sempv2Client = this.getSEMPv2Client(service);
         try {
           var getResponse = await AllService.deleteMsgVpnAclProfile(service.msgVpnName, app.credentials.secret.consumerKey);
           L.info("ACL deleted");
-        } catch (e) {
-          if (!(e.body.meta.error.status == "NOT_FOUND")) {
-            reject(e);
+        } catch (err) {
+          if (!(err.body.meta.error.status == "NOT_FOUND")) {
+            throw err;
           }
         }
       };
-      resolve();
-    });
   }
 
-  private deleteQueues(app: App, services: Service[]) {
-    return new Promise<void>(async (resolve, reject) => {
+  private async deleteQueues(app: App, services: Service[]) {
       for (var service of services) {
         var sempv2Client = this.getSEMPv2Client(service);
         try {
@@ -227,17 +223,14 @@ class BrokerService {
           L.info('Queue deleted');
         } catch (e) {
           if (!(e.body.meta.error.status == "NOT_FOUND")) {
-            reject(e);
+            throw e;
           }
 
         }
       };
-      resolve();
-    });
   }
 
-  private deleteRDPs(app: App, services: Service[]) {
-    return new Promise<void>(async (resolve, reject) => {
+  private async deleteRDPs(app: App, services: Service[]) {
       for (var service of services) {
         var sempv2Client = this.getSEMPv2Client(service);
         try {
@@ -245,12 +238,9 @@ class BrokerService {
           L.info("RDP deleted");
         } catch (e) {
           if (!(e.body.meta.error.status == "NOT_FOUND"))
-            reject(e);
+            throw e;
         }
-
-        resolve();
       }
-    });
   }
   private createClientUsernames(app: App, services: Service[]): Promise<void> {
     return new Promise<void>(async (resolve, reject) => {
