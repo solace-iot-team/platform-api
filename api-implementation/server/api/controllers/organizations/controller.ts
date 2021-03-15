@@ -8,7 +8,6 @@ export class Controller {
     OrganizationsService.all()
       .then((r) => {
         res.json(r).status(200).end();
-        next();
       })
       .catch((e) => next(e));
   }
