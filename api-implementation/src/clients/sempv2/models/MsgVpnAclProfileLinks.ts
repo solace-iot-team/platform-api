@@ -1,7 +1,8 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
-export interface MsgVpnAclProfileLinks {
+
+export type MsgVpnAclProfileLinks = {
     /**
      * The URI of this ACL Profile's collection of Client Connect Exception objects.
      */

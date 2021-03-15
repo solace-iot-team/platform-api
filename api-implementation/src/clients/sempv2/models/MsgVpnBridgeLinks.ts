@@ -1,7 +1,8 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
-export interface MsgVpnBridgeLinks {
+
+export type MsgVpnBridgeLinks = {
     /**
      * The URI of this Bridge's collection of Remote Message VPN objects.
      */

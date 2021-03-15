@@ -1,7 +1,8 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
-export interface VirtualHostname {
+
+export type VirtualHostname = {
     /**
      * Enable or disable Virtual Hostname to Message VPN mapping. The default value is `false`.
      */

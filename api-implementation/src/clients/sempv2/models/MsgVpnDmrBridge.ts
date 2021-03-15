@@ -1,7 +1,8 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
-export interface MsgVpnDmrBridge {
+
+export type MsgVpnDmrBridge = {
     /**
      * The name of the Message VPN.
      */

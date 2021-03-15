@@ -1,7 +1,8 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
-export interface AboutUserMsgVpn {
+
+export type AboutUserMsgVpn = {
     /**
      * The Message VPN access level of the User. The allowed values and their meaning are:
      *

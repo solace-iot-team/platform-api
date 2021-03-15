@@ -1,7 +1,8 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
-export interface CertAuthorityLinks {
+
+export type CertAuthorityLinks = {
     /**
      * The URI of this Certificate Authority's collection of OCSP Responder Trusted Common Name objects. Deprecated since 2.19. Replaced by clientCertAuthorities.
      */

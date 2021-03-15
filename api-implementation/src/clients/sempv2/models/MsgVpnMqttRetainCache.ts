@@ -1,7 +1,8 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
-export interface MsgVpnMqttRetainCache {
+
+export type MsgVpnMqttRetainCache = {
     /**
      * The name of the MQTT Retain Cache.
      */

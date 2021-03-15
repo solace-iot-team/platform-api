@@ -1,7 +1,8 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
-export interface SystemInformationLinks {
+
+export type SystemInformationLinks = {
     /**
      * The URI of this System Information object.
      */

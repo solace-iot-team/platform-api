@@ -1,7 +1,8 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
-export interface DomainCertAuthorityLinks {
+
+export type DomainCertAuthorityLinks = {
     /**
      * The URI of this Domain Certificate Authority object.
      */

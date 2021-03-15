@@ -1,7 +1,8 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
-export interface MsgVpnQueueSubscription {
+
+export type MsgVpnQueueSubscription = {
     /**
      * The name of the Message VPN.
      */

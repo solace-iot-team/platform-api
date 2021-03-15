@@ -1,7 +1,8 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
-export interface MsgVpnReplicatedTopic {
+
+export type MsgVpnReplicatedTopic = {
     /**
      * The name of the Message VPN.
      */

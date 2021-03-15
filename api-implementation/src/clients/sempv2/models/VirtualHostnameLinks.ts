@@ -1,7 +1,8 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
-export interface VirtualHostnameLinks {
+
+export type VirtualHostnameLinks = {
     /**
      * The URI of this Virtual Hostname object.
      */

@@ -1,11 +1,12 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
+
 import type { SempError } from './SempError';
 import type { SempPaging } from './SempPaging';
 import type { SempRequest } from './SempRequest';
 
-export interface SempMeta {
+export type SempMeta = {
     /**
      * The total number of objects requested, irrespective of page size. This may be a count of all objects in a collection or a filtered subset. It represents a snapshot in time and may change when paging through results.
      */

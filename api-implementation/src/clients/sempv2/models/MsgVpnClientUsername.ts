@@ -1,7 +1,8 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
-export interface MsgVpnClientUsername {
+
+export type MsgVpnClientUsername = {
     /**
      * The ACL Profile of the Client Username. The default value is `"default"`.
      */

@@ -1,10 +1,11 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
+
 import type { EventThresholdByPercent } from './EventThresholdByPercent';
 import type { EventThresholdByValue } from './EventThresholdByValue';
 
-export interface MsgVpnDistributedCacheCluster {
+export type MsgVpnDistributedCacheCluster = {
     /**
      * The name of the Distributed Cache.
      */

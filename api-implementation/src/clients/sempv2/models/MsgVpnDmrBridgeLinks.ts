@@ -1,7 +1,8 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
-export interface MsgVpnDmrBridgeLinks {
+
+export type MsgVpnDmrBridgeLinks = {
     /**
      * The URI of this DMR Bridge object.
      */

@@ -1,10 +1,11 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
+
 import type { EventThreshold } from './EventThreshold';
 import type { EventThresholdByValue } from './EventThresholdByValue';
 
-export interface MsgVpn {
+export type MsgVpn = {
     /**
      * The name of another Message VPN which this Message VPN is an alias for. When this Message VPN is enabled, the alias has no effect. When this Message VPN is disabled, Clients (but not Bridges and routing Links) logging into this Message VPN are automatically logged in to the other Message VPN, and authentication and authorization take place in the context of the other Message VPN.
      *

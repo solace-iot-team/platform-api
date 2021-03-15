@@ -1,7 +1,8 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
-export interface AboutApiLinks {
+
+export type AboutApiLinks = {
     /**
      * The URI of this API Description object.
      */

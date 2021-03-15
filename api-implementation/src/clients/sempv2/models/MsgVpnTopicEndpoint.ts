@@ -1,9 +1,10 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
+
 import type { EventThreshold } from './EventThreshold';
 
-export interface MsgVpnTopicEndpoint {
+export type MsgVpnTopicEndpoint = {
     /**
      * The access type for delivering messages to consumer flows bound to the Topic Endpoint. The default value is `"exclusive"`. The allowed values and their meaning are:
      *

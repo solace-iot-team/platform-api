@@ -1,7 +1,8 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
-export interface DmrCluster {
+
+export type DmrCluster = {
     /**
      * Enable or disable basic authentication for Cluster Links. The default value is `true`.
      */

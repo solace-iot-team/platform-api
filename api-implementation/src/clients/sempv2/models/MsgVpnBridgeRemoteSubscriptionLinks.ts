@@ -1,7 +1,8 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
-export interface MsgVpnBridgeRemoteSubscriptionLinks {
+
+export type MsgVpnBridgeRemoteSubscriptionLinks = {
     /**
      * The URI of this Remote Subscription object.
      */

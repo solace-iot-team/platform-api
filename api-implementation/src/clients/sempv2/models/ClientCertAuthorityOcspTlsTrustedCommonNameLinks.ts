@@ -1,7 +1,8 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
-export interface ClientCertAuthorityOcspTlsTrustedCommonNameLinks {
+
+export type ClientCertAuthorityOcspTlsTrustedCommonNameLinks = {
     /**
      * The URI of this OCSP Responder Trusted Common Name object.
      */

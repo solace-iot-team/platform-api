@@ -1,7 +1,8 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
-export interface SempPaging {
+
+export type SempPaging = {
     /**
      * The cursor, or position, for the next page of objects. Use this as the `cursor` query parameter of the next request.
      */

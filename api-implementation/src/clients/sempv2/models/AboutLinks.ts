@@ -1,7 +1,8 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
-export interface AboutLinks {
+
+export type AboutLinks = {
     /**
      * The URI of this About object.
      */

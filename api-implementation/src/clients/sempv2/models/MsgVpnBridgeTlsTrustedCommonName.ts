@@ -1,7 +1,8 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
-export interface MsgVpnBridgeTlsTrustedCommonName {
+
+export type MsgVpnBridgeTlsTrustedCommonName = {
     /**
      * The name of the Bridge. Deprecated since 2.18. Common Name validation has been replaced by Server Certificate Name validation.
      */
