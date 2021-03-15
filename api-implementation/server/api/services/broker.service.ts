@@ -172,10 +172,8 @@ class BrokerService {
     }
   }
 
-  private createACLs(app: App, services: Service[]) {
-    return new Promise<void>(async (resolve, reject) => {
+  private async createACLs(app: App, services: Service[]): Promise<void> {
       for (const service of services) {
-
         const sempv2Client = this.getSEMPv2Client(service);
         const aclProfile: MsgVpnAclProfile = {
           aclProfileName: app.credentials.secret.consumerKey,
@@ -188,22 +186,19 @@ class BrokerService {
           msgVpnName: service.msgVpnName,
         };
         try {
-          var getResponse = await AllService.getMsgVpnAclProfile(service.msgVpnName, app.credentials.secret.consumerKey);
-          L.info("ACL Looked up");
-          var responseUpd = await AllService.updateMsgVpnAclProfile(service.msgVpnName, app.credentials.secret.consumerKey, aclProfile);
-          L.info("ACL updated");
+          const getResponse = await AllService.getMsgVpnAclProfile(service.msgVpnName, app.credentials.secret.consumerKey);
+          L.debug(`ACL Looked up ${JSON.stringify(getResponse)}`);
+          const responseUpd = await AllService.updateMsgVpnAclProfile(service.msgVpnName, app.credentials.secret.consumerKey, aclProfile);
+          L.debug(`ACL updated ${JSON.stringify(responseUpd)}`);
         } catch (e) {
-
           try {
-            let response = await AllService.createMsgVpnAclProfile(service.msgVpnName, aclProfile);
-            L.info("created  ACL");
-          } catch (e) {
-            reject(e);
+            const response = await AllService.createMsgVpnAclProfile(service.msgVpnName, aclProfile);
+            L.debug(`ACL updated ${JSON.stringify(response)}`);
+          } catch (err) {
+            throw (err);
           }
         }
       };
-      resolve();
-    });
   }
 
   private deleteACLs(app: App, services: Service[]) {
