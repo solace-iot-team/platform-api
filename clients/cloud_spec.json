@@ -7,7 +7,7 @@
   },
   "servers": [
     {
-      "url": "https://api.solace.cloud/api/v0/"
+      "url": "https://api.solace.cloud/api/v0"
     }
   ],
   "components": {
