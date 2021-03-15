@@ -1,7 +1,8 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
-export interface MsgVpnDistributedCacheClusterGlobalCachingHomeClusterLinks {
+
+export type MsgVpnDistributedCacheClusterGlobalCachingHomeClusterLinks = {
     /**
      * The URI of this Home Cache Cluster's collection of Topic Prefix objects.
      */

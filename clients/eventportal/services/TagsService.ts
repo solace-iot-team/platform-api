@@ -12,7 +12,7 @@ export class TagsService {
      * @param pageNumber The page number to get. Min: 1
      * @param name Name of the tag to match on.
      * @param ids Match only tags with the given IDs separated by commas.
-     * @result any Retrieve a list of tags and the accompanying metadata.
+     * @returns any Retrieve a list of tags and the accompanying metadata.
      * @throws ApiError
      */
     public static async list11(
@@ -47,7 +47,7 @@ export class TagsService {
      * Creates a tag
      * Tags can be created to organize the objects of your event-driven architecture. Assign tags to objects to make them easier to group and find.
      * @param requestBody Tags require a name.
-     * @result any Created. The newly saved tag is returned in the response body.
+     * @returns any Created. The newly saved tag is returned in the response body.
      * @throws ApiError
      */
     public static async add2(
@@ -74,7 +74,7 @@ export class TagsService {
      * Retrieves a tag
      * Use this API to retrieve a single tag by its ID.
      * @param id The ID of the tag.
-     * @result any The single tag.
+     * @returns any The single tag.
      * @throws ApiError
      */
     public static async get4(
@@ -101,7 +101,7 @@ export class TagsService {
      * Use this API to update a tag.
      * @param id The ID of the tag object to update.
      * @param requestBody The tag.
-     * @result any The updated tag.
+     * @returns any The updated tag.
      * @throws ApiError
      */
     public static async update11(
@@ -129,7 +129,7 @@ export class TagsService {
      * Deletes a tag
      * Use this API to delete a tag. The tag must not be in use by any objects else it cannot be deleted.
      * @param id The ID of the tag.
-     * @result any No content is returned.
+     * @returns any No content is returned.
      * @throws ApiError
      */
     public static async delete4(

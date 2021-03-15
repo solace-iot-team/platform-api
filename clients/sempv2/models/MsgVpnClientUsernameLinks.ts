@@ -1,7 +1,8 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
-export interface MsgVpnClientUsernameLinks {
+
+export type MsgVpnClientUsernameLinks = {
     /**
      * The URI of this Client Username object.
      */

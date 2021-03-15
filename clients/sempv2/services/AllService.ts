@@ -285,8 +285,8 @@ export class AllService {
      * This has been available since 2.13.
      * @param opaquePassword Accept opaque attributes in the request or return opaque attributes in the response, encrypted with the specified password. See that documentation for the `opaquePassword` parameter.
      * @param select Include in the response only selected attributes of the object, or exclude from the response selected attributes of the object. See the documentation for the `select` parameter.
-     * @result BrokerResponse The Broker object's attributes, and the request metadata.
-     * @result SempMetaOnlyResponse The error response.
+     * @returns BrokerResponse The Broker object's attributes, and the request metadata.
+     * @returns SempMetaOnlyResponse The error response.
      * @throws ApiError
      */
     public static async getBroker(
@@ -454,8 +454,8 @@ export class AllService {
      * @param body The Broker object's attributes.
      * @param opaquePassword Accept opaque attributes in the request or return opaque attributes in the response, encrypted with the specified password. See that documentation for the `opaquePassword` parameter.
      * @param select Include in the response only selected attributes of the object, or exclude from the response selected attributes of the object. See the documentation for the `select` parameter.
-     * @result BrokerResponse The Broker object's attributes after being updated, and the request metadata.
-     * @result SempMetaOnlyResponse The error response.
+     * @returns BrokerResponse The Broker object's attributes after being updated, and the request metadata.
+     * @returns SempMetaOnlyResponse The error response.
      * @throws ApiError
      */
     public static async updateBroker(
@@ -488,8 +488,8 @@ export class AllService {
      * This has been available since 2.13.
      * @param opaquePassword Accept opaque attributes in the request or return opaque attributes in the response, encrypted with the specified password. See that documentation for the `opaquePassword` parameter.
      * @param select Include in the response only selected attributes of the object, or exclude from the response selected attributes of the object. See the documentation for the `select` parameter.
-     * @result AboutResponse The About object's attributes, and the request metadata.
-     * @result SempMetaOnlyResponse The error response.
+     * @returns AboutResponse The About object's attributes, and the request metadata.
+     * @returns SempMetaOnlyResponse The error response.
      * @throws ApiError
      */
     public static async getAbout(
@@ -515,8 +515,8 @@ export class AllService {
      * A SEMP client authorized with a minimum access scope/level of "global/none" is required to perform this operation.
      *
      * This has been available since 2.2.
-     * @result AboutApiResponse The API Description object's attributes, and the request metadata.
-     * @result SempMetaOnlyResponse The error response.
+     * @returns AboutApiResponse The API Description object's attributes, and the request metadata.
+     * @returns SempMetaOnlyResponse The error response.
      * @throws ApiError
      */
     public static async getAboutApi(): Promise<AboutApiResponse | SempMetaOnlyResponse> {
@@ -540,8 +540,8 @@ export class AllService {
      * This has been available since 2.2.
      * @param opaquePassword Accept opaque attributes in the request or return opaque attributes in the response, encrypted with the specified password. See that documentation for the `opaquePassword` parameter.
      * @param select Include in the response only selected attributes of the object, or exclude from the response selected attributes of the object. See the documentation for the `select` parameter.
-     * @result AboutUserResponse The User object's attributes, and the request metadata.
-     * @result SempMetaOnlyResponse The error response.
+     * @returns AboutUserResponse The User object's attributes, and the request metadata.
+     * @returns SempMetaOnlyResponse The error response.
      * @throws ApiError
      */
     public static async getAboutUser(
@@ -580,8 +580,8 @@ export class AllService {
      * @param opaquePassword Accept opaque attributes in the request or return opaque attributes in the response, encrypted with the specified password. See that documentation for the `opaquePassword` parameter.
      * @param where Include in the response only objects where certain conditions are true. See the the documentation for the `where` parameter.
      * @param select Include in the response only selected attributes of the object, or exclude from the response selected attributes of the object. See the documentation for the `select` parameter.
-     * @result AboutUserMsgVpnsResponse The list of User Message VPN objects' attributes, and the request metadata.
-     * @result SempMetaOnlyResponse The error response.
+     * @returns AboutUserMsgVpnsResponse The list of User Message VPN objects' attributes, and the request metadata.
+     * @returns SempMetaOnlyResponse The error response.
      * @throws ApiError
      */
     public static async getAboutUserMsgVpns(
@@ -624,8 +624,8 @@ export class AllService {
      * @param msgVpnName The name of the Message VPN.
      * @param opaquePassword Accept opaque attributes in the request or return opaque attributes in the response, encrypted with the specified password. See that documentation for the `opaquePassword` parameter.
      * @param select Include in the response only selected attributes of the object, or exclude from the response selected attributes of the object. See the documentation for the `select` parameter.
-     * @result AboutUserMsgVpnResponse The User Message VPN object's attributes, and the request metadata.
-     * @result SempMetaOnlyResponse The error response.
+     * @returns AboutUserMsgVpnResponse The User Message VPN object's attributes, and the request metadata.
+     * @returns SempMetaOnlyResponse The error response.
      * @throws ApiError
      */
     public static async getAboutUserMsgVpn(
@@ -674,8 +674,8 @@ export class AllService {
      * @param opaquePassword Accept opaque attributes in the request or return opaque attributes in the response, encrypted with the specified password. See that documentation for the `opaquePassword` parameter.
      * @param where Include in the response only objects where certain conditions are true. See the the documentation for the `where` parameter.
      * @param select Include in the response only selected attributes of the object, or exclude from the response selected attributes of the object. See the documentation for the `select` parameter.
-     * @result CertAuthoritiesResponse The list of Certificate Authority objects' attributes, and the request metadata.
-     * @result SempMetaOnlyResponse The error response.
+     * @returns CertAuthoritiesResponse The list of Certificate Authority objects' attributes, and the request metadata.
+     * @returns SempMetaOnlyResponse The error response.
      * @throws ApiError
      */
     public static async getCertAuthorities(
@@ -737,8 +737,8 @@ export class AllService {
      * @param body The Certificate Authority object's attributes.
      * @param opaquePassword Accept opaque attributes in the request or return opaque attributes in the response, encrypted with the specified password. See that documentation for the `opaquePassword` parameter.
      * @param select Include in the response only selected attributes of the object, or exclude from the response selected attributes of the object. See the documentation for the `select` parameter.
-     * @result CertAuthorityResponse The Certificate Authority object's attributes after being created, and the request metadata.
-     * @result SempMetaOnlyResponse The error response.
+     * @returns CertAuthorityResponse The Certificate Authority object's attributes after being created, and the request metadata.
+     * @returns SempMetaOnlyResponse The error response.
      * @throws ApiError
      */
     public static async createCertAuthority(
@@ -769,7 +769,7 @@ export class AllService {
      *
      * This has been deprecated since 2.19. Replaced by clientCertAuthorities and domainCertAuthorities.
      * @param certAuthorityName The name of the Certificate Authority.
-     * @result SempMetaOnlyResponse The request metadata.
+     * @returns SempMetaOnlyResponse The request metadata.
      * @throws ApiError
      */
     public static async deleteCertAuthority(
@@ -810,8 +810,8 @@ export class AllService {
      * @param certAuthorityName The name of the Certificate Authority.
      * @param opaquePassword Accept opaque attributes in the request or return opaque attributes in the response, encrypted with the specified password. See that documentation for the `opaquePassword` parameter.
      * @param select Include in the response only selected attributes of the object, or exclude from the response selected attributes of the object. See the documentation for the `select` parameter.
-     * @result CertAuthorityResponse The Certificate Authority object's attributes, and the request metadata.
-     * @result SempMetaOnlyResponse The error response.
+     * @returns CertAuthorityResponse The Certificate Authority object's attributes, and the request metadata.
+     * @returns SempMetaOnlyResponse The error response.
      * @throws ApiError
      */
     public static async getCertAuthority(
@@ -869,8 +869,8 @@ export class AllService {
      * @param body The Certificate Authority object's attributes.
      * @param opaquePassword Accept opaque attributes in the request or return opaque attributes in the response, encrypted with the specified password. See that documentation for the `opaquePassword` parameter.
      * @param select Include in the response only selected attributes of the object, or exclude from the response selected attributes of the object. See the documentation for the `select` parameter.
-     * @result CertAuthorityResponse The Certificate Authority object's attributes after being updated, and the request metadata.
-     * @result SempMetaOnlyResponse The error response.
+     * @returns CertAuthorityResponse The Certificate Authority object's attributes after being updated, and the request metadata.
+     * @returns SempMetaOnlyResponse The error response.
      * @throws ApiError
      */
     public static async updateCertAuthority(
@@ -930,8 +930,8 @@ export class AllService {
      * @param body The Certificate Authority object's attributes.
      * @param opaquePassword Accept opaque attributes in the request or return opaque attributes in the response, encrypted with the specified password. See that documentation for the `opaquePassword` parameter.
      * @param select Include in the response only selected attributes of the object, or exclude from the response selected attributes of the object. See the documentation for the `select` parameter.
-     * @result CertAuthorityResponse The Certificate Authority object's attributes after being replaced, and the request metadata.
-     * @result SempMetaOnlyResponse The error response.
+     * @returns CertAuthorityResponse The Certificate Authority object's attributes after being replaced, and the request metadata.
+     * @returns SempMetaOnlyResponse The error response.
      * @throws ApiError
      */
     public static async replaceCertAuthority(
@@ -974,8 +974,8 @@ export class AllService {
      * @param opaquePassword Accept opaque attributes in the request or return opaque attributes in the response, encrypted with the specified password. See that documentation for the `opaquePassword` parameter.
      * @param where Include in the response only objects where certain conditions are true. See the the documentation for the `where` parameter.
      * @param select Include in the response only selected attributes of the object, or exclude from the response selected attributes of the object. See the documentation for the `select` parameter.
-     * @result CertAuthorityOcspTlsTrustedCommonNamesResponse The list of OCSP Responder Trusted Common Name objects' attributes, and the request metadata.
-     * @result SempMetaOnlyResponse The error response.
+     * @returns CertAuthorityOcspTlsTrustedCommonNamesResponse The list of OCSP Responder Trusted Common Name objects' attributes, and the request metadata.
+     * @returns SempMetaOnlyResponse The error response.
      * @throws ApiError
      */
     public static async getCertAuthorityOcspTlsTrustedCommonNames(
@@ -1018,8 +1018,8 @@ export class AllService {
      * @param body The OCSP Responder Trusted Common Name object's attributes.
      * @param opaquePassword Accept opaque attributes in the request or return opaque attributes in the response, encrypted with the specified password. See that documentation for the `opaquePassword` parameter.
      * @param select Include in the response only selected attributes of the object, or exclude from the response selected attributes of the object. See the documentation for the `select` parameter.
-     * @result CertAuthorityOcspTlsTrustedCommonNameResponse The OCSP Responder Trusted Common Name object's attributes after being created, and the request metadata.
-     * @result SempMetaOnlyResponse The error response.
+     * @returns CertAuthorityOcspTlsTrustedCommonNameResponse The OCSP Responder Trusted Common Name object's attributes after being created, and the request metadata.
+     * @returns SempMetaOnlyResponse The error response.
      * @throws ApiError
      */
     public static async createCertAuthorityOcspTlsTrustedCommonName(
@@ -1052,7 +1052,7 @@ export class AllService {
      * This has been deprecated since 2.19. Replaced by clientCertAuthorities.
      * @param certAuthorityName The name of the Certificate Authority.
      * @param ocspTlsTrustedCommonName The expected Trusted Common Name of the OCSP responder remote certificate.
-     * @result SempMetaOnlyResponse The request metadata.
+     * @returns SempMetaOnlyResponse The request metadata.
      * @throws ApiError
      */
     public static async deleteCertAuthorityOcspTlsTrustedCommonName(
@@ -1088,8 +1088,8 @@ export class AllService {
      * @param ocspTlsTrustedCommonName The expected Trusted Common Name of the OCSP responder remote certificate.
      * @param opaquePassword Accept opaque attributes in the request or return opaque attributes in the response, encrypted with the specified password. See that documentation for the `opaquePassword` parameter.
      * @param select Include in the response only selected attributes of the object, or exclude from the response selected attributes of the object. See the documentation for the `select` parameter.
-     * @result CertAuthorityOcspTlsTrustedCommonNameResponse The OCSP Responder Trusted Common Name object's attributes, and the request metadata.
-     * @result SempMetaOnlyResponse The error response.
+     * @returns CertAuthorityOcspTlsTrustedCommonNameResponse The OCSP Responder Trusted Common Name object's attributes, and the request metadata.
+     * @returns SempMetaOnlyResponse The error response.
      * @throws ApiError
      */
     public static async getCertAuthorityOcspTlsTrustedCommonName(
@@ -1130,8 +1130,8 @@ export class AllService {
      * @param opaquePassword Accept opaque attributes in the request or return opaque attributes in the response, encrypted with the specified password. See that documentation for the `opaquePassword` parameter.
      * @param where Include in the response only objects where certain conditions are true. See the the documentation for the `where` parameter.
      * @param select Include in the response only selected attributes of the object, or exclude from the response selected attributes of the object. See the documentation for the `select` parameter.
-     * @result ClientCertAuthoritiesResponse The list of Client Certificate Authority objects' attributes, and the request metadata.
-     * @result SempMetaOnlyResponse The error response.
+     * @returns ClientCertAuthoritiesResponse The list of Client Certificate Authority objects' attributes, and the request metadata.
+     * @returns SempMetaOnlyResponse The error response.
      * @throws ApiError
      */
     public static async getClientCertAuthorities(
@@ -1184,8 +1184,8 @@ export class AllService {
      * @param body The Client Certificate Authority object's attributes.
      * @param opaquePassword Accept opaque attributes in the request or return opaque attributes in the response, encrypted with the specified password. See that documentation for the `opaquePassword` parameter.
      * @param select Include in the response only selected attributes of the object, or exclude from the response selected attributes of the object. See the documentation for the `select` parameter.
-     * @result ClientCertAuthorityResponse The Client Certificate Authority object's attributes after being created, and the request metadata.
-     * @result SempMetaOnlyResponse The error response.
+     * @returns ClientCertAuthorityResponse The Client Certificate Authority object's attributes after being created, and the request metadata.
+     * @returns SempMetaOnlyResponse The error response.
      * @throws ApiError
      */
     public static async createClientCertAuthority(
@@ -1215,7 +1215,7 @@ export class AllService {
      *
      * This has been available since 2.19.
      * @param certAuthorityName The name of the Certificate Authority.
-     * @result SempMetaOnlyResponse The request metadata.
+     * @returns SempMetaOnlyResponse The request metadata.
      * @throws ApiError
      */
     public static async deleteClientCertAuthority(
@@ -1247,8 +1247,8 @@ export class AllService {
      * @param certAuthorityName The name of the Certificate Authority.
      * @param opaquePassword Accept opaque attributes in the request or return opaque attributes in the response, encrypted with the specified password. See that documentation for the `opaquePassword` parameter.
      * @param select Include in the response only selected attributes of the object, or exclude from the response selected attributes of the object. See the documentation for the `select` parameter.
-     * @result ClientCertAuthorityResponse The Client Certificate Authority object's attributes, and the request metadata.
-     * @result SempMetaOnlyResponse The error response.
+     * @returns ClientCertAuthorityResponse The Client Certificate Authority object's attributes, and the request metadata.
+     * @returns SempMetaOnlyResponse The error response.
      * @throws ApiError
      */
     public static async getClientCertAuthority(
@@ -1298,8 +1298,8 @@ export class AllService {
      * @param body The Client Certificate Authority object's attributes.
      * @param opaquePassword Accept opaque attributes in the request or return opaque attributes in the response, encrypted with the specified password. See that documentation for the `opaquePassword` parameter.
      * @param select Include in the response only selected attributes of the object, or exclude from the response selected attributes of the object. See the documentation for the `select` parameter.
-     * @result ClientCertAuthorityResponse The Client Certificate Authority object's attributes after being updated, and the request metadata.
-     * @result SempMetaOnlyResponse The error response.
+     * @returns ClientCertAuthorityResponse The Client Certificate Authority object's attributes after being updated, and the request metadata.
+     * @returns SempMetaOnlyResponse The error response.
      * @throws ApiError
      */
     public static async updateClientCertAuthority(
@@ -1351,8 +1351,8 @@ export class AllService {
      * @param body The Client Certificate Authority object's attributes.
      * @param opaquePassword Accept opaque attributes in the request or return opaque attributes in the response, encrypted with the specified password. See that documentation for the `opaquePassword` parameter.
      * @param select Include in the response only selected attributes of the object, or exclude from the response selected attributes of the object. See the documentation for the `select` parameter.
-     * @result ClientCertAuthorityResponse The Client Certificate Authority object's attributes after being replaced, and the request metadata.
-     * @result SempMetaOnlyResponse The error response.
+     * @returns ClientCertAuthorityResponse The Client Certificate Authority object's attributes after being replaced, and the request metadata.
+     * @returns SempMetaOnlyResponse The error response.
      * @throws ApiError
      */
     public static async replaceClientCertAuthority(
@@ -1394,8 +1394,8 @@ export class AllService {
      * @param opaquePassword Accept opaque attributes in the request or return opaque attributes in the response, encrypted with the specified password. See that documentation for the `opaquePassword` parameter.
      * @param where Include in the response only objects where certain conditions are true. See the the documentation for the `where` parameter.
      * @param select Include in the response only selected attributes of the object, or exclude from the response selected attributes of the object. See the documentation for the `select` parameter.
-     * @result ClientCertAuthorityOcspTlsTrustedCommonNamesResponse The list of OCSP Responder Trusted Common Name objects' attributes, and the request metadata.
-     * @result SempMetaOnlyResponse The error response.
+     * @returns ClientCertAuthorityOcspTlsTrustedCommonNamesResponse The list of OCSP Responder Trusted Common Name objects' attributes, and the request metadata.
+     * @returns SempMetaOnlyResponse The error response.
      * @throws ApiError
      */
     public static async getClientCertAuthorityOcspTlsTrustedCommonNames(
@@ -1437,8 +1437,8 @@ export class AllService {
      * @param body The OCSP Responder Trusted Common Name object's attributes.
      * @param opaquePassword Accept opaque attributes in the request or return opaque attributes in the response, encrypted with the specified password. See that documentation for the `opaquePassword` parameter.
      * @param select Include in the response only selected attributes of the object, or exclude from the response selected attributes of the object. See the documentation for the `select` parameter.
-     * @result ClientCertAuthorityOcspTlsTrustedCommonNameResponse The OCSP Responder Trusted Common Name object's attributes after being created, and the request metadata.
-     * @result SempMetaOnlyResponse The error response.
+     * @returns ClientCertAuthorityOcspTlsTrustedCommonNameResponse The OCSP Responder Trusted Common Name object's attributes after being created, and the request metadata.
+     * @returns SempMetaOnlyResponse The error response.
      * @throws ApiError
      */
     public static async createClientCertAuthorityOcspTlsTrustedCommonName(
@@ -1470,7 +1470,7 @@ export class AllService {
      * This has been available since 2.19.
      * @param certAuthorityName The name of the Certificate Authority.
      * @param ocspTlsTrustedCommonName The expected Trusted Common Name of the OCSP responder remote certificate.
-     * @result SempMetaOnlyResponse The request metadata.
+     * @returns SempMetaOnlyResponse The request metadata.
      * @throws ApiError
      */
     public static async deleteClientCertAuthorityOcspTlsTrustedCommonName(
@@ -1505,8 +1505,8 @@ export class AllService {
      * @param ocspTlsTrustedCommonName The expected Trusted Common Name of the OCSP responder remote certificate.
      * @param opaquePassword Accept opaque attributes in the request or return opaque attributes in the response, encrypted with the specified password. See that documentation for the `opaquePassword` parameter.
      * @param select Include in the response only selected attributes of the object, or exclude from the response selected attributes of the object. See the documentation for the `select` parameter.
-     * @result ClientCertAuthorityOcspTlsTrustedCommonNameResponse The OCSP Responder Trusted Common Name object's attributes, and the request metadata.
-     * @result SempMetaOnlyResponse The error response.
+     * @returns ClientCertAuthorityOcspTlsTrustedCommonNameResponse The OCSP Responder Trusted Common Name object's attributes, and the request metadata.
+     * @returns SempMetaOnlyResponse The error response.
      * @throws ApiError
      */
     public static async getClientCertAuthorityOcspTlsTrustedCommonName(
@@ -1551,8 +1551,8 @@ export class AllService {
      * @param opaquePassword Accept opaque attributes in the request or return opaque attributes in the response, encrypted with the specified password. See that documentation for the `opaquePassword` parameter.
      * @param where Include in the response only objects where certain conditions are true. See the the documentation for the `where` parameter.
      * @param select Include in the response only selected attributes of the object, or exclude from the response selected attributes of the object. See the documentation for the `select` parameter.
-     * @result DmrClustersResponse The list of Cluster objects' attributes, and the request metadata.
-     * @result SempMetaOnlyResponse The error response.
+     * @returns DmrClustersResponse The list of Cluster objects' attributes, and the request metadata.
+     * @returns SempMetaOnlyResponse The error response.
      * @throws ApiError
      */
     public static async getDmrClusters(
@@ -1609,8 +1609,8 @@ export class AllService {
      * @param body The Cluster object's attributes.
      * @param opaquePassword Accept opaque attributes in the request or return opaque attributes in the response, encrypted with the specified password. See that documentation for the `opaquePassword` parameter.
      * @param select Include in the response only selected attributes of the object, or exclude from the response selected attributes of the object. See the documentation for the `select` parameter.
-     * @result DmrClusterResponse The Cluster object's attributes after being created, and the request metadata.
-     * @result SempMetaOnlyResponse The error response.
+     * @returns DmrClusterResponse The Cluster object's attributes after being created, and the request metadata.
+     * @returns SempMetaOnlyResponse The error response.
      * @throws ApiError
      */
     public static async createDmrCluster(
@@ -1640,7 +1640,7 @@ export class AllService {
      *
      * This has been available since 2.11.
      * @param dmrClusterName The name of the Cluster.
-     * @result SempMetaOnlyResponse The request metadata.
+     * @returns SempMetaOnlyResponse The request metadata.
      * @throws ApiError
      */
     public static async deleteDmrCluster(
@@ -1676,8 +1676,8 @@ export class AllService {
      * @param dmrClusterName The name of the Cluster.
      * @param opaquePassword Accept opaque attributes in the request or return opaque attributes in the response, encrypted with the specified password. See that documentation for the `opaquePassword` parameter.
      * @param select Include in the response only selected attributes of the object, or exclude from the response selected attributes of the object. See the documentation for the `select` parameter.
-     * @result DmrClusterResponse The Cluster object's attributes, and the request metadata.
-     * @result SempMetaOnlyResponse The error response.
+     * @returns DmrClusterResponse The Cluster object's attributes, and the request metadata.
+     * @returns SempMetaOnlyResponse The error response.
      * @throws ApiError
      */
     public static async getDmrCluster(
@@ -1731,8 +1731,8 @@ export class AllService {
      * @param body The Cluster object's attributes.
      * @param opaquePassword Accept opaque attributes in the request or return opaque attributes in the response, encrypted with the specified password. See that documentation for the `opaquePassword` parameter.
      * @param select Include in the response only selected attributes of the object, or exclude from the response selected attributes of the object. See the documentation for the `select` parameter.
-     * @result DmrClusterResponse The Cluster object's attributes after being updated, and the request metadata.
-     * @result SempMetaOnlyResponse The error response.
+     * @returns DmrClusterResponse The Cluster object's attributes after being updated, and the request metadata.
+     * @returns SempMetaOnlyResponse The error response.
      * @throws ApiError
      */
     public static async updateDmrCluster(
@@ -1788,8 +1788,8 @@ export class AllService {
      * @param body The Cluster object's attributes.
      * @param opaquePassword Accept opaque attributes in the request or return opaque attributes in the response, encrypted with the specified password. See that documentation for the `opaquePassword` parameter.
      * @param select Include in the response only selected attributes of the object, or exclude from the response selected attributes of the object. See the documentation for the `select` parameter.
-     * @result DmrClusterResponse The Cluster object's attributes after being replaced, and the request metadata.
-     * @result SempMetaOnlyResponse The error response.
+     * @returns DmrClusterResponse The Cluster object's attributes after being replaced, and the request metadata.
+     * @returns SempMetaOnlyResponse The error response.
      * @throws ApiError
      */
     public static async replaceDmrCluster(
@@ -1834,8 +1834,8 @@ export class AllService {
      * @param opaquePassword Accept opaque attributes in the request or return opaque attributes in the response, encrypted with the specified password. See that documentation for the `opaquePassword` parameter.
      * @param where Include in the response only objects where certain conditions are true. See the the documentation for the `where` parameter.
      * @param select Include in the response only selected attributes of the object, or exclude from the response selected attributes of the object. See the documentation for the `select` parameter.
-     * @result DmrClusterLinksResponse The list of Link objects' attributes, and the request metadata.
-     * @result SempMetaOnlyResponse The error response.
+     * @returns DmrClusterLinksResponse The list of Link objects' attributes, and the request metadata.
+     * @returns SempMetaOnlyResponse The error response.
      * @throws ApiError
      */
     public static async getDmrClusterLinks(
@@ -1894,8 +1894,8 @@ export class AllService {
      * @param body The Link object's attributes.
      * @param opaquePassword Accept opaque attributes in the request or return opaque attributes in the response, encrypted with the specified password. See that documentation for the `opaquePassword` parameter.
      * @param select Include in the response only selected attributes of the object, or exclude from the response selected attributes of the object. See the documentation for the `select` parameter.
-     * @result DmrClusterLinkResponse The Link object's attributes after being created, and the request metadata.
-     * @result SempMetaOnlyResponse The error response.
+     * @returns DmrClusterLinkResponse The Link object's attributes after being created, and the request metadata.
+     * @returns SempMetaOnlyResponse The error response.
      * @throws ApiError
      */
     public static async createDmrClusterLink(
@@ -1927,7 +1927,7 @@ export class AllService {
      * This has been available since 2.11.
      * @param dmrClusterName The name of the Cluster.
      * @param remoteNodeName The name of the node at the remote end of the Link.
-     * @result SempMetaOnlyResponse The request metadata.
+     * @returns SempMetaOnlyResponse The request metadata.
      * @throws ApiError
      */
     public static async deleteDmrClusterLink(
@@ -1963,8 +1963,8 @@ export class AllService {
      * @param remoteNodeName The name of the node at the remote end of the Link.
      * @param opaquePassword Accept opaque attributes in the request or return opaque attributes in the response, encrypted with the specified password. See that documentation for the `opaquePassword` parameter.
      * @param select Include in the response only selected attributes of the object, or exclude from the response selected attributes of the object. See the documentation for the `select` parameter.
-     * @result DmrClusterLinkResponse The Link object's attributes, and the request metadata.
-     * @result SempMetaOnlyResponse The error response.
+     * @returns DmrClusterLinkResponse The Link object's attributes, and the request metadata.
+     * @returns SempMetaOnlyResponse The error response.
      * @throws ApiError
      */
     public static async getDmrClusterLink(
@@ -2025,8 +2025,8 @@ export class AllService {
      * @param body The Link object's attributes.
      * @param opaquePassword Accept opaque attributes in the request or return opaque attributes in the response, encrypted with the specified password. See that documentation for the `opaquePassword` parameter.
      * @param select Include in the response only selected attributes of the object, or exclude from the response selected attributes of the object. See the documentation for the `select` parameter.
-     * @result DmrClusterLinkResponse The Link object's attributes after being updated, and the request metadata.
-     * @result SempMetaOnlyResponse The error response.
+     * @returns DmrClusterLinkResponse The Link object's attributes after being updated, and the request metadata.
+     * @returns SempMetaOnlyResponse The error response.
      * @throws ApiError
      */
     public static async updateDmrClusterLink(
@@ -2089,8 +2089,8 @@ export class AllService {
      * @param body The Link object's attributes.
      * @param opaquePassword Accept opaque attributes in the request or return opaque attributes in the response, encrypted with the specified password. See that documentation for the `opaquePassword` parameter.
      * @param select Include in the response only selected attributes of the object, or exclude from the response selected attributes of the object. See the documentation for the `select` parameter.
-     * @result DmrClusterLinkResponse The Link object's attributes after being replaced, and the request metadata.
-     * @result SempMetaOnlyResponse The error response.
+     * @returns DmrClusterLinkResponse The Link object's attributes after being replaced, and the request metadata.
+     * @returns SempMetaOnlyResponse The error response.
      * @throws ApiError
      */
     public static async replaceDmrClusterLink(
@@ -2135,8 +2135,8 @@ export class AllService {
      * @param opaquePassword Accept opaque attributes in the request or return opaque attributes in the response, encrypted with the specified password. See that documentation for the `opaquePassword` parameter.
      * @param where Include in the response only objects where certain conditions are true. See the the documentation for the `where` parameter.
      * @param select Include in the response only selected attributes of the object, or exclude from the response selected attributes of the object. See the documentation for the `select` parameter.
-     * @result DmrClusterLinkRemoteAddressesResponse The list of Remote Address objects' attributes, and the request metadata.
-     * @result SempMetaOnlyResponse The error response.
+     * @returns DmrClusterLinkRemoteAddressesResponse The list of Remote Address objects' attributes, and the request metadata.
+     * @returns SempMetaOnlyResponse The error response.
      * @throws ApiError
      */
     public static async getDmrClusterLinkRemoteAddresses(
@@ -2181,8 +2181,8 @@ export class AllService {
      * @param body The Remote Address object's attributes.
      * @param opaquePassword Accept opaque attributes in the request or return opaque attributes in the response, encrypted with the specified password. See that documentation for the `opaquePassword` parameter.
      * @param select Include in the response only selected attributes of the object, or exclude from the response selected attributes of the object. See the documentation for the `select` parameter.
-     * @result DmrClusterLinkRemoteAddressResponse The Remote Address object's attributes after being created, and the request metadata.
-     * @result SempMetaOnlyResponse The error response.
+     * @returns DmrClusterLinkRemoteAddressResponse The Remote Address object's attributes after being created, and the request metadata.
+     * @returns SempMetaOnlyResponse The error response.
      * @throws ApiError
      */
     public static async createDmrClusterLinkRemoteAddress(
@@ -2216,7 +2216,7 @@ export class AllService {
      * @param dmrClusterName The name of the Cluster.
      * @param remoteNodeName The name of the node at the remote end of the Link.
      * @param remoteAddress The FQDN or IP address (and optional port) of the remote node. If a port is not provided, it will vary based on the transport encoding: 55555 (plain-text), 55443 (encrypted), or 55003 (compressed).
-     * @result SempMetaOnlyResponse The request metadata.
+     * @returns SempMetaOnlyResponse The request metadata.
      * @throws ApiError
      */
     public static async deleteDmrClusterLinkRemoteAddress(
@@ -2254,8 +2254,8 @@ export class AllService {
      * @param remoteAddress The FQDN or IP address (and optional port) of the remote node. If a port is not provided, it will vary based on the transport encoding: 55555 (plain-text), 55443 (encrypted), or 55003 (compressed).
      * @param opaquePassword Accept opaque attributes in the request or return opaque attributes in the response, encrypted with the specified password. See that documentation for the `opaquePassword` parameter.
      * @param select Include in the response only selected attributes of the object, or exclude from the response selected attributes of the object. See the documentation for the `select` parameter.
-     * @result DmrClusterLinkRemoteAddressResponse The Remote Address object's attributes, and the request metadata.
-     * @result SempMetaOnlyResponse The error response.
+     * @returns DmrClusterLinkRemoteAddressResponse The Remote Address object's attributes, and the request metadata.
+     * @returns SempMetaOnlyResponse The error response.
      * @throws ApiError
      */
     public static async getDmrClusterLinkRemoteAddress(
@@ -2300,8 +2300,8 @@ export class AllService {
      * @param opaquePassword Accept opaque attributes in the request or return opaque attributes in the response, encrypted with the specified password. See that documentation for the `opaquePassword` parameter.
      * @param where Include in the response only objects where certain conditions are true. See the the documentation for the `where` parameter.
      * @param select Include in the response only selected attributes of the object, or exclude from the response selected attributes of the object. See the documentation for the `select` parameter.
-     * @result DmrClusterLinkTlsTrustedCommonNamesResponse The list of Trusted Common Name objects' attributes, and the request metadata.
-     * @result SempMetaOnlyResponse The error response.
+     * @returns DmrClusterLinkTlsTrustedCommonNamesResponse The list of Trusted Common Name objects' attributes, and the request metadata.
+     * @returns SempMetaOnlyResponse The error response.
      * @throws ApiError
      */
     public static async getDmrClusterLinkTlsTrustedCommonNames(
@@ -2347,8 +2347,8 @@ export class AllService {
      * @param body The Trusted Common Name object's attributes.
      * @param opaquePassword Accept opaque attributes in the request or return opaque attributes in the response, encrypted with the specified password. See that documentation for the `opaquePassword` parameter.
      * @param select Include in the response only selected attributes of the object, or exclude from the response selected attributes of the object. See the documentation for the `select` parameter.
-     * @result DmrClusterLinkTlsTrustedCommonNameResponse The Trusted Common Name object's attributes after being created, and the request metadata.
-     * @result SempMetaOnlyResponse The error response.
+     * @returns DmrClusterLinkTlsTrustedCommonNameResponse The Trusted Common Name object's attributes after being created, and the request metadata.
+     * @returns SempMetaOnlyResponse The error response.
      * @throws ApiError
      */
     public static async createDmrClusterLinkTlsTrustedCommonName(
@@ -2383,7 +2383,7 @@ export class AllService {
      * @param dmrClusterName The name of the Cluster.
      * @param remoteNodeName The name of the node at the remote end of the Link.
      * @param tlsTrustedCommonName The expected trusted common name of the remote certificate.
-     * @result SempMetaOnlyResponse The request metadata.
+     * @returns SempMetaOnlyResponse The request metadata.
      * @throws ApiError
      */
     public static async deleteDmrClusterLinkTlsTrustedCommonName(
@@ -2422,8 +2422,8 @@ export class AllService {
      * @param tlsTrustedCommonName The expected trusted common name of the remote certificate.
      * @param opaquePassword Accept opaque attributes in the request or return opaque attributes in the response, encrypted with the specified password. See that documentation for the `opaquePassword` parameter.
      * @param select Include in the response only selected attributes of the object, or exclude from the response selected attributes of the object. See the documentation for the `select` parameter.
-     * @result DmrClusterLinkTlsTrustedCommonNameResponse The Trusted Common Name object's attributes, and the request metadata.
-     * @result SempMetaOnlyResponse The error response.
+     * @returns DmrClusterLinkTlsTrustedCommonNameResponse The Trusted Common Name object's attributes, and the request metadata.
+     * @returns SempMetaOnlyResponse The error response.
      * @throws ApiError
      */
     public static async getDmrClusterLinkTlsTrustedCommonName(
@@ -2465,8 +2465,8 @@ export class AllService {
      * @param opaquePassword Accept opaque attributes in the request or return opaque attributes in the response, encrypted with the specified password. See that documentation for the `opaquePassword` parameter.
      * @param where Include in the response only objects where certain conditions are true. See the the documentation for the `where` parameter.
      * @param select Include in the response only selected attributes of the object, or exclude from the response selected attributes of the object. See the documentation for the `select` parameter.
-     * @result DomainCertAuthoritiesResponse The list of Domain Certificate Authority objects' attributes, and the request metadata.
-     * @result SempMetaOnlyResponse The error response.
+     * @returns DomainCertAuthoritiesResponse The list of Domain Certificate Authority objects' attributes, and the request metadata.
+     * @returns SempMetaOnlyResponse The error response.
      * @throws ApiError
      */
     public static async getDomainCertAuthorities(
@@ -2509,8 +2509,8 @@ export class AllService {
      * @param body The Domain Certificate Authority object's attributes.
      * @param opaquePassword Accept opaque attributes in the request or return opaque attributes in the response, encrypted with the specified password. See that documentation for the `opaquePassword` parameter.
      * @param select Include in the response only selected attributes of the object, or exclude from the response selected attributes of the object. See the documentation for the `select` parameter.
-     * @result DomainCertAuthorityResponse The Domain Certificate Authority object's attributes after being created, and the request metadata.
-     * @result SempMetaOnlyResponse The error response.
+     * @returns DomainCertAuthorityResponse The Domain Certificate Authority object's attributes after being created, and the request metadata.
+     * @returns SempMetaOnlyResponse The error response.
      * @throws ApiError
      */
     public static async createDomainCertAuthority(
@@ -2540,7 +2540,7 @@ export class AllService {
      *
      * This has been available since 2.19.
      * @param certAuthorityName The name of the Certificate Authority.
-     * @result SempMetaOnlyResponse The request metadata.
+     * @returns SempMetaOnlyResponse The request metadata.
      * @throws ApiError
      */
     public static async deleteDomainCertAuthority(
@@ -2572,8 +2572,8 @@ export class AllService {
      * @param certAuthorityName The name of the Certificate Authority.
      * @param opaquePassword Accept opaque attributes in the request or return opaque attributes in the response, encrypted with the specified password. See that documentation for the `opaquePassword` parameter.
      * @param select Include in the response only selected attributes of the object, or exclude from the response selected attributes of the object. See the documentation for the `select` parameter.
-     * @result DomainCertAuthorityResponse The Domain Certificate Authority object's attributes, and the request metadata.
-     * @result SempMetaOnlyResponse The error response.
+     * @returns DomainCertAuthorityResponse The Domain Certificate Authority object's attributes, and the request metadata.
+     * @returns SempMetaOnlyResponse The error response.
      * @throws ApiError
      */
     public static async getDomainCertAuthority(
@@ -2612,8 +2612,8 @@ export class AllService {
      * @param body The Domain Certificate Authority object's attributes.
      * @param opaquePassword Accept opaque attributes in the request or return opaque attributes in the response, encrypted with the specified password. See that documentation for the `opaquePassword` parameter.
      * @param select Include in the response only selected attributes of the object, or exclude from the response selected attributes of the object. See the documentation for the `select` parameter.
-     * @result DomainCertAuthorityResponse The Domain Certificate Authority object's attributes after being updated, and the request metadata.
-     * @result SempMetaOnlyResponse The error response.
+     * @returns DomainCertAuthorityResponse The Domain Certificate Authority object's attributes after being updated, and the request metadata.
+     * @returns SempMetaOnlyResponse The error response.
      * @throws ApiError
      */
     public static async updateDomainCertAuthority(
@@ -2654,8 +2654,8 @@ export class AllService {
      * @param body The Domain Certificate Authority object's attributes.
      * @param opaquePassword Accept opaque attributes in the request or return opaque attributes in the response, encrypted with the specified password. See that documentation for the `opaquePassword` parameter.
      * @param select Include in the response only selected attributes of the object, or exclude from the response selected attributes of the object. See the documentation for the `select` parameter.
-     * @result DomainCertAuthorityResponse The Domain Certificate Authority object's attributes after being replaced, and the request metadata.
-     * @result SempMetaOnlyResponse The error response.
+     * @returns DomainCertAuthorityResponse The Domain Certificate Authority object's attributes after being replaced, and the request metadata.
+     * @returns SempMetaOnlyResponse The error response.
      * @throws ApiError
      */
     public static async replaceDomainCertAuthority(
@@ -2703,8 +2703,8 @@ export class AllService {
      * @param opaquePassword Accept opaque attributes in the request or return opaque attributes in the response, encrypted with the specified password. See that documentation for the `opaquePassword` parameter.
      * @param where Include in the response only objects where certain conditions are true. See the the documentation for the `where` parameter.
      * @param select Include in the response only selected attributes of the object, or exclude from the response selected attributes of the object. See the documentation for the `select` parameter.
-     * @result MsgVpnsResponse The list of Message VPN objects' attributes, and the request metadata.
-     * @result SempMetaOnlyResponse The error response.
+     * @returns MsgVpnsResponse The list of Message VPN objects' attributes, and the request metadata.
+     * @returns SempMetaOnlyResponse The error response.
      * @throws ApiError
      */
     public static async getMsgVpns(
@@ -2775,8 +2775,8 @@ export class AllService {
      * @param body The Message VPN object's attributes.
      * @param opaquePassword Accept opaque attributes in the request or return opaque attributes in the response, encrypted with the specified password. See that documentation for the `opaquePassword` parameter.
      * @param select Include in the response only selected attributes of the object, or exclude from the response selected attributes of the object. See the documentation for the `select` parameter.
-     * @result MsgVpnResponse The Message VPN object's attributes after being created, and the request metadata.
-     * @result SempMetaOnlyResponse The error response.
+     * @returns MsgVpnResponse The Message VPN object's attributes after being created, and the request metadata.
+     * @returns SempMetaOnlyResponse The error response.
      * @throws ApiError
      */
     public static async createMsgVpn(
@@ -2806,7 +2806,7 @@ export class AllService {
      *
      * This has been available since 2.0.
      * @param msgVpnName The name of the Message VPN.
-     * @result SempMetaOnlyResponse The request metadata.
+     * @returns SempMetaOnlyResponse The request metadata.
      * @throws ApiError
      */
     public static async deleteMsgVpn(
@@ -2844,8 +2844,8 @@ export class AllService {
      * @param msgVpnName The name of the Message VPN.
      * @param opaquePassword Accept opaque attributes in the request or return opaque attributes in the response, encrypted with the specified password. See that documentation for the `opaquePassword` parameter.
      * @param select Include in the response only selected attributes of the object, or exclude from the response selected attributes of the object. See the documentation for the `select` parameter.
-     * @result MsgVpnResponse The Message VPN object's attributes, and the request metadata.
-     * @result SempMetaOnlyResponse The error response.
+     * @returns MsgVpnResponse The Message VPN object's attributes, and the request metadata.
+     * @returns SempMetaOnlyResponse The error response.
      * @throws ApiError
      */
     public static async getMsgVpn(
@@ -2984,8 +2984,8 @@ export class AllService {
      * @param body The Message VPN object's attributes.
      * @param opaquePassword Accept opaque attributes in the request or return opaque attributes in the response, encrypted with the specified password. See that documentation for the `opaquePassword` parameter.
      * @param select Include in the response only selected attributes of the object, or exclude from the response selected attributes of the object. See the documentation for the `select` parameter.
-     * @result MsgVpnResponse The Message VPN object's attributes after being updated, and the request metadata.
-     * @result SempMetaOnlyResponse The error response.
+     * @returns MsgVpnResponse The Message VPN object's attributes after being updated, and the request metadata.
+     * @returns SempMetaOnlyResponse The error response.
      * @throws ApiError
      */
     public static async updateMsgVpn(
@@ -3126,8 +3126,8 @@ export class AllService {
      * @param body The Message VPN object's attributes.
      * @param opaquePassword Accept opaque attributes in the request or return opaque attributes in the response, encrypted with the specified password. See that documentation for the `opaquePassword` parameter.
      * @param select Include in the response only selected attributes of the object, or exclude from the response selected attributes of the object. See the documentation for the `select` parameter.
-     * @result MsgVpnResponse The Message VPN object's attributes after being replaced, and the request metadata.
-     * @result SempMetaOnlyResponse The error response.
+     * @returns MsgVpnResponse The Message VPN object's attributes after being replaced, and the request metadata.
+     * @returns SempMetaOnlyResponse The error response.
      * @throws ApiError
      */
     public static async replaceMsgVpn(
@@ -3171,8 +3171,8 @@ export class AllService {
      * @param opaquePassword Accept opaque attributes in the request or return opaque attributes in the response, encrypted with the specified password. See that documentation for the `opaquePassword` parameter.
      * @param where Include in the response only objects where certain conditions are true. See the the documentation for the `where` parameter.
      * @param select Include in the response only selected attributes of the object, or exclude from the response selected attributes of the object. See the documentation for the `select` parameter.
-     * @result MsgVpnAclProfilesResponse The list of ACL Profile objects' attributes, and the request metadata.
-     * @result SempMetaOnlyResponse The error response.
+     * @returns MsgVpnAclProfilesResponse The list of ACL Profile objects' attributes, and the request metadata.
+     * @returns SempMetaOnlyResponse The error response.
      * @throws ApiError
      */
     public static async getMsgVpnAclProfiles(
@@ -3218,8 +3218,8 @@ export class AllService {
      * @param body The ACL Profile object's attributes.
      * @param opaquePassword Accept opaque attributes in the request or return opaque attributes in the response, encrypted with the specified password. See that documentation for the `opaquePassword` parameter.
      * @param select Include in the response only selected attributes of the object, or exclude from the response selected attributes of the object. See the documentation for the `select` parameter.
-     * @result MsgVpnAclProfileResponse The ACL Profile object's attributes after being created, and the request metadata.
-     * @result SempMetaOnlyResponse The error response.
+     * @returns MsgVpnAclProfileResponse The ACL Profile object's attributes after being created, and the request metadata.
+     * @returns SempMetaOnlyResponse The error response.
      * @throws ApiError
      */
     public static async createMsgVpnAclProfile(
@@ -3251,7 +3251,7 @@ export class AllService {
      * This has been available since 2.0.
      * @param msgVpnName The name of the Message VPN.
      * @param aclProfileName The name of the ACL Profile.
-     * @result SempMetaOnlyResponse The request metadata.
+     * @returns SempMetaOnlyResponse The request metadata.
      * @throws ApiError
      */
     public static async deleteMsgVpnAclProfile(
@@ -3286,8 +3286,8 @@ export class AllService {
      * @param aclProfileName The name of the ACL Profile.
      * @param opaquePassword Accept opaque attributes in the request or return opaque attributes in the response, encrypted with the specified password. See that documentation for the `opaquePassword` parameter.
      * @param select Include in the response only selected attributes of the object, or exclude from the response selected attributes of the object. See the documentation for the `select` parameter.
-     * @result MsgVpnAclProfileResponse The ACL Profile object's attributes, and the request metadata.
-     * @result SempMetaOnlyResponse The error response.
+     * @returns MsgVpnAclProfileResponse The ACL Profile object's attributes, and the request metadata.
+     * @returns SempMetaOnlyResponse The error response.
      * @throws ApiError
      */
     public static async getMsgVpnAclProfile(
@@ -3329,8 +3329,8 @@ export class AllService {
      * @param body The ACL Profile object's attributes.
      * @param opaquePassword Accept opaque attributes in the request or return opaque attributes in the response, encrypted with the specified password. See that documentation for the `opaquePassword` parameter.
      * @param select Include in the response only selected attributes of the object, or exclude from the response selected attributes of the object. See the documentation for the `select` parameter.
-     * @result MsgVpnAclProfileResponse The ACL Profile object's attributes after being updated, and the request metadata.
-     * @result SempMetaOnlyResponse The error response.
+     * @returns MsgVpnAclProfileResponse The ACL Profile object's attributes after being updated, and the request metadata.
+     * @returns SempMetaOnlyResponse The error response.
      * @throws ApiError
      */
     public static async updateMsgVpnAclProfile(
@@ -3374,8 +3374,8 @@ export class AllService {
      * @param body The ACL Profile object's attributes.
      * @param opaquePassword Accept opaque attributes in the request or return opaque attributes in the response, encrypted with the specified password. See that documentation for the `opaquePassword` parameter.
      * @param select Include in the response only selected attributes of the object, or exclude from the response selected attributes of the object. See the documentation for the `select` parameter.
-     * @result MsgVpnAclProfileResponse The ACL Profile object's attributes after being replaced, and the request metadata.
-     * @result SempMetaOnlyResponse The error response.
+     * @returns MsgVpnAclProfileResponse The ACL Profile object's attributes after being replaced, and the request metadata.
+     * @returns SempMetaOnlyResponse The error response.
      * @throws ApiError
      */
     public static async replaceMsgVpnAclProfile(
@@ -3422,8 +3422,8 @@ export class AllService {
      * @param opaquePassword Accept opaque attributes in the request or return opaque attributes in the response, encrypted with the specified password. See that documentation for the `opaquePassword` parameter.
      * @param where Include in the response only objects where certain conditions are true. See the the documentation for the `where` parameter.
      * @param select Include in the response only selected attributes of the object, or exclude from the response selected attributes of the object. See the documentation for the `select` parameter.
-     * @result MsgVpnAclProfileClientConnectExceptionsResponse The list of Client Connect Exception objects' attributes, and the request metadata.
-     * @result SempMetaOnlyResponse The error response.
+     * @returns MsgVpnAclProfileClientConnectExceptionsResponse The list of Client Connect Exception objects' attributes, and the request metadata.
+     * @returns SempMetaOnlyResponse The error response.
      * @throws ApiError
      */
     public static async getMsgVpnAclProfileClientConnectExceptions(
@@ -3472,8 +3472,8 @@ export class AllService {
      * @param body The Client Connect Exception object's attributes.
      * @param opaquePassword Accept opaque attributes in the request or return opaque attributes in the response, encrypted with the specified password. See that documentation for the `opaquePassword` parameter.
      * @param select Include in the response only selected attributes of the object, or exclude from the response selected attributes of the object. See the documentation for the `select` parameter.
-     * @result MsgVpnAclProfileClientConnectExceptionResponse The Client Connect Exception object's attributes after being created, and the request metadata.
-     * @result SempMetaOnlyResponse The error response.
+     * @returns MsgVpnAclProfileClientConnectExceptionResponse The Client Connect Exception object's attributes after being created, and the request metadata.
+     * @returns SempMetaOnlyResponse The error response.
      * @throws ApiError
      */
     public static async createMsgVpnAclProfileClientConnectException(
@@ -3507,7 +3507,7 @@ export class AllService {
      * @param msgVpnName The name of the Message VPN.
      * @param aclProfileName The name of the ACL Profile.
      * @param clientConnectExceptionAddress The IP address/netmask of the client connect exception in CIDR form.
-     * @result SempMetaOnlyResponse The request metadata.
+     * @returns SempMetaOnlyResponse The request metadata.
      * @throws ApiError
      */
     public static async deleteMsgVpnAclProfileClientConnectException(
@@ -3545,8 +3545,8 @@ export class AllService {
      * @param clientConnectExceptionAddress The IP address/netmask of the client connect exception in CIDR form.
      * @param opaquePassword Accept opaque attributes in the request or return opaque attributes in the response, encrypted with the specified password. See that documentation for the `opaquePassword` parameter.
      * @param select Include in the response only selected attributes of the object, or exclude from the response selected attributes of the object. See the documentation for the `select` parameter.
-     * @result MsgVpnAclProfileClientConnectExceptionResponse The Client Connect Exception object's attributes, and the request metadata.
-     * @result SempMetaOnlyResponse The error response.
+     * @returns MsgVpnAclProfileClientConnectExceptionResponse The Client Connect Exception object's attributes, and the request metadata.
+     * @returns SempMetaOnlyResponse The error response.
      * @throws ApiError
      */
     public static async getMsgVpnAclProfileClientConnectException(
@@ -3594,8 +3594,8 @@ export class AllService {
      * @param opaquePassword Accept opaque attributes in the request or return opaque attributes in the response, encrypted with the specified password. See that documentation for the `opaquePassword` parameter.
      * @param where Include in the response only objects where certain conditions are true. See the the documentation for the `where` parameter.
      * @param select Include in the response only selected attributes of the object, or exclude from the response selected attributes of the object. See the documentation for the `select` parameter.
-     * @result MsgVpnAclProfilePublishExceptionsResponse The list of Publish Topic Exception objects' attributes, and the request metadata.
-     * @result SempMetaOnlyResponse The error response.
+     * @returns MsgVpnAclProfilePublishExceptionsResponse The list of Publish Topic Exception objects' attributes, and the request metadata.
+     * @returns SempMetaOnlyResponse The error response.
      * @throws ApiError
      */
     public static async getMsgVpnAclProfilePublishExceptions(
@@ -3646,8 +3646,8 @@ export class AllService {
      * @param body The Publish Topic Exception object's attributes.
      * @param opaquePassword Accept opaque attributes in the request or return opaque attributes in the response, encrypted with the specified password. See that documentation for the `opaquePassword` parameter.
      * @param select Include in the response only selected attributes of the object, or exclude from the response selected attributes of the object. See the documentation for the `select` parameter.
-     * @result MsgVpnAclProfilePublishExceptionResponse The Publish Topic Exception object's attributes after being created, and the request metadata.
-     * @result SempMetaOnlyResponse The error response.
+     * @returns MsgVpnAclProfilePublishExceptionResponse The Publish Topic Exception object's attributes after being created, and the request metadata.
+     * @returns SempMetaOnlyResponse The error response.
      * @throws ApiError
      */
     public static async createMsgVpnAclProfilePublishException(
@@ -3683,7 +3683,7 @@ export class AllService {
      * @param aclProfileName The name of the ACL Profile.
      * @param topicSyntax The syntax of the topic for the exception to the default action taken.
      * @param publishExceptionTopic The topic for the exception to the default action taken. May include wildcard characters.
-     * @result SempMetaOnlyResponse The request metadata.
+     * @returns SempMetaOnlyResponse The request metadata.
      * @throws ApiError
      */
     public static async deleteMsgVpnAclProfilePublishException(
@@ -3725,8 +3725,8 @@ export class AllService {
      * @param publishExceptionTopic The topic for the exception to the default action taken. May include wildcard characters.
      * @param opaquePassword Accept opaque attributes in the request or return opaque attributes in the response, encrypted with the specified password. See that documentation for the `opaquePassword` parameter.
      * @param select Include in the response only selected attributes of the object, or exclude from the response selected attributes of the object. See the documentation for the `select` parameter.
-     * @result MsgVpnAclProfilePublishExceptionResponse The Publish Topic Exception object's attributes, and the request metadata.
-     * @result SempMetaOnlyResponse The error response.
+     * @returns MsgVpnAclProfilePublishExceptionResponse The Publish Topic Exception object's attributes, and the request metadata.
+     * @returns SempMetaOnlyResponse The error response.
      * @throws ApiError
      */
     public static async getMsgVpnAclProfilePublishException(
@@ -3774,8 +3774,8 @@ export class AllService {
      * @param opaquePassword Accept opaque attributes in the request or return opaque attributes in the response, encrypted with the specified password. See that documentation for the `opaquePassword` parameter.
      * @param where Include in the response only objects where certain conditions are true. See the the documentation for the `where` parameter.
      * @param select Include in the response only selected attributes of the object, or exclude from the response selected attributes of the object. See the documentation for the `select` parameter.
-     * @result MsgVpnAclProfilePublishTopicExceptionsResponse The list of Publish Topic Exception objects' attributes, and the request metadata.
-     * @result SempMetaOnlyResponse The error response.
+     * @returns MsgVpnAclProfilePublishTopicExceptionsResponse The list of Publish Topic Exception objects' attributes, and the request metadata.
+     * @returns SempMetaOnlyResponse The error response.
      * @throws ApiError
      */
     public static async getMsgVpnAclProfilePublishTopicExceptions(
@@ -3825,8 +3825,8 @@ export class AllService {
      * @param body The Publish Topic Exception object's attributes.
      * @param opaquePassword Accept opaque attributes in the request or return opaque attributes in the response, encrypted with the specified password. See that documentation for the `opaquePassword` parameter.
      * @param select Include in the response only selected attributes of the object, or exclude from the response selected attributes of the object. See the documentation for the `select` parameter.
-     * @result MsgVpnAclProfilePublishTopicExceptionResponse The Publish Topic Exception object's attributes after being created, and the request metadata.
-     * @result SempMetaOnlyResponse The error response.
+     * @returns MsgVpnAclProfilePublishTopicExceptionResponse The Publish Topic Exception object's attributes after being created, and the request metadata.
+     * @returns SempMetaOnlyResponse The error response.
      * @throws ApiError
      */
     public static async createMsgVpnAclProfilePublishTopicException(
@@ -3861,7 +3861,7 @@ export class AllService {
      * @param aclProfileName The name of the ACL Profile.
      * @param publishTopicExceptionSyntax The syntax of the topic for the exception to the default action taken.
      * @param publishTopicException The topic for the exception to the default action taken. May include wildcard characters.
-     * @result SempMetaOnlyResponse The request metadata.
+     * @returns SempMetaOnlyResponse The request metadata.
      * @throws ApiError
      */
     public static async deleteMsgVpnAclProfilePublishTopicException(
@@ -3902,8 +3902,8 @@ export class AllService {
      * @param publishTopicException The topic for the exception to the default action taken. May include wildcard characters.
      * @param opaquePassword Accept opaque attributes in the request or return opaque attributes in the response, encrypted with the specified password. See that documentation for the `opaquePassword` parameter.
      * @param select Include in the response only selected attributes of the object, or exclude from the response selected attributes of the object. See the documentation for the `select` parameter.
-     * @result MsgVpnAclProfilePublishTopicExceptionResponse The Publish Topic Exception object's attributes, and the request metadata.
-     * @result SempMetaOnlyResponse The error response.
+     * @returns MsgVpnAclProfilePublishTopicExceptionResponse The Publish Topic Exception object's attributes, and the request metadata.
+     * @returns SempMetaOnlyResponse The error response.
      * @throws ApiError
      */
     public static async getMsgVpnAclProfilePublishTopicException(
@@ -3952,8 +3952,8 @@ export class AllService {
      * @param opaquePassword Accept opaque attributes in the request or return opaque attributes in the response, encrypted with the specified password. See that documentation for the `opaquePassword` parameter.
      * @param where Include in the response only objects where certain conditions are true. See the the documentation for the `where` parameter.
      * @param select Include in the response only selected attributes of the object, or exclude from the response selected attributes of the object. See the documentation for the `select` parameter.
-     * @result MsgVpnAclProfileSubscribeExceptionsResponse The list of Subscribe Topic Exception objects' attributes, and the request metadata.
-     * @result SempMetaOnlyResponse The error response.
+     * @returns MsgVpnAclProfileSubscribeExceptionsResponse The list of Subscribe Topic Exception objects' attributes, and the request metadata.
+     * @returns SempMetaOnlyResponse The error response.
      * @throws ApiError
      */
     public static async getMsgVpnAclProfileSubscribeExceptions(
@@ -4004,8 +4004,8 @@ export class AllService {
      * @param body The Subscribe Topic Exception object's attributes.
      * @param opaquePassword Accept opaque attributes in the request or return opaque attributes in the response, encrypted with the specified password. See that documentation for the `opaquePassword` parameter.
      * @param select Include in the response only selected attributes of the object, or exclude from the response selected attributes of the object. See the documentation for the `select` parameter.
-     * @result MsgVpnAclProfileSubscribeExceptionResponse The Subscribe Topic Exception object's attributes after being created, and the request metadata.
-     * @result SempMetaOnlyResponse The error response.
+     * @returns MsgVpnAclProfileSubscribeExceptionResponse The Subscribe Topic Exception object's attributes after being created, and the request metadata.
+     * @returns SempMetaOnlyResponse The error response.
      * @throws ApiError
      */
     public static async createMsgVpnAclProfileSubscribeException(
@@ -4041,7 +4041,7 @@ export class AllService {
      * @param aclProfileName The name of the ACL Profile.
      * @param topicSyntax The syntax of the topic for the exception to the default action taken.
      * @param subscribeExceptionTopic The topic for the exception to the default action taken. May include wildcard characters.
-     * @result SempMetaOnlyResponse The request metadata.
+     * @returns SempMetaOnlyResponse The request metadata.
      * @throws ApiError
      */
     public static async deleteMsgVpnAclProfileSubscribeException(
@@ -4083,8 +4083,8 @@ export class AllService {
      * @param subscribeExceptionTopic The topic for the exception to the default action taken. May include wildcard characters.
      * @param opaquePassword Accept opaque attributes in the request or return opaque attributes in the response, encrypted with the specified password. See that documentation for the `opaquePassword` parameter.
      * @param select Include in the response only selected attributes of the object, or exclude from the response selected attributes of the object. See the documentation for the `select` parameter.
-     * @result MsgVpnAclProfileSubscribeExceptionResponse The Subscribe Topic Exception object's attributes, and the request metadata.
-     * @result SempMetaOnlyResponse The error response.
+     * @returns MsgVpnAclProfileSubscribeExceptionResponse The Subscribe Topic Exception object's attributes, and the request metadata.
+     * @returns SempMetaOnlyResponse The error response.
      * @throws ApiError
      */
     public static async getMsgVpnAclProfileSubscribeException(
@@ -4132,8 +4132,8 @@ export class AllService {
      * @param opaquePassword Accept opaque attributes in the request or return opaque attributes in the response, encrypted with the specified password. See that documentation for the `opaquePassword` parameter.
      * @param where Include in the response only objects where certain conditions are true. See the the documentation for the `where` parameter.
      * @param select Include in the response only selected attributes of the object, or exclude from the response selected attributes of the object. See the documentation for the `select` parameter.
-     * @result MsgVpnAclProfileSubscribeShareNameExceptionsResponse The list of Subscribe Share Name Exception objects' attributes, and the request metadata.
-     * @result SempMetaOnlyResponse The error response.
+     * @returns MsgVpnAclProfileSubscribeShareNameExceptionsResponse The list of Subscribe Share Name Exception objects' attributes, and the request metadata.
+     * @returns SempMetaOnlyResponse The error response.
      * @throws ApiError
      */
     public static async getMsgVpnAclProfileSubscribeShareNameExceptions(
@@ -4183,8 +4183,8 @@ export class AllService {
      * @param body The Subscribe Share Name Exception object's attributes.
      * @param opaquePassword Accept opaque attributes in the request or return opaque attributes in the response, encrypted with the specified password. See that documentation for the `opaquePassword` parameter.
      * @param select Include in the response only selected attributes of the object, or exclude from the response selected attributes of the object. See the documentation for the `select` parameter.
-     * @result MsgVpnAclProfileSubscribeShareNameExceptionResponse The Subscribe Share Name Exception object's attributes after being created, and the request metadata.
-     * @result SempMetaOnlyResponse The error response.
+     * @returns MsgVpnAclProfileSubscribeShareNameExceptionResponse The Subscribe Share Name Exception object's attributes after being created, and the request metadata.
+     * @returns SempMetaOnlyResponse The error response.
      * @throws ApiError
      */
     public static async createMsgVpnAclProfileSubscribeShareNameException(
@@ -4219,7 +4219,7 @@ export class AllService {
      * @param aclProfileName The name of the ACL Profile.
      * @param subscribeShareNameExceptionSyntax The syntax of the subscribe share name for the exception to the default action taken.
      * @param subscribeShareNameException The subscribe share name exception to the default action taken. May include wildcard characters.
-     * @result SempMetaOnlyResponse The request metadata.
+     * @returns SempMetaOnlyResponse The request metadata.
      * @throws ApiError
      */
     public static async deleteMsgVpnAclProfileSubscribeShareNameException(
@@ -4260,8 +4260,8 @@ export class AllService {
      * @param subscribeShareNameException The subscribe share name exception to the default action taken. May include wildcard characters.
      * @param opaquePassword Accept opaque attributes in the request or return opaque attributes in the response, encrypted with the specified password. See that documentation for the `opaquePassword` parameter.
      * @param select Include in the response only selected attributes of the object, or exclude from the response selected attributes of the object. See the documentation for the `select` parameter.
-     * @result MsgVpnAclProfileSubscribeShareNameExceptionResponse The Subscribe Share Name Exception object's attributes, and the request metadata.
-     * @result SempMetaOnlyResponse The error response.
+     * @returns MsgVpnAclProfileSubscribeShareNameExceptionResponse The Subscribe Share Name Exception object's attributes, and the request metadata.
+     * @returns SempMetaOnlyResponse The error response.
      * @throws ApiError
      */
     public static async getMsgVpnAclProfileSubscribeShareNameException(
@@ -4309,8 +4309,8 @@ export class AllService {
      * @param opaquePassword Accept opaque attributes in the request or return opaque attributes in the response, encrypted with the specified password. See that documentation for the `opaquePassword` parameter.
      * @param where Include in the response only objects where certain conditions are true. See the the documentation for the `where` parameter.
      * @param select Include in the response only selected attributes of the object, or exclude from the response selected attributes of the object. See the documentation for the `select` parameter.
-     * @result MsgVpnAclProfileSubscribeTopicExceptionsResponse The list of Subscribe Topic Exception objects' attributes, and the request metadata.
-     * @result SempMetaOnlyResponse The error response.
+     * @returns MsgVpnAclProfileSubscribeTopicExceptionsResponse The list of Subscribe Topic Exception objects' attributes, and the request metadata.
+     * @returns SempMetaOnlyResponse The error response.
      * @throws ApiError
      */
     public static async getMsgVpnAclProfileSubscribeTopicExceptions(
@@ -4360,8 +4360,8 @@ export class AllService {
      * @param body The Subscribe Topic Exception object's attributes.
      * @param opaquePassword Accept opaque attributes in the request or return opaque attributes in the response, encrypted with the specified password. See that documentation for the `opaquePassword` parameter.
      * @param select Include in the response only selected attributes of the object, or exclude from the response selected attributes of the object. See the documentation for the `select` parameter.
-     * @result MsgVpnAclProfileSubscribeTopicExceptionResponse The Subscribe Topic Exception object's attributes after being created, and the request metadata.
-     * @result SempMetaOnlyResponse The error response.
+     * @returns MsgVpnAclProfileSubscribeTopicExceptionResponse The Subscribe Topic Exception object's attributes after being created, and the request metadata.
+     * @returns SempMetaOnlyResponse The error response.
      * @throws ApiError
      */
     public static async createMsgVpnAclProfileSubscribeTopicException(
@@ -4396,7 +4396,7 @@ export class AllService {
      * @param aclProfileName The name of the ACL Profile.
      * @param subscribeTopicExceptionSyntax The syntax of the topic for the exception to the default action taken.
      * @param subscribeTopicException The topic for the exception to the default action taken. May include wildcard characters.
-     * @result SempMetaOnlyResponse The request metadata.
+     * @returns SempMetaOnlyResponse The request metadata.
      * @throws ApiError
      */
     public static async deleteMsgVpnAclProfileSubscribeTopicException(
@@ -4437,8 +4437,8 @@ export class AllService {
      * @param subscribeTopicException The topic for the exception to the default action taken. May include wildcard characters.
      * @param opaquePassword Accept opaque attributes in the request or return opaque attributes in the response, encrypted with the specified password. See that documentation for the `opaquePassword` parameter.
      * @param select Include in the response only selected attributes of the object, or exclude from the response selected attributes of the object. See the documentation for the `select` parameter.
-     * @result MsgVpnAclProfileSubscribeTopicExceptionResponse The Subscribe Topic Exception object's attributes, and the request metadata.
-     * @result SempMetaOnlyResponse The error response.
+     * @returns MsgVpnAclProfileSubscribeTopicExceptionResponse The Subscribe Topic Exception object's attributes, and the request metadata.
+     * @returns SempMetaOnlyResponse The error response.
      * @throws ApiError
      */
     public static async getMsgVpnAclProfileSubscribeTopicException(
@@ -4484,8 +4484,8 @@ export class AllService {
      * @param opaquePassword Accept opaque attributes in the request or return opaque attributes in the response, encrypted with the specified password. See that documentation for the `opaquePassword` parameter.
      * @param where Include in the response only objects where certain conditions are true. See the the documentation for the `where` parameter.
      * @param select Include in the response only selected attributes of the object, or exclude from the response selected attributes of the object. See the documentation for the `select` parameter.
-     * @result MsgVpnAuthenticationOauthProvidersResponse The list of OAuth Provider objects' attributes, and the request metadata.
-     * @result SempMetaOnlyResponse The error response.
+     * @returns MsgVpnAuthenticationOauthProvidersResponse The list of OAuth Provider objects' attributes, and the request metadata.
+     * @returns SempMetaOnlyResponse The error response.
      * @throws ApiError
      */
     public static async getMsgVpnAuthenticationOauthProviders(
@@ -4532,8 +4532,8 @@ export class AllService {
      * @param body The OAuth Provider object's attributes.
      * @param opaquePassword Accept opaque attributes in the request or return opaque attributes in the response, encrypted with the specified password. See that documentation for the `opaquePassword` parameter.
      * @param select Include in the response only selected attributes of the object, or exclude from the response selected attributes of the object. See the documentation for the `select` parameter.
-     * @result MsgVpnAuthenticationOauthProviderResponse The OAuth Provider object's attributes after being created, and the request metadata.
-     * @result SempMetaOnlyResponse The error response.
+     * @returns MsgVpnAuthenticationOauthProviderResponse The OAuth Provider object's attributes after being created, and the request metadata.
+     * @returns SempMetaOnlyResponse The error response.
      * @throws ApiError
      */
     public static async createMsgVpnAuthenticationOauthProvider(
@@ -4565,7 +4565,7 @@ export class AllService {
      * This has been available since 2.13.
      * @param msgVpnName The name of the Message VPN.
      * @param oauthProviderName The name of the OAuth Provider.
-     * @result SempMetaOnlyResponse The request metadata.
+     * @returns SempMetaOnlyResponse The request metadata.
      * @throws ApiError
      */
     public static async deleteMsgVpnAuthenticationOauthProvider(
@@ -4601,8 +4601,8 @@ export class AllService {
      * @param oauthProviderName The name of the OAuth Provider.
      * @param opaquePassword Accept opaque attributes in the request or return opaque attributes in the response, encrypted with the specified password. See that documentation for the `opaquePassword` parameter.
      * @param select Include in the response only selected attributes of the object, or exclude from the response selected attributes of the object. See the documentation for the `select` parameter.
-     * @result MsgVpnAuthenticationOauthProviderResponse The OAuth Provider object's attributes, and the request metadata.
-     * @result SempMetaOnlyResponse The error response.
+     * @returns MsgVpnAuthenticationOauthProviderResponse The OAuth Provider object's attributes, and the request metadata.
+     * @returns SempMetaOnlyResponse The error response.
      * @throws ApiError
      */
     public static async getMsgVpnAuthenticationOauthProvider(
@@ -4645,8 +4645,8 @@ export class AllService {
      * @param body The OAuth Provider object's attributes.
      * @param opaquePassword Accept opaque attributes in the request or return opaque attributes in the response, encrypted with the specified password. See that documentation for the `opaquePassword` parameter.
      * @param select Include in the response only selected attributes of the object, or exclude from the response selected attributes of the object. See the documentation for the `select` parameter.
-     * @result MsgVpnAuthenticationOauthProviderResponse The OAuth Provider object's attributes after being updated, and the request metadata.
-     * @result SempMetaOnlyResponse The error response.
+     * @returns MsgVpnAuthenticationOauthProviderResponse The OAuth Provider object's attributes after being updated, and the request metadata.
+     * @returns SempMetaOnlyResponse The error response.
      * @throws ApiError
      */
     public static async updateMsgVpnAuthenticationOauthProvider(
@@ -4691,8 +4691,8 @@ export class AllService {
      * @param body The OAuth Provider object's attributes.
      * @param opaquePassword Accept opaque attributes in the request or return opaque attributes in the response, encrypted with the specified password. See that documentation for the `opaquePassword` parameter.
      * @param select Include in the response only selected attributes of the object, or exclude from the response selected attributes of the object. See the documentation for the `select` parameter.
-     * @result MsgVpnAuthenticationOauthProviderResponse The OAuth Provider object's attributes after being replaced, and the request metadata.
-     * @result SempMetaOnlyResponse The error response.
+     * @returns MsgVpnAuthenticationOauthProviderResponse The OAuth Provider object's attributes after being replaced, and the request metadata.
+     * @returns SempMetaOnlyResponse The error response.
      * @throws ApiError
      */
     public static async replaceMsgVpnAuthenticationOauthProvider(
@@ -4739,8 +4739,8 @@ export class AllService {
      * @param opaquePassword Accept opaque attributes in the request or return opaque attributes in the response, encrypted with the specified password. See that documentation for the `opaquePassword` parameter.
      * @param where Include in the response only objects where certain conditions are true. See the the documentation for the `where` parameter.
      * @param select Include in the response only selected attributes of the object, or exclude from the response selected attributes of the object. See the documentation for the `select` parameter.
-     * @result MsgVpnAuthorizationGroupsResponse The list of LDAP Authorization Group objects' attributes, and the request metadata.
-     * @result SempMetaOnlyResponse The error response.
+     * @returns MsgVpnAuthorizationGroupsResponse The list of LDAP Authorization Group objects' attributes, and the request metadata.
+     * @returns SempMetaOnlyResponse The error response.
      * @throws ApiError
      */
     public static async getMsgVpnAuthorizationGroups(
@@ -4798,8 +4798,8 @@ export class AllService {
      * @param body The LDAP Authorization Group object's attributes.
      * @param opaquePassword Accept opaque attributes in the request or return opaque attributes in the response, encrypted with the specified password. See that documentation for the `opaquePassword` parameter.
      * @param select Include in the response only selected attributes of the object, or exclude from the response selected attributes of the object. See the documentation for the `select` parameter.
-     * @result MsgVpnAuthorizationGroupResponse The LDAP Authorization Group object's attributes after being created, and the request metadata.
-     * @result SempMetaOnlyResponse The error response.
+     * @returns MsgVpnAuthorizationGroupResponse The LDAP Authorization Group object's attributes after being created, and the request metadata.
+     * @returns SempMetaOnlyResponse The error response.
      * @throws ApiError
      */
     public static async createMsgVpnAuthorizationGroup(
@@ -4831,7 +4831,7 @@ export class AllService {
      * This has been available since 2.0.
      * @param msgVpnName The name of the Message VPN.
      * @param authorizationGroupName The name of the LDAP Authorization Group. Special care is needed if the group name contains special characters such as '#', '+', ';', '=' as the value of the group name returned from the LDAP server might prepend those characters with '\'. For example a group name called 'test#,lab,com' will be returned from the LDAP server as 'test\#,lab,com'.
-     * @result SempMetaOnlyResponse The request metadata.
+     * @returns SempMetaOnlyResponse The request metadata.
      * @throws ApiError
      */
     public static async deleteMsgVpnAuthorizationGroup(
@@ -4868,8 +4868,8 @@ export class AllService {
      * @param authorizationGroupName The name of the LDAP Authorization Group. Special care is needed if the group name contains special characters such as '#', '+', ';', '=' as the value of the group name returned from the LDAP server might prepend those characters with '\'. For example a group name called 'test#,lab,com' will be returned from the LDAP server as 'test\#,lab,com'.
      * @param opaquePassword Accept opaque attributes in the request or return opaque attributes in the response, encrypted with the specified password. See that documentation for the `opaquePassword` parameter.
      * @param select Include in the response only selected attributes of the object, or exclude from the response selected attributes of the object. See the documentation for the `select` parameter.
-     * @result MsgVpnAuthorizationGroupResponse The LDAP Authorization Group object's attributes, and the request metadata.
-     * @result SempMetaOnlyResponse The error response.
+     * @returns MsgVpnAuthorizationGroupResponse The LDAP Authorization Group object's attributes, and the request metadata.
+     * @returns SempMetaOnlyResponse The error response.
      * @throws ApiError
      */
     public static async getMsgVpnAuthorizationGroup(
@@ -4925,8 +4925,8 @@ export class AllService {
      * @param body The LDAP Authorization Group object's attributes.
      * @param opaquePassword Accept opaque attributes in the request or return opaque attributes in the response, encrypted with the specified password. See that documentation for the `opaquePassword` parameter.
      * @param select Include in the response only selected attributes of the object, or exclude from the response selected attributes of the object. See the documentation for the `select` parameter.
-     * @result MsgVpnAuthorizationGroupResponse The LDAP Authorization Group object's attributes after being updated, and the request metadata.
-     * @result SempMetaOnlyResponse The error response.
+     * @returns MsgVpnAuthorizationGroupResponse The LDAP Authorization Group object's attributes after being updated, and the request metadata.
+     * @returns SempMetaOnlyResponse The error response.
      * @throws ApiError
      */
     public static async updateMsgVpnAuthorizationGroup(
@@ -4984,8 +4984,8 @@ export class AllService {
      * @param body The LDAP Authorization Group object's attributes.
      * @param opaquePassword Accept opaque attributes in the request or return opaque attributes in the response, encrypted with the specified password. See that documentation for the `opaquePassword` parameter.
      * @param select Include in the response only selected attributes of the object, or exclude from the response selected attributes of the object. See the documentation for the `select` parameter.
-     * @result MsgVpnAuthorizationGroupResponse The LDAP Authorization Group object's attributes after being replaced, and the request metadata.
-     * @result SempMetaOnlyResponse The error response.
+     * @returns MsgVpnAuthorizationGroupResponse The LDAP Authorization Group object's attributes after being replaced, and the request metadata.
+     * @returns SempMetaOnlyResponse The error response.
      * @throws ApiError
      */
     public static async replaceMsgVpnAuthorizationGroup(
@@ -5034,8 +5034,8 @@ export class AllService {
      * @param opaquePassword Accept opaque attributes in the request or return opaque attributes in the response, encrypted with the specified password. See that documentation for the `opaquePassword` parameter.
      * @param where Include in the response only objects where certain conditions are true. See the the documentation for the `where` parameter.
      * @param select Include in the response only selected attributes of the object, or exclude from the response selected attributes of the object. See the documentation for the `select` parameter.
-     * @result MsgVpnBridgesResponse The list of Bridge objects' attributes, and the request metadata.
-     * @result SempMetaOnlyResponse The error response.
+     * @returns MsgVpnBridgesResponse The list of Bridge objects' attributes, and the request metadata.
+     * @returns SempMetaOnlyResponse The error response.
      * @throws ApiError
      */
     public static async getMsgVpnBridges(
@@ -5096,8 +5096,8 @@ export class AllService {
      * @param body The Bridge object's attributes.
      * @param opaquePassword Accept opaque attributes in the request or return opaque attributes in the response, encrypted with the specified password. See that documentation for the `opaquePassword` parameter.
      * @param select Include in the response only selected attributes of the object, or exclude from the response selected attributes of the object. See the documentation for the `select` parameter.
-     * @result MsgVpnBridgeResponse The Bridge object's attributes after being created, and the request metadata.
-     * @result SempMetaOnlyResponse The error response.
+     * @returns MsgVpnBridgeResponse The Bridge object's attributes after being created, and the request metadata.
+     * @returns SempMetaOnlyResponse The error response.
      * @throws ApiError
      */
     public static async createMsgVpnBridge(
@@ -5130,7 +5130,7 @@ export class AllService {
      * @param msgVpnName The name of the Message VPN.
      * @param bridgeName The name of the Bridge.
      * @param bridgeVirtualRouter The virtual router of the Bridge.
-     * @result SempMetaOnlyResponse The request metadata.
+     * @returns SempMetaOnlyResponse The request metadata.
      * @throws ApiError
      */
     public static async deleteMsgVpnBridge(
@@ -5171,8 +5171,8 @@ export class AllService {
      * @param bridgeVirtualRouter The virtual router of the Bridge.
      * @param opaquePassword Accept opaque attributes in the request or return opaque attributes in the response, encrypted with the specified password. See that documentation for the `opaquePassword` parameter.
      * @param select Include in the response only selected attributes of the object, or exclude from the response selected attributes of the object. See the documentation for the `select` parameter.
-     * @result MsgVpnBridgeResponse The Bridge object's attributes, and the request metadata.
-     * @result SempMetaOnlyResponse The error response.
+     * @returns MsgVpnBridgeResponse The Bridge object's attributes, and the request metadata.
+     * @returns SempMetaOnlyResponse The error response.
      * @throws ApiError
      */
     public static async getMsgVpnBridge(
@@ -5235,8 +5235,8 @@ export class AllService {
      * @param body The Bridge object's attributes.
      * @param opaquePassword Accept opaque attributes in the request or return opaque attributes in the response, encrypted with the specified password. See that documentation for the `opaquePassword` parameter.
      * @param select Include in the response only selected attributes of the object, or exclude from the response selected attributes of the object. See the documentation for the `select` parameter.
-     * @result MsgVpnBridgeResponse The Bridge object's attributes after being updated, and the request metadata.
-     * @result SempMetaOnlyResponse The error response.
+     * @returns MsgVpnBridgeResponse The Bridge object's attributes after being updated, and the request metadata.
+     * @returns SempMetaOnlyResponse The error response.
      * @throws ApiError
      */
     public static async updateMsgVpnBridge(
@@ -5301,8 +5301,8 @@ export class AllService {
      * @param body The Bridge object's attributes.
      * @param opaquePassword Accept opaque attributes in the request or return opaque attributes in the response, encrypted with the specified password. See that documentation for the `opaquePassword` parameter.
      * @param select Include in the response only selected attributes of the object, or exclude from the response selected attributes of the object. See the documentation for the `select` parameter.
-     * @result MsgVpnBridgeResponse The Bridge object's attributes after being replaced, and the request metadata.
-     * @result SempMetaOnlyResponse The error response.
+     * @returns MsgVpnBridgeResponse The Bridge object's attributes after being replaced, and the request metadata.
+     * @returns SempMetaOnlyResponse The error response.
      * @throws ApiError
      */
     public static async replaceMsgVpnBridge(
@@ -5353,8 +5353,8 @@ export class AllService {
      * @param opaquePassword Accept opaque attributes in the request or return opaque attributes in the response, encrypted with the specified password. See that documentation for the `opaquePassword` parameter.
      * @param where Include in the response only objects where certain conditions are true. See the the documentation for the `where` parameter.
      * @param select Include in the response only selected attributes of the object, or exclude from the response selected attributes of the object. See the documentation for the `select` parameter.
-     * @result MsgVpnBridgeRemoteMsgVpnsResponse The list of Remote Message VPN objects' attributes, and the request metadata.
-     * @result SempMetaOnlyResponse The error response.
+     * @returns MsgVpnBridgeRemoteMsgVpnsResponse The list of Remote Message VPN objects' attributes, and the request metadata.
+     * @returns SempMetaOnlyResponse The error response.
      * @throws ApiError
      */
     public static async getMsgVpnBridgeRemoteMsgVpns(
@@ -5415,8 +5415,8 @@ export class AllService {
      * @param body The Remote Message VPN object's attributes.
      * @param opaquePassword Accept opaque attributes in the request or return opaque attributes in the response, encrypted with the specified password. See that documentation for the `opaquePassword` parameter.
      * @param select Include in the response only selected attributes of the object, or exclude from the response selected attributes of the object. See the documentation for the `select` parameter.
-     * @result MsgVpnBridgeRemoteMsgVpnResponse The Remote Message VPN object's attributes after being created, and the request metadata.
-     * @result SempMetaOnlyResponse The error response.
+     * @returns MsgVpnBridgeRemoteMsgVpnResponse The Remote Message VPN object's attributes after being created, and the request metadata.
+     * @returns SempMetaOnlyResponse The error response.
      * @throws ApiError
      */
     public static async createMsgVpnBridgeRemoteMsgVpn(
@@ -5454,7 +5454,7 @@ export class AllService {
      * @param remoteMsgVpnName The name of the remote Message VPN.
      * @param remoteMsgVpnLocation The location of the remote Message VPN as either an FQDN with port, IP address with port, or virtual router name (starting with "v:").
      * @param remoteMsgVpnInterface The physical interface on the local Message VPN host for connecting to the remote Message VPN. By default, an interface is chosen automatically (recommended), but if specified, `remoteMsgVpnLocation` must not be a virtual router name.
-     * @result SempMetaOnlyResponse The request metadata.
+     * @returns SempMetaOnlyResponse The request metadata.
      * @throws ApiError
      */
     public static async deleteMsgVpnBridgeRemoteMsgVpn(
@@ -5502,8 +5502,8 @@ export class AllService {
      * @param remoteMsgVpnInterface The physical interface on the local Message VPN host for connecting to the remote Message VPN. By default, an interface is chosen automatically (recommended), but if specified, `remoteMsgVpnLocation` must not be a virtual router name.
      * @param opaquePassword Accept opaque attributes in the request or return opaque attributes in the response, encrypted with the specified password. See that documentation for the `opaquePassword` parameter.
      * @param select Include in the response only selected attributes of the object, or exclude from the response selected attributes of the object. See the documentation for the `select` parameter.
-     * @result MsgVpnBridgeRemoteMsgVpnResponse The Remote Message VPN object's attributes, and the request metadata.
-     * @result SempMetaOnlyResponse The error response.
+     * @returns MsgVpnBridgeRemoteMsgVpnResponse The Remote Message VPN object's attributes, and the request metadata.
+     * @returns SempMetaOnlyResponse The error response.
      * @throws ApiError
      */
     public static async getMsgVpnBridgeRemoteMsgVpn(
@@ -5572,8 +5572,8 @@ export class AllService {
      * @param body The Remote Message VPN object's attributes.
      * @param opaquePassword Accept opaque attributes in the request or return opaque attributes in the response, encrypted with the specified password. See that documentation for the `opaquePassword` parameter.
      * @param select Include in the response only selected attributes of the object, or exclude from the response selected attributes of the object. See the documentation for the `select` parameter.
-     * @result MsgVpnBridgeRemoteMsgVpnResponse The Remote Message VPN object's attributes after being updated, and the request metadata.
-     * @result SempMetaOnlyResponse The error response.
+     * @returns MsgVpnBridgeRemoteMsgVpnResponse The Remote Message VPN object's attributes after being updated, and the request metadata.
+     * @returns SempMetaOnlyResponse The error response.
      * @throws ApiError
      */
     public static async updateMsgVpnBridgeRemoteMsgVpn(
@@ -5644,8 +5644,8 @@ export class AllService {
      * @param body The Remote Message VPN object's attributes.
      * @param opaquePassword Accept opaque attributes in the request or return opaque attributes in the response, encrypted with the specified password. See that documentation for the `opaquePassword` parameter.
      * @param select Include in the response only selected attributes of the object, or exclude from the response selected attributes of the object. See the documentation for the `select` parameter.
-     * @result MsgVpnBridgeRemoteMsgVpnResponse The Remote Message VPN object's attributes after being replaced, and the request metadata.
-     * @result SempMetaOnlyResponse The error response.
+     * @returns MsgVpnBridgeRemoteMsgVpnResponse The Remote Message VPN object's attributes after being replaced, and the request metadata.
+     * @returns SempMetaOnlyResponse The error response.
      * @throws ApiError
      */
     public static async replaceMsgVpnBridgeRemoteMsgVpn(
@@ -5698,8 +5698,8 @@ export class AllService {
      * @param opaquePassword Accept opaque attributes in the request or return opaque attributes in the response, encrypted with the specified password. See that documentation for the `opaquePassword` parameter.
      * @param where Include in the response only objects where certain conditions are true. See the the documentation for the `where` parameter.
      * @param select Include in the response only selected attributes of the object, or exclude from the response selected attributes of the object. See the documentation for the `select` parameter.
-     * @result MsgVpnBridgeRemoteSubscriptionsResponse The list of Remote Subscription objects' attributes, and the request metadata.
-     * @result SempMetaOnlyResponse The error response.
+     * @returns MsgVpnBridgeRemoteSubscriptionsResponse The list of Remote Subscription objects' attributes, and the request metadata.
+     * @returns SempMetaOnlyResponse The error response.
      * @throws ApiError
      */
     public static async getMsgVpnBridgeRemoteSubscriptions(
@@ -5752,8 +5752,8 @@ export class AllService {
      * @param body The Remote Subscription object's attributes.
      * @param opaquePassword Accept opaque attributes in the request or return opaque attributes in the response, encrypted with the specified password. See that documentation for the `opaquePassword` parameter.
      * @param select Include in the response only selected attributes of the object, or exclude from the response selected attributes of the object. See the documentation for the `select` parameter.
-     * @result MsgVpnBridgeRemoteSubscriptionResponse The Remote Subscription object's attributes after being created, and the request metadata.
-     * @result SempMetaOnlyResponse The error response.
+     * @returns MsgVpnBridgeRemoteSubscriptionResponse The Remote Subscription object's attributes after being created, and the request metadata.
+     * @returns SempMetaOnlyResponse The error response.
      * @throws ApiError
      */
     public static async createMsgVpnBridgeRemoteSubscription(
@@ -5789,7 +5789,7 @@ export class AllService {
      * @param bridgeName The name of the Bridge.
      * @param bridgeVirtualRouter The virtual router of the Bridge.
      * @param remoteSubscriptionTopic The topic of the Bridge remote subscription.
-     * @result SempMetaOnlyResponse The request metadata.
+     * @returns SempMetaOnlyResponse The request metadata.
      * @throws ApiError
      */
     public static async deleteMsgVpnBridgeRemoteSubscription(
@@ -5830,8 +5830,8 @@ export class AllService {
      * @param remoteSubscriptionTopic The topic of the Bridge remote subscription.
      * @param opaquePassword Accept opaque attributes in the request or return opaque attributes in the response, encrypted with the specified password. See that documentation for the `opaquePassword` parameter.
      * @param select Include in the response only selected attributes of the object, or exclude from the response selected attributes of the object. See the documentation for the `select` parameter.
-     * @result MsgVpnBridgeRemoteSubscriptionResponse The Remote Subscription object's attributes, and the request metadata.
-     * @result SempMetaOnlyResponse The error response.
+     * @returns MsgVpnBridgeRemoteSubscriptionResponse The Remote Subscription object's attributes, and the request metadata.
+     * @returns SempMetaOnlyResponse The error response.
      * @throws ApiError
      */
     public static async getMsgVpnBridgeRemoteSubscription(
@@ -5879,8 +5879,8 @@ export class AllService {
      * @param opaquePassword Accept opaque attributes in the request or return opaque attributes in the response, encrypted with the specified password. See that documentation for the `opaquePassword` parameter.
      * @param where Include in the response only objects where certain conditions are true. See the the documentation for the `where` parameter.
      * @param select Include in the response only selected attributes of the object, or exclude from the response selected attributes of the object. See the documentation for the `select` parameter.
-     * @result MsgVpnBridgeTlsTrustedCommonNamesResponse The list of Trusted Common Name objects' attributes, and the request metadata.
-     * @result SempMetaOnlyResponse The error response.
+     * @returns MsgVpnBridgeTlsTrustedCommonNamesResponse The list of Trusted Common Name objects' attributes, and the request metadata.
+     * @returns SempMetaOnlyResponse The error response.
      * @throws ApiError
      */
     public static async getMsgVpnBridgeTlsTrustedCommonNames(
@@ -5929,8 +5929,8 @@ export class AllService {
      * @param body The Trusted Common Name object's attributes.
      * @param opaquePassword Accept opaque attributes in the request or return opaque attributes in the response, encrypted with the specified password. See that documentation for the `opaquePassword` parameter.
      * @param select Include in the response only selected attributes of the object, or exclude from the response selected attributes of the object. See the documentation for the `select` parameter.
-     * @result MsgVpnBridgeTlsTrustedCommonNameResponse The Trusted Common Name object's attributes after being created, and the request metadata.
-     * @result SempMetaOnlyResponse The error response.
+     * @returns MsgVpnBridgeTlsTrustedCommonNameResponse The Trusted Common Name object's attributes after being created, and the request metadata.
+     * @returns SempMetaOnlyResponse The error response.
      * @throws ApiError
      */
     public static async createMsgVpnBridgeTlsTrustedCommonName(
@@ -5967,7 +5967,7 @@ export class AllService {
      * @param bridgeName The name of the Bridge.
      * @param bridgeVirtualRouter The virtual router of the Bridge.
      * @param tlsTrustedCommonName The expected trusted common name of the remote certificate.
-     * @result SempMetaOnlyResponse The request metadata.
+     * @returns SempMetaOnlyResponse The request metadata.
      * @throws ApiError
      */
     public static async deleteMsgVpnBridgeTlsTrustedCommonName(
@@ -6009,8 +6009,8 @@ export class AllService {
      * @param tlsTrustedCommonName The expected trusted common name of the remote certificate.
      * @param opaquePassword Accept opaque attributes in the request or return opaque attributes in the response, encrypted with the specified password. See that documentation for the `opaquePassword` parameter.
      * @param select Include in the response only selected attributes of the object, or exclude from the response selected attributes of the object. See the documentation for the `select` parameter.
-     * @result MsgVpnBridgeTlsTrustedCommonNameResponse The Trusted Common Name object's attributes, and the request metadata.
-     * @result SempMetaOnlyResponse The error response.
+     * @returns MsgVpnBridgeTlsTrustedCommonNameResponse The Trusted Common Name object's attributes, and the request metadata.
+     * @returns SempMetaOnlyResponse The error response.
      * @throws ApiError
      */
     public static async getMsgVpnBridgeTlsTrustedCommonName(
@@ -6057,8 +6057,8 @@ export class AllService {
      * @param opaquePassword Accept opaque attributes in the request or return opaque attributes in the response, encrypted with the specified password. See that documentation for the `opaquePassword` parameter.
      * @param where Include in the response only objects where certain conditions are true. See the the documentation for the `where` parameter.
      * @param select Include in the response only selected attributes of the object, or exclude from the response selected attributes of the object. See the documentation for the `select` parameter.
-     * @result MsgVpnClientProfilesResponse The list of Client Profile objects' attributes, and the request metadata.
-     * @result SempMetaOnlyResponse The error response.
+     * @returns MsgVpnClientProfilesResponse The list of Client Profile objects' attributes, and the request metadata.
+     * @returns SempMetaOnlyResponse The error response.
      * @throws ApiError
      */
     public static async getMsgVpnClientProfiles(
@@ -6120,8 +6120,8 @@ export class AllService {
      * @param body The Client Profile object's attributes.
      * @param opaquePassword Accept opaque attributes in the request or return opaque attributes in the response, encrypted with the specified password. See that documentation for the `opaquePassword` parameter.
      * @param select Include in the response only selected attributes of the object, or exclude from the response selected attributes of the object. See the documentation for the `select` parameter.
-     * @result MsgVpnClientProfileResponse The Client Profile object's attributes after being created, and the request metadata.
-     * @result SempMetaOnlyResponse The error response.
+     * @returns MsgVpnClientProfileResponse The Client Profile object's attributes after being created, and the request metadata.
+     * @returns SempMetaOnlyResponse The error response.
      * @throws ApiError
      */
     public static async createMsgVpnClientProfile(
@@ -6153,7 +6153,7 @@ export class AllService {
      * This has been available since 2.0.
      * @param msgVpnName The name of the Message VPN.
      * @param clientProfileName The name of the Client Profile.
-     * @result SempMetaOnlyResponse The request metadata.
+     * @returns SempMetaOnlyResponse The request metadata.
      * @throws ApiError
      */
     public static async deleteMsgVpnClientProfile(
@@ -6190,8 +6190,8 @@ export class AllService {
      * @param clientProfileName The name of the Client Profile.
      * @param opaquePassword Accept opaque attributes in the request or return opaque attributes in the response, encrypted with the specified password. See that documentation for the `opaquePassword` parameter.
      * @param select Include in the response only selected attributes of the object, or exclude from the response selected attributes of the object. See the documentation for the `select` parameter.
-     * @result MsgVpnClientProfileResponse The Client Profile object's attributes, and the request metadata.
-     * @result SempMetaOnlyResponse The error response.
+     * @returns MsgVpnClientProfileResponse The Client Profile object's attributes, and the request metadata.
+     * @returns SempMetaOnlyResponse The error response.
      * @throws ApiError
      */
     public static async getMsgVpnClientProfile(
@@ -6249,8 +6249,8 @@ export class AllService {
      * @param body The Client Profile object's attributes.
      * @param opaquePassword Accept opaque attributes in the request or return opaque attributes in the response, encrypted with the specified password. See that documentation for the `opaquePassword` parameter.
      * @param select Include in the response only selected attributes of the object, or exclude from the response selected attributes of the object. See the documentation for the `select` parameter.
-     * @result MsgVpnClientProfileResponse The Client Profile object's attributes after being updated, and the request metadata.
-     * @result SempMetaOnlyResponse The error response.
+     * @returns MsgVpnClientProfileResponse The Client Profile object's attributes after being updated, and the request metadata.
+     * @returns SempMetaOnlyResponse The error response.
      * @throws ApiError
      */
     public static async updateMsgVpnClientProfile(
@@ -6310,8 +6310,8 @@ export class AllService {
      * @param body The Client Profile object's attributes.
      * @param opaquePassword Accept opaque attributes in the request or return opaque attributes in the response, encrypted with the specified password. See that documentation for the `opaquePassword` parameter.
      * @param select Include in the response only selected attributes of the object, or exclude from the response selected attributes of the object. See the documentation for the `select` parameter.
-     * @result MsgVpnClientProfileResponse The Client Profile object's attributes after being replaced, and the request metadata.
-     * @result SempMetaOnlyResponse The error response.
+     * @returns MsgVpnClientProfileResponse The Client Profile object's attributes after being replaced, and the request metadata.
+     * @returns SempMetaOnlyResponse The error response.
      * @throws ApiError
      */
     public static async replaceMsgVpnClientProfile(
@@ -6357,8 +6357,8 @@ export class AllService {
      * @param opaquePassword Accept opaque attributes in the request or return opaque attributes in the response, encrypted with the specified password. See that documentation for the `opaquePassword` parameter.
      * @param where Include in the response only objects where certain conditions are true. See the the documentation for the `where` parameter.
      * @param select Include in the response only selected attributes of the object, or exclude from the response selected attributes of the object. See the documentation for the `select` parameter.
-     * @result MsgVpnClientUsernamesResponse The list of Client Username objects' attributes, and the request metadata.
-     * @result SempMetaOnlyResponse The error response.
+     * @returns MsgVpnClientUsernamesResponse The list of Client Username objects' attributes, and the request metadata.
+     * @returns SempMetaOnlyResponse The error response.
      * @throws ApiError
      */
     public static async getMsgVpnClientUsernames(
@@ -6405,8 +6405,8 @@ export class AllService {
      * @param body The Client Username object's attributes.
      * @param opaquePassword Accept opaque attributes in the request or return opaque attributes in the response, encrypted with the specified password. See that documentation for the `opaquePassword` parameter.
      * @param select Include in the response only selected attributes of the object, or exclude from the response selected attributes of the object. See the documentation for the `select` parameter.
-     * @result MsgVpnClientUsernameResponse The Client Username object's attributes after being created, and the request metadata.
-     * @result SempMetaOnlyResponse The error response.
+     * @returns MsgVpnClientUsernameResponse The Client Username object's attributes after being created, and the request metadata.
+     * @returns SempMetaOnlyResponse The error response.
      * @throws ApiError
      */
     public static async createMsgVpnClientUsername(
@@ -6438,7 +6438,7 @@ export class AllService {
      * This has been available since 2.0.
      * @param msgVpnName The name of the Message VPN.
      * @param clientUsername The name of the Client Username.
-     * @result SempMetaOnlyResponse The request metadata.
+     * @returns SempMetaOnlyResponse The request metadata.
      * @throws ApiError
      */
     public static async deleteMsgVpnClientUsername(
@@ -6474,8 +6474,8 @@ export class AllService {
      * @param clientUsername The name of the Client Username.
      * @param opaquePassword Accept opaque attributes in the request or return opaque attributes in the response, encrypted with the specified password. See that documentation for the `opaquePassword` parameter.
      * @param select Include in the response only selected attributes of the object, or exclude from the response selected attributes of the object. See the documentation for the `select` parameter.
-     * @result MsgVpnClientUsernameResponse The Client Username object's attributes, and the request metadata.
-     * @result SempMetaOnlyResponse The error response.
+     * @returns MsgVpnClientUsernameResponse The Client Username object's attributes, and the request metadata.
+     * @returns SempMetaOnlyResponse The error response.
      * @throws ApiError
      */
     public static async getMsgVpnClientUsername(
@@ -6520,8 +6520,8 @@ export class AllService {
      * @param body The Client Username object's attributes.
      * @param opaquePassword Accept opaque attributes in the request or return opaque attributes in the response, encrypted with the specified password. See that documentation for the `opaquePassword` parameter.
      * @param select Include in the response only selected attributes of the object, or exclude from the response selected attributes of the object. See the documentation for the `select` parameter.
-     * @result MsgVpnClientUsernameResponse The Client Username object's attributes after being updated, and the request metadata.
-     * @result SempMetaOnlyResponse The error response.
+     * @returns MsgVpnClientUsernameResponse The Client Username object's attributes after being updated, and the request metadata.
+     * @returns SempMetaOnlyResponse The error response.
      * @throws ApiError
      */
     public static async updateMsgVpnClientUsername(
@@ -6568,8 +6568,8 @@ export class AllService {
      * @param body The Client Username object's attributes.
      * @param opaquePassword Accept opaque attributes in the request or return opaque attributes in the response, encrypted with the specified password. See that documentation for the `opaquePassword` parameter.
      * @param select Include in the response only selected attributes of the object, or exclude from the response selected attributes of the object. See the documentation for the `select` parameter.
-     * @result MsgVpnClientUsernameResponse The Client Username object's attributes after being replaced, and the request metadata.
-     * @result SempMetaOnlyResponse The error response.
+     * @returns MsgVpnClientUsernameResponse The Client Username object's attributes after being replaced, and the request metadata.
+     * @returns SempMetaOnlyResponse The error response.
      * @throws ApiError
      */
     public static async replaceMsgVpnClientUsername(
@@ -6614,8 +6614,8 @@ export class AllService {
      * @param opaquePassword Accept opaque attributes in the request or return opaque attributes in the response, encrypted with the specified password. See that documentation for the `opaquePassword` parameter.
      * @param where Include in the response only objects where certain conditions are true. See the the documentation for the `where` parameter.
      * @param select Include in the response only selected attributes of the object, or exclude from the response selected attributes of the object. See the documentation for the `select` parameter.
-     * @result MsgVpnDistributedCachesResponse The list of Distributed Cache objects' attributes, and the request metadata.
-     * @result SempMetaOnlyResponse The error response.
+     * @returns MsgVpnDistributedCachesResponse The list of Distributed Cache objects' attributes, and the request metadata.
+     * @returns SempMetaOnlyResponse The error response.
      * @throws ApiError
      */
     public static async getMsgVpnDistributedCaches(
@@ -6671,8 +6671,8 @@ export class AllService {
      * @param body The Distributed Cache object's attributes.
      * @param opaquePassword Accept opaque attributes in the request or return opaque attributes in the response, encrypted with the specified password. See that documentation for the `opaquePassword` parameter.
      * @param select Include in the response only selected attributes of the object, or exclude from the response selected attributes of the object. See the documentation for the `select` parameter.
-     * @result MsgVpnDistributedCacheResponse The Distributed Cache object's attributes after being created, and the request metadata.
-     * @result SempMetaOnlyResponse The error response.
+     * @returns MsgVpnDistributedCacheResponse The Distributed Cache object's attributes after being created, and the request metadata.
+     * @returns SempMetaOnlyResponse The error response.
      * @throws ApiError
      */
     public static async createMsgVpnDistributedCache(
@@ -6704,7 +6704,7 @@ export class AllService {
      * This has been available since 2.11.
      * @param msgVpnName The name of the Message VPN.
      * @param cacheName The name of the Distributed Cache.
-     * @result SempMetaOnlyResponse The request metadata.
+     * @returns SempMetaOnlyResponse The request metadata.
      * @throws ApiError
      */
     public static async deleteMsgVpnDistributedCache(
@@ -6739,8 +6739,8 @@ export class AllService {
      * @param cacheName The name of the Distributed Cache.
      * @param opaquePassword Accept opaque attributes in the request or return opaque attributes in the response, encrypted with the specified password. See that documentation for the `opaquePassword` parameter.
      * @param select Include in the response only selected attributes of the object, or exclude from the response selected attributes of the object. See the documentation for the `select` parameter.
-     * @result MsgVpnDistributedCacheResponse The Distributed Cache object's attributes, and the request metadata.
-     * @result SempMetaOnlyResponse The error response.
+     * @returns MsgVpnDistributedCacheResponse The Distributed Cache object's attributes, and the request metadata.
+     * @returns SempMetaOnlyResponse The error response.
      * @throws ApiError
      */
     public static async getMsgVpnDistributedCache(
@@ -6792,8 +6792,8 @@ export class AllService {
      * @param body The Distributed Cache object's attributes.
      * @param opaquePassword Accept opaque attributes in the request or return opaque attributes in the response, encrypted with the specified password. See that documentation for the `opaquePassword` parameter.
      * @param select Include in the response only selected attributes of the object, or exclude from the response selected attributes of the object. See the documentation for the `select` parameter.
-     * @result MsgVpnDistributedCacheResponse The Distributed Cache object's attributes after being updated, and the request metadata.
-     * @result SempMetaOnlyResponse The error response.
+     * @returns MsgVpnDistributedCacheResponse The Distributed Cache object's attributes after being updated, and the request metadata.
+     * @returns SempMetaOnlyResponse The error response.
      * @throws ApiError
      */
     public static async updateMsgVpnDistributedCache(
@@ -6847,8 +6847,8 @@ export class AllService {
      * @param body The Distributed Cache object's attributes.
      * @param opaquePassword Accept opaque attributes in the request or return opaque attributes in the response, encrypted with the specified password. See that documentation for the `opaquePassword` parameter.
      * @param select Include in the response only selected attributes of the object, or exclude from the response selected attributes of the object. See the documentation for the `select` parameter.
-     * @result MsgVpnDistributedCacheResponse The Distributed Cache object's attributes after being replaced, and the request metadata.
-     * @result SempMetaOnlyResponse The error response.
+     * @returns MsgVpnDistributedCacheResponse The Distributed Cache object's attributes after being replaced, and the request metadata.
+     * @returns SempMetaOnlyResponse The error response.
      * @throws ApiError
      */
     public static async replaceMsgVpnDistributedCache(
@@ -6895,8 +6895,8 @@ export class AllService {
      * @param opaquePassword Accept opaque attributes in the request or return opaque attributes in the response, encrypted with the specified password. See that documentation for the `opaquePassword` parameter.
      * @param where Include in the response only objects where certain conditions are true. See the the documentation for the `where` parameter.
      * @param select Include in the response only selected attributes of the object, or exclude from the response selected attributes of the object. See the documentation for the `select` parameter.
-     * @result MsgVpnDistributedCacheClustersResponse The list of Cache Cluster objects' attributes, and the request metadata.
-     * @result SempMetaOnlyResponse The error response.
+     * @returns MsgVpnDistributedCacheClustersResponse The list of Cache Cluster objects' attributes, and the request metadata.
+     * @returns SempMetaOnlyResponse The error response.
      * @throws ApiError
      */
     public static async getMsgVpnDistributedCacheClusters(
@@ -6957,8 +6957,8 @@ export class AllService {
      * @param body The Cache Cluster object's attributes.
      * @param opaquePassword Accept opaque attributes in the request or return opaque attributes in the response, encrypted with the specified password. See that documentation for the `opaquePassword` parameter.
      * @param select Include in the response only selected attributes of the object, or exclude from the response selected attributes of the object. See the documentation for the `select` parameter.
-     * @result MsgVpnDistributedCacheClusterResponse The Cache Cluster object's attributes after being created, and the request metadata.
-     * @result SempMetaOnlyResponse The error response.
+     * @returns MsgVpnDistributedCacheClusterResponse The Cache Cluster object's attributes after being created, and the request metadata.
+     * @returns SempMetaOnlyResponse The error response.
      * @throws ApiError
      */
     public static async createMsgVpnDistributedCacheCluster(
@@ -6992,7 +6992,7 @@ export class AllService {
      * @param msgVpnName The name of the Message VPN.
      * @param cacheName The name of the Distributed Cache.
      * @param clusterName The name of the Cache Cluster.
-     * @result SempMetaOnlyResponse The request metadata.
+     * @returns SempMetaOnlyResponse The request metadata.
      * @throws ApiError
      */
     public static async deleteMsgVpnDistributedCacheCluster(
@@ -7030,8 +7030,8 @@ export class AllService {
      * @param clusterName The name of the Cache Cluster.
      * @param opaquePassword Accept opaque attributes in the request or return opaque attributes in the response, encrypted with the specified password. See that documentation for the `opaquePassword` parameter.
      * @param select Include in the response only selected attributes of the object, or exclude from the response selected attributes of the object. See the documentation for the `select` parameter.
-     * @result MsgVpnDistributedCacheClusterResponse The Cache Cluster object's attributes, and the request metadata.
-     * @result SempMetaOnlyResponse The error response.
+     * @returns MsgVpnDistributedCacheClusterResponse The Cache Cluster object's attributes, and the request metadata.
+     * @returns SempMetaOnlyResponse The error response.
      * @throws ApiError
      */
     public static async getMsgVpnDistributedCacheCluster(
@@ -7088,8 +7088,8 @@ export class AllService {
      * @param body The Cache Cluster object's attributes.
      * @param opaquePassword Accept opaque attributes in the request or return opaque attributes in the response, encrypted with the specified password. See that documentation for the `opaquePassword` parameter.
      * @param select Include in the response only selected attributes of the object, or exclude from the response selected attributes of the object. See the documentation for the `select` parameter.
-     * @result MsgVpnDistributedCacheClusterResponse The Cache Cluster object's attributes after being updated, and the request metadata.
-     * @result SempMetaOnlyResponse The error response.
+     * @returns MsgVpnDistributedCacheClusterResponse The Cache Cluster object's attributes after being updated, and the request metadata.
+     * @returns SempMetaOnlyResponse The error response.
      * @throws ApiError
      */
     public static async updateMsgVpnDistributedCacheCluster(
@@ -7148,8 +7148,8 @@ export class AllService {
      * @param body The Cache Cluster object's attributes.
      * @param opaquePassword Accept opaque attributes in the request or return opaque attributes in the response, encrypted with the specified password. See that documentation for the `opaquePassword` parameter.
      * @param select Include in the response only selected attributes of the object, or exclude from the response selected attributes of the object. See the documentation for the `select` parameter.
-     * @result MsgVpnDistributedCacheClusterResponse The Cache Cluster object's attributes after being replaced, and the request metadata.
-     * @result SempMetaOnlyResponse The error response.
+     * @returns MsgVpnDistributedCacheClusterResponse The Cache Cluster object's attributes after being replaced, and the request metadata.
+     * @returns SempMetaOnlyResponse The error response.
      * @throws ApiError
      */
     public static async replaceMsgVpnDistributedCacheCluster(
@@ -7199,8 +7199,8 @@ export class AllService {
      * @param opaquePassword Accept opaque attributes in the request or return opaque attributes in the response, encrypted with the specified password. See that documentation for the `opaquePassword` parameter.
      * @param where Include in the response only objects where certain conditions are true. See the the documentation for the `where` parameter.
      * @param select Include in the response only selected attributes of the object, or exclude from the response selected attributes of the object. See the documentation for the `select` parameter.
-     * @result MsgVpnDistributedCacheClusterGlobalCachingHomeClustersResponse The list of Home Cache Cluster objects' attributes, and the request metadata.
-     * @result SempMetaOnlyResponse The error response.
+     * @returns MsgVpnDistributedCacheClusterGlobalCachingHomeClustersResponse The list of Home Cache Cluster objects' attributes, and the request metadata.
+     * @returns SempMetaOnlyResponse The error response.
      * @throws ApiError
      */
     public static async getMsgVpnDistributedCacheClusterGlobalCachingHomeClusters(
@@ -7252,8 +7252,8 @@ export class AllService {
      * @param body The Home Cache Cluster object's attributes.
      * @param opaquePassword Accept opaque attributes in the request or return opaque attributes in the response, encrypted with the specified password. See that documentation for the `opaquePassword` parameter.
      * @param select Include in the response only selected attributes of the object, or exclude from the response selected attributes of the object. See the documentation for the `select` parameter.
-     * @result MsgVpnDistributedCacheClusterGlobalCachingHomeClusterResponse The Home Cache Cluster object's attributes after being created, and the request metadata.
-     * @result SempMetaOnlyResponse The error response.
+     * @returns MsgVpnDistributedCacheClusterGlobalCachingHomeClusterResponse The Home Cache Cluster object's attributes after being created, and the request metadata.
+     * @returns SempMetaOnlyResponse The error response.
      * @throws ApiError
      */
     public static async createMsgVpnDistributedCacheClusterGlobalCachingHomeCluster(
@@ -7289,7 +7289,7 @@ export class AllService {
      * @param cacheName The name of the Distributed Cache.
      * @param clusterName The name of the Cache Cluster.
      * @param homeClusterName The name of the remote Home Cache Cluster.
-     * @result SempMetaOnlyResponse The request metadata.
+     * @returns SempMetaOnlyResponse The request metadata.
      * @throws ApiError
      */
     public static async deleteMsgVpnDistributedCacheClusterGlobalCachingHomeCluster(
@@ -7330,8 +7330,8 @@ export class AllService {
      * @param homeClusterName The name of the remote Home Cache Cluster.
      * @param opaquePassword Accept opaque attributes in the request or return opaque attributes in the response, encrypted with the specified password. See that documentation for the `opaquePassword` parameter.
      * @param select Include in the response only selected attributes of the object, or exclude from the response selected attributes of the object. See the documentation for the `select` parameter.
-     * @result MsgVpnDistributedCacheClusterGlobalCachingHomeClusterResponse The Home Cache Cluster object's attributes, and the request metadata.
-     * @result SempMetaOnlyResponse The error response.
+     * @returns MsgVpnDistributedCacheClusterGlobalCachingHomeClusterResponse The Home Cache Cluster object's attributes, and the request metadata.
+     * @returns SempMetaOnlyResponse The error response.
      * @throws ApiError
      */
     public static async getMsgVpnDistributedCacheClusterGlobalCachingHomeCluster(
@@ -7382,8 +7382,8 @@ export class AllService {
      * @param opaquePassword Accept opaque attributes in the request or return opaque attributes in the response, encrypted with the specified password. See that documentation for the `opaquePassword` parameter.
      * @param where Include in the response only objects where certain conditions are true. See the the documentation for the `where` parameter.
      * @param select Include in the response only selected attributes of the object, or exclude from the response selected attributes of the object. See the documentation for the `select` parameter.
-     * @result MsgVpnDistributedCacheClusterGlobalCachingHomeClusterTopicPrefixesResponse The list of Topic Prefix objects' attributes, and the request metadata.
-     * @result SempMetaOnlyResponse The error response.
+     * @returns MsgVpnDistributedCacheClusterGlobalCachingHomeClusterTopicPrefixesResponse The list of Topic Prefix objects' attributes, and the request metadata.
+     * @returns SempMetaOnlyResponse The error response.
      * @throws ApiError
      */
     public static async getMsgVpnDistributedCacheClusterGlobalCachingHomeClusterTopicPrefixes(
@@ -7438,8 +7438,8 @@ export class AllService {
      * @param body The Topic Prefix object's attributes.
      * @param opaquePassword Accept opaque attributes in the request or return opaque attributes in the response, encrypted with the specified password. See that documentation for the `opaquePassword` parameter.
      * @param select Include in the response only selected attributes of the object, or exclude from the response selected attributes of the object. See the documentation for the `select` parameter.
-     * @result MsgVpnDistributedCacheClusterGlobalCachingHomeClusterTopicPrefixResponse The Topic Prefix object's attributes after being created, and the request metadata.
-     * @result SempMetaOnlyResponse The error response.
+     * @returns MsgVpnDistributedCacheClusterGlobalCachingHomeClusterTopicPrefixResponse The Topic Prefix object's attributes after being created, and the request metadata.
+     * @returns SempMetaOnlyResponse The error response.
      * @throws ApiError
      */
     public static async createMsgVpnDistributedCacheClusterGlobalCachingHomeClusterTopicPrefix(
@@ -7477,7 +7477,7 @@ export class AllService {
      * @param clusterName The name of the Cache Cluster.
      * @param homeClusterName The name of the remote Home Cache Cluster.
      * @param topicPrefix A topic prefix for global topics available from the remote Home Cache Cluster. A wildcard (/>) is implied at the end of the prefix.
-     * @result SempMetaOnlyResponse The request metadata.
+     * @returns SempMetaOnlyResponse The request metadata.
      * @throws ApiError
      */
     public static async deleteMsgVpnDistributedCacheClusterGlobalCachingHomeClusterTopicPrefix(
@@ -7521,8 +7521,8 @@ export class AllService {
      * @param topicPrefix A topic prefix for global topics available from the remote Home Cache Cluster. A wildcard (/>) is implied at the end of the prefix.
      * @param opaquePassword Accept opaque attributes in the request or return opaque attributes in the response, encrypted with the specified password. See that documentation for the `opaquePassword` parameter.
      * @param select Include in the response only selected attributes of the object, or exclude from the response selected attributes of the object. See the documentation for the `select` parameter.
-     * @result MsgVpnDistributedCacheClusterGlobalCachingHomeClusterTopicPrefixResponse The Topic Prefix object's attributes, and the request metadata.
-     * @result SempMetaOnlyResponse The error response.
+     * @returns MsgVpnDistributedCacheClusterGlobalCachingHomeClusterTopicPrefixResponse The Topic Prefix object's attributes, and the request metadata.
+     * @returns SempMetaOnlyResponse The error response.
      * @throws ApiError
      */
     public static async getMsgVpnDistributedCacheClusterGlobalCachingHomeClusterTopicPrefix(
@@ -7572,8 +7572,8 @@ export class AllService {
      * @param opaquePassword Accept opaque attributes in the request or return opaque attributes in the response, encrypted with the specified password. See that documentation for the `opaquePassword` parameter.
      * @param where Include in the response only objects where certain conditions are true. See the the documentation for the `where` parameter.
      * @param select Include in the response only selected attributes of the object, or exclude from the response selected attributes of the object. See the documentation for the `select` parameter.
-     * @result MsgVpnDistributedCacheClusterInstancesResponse The list of Cache Instance objects' attributes, and the request metadata.
-     * @result SempMetaOnlyResponse The error response.
+     * @returns MsgVpnDistributedCacheClusterInstancesResponse The list of Cache Instance objects' attributes, and the request metadata.
+     * @returns SempMetaOnlyResponse The error response.
      * @throws ApiError
      */
     public static async getMsgVpnDistributedCacheClusterInstances(
@@ -7625,8 +7625,8 @@ export class AllService {
      * @param body The Cache Instance object's attributes.
      * @param opaquePassword Accept opaque attributes in the request or return opaque attributes in the response, encrypted with the specified password. See that documentation for the `opaquePassword` parameter.
      * @param select Include in the response only selected attributes of the object, or exclude from the response selected attributes of the object. See the documentation for the `select` parameter.
-     * @result MsgVpnDistributedCacheClusterInstanceResponse The Cache Instance object's attributes after being created, and the request metadata.
-     * @result SempMetaOnlyResponse The error response.
+     * @returns MsgVpnDistributedCacheClusterInstanceResponse The Cache Instance object's attributes after being created, and the request metadata.
+     * @returns SempMetaOnlyResponse The error response.
      * @throws ApiError
      */
     public static async createMsgVpnDistributedCacheClusterInstance(
@@ -7662,7 +7662,7 @@ export class AllService {
      * @param cacheName The name of the Distributed Cache.
      * @param clusterName The name of the Cache Cluster.
      * @param instanceName The name of the Cache Instance.
-     * @result SempMetaOnlyResponse The request metadata.
+     * @returns SempMetaOnlyResponse The request metadata.
      * @throws ApiError
      */
     public static async deleteMsgVpnDistributedCacheClusterInstance(
@@ -7703,8 +7703,8 @@ export class AllService {
      * @param instanceName The name of the Cache Instance.
      * @param opaquePassword Accept opaque attributes in the request or return opaque attributes in the response, encrypted with the specified password. See that documentation for the `opaquePassword` parameter.
      * @param select Include in the response only selected attributes of the object, or exclude from the response selected attributes of the object. See the documentation for the `select` parameter.
-     * @result MsgVpnDistributedCacheClusterInstanceResponse The Cache Instance object's attributes, and the request metadata.
-     * @result SempMetaOnlyResponse The error response.
+     * @returns MsgVpnDistributedCacheClusterInstanceResponse The Cache Instance object's attributes, and the request metadata.
+     * @returns SempMetaOnlyResponse The error response.
      * @throws ApiError
      */
     public static async getMsgVpnDistributedCacheClusterInstance(
@@ -7752,8 +7752,8 @@ export class AllService {
      * @param body The Cache Instance object's attributes.
      * @param opaquePassword Accept opaque attributes in the request or return opaque attributes in the response, encrypted with the specified password. See that documentation for the `opaquePassword` parameter.
      * @param select Include in the response only selected attributes of the object, or exclude from the response selected attributes of the object. See the documentation for the `select` parameter.
-     * @result MsgVpnDistributedCacheClusterInstanceResponse The Cache Instance object's attributes after being updated, and the request metadata.
-     * @result SempMetaOnlyResponse The error response.
+     * @returns MsgVpnDistributedCacheClusterInstanceResponse The Cache Instance object's attributes after being updated, and the request metadata.
+     * @returns SempMetaOnlyResponse The error response.
      * @throws ApiError
      */
     public static async updateMsgVpnDistributedCacheClusterInstance(
@@ -7803,8 +7803,8 @@ export class AllService {
      * @param body The Cache Instance object's attributes.
      * @param opaquePassword Accept opaque attributes in the request or return opaque attributes in the response, encrypted with the specified password. See that documentation for the `opaquePassword` parameter.
      * @param select Include in the response only selected attributes of the object, or exclude from the response selected attributes of the object. See the documentation for the `select` parameter.
-     * @result MsgVpnDistributedCacheClusterInstanceResponse The Cache Instance object's attributes after being replaced, and the request metadata.
-     * @result SempMetaOnlyResponse The error response.
+     * @returns MsgVpnDistributedCacheClusterInstanceResponse The Cache Instance object's attributes after being replaced, and the request metadata.
+     * @returns SempMetaOnlyResponse The error response.
      * @throws ApiError
      */
     public static async replaceMsgVpnDistributedCacheClusterInstance(
@@ -7855,8 +7855,8 @@ export class AllService {
      * @param opaquePassword Accept opaque attributes in the request or return opaque attributes in the response, encrypted with the specified password. See that documentation for the `opaquePassword` parameter.
      * @param where Include in the response only objects where certain conditions are true. See the the documentation for the `where` parameter.
      * @param select Include in the response only selected attributes of the object, or exclude from the response selected attributes of the object. See the documentation for the `select` parameter.
-     * @result MsgVpnDistributedCacheClusterTopicsResponse The list of Topic objects' attributes, and the request metadata.
-     * @result SempMetaOnlyResponse The error response.
+     * @returns MsgVpnDistributedCacheClusterTopicsResponse The list of Topic objects' attributes, and the request metadata.
+     * @returns SempMetaOnlyResponse The error response.
      * @throws ApiError
      */
     public static async getMsgVpnDistributedCacheClusterTopics(
@@ -7908,8 +7908,8 @@ export class AllService {
      * @param body The Topic object's attributes.
      * @param opaquePassword Accept opaque attributes in the request or return opaque attributes in the response, encrypted with the specified password. See that documentation for the `opaquePassword` parameter.
      * @param select Include in the response only selected attributes of the object, or exclude from the response selected attributes of the object. See the documentation for the `select` parameter.
-     * @result MsgVpnDistributedCacheClusterTopicResponse The Topic object's attributes after being created, and the request metadata.
-     * @result SempMetaOnlyResponse The error response.
+     * @returns MsgVpnDistributedCacheClusterTopicResponse The Topic object's attributes after being created, and the request metadata.
+     * @returns SempMetaOnlyResponse The error response.
      * @throws ApiError
      */
     public static async createMsgVpnDistributedCacheClusterTopic(
@@ -7945,7 +7945,7 @@ export class AllService {
      * @param cacheName The name of the Distributed Cache.
      * @param clusterName The name of the Cache Cluster.
      * @param topic The value of the Topic in the form a/b/c.
-     * @result SempMetaOnlyResponse The request metadata.
+     * @returns SempMetaOnlyResponse The request metadata.
      * @throws ApiError
      */
     public static async deleteMsgVpnDistributedCacheClusterTopic(
@@ -7986,8 +7986,8 @@ export class AllService {
      * @param topic The value of the Topic in the form a/b/c.
      * @param opaquePassword Accept opaque attributes in the request or return opaque attributes in the response, encrypted with the specified password. See that documentation for the `opaquePassword` parameter.
      * @param select Include in the response only selected attributes of the object, or exclude from the response selected attributes of the object. See the documentation for the `select` parameter.
-     * @result MsgVpnDistributedCacheClusterTopicResponse The Topic object's attributes, and the request metadata.
-     * @result SempMetaOnlyResponse The error response.
+     * @returns MsgVpnDistributedCacheClusterTopicResponse The Topic object's attributes, and the request metadata.
+     * @returns SempMetaOnlyResponse The error response.
      * @throws ApiError
      */
     public static async getMsgVpnDistributedCacheClusterTopic(
@@ -8032,8 +8032,8 @@ export class AllService {
      * @param opaquePassword Accept opaque attributes in the request or return opaque attributes in the response, encrypted with the specified password. See that documentation for the `opaquePassword` parameter.
      * @param where Include in the response only objects where certain conditions are true. See the the documentation for the `where` parameter.
      * @param select Include in the response only selected attributes of the object, or exclude from the response selected attributes of the object. See the documentation for the `select` parameter.
-     * @result MsgVpnDmrBridgesResponse The list of DMR Bridge objects' attributes, and the request metadata.
-     * @result SempMetaOnlyResponse The error response.
+     * @returns MsgVpnDmrBridgesResponse The list of DMR Bridge objects' attributes, and the request metadata.
+     * @returns SempMetaOnlyResponse The error response.
      * @throws ApiError
      */
     public static async getMsgVpnDmrBridges(
@@ -8079,8 +8079,8 @@ export class AllService {
      * @param body The DMR Bridge object's attributes.
      * @param opaquePassword Accept opaque attributes in the request or return opaque attributes in the response, encrypted with the specified password. See that documentation for the `opaquePassword` parameter.
      * @param select Include in the response only selected attributes of the object, or exclude from the response selected attributes of the object. See the documentation for the `select` parameter.
-     * @result MsgVpnDmrBridgeResponse The DMR Bridge object's attributes after being created, and the request metadata.
-     * @result SempMetaOnlyResponse The error response.
+     * @returns MsgVpnDmrBridgeResponse The DMR Bridge object's attributes after being created, and the request metadata.
+     * @returns SempMetaOnlyResponse The error response.
      * @throws ApiError
      */
     public static async createMsgVpnDmrBridge(
@@ -8112,7 +8112,7 @@ export class AllService {
      * This has been available since 2.11.
      * @param msgVpnName The name of the Message VPN.
      * @param remoteNodeName The name of the node at the remote end of the DMR Bridge.
-     * @result SempMetaOnlyResponse The request metadata.
+     * @returns SempMetaOnlyResponse The request metadata.
      * @throws ApiError
      */
     public static async deleteMsgVpnDmrBridge(
@@ -8147,8 +8147,8 @@ export class AllService {
      * @param remoteNodeName The name of the node at the remote end of the DMR Bridge.
      * @param opaquePassword Accept opaque attributes in the request or return opaque attributes in the response, encrypted with the specified password. See that documentation for the `opaquePassword` parameter.
      * @param select Include in the response only selected attributes of the object, or exclude from the response selected attributes of the object. See the documentation for the `select` parameter.
-     * @result MsgVpnDmrBridgeResponse The DMR Bridge object's attributes, and the request metadata.
-     * @result SempMetaOnlyResponse The error response.
+     * @returns MsgVpnDmrBridgeResponse The DMR Bridge object's attributes, and the request metadata.
+     * @returns SempMetaOnlyResponse The error response.
      * @throws ApiError
      */
     public static async getMsgVpnDmrBridge(
@@ -8190,8 +8190,8 @@ export class AllService {
      * @param body The DMR Bridge object's attributes.
      * @param opaquePassword Accept opaque attributes in the request or return opaque attributes in the response, encrypted with the specified password. See that documentation for the `opaquePassword` parameter.
      * @param select Include in the response only selected attributes of the object, or exclude from the response selected attributes of the object. See the documentation for the `select` parameter.
-     * @result MsgVpnDmrBridgeResponse The DMR Bridge object's attributes after being updated, and the request metadata.
-     * @result SempMetaOnlyResponse The error response.
+     * @returns MsgVpnDmrBridgeResponse The DMR Bridge object's attributes after being updated, and the request metadata.
+     * @returns SempMetaOnlyResponse The error response.
      * @throws ApiError
      */
     public static async updateMsgVpnDmrBridge(
@@ -8235,8 +8235,8 @@ export class AllService {
      * @param body The DMR Bridge object's attributes.
      * @param opaquePassword Accept opaque attributes in the request or return opaque attributes in the response, encrypted with the specified password. See that documentation for the `opaquePassword` parameter.
      * @param select Include in the response only selected attributes of the object, or exclude from the response selected attributes of the object. See the documentation for the `select` parameter.
-     * @result MsgVpnDmrBridgeResponse The DMR Bridge object's attributes after being replaced, and the request metadata.
-     * @result SempMetaOnlyResponse The error response.
+     * @returns MsgVpnDmrBridgeResponse The DMR Bridge object's attributes after being replaced, and the request metadata.
+     * @returns SempMetaOnlyResponse The error response.
      * @throws ApiError
      */
     public static async replaceMsgVpnDmrBridge(
@@ -8281,8 +8281,8 @@ export class AllService {
      * @param opaquePassword Accept opaque attributes in the request or return opaque attributes in the response, encrypted with the specified password. See that documentation for the `opaquePassword` parameter.
      * @param where Include in the response only objects where certain conditions are true. See the the documentation for the `where` parameter.
      * @param select Include in the response only selected attributes of the object, or exclude from the response selected attributes of the object. See the documentation for the `select` parameter.
-     * @result MsgVpnJndiConnectionFactoriesResponse The list of JNDI Connection Factory objects' attributes, and the request metadata.
-     * @result SempMetaOnlyResponse The error response.
+     * @returns MsgVpnJndiConnectionFactoriesResponse The list of JNDI Connection Factory objects' attributes, and the request metadata.
+     * @returns SempMetaOnlyResponse The error response.
      * @throws ApiError
      */
     public static async getMsgVpnJndiConnectionFactories(
@@ -8328,8 +8328,8 @@ export class AllService {
      * @param body The JNDI Connection Factory object's attributes.
      * @param opaquePassword Accept opaque attributes in the request or return opaque attributes in the response, encrypted with the specified password. See that documentation for the `opaquePassword` parameter.
      * @param select Include in the response only selected attributes of the object, or exclude from the response selected attributes of the object. See the documentation for the `select` parameter.
-     * @result MsgVpnJndiConnectionFactoryResponse The JNDI Connection Factory object's attributes after being created, and the request metadata.
-     * @result SempMetaOnlyResponse The error response.
+     * @returns MsgVpnJndiConnectionFactoryResponse The JNDI Connection Factory object's attributes after being created, and the request metadata.
+     * @returns SempMetaOnlyResponse The error response.
      * @throws ApiError
      */
     public static async createMsgVpnJndiConnectionFactory(
@@ -8361,7 +8361,7 @@ export class AllService {
      * This has been available since 2.2.
      * @param msgVpnName The name of the Message VPN.
      * @param connectionFactoryName The name of the JMS Connection Factory.
-     * @result SempMetaOnlyResponse The request metadata.
+     * @returns SempMetaOnlyResponse The request metadata.
      * @throws ApiError
      */
     public static async deleteMsgVpnJndiConnectionFactory(
@@ -8396,8 +8396,8 @@ export class AllService {
      * @param connectionFactoryName The name of the JMS Connection Factory.
      * @param opaquePassword Accept opaque attributes in the request or return opaque attributes in the response, encrypted with the specified password. See that documentation for the `opaquePassword` parameter.
      * @param select Include in the response only selected attributes of the object, or exclude from the response selected attributes of the object. See the documentation for the `select` parameter.
-     * @result MsgVpnJndiConnectionFactoryResponse The JNDI Connection Factory object's attributes, and the request metadata.
-     * @result SempMetaOnlyResponse The error response.
+     * @returns MsgVpnJndiConnectionFactoryResponse The JNDI Connection Factory object's attributes, and the request metadata.
+     * @returns SempMetaOnlyResponse The error response.
      * @throws ApiError
      */
     public static async getMsgVpnJndiConnectionFactory(
@@ -8439,8 +8439,8 @@ export class AllService {
      * @param body The JNDI Connection Factory object's attributes.
      * @param opaquePassword Accept opaque attributes in the request or return opaque attributes in the response, encrypted with the specified password. See that documentation for the `opaquePassword` parameter.
      * @param select Include in the response only selected attributes of the object, or exclude from the response selected attributes of the object. See the documentation for the `select` parameter.
-     * @result MsgVpnJndiConnectionFactoryResponse The JNDI Connection Factory object's attributes after being updated, and the request metadata.
-     * @result SempMetaOnlyResponse The error response.
+     * @returns MsgVpnJndiConnectionFactoryResponse The JNDI Connection Factory object's attributes after being updated, and the request metadata.
+     * @returns SempMetaOnlyResponse The error response.
      * @throws ApiError
      */
     public static async updateMsgVpnJndiConnectionFactory(
@@ -8484,8 +8484,8 @@ export class AllService {
      * @param body The JNDI Connection Factory object's attributes.
      * @param opaquePassword Accept opaque attributes in the request or return opaque attributes in the response, encrypted with the specified password. See that documentation for the `opaquePassword` parameter.
      * @param select Include in the response only selected attributes of the object, or exclude from the response selected attributes of the object. See the documentation for the `select` parameter.
-     * @result MsgVpnJndiConnectionFactoryResponse The JNDI Connection Factory object's attributes after being replaced, and the request metadata.
-     * @result SempMetaOnlyResponse The error response.
+     * @returns MsgVpnJndiConnectionFactoryResponse The JNDI Connection Factory object's attributes after being replaced, and the request metadata.
+     * @returns SempMetaOnlyResponse The error response.
      * @throws ApiError
      */
     public static async replaceMsgVpnJndiConnectionFactory(
@@ -8530,8 +8530,8 @@ export class AllService {
      * @param opaquePassword Accept opaque attributes in the request or return opaque attributes in the response, encrypted with the specified password. See that documentation for the `opaquePassword` parameter.
      * @param where Include in the response only objects where certain conditions are true. See the the documentation for the `where` parameter.
      * @param select Include in the response only selected attributes of the object, or exclude from the response selected attributes of the object. See the documentation for the `select` parameter.
-     * @result MsgVpnJndiQueuesResponse The list of JNDI Queue objects' attributes, and the request metadata.
-     * @result SempMetaOnlyResponse The error response.
+     * @returns MsgVpnJndiQueuesResponse The list of JNDI Queue objects' attributes, and the request metadata.
+     * @returns SempMetaOnlyResponse The error response.
      * @throws ApiError
      */
     public static async getMsgVpnJndiQueues(
@@ -8577,8 +8577,8 @@ export class AllService {
      * @param body The JNDI Queue object's attributes.
      * @param opaquePassword Accept opaque attributes in the request or return opaque attributes in the response, encrypted with the specified password. See that documentation for the `opaquePassword` parameter.
      * @param select Include in the response only selected attributes of the object, or exclude from the response selected attributes of the object. See the documentation for the `select` parameter.
-     * @result MsgVpnJndiQueueResponse The JNDI Queue object's attributes after being created, and the request metadata.
-     * @result SempMetaOnlyResponse The error response.
+     * @returns MsgVpnJndiQueueResponse The JNDI Queue object's attributes after being created, and the request metadata.
+     * @returns SempMetaOnlyResponse The error response.
      * @throws ApiError
      */
     public static async createMsgVpnJndiQueue(
@@ -8610,7 +8610,7 @@ export class AllService {
      * This has been available since 2.2.
      * @param msgVpnName The name of the Message VPN.
      * @param queueName The JNDI name of the JMS Queue.
-     * @result SempMetaOnlyResponse The request metadata.
+     * @returns SempMetaOnlyResponse The request metadata.
      * @throws ApiError
      */
     public static async deleteMsgVpnJndiQueue(
@@ -8645,8 +8645,8 @@ export class AllService {
      * @param queueName The JNDI name of the JMS Queue.
      * @param opaquePassword Accept opaque attributes in the request or return opaque attributes in the response, encrypted with the specified password. See that documentation for the `opaquePassword` parameter.
      * @param select Include in the response only selected attributes of the object, or exclude from the response selected attributes of the object. See the documentation for the `select` parameter.
-     * @result MsgVpnJndiQueueResponse The JNDI Queue object's attributes, and the request metadata.
-     * @result SempMetaOnlyResponse The error response.
+     * @returns MsgVpnJndiQueueResponse The JNDI Queue object's attributes, and the request metadata.
+     * @returns SempMetaOnlyResponse The error response.
      * @throws ApiError
      */
     public static async getMsgVpnJndiQueue(
@@ -8688,8 +8688,8 @@ export class AllService {
      * @param body The JNDI Queue object's attributes.
      * @param opaquePassword Accept opaque attributes in the request or return opaque attributes in the response, encrypted with the specified password. See that documentation for the `opaquePassword` parameter.
      * @param select Include in the response only selected attributes of the object, or exclude from the response selected attributes of the object. See the documentation for the `select` parameter.
-     * @result MsgVpnJndiQueueResponse The JNDI Queue object's attributes after being updated, and the request metadata.
-     * @result SempMetaOnlyResponse The error response.
+     * @returns MsgVpnJndiQueueResponse The JNDI Queue object's attributes after being updated, and the request metadata.
+     * @returns SempMetaOnlyResponse The error response.
      * @throws ApiError
      */
     public static async updateMsgVpnJndiQueue(
@@ -8733,8 +8733,8 @@ export class AllService {
      * @param body The JNDI Queue object's attributes.
      * @param opaquePassword Accept opaque attributes in the request or return opaque attributes in the response, encrypted with the specified password. See that documentation for the `opaquePassword` parameter.
      * @param select Include in the response only selected attributes of the object, or exclude from the response selected attributes of the object. See the documentation for the `select` parameter.
-     * @result MsgVpnJndiQueueResponse The JNDI Queue object's attributes after being replaced, and the request metadata.
-     * @result SempMetaOnlyResponse The error response.
+     * @returns MsgVpnJndiQueueResponse The JNDI Queue object's attributes after being replaced, and the request metadata.
+     * @returns SempMetaOnlyResponse The error response.
      * @throws ApiError
      */
     public static async replaceMsgVpnJndiQueue(
@@ -8779,8 +8779,8 @@ export class AllService {
      * @param opaquePassword Accept opaque attributes in the request or return opaque attributes in the response, encrypted with the specified password. See that documentation for the `opaquePassword` parameter.
      * @param where Include in the response only objects where certain conditions are true. See the the documentation for the `where` parameter.
      * @param select Include in the response only selected attributes of the object, or exclude from the response selected attributes of the object. See the documentation for the `select` parameter.
-     * @result MsgVpnJndiTopicsResponse The list of JNDI Topic objects' attributes, and the request metadata.
-     * @result SempMetaOnlyResponse The error response.
+     * @returns MsgVpnJndiTopicsResponse The list of JNDI Topic objects' attributes, and the request metadata.
+     * @returns SempMetaOnlyResponse The error response.
      * @throws ApiError
      */
     public static async getMsgVpnJndiTopics(
@@ -8826,8 +8826,8 @@ export class AllService {
      * @param body The JNDI Topic object's attributes.
      * @param opaquePassword Accept opaque attributes in the request or return opaque attributes in the response, encrypted with the specified password. See that documentation for the `opaquePassword` parameter.
      * @param select Include in the response only selected attributes of the object, or exclude from the response selected attributes of the object. See the documentation for the `select` parameter.
-     * @result MsgVpnJndiTopicResponse The JNDI Topic object's attributes after being created, and the request metadata.
-     * @result SempMetaOnlyResponse The error response.
+     * @returns MsgVpnJndiTopicResponse The JNDI Topic object's attributes after being created, and the request metadata.
+     * @returns SempMetaOnlyResponse The error response.
      * @throws ApiError
      */
     public static async createMsgVpnJndiTopic(
@@ -8859,7 +8859,7 @@ export class AllService {
      * This has been available since 2.2.
      * @param msgVpnName The name of the Message VPN.
      * @param topicName The JNDI name of the JMS Topic.
-     * @result SempMetaOnlyResponse The request metadata.
+     * @returns SempMetaOnlyResponse The request metadata.
      * @throws ApiError
      */
     public static async deleteMsgVpnJndiTopic(
@@ -8894,8 +8894,8 @@ export class AllService {
      * @param topicName The JNDI name of the JMS Topic.
      * @param opaquePassword Accept opaque attributes in the request or return opaque attributes in the response, encrypted with the specified password. See that documentation for the `opaquePassword` parameter.
      * @param select Include in the response only selected attributes of the object, or exclude from the response selected attributes of the object. See the documentation for the `select` parameter.
-     * @result MsgVpnJndiTopicResponse The JNDI Topic object's attributes, and the request metadata.
-     * @result SempMetaOnlyResponse The error response.
+     * @returns MsgVpnJndiTopicResponse The JNDI Topic object's attributes, and the request metadata.
+     * @returns SempMetaOnlyResponse The error response.
      * @throws ApiError
      */
     public static async getMsgVpnJndiTopic(
@@ -8937,8 +8937,8 @@ export class AllService {
      * @param body The JNDI Topic object's attributes.
      * @param opaquePassword Accept opaque attributes in the request or return opaque attributes in the response, encrypted with the specified password. See that documentation for the `opaquePassword` parameter.
      * @param select Include in the response only selected attributes of the object, or exclude from the response selected attributes of the object. See the documentation for the `select` parameter.
-     * @result MsgVpnJndiTopicResponse The JNDI Topic object's attributes after being updated, and the request metadata.
-     * @result SempMetaOnlyResponse The error response.
+     * @returns MsgVpnJndiTopicResponse The JNDI Topic object's attributes after being updated, and the request metadata.
+     * @returns SempMetaOnlyResponse The error response.
      * @throws ApiError
      */
     public static async updateMsgVpnJndiTopic(
@@ -8982,8 +8982,8 @@ export class AllService {
      * @param body The JNDI Topic object's attributes.
      * @param opaquePassword Accept opaque attributes in the request or return opaque attributes in the response, encrypted with the specified password. See that documentation for the `opaquePassword` parameter.
      * @param select Include in the response only selected attributes of the object, or exclude from the response selected attributes of the object. See the documentation for the `select` parameter.
-     * @result MsgVpnJndiTopicResponse The JNDI Topic object's attributes after being replaced, and the request metadata.
-     * @result SempMetaOnlyResponse The error response.
+     * @returns MsgVpnJndiTopicResponse The JNDI Topic object's attributes after being replaced, and the request metadata.
+     * @returns SempMetaOnlyResponse The error response.
      * @throws ApiError
      */
     public static async replaceMsgVpnJndiTopic(
@@ -9028,8 +9028,8 @@ export class AllService {
      * @param opaquePassword Accept opaque attributes in the request or return opaque attributes in the response, encrypted with the specified password. See that documentation for the `opaquePassword` parameter.
      * @param where Include in the response only objects where certain conditions are true. See the the documentation for the `where` parameter.
      * @param select Include in the response only selected attributes of the object, or exclude from the response selected attributes of the object. See the documentation for the `select` parameter.
-     * @result MsgVpnMqttRetainCachesResponse The list of MQTT Retain Cache objects' attributes, and the request metadata.
-     * @result SempMetaOnlyResponse The error response.
+     * @returns MsgVpnMqttRetainCachesResponse The list of MQTT Retain Cache objects' attributes, and the request metadata.
+     * @returns SempMetaOnlyResponse The error response.
      * @throws ApiError
      */
     public static async getMsgVpnMqttRetainCaches(
@@ -9075,8 +9075,8 @@ export class AllService {
      * @param body The MQTT Retain Cache object's attributes.
      * @param opaquePassword Accept opaque attributes in the request or return opaque attributes in the response, encrypted with the specified password. See that documentation for the `opaquePassword` parameter.
      * @param select Include in the response only selected attributes of the object, or exclude from the response selected attributes of the object. See the documentation for the `select` parameter.
-     * @result MsgVpnMqttRetainCacheResponse The MQTT Retain Cache object's attributes after being created, and the request metadata.
-     * @result SempMetaOnlyResponse The error response.
+     * @returns MsgVpnMqttRetainCacheResponse The MQTT Retain Cache object's attributes after being created, and the request metadata.
+     * @returns SempMetaOnlyResponse The error response.
      * @throws ApiError
      */
     public static async createMsgVpnMqttRetainCache(
@@ -9108,7 +9108,7 @@ export class AllService {
      * This has been available since 2.11.
      * @param msgVpnName The name of the Message VPN.
      * @param cacheName The name of the MQTT Retain Cache.
-     * @result SempMetaOnlyResponse The request metadata.
+     * @returns SempMetaOnlyResponse The request metadata.
      * @throws ApiError
      */
     public static async deleteMsgVpnMqttRetainCache(
@@ -9143,8 +9143,8 @@ export class AllService {
      * @param cacheName The name of the MQTT Retain Cache.
      * @param opaquePassword Accept opaque attributes in the request or return opaque attributes in the response, encrypted with the specified password. See that documentation for the `opaquePassword` parameter.
      * @param select Include in the response only selected attributes of the object, or exclude from the response selected attributes of the object. See the documentation for the `select` parameter.
-     * @result MsgVpnMqttRetainCacheResponse The MQTT Retain Cache object's attributes, and the request metadata.
-     * @result SempMetaOnlyResponse The error response.
+     * @returns MsgVpnMqttRetainCacheResponse The MQTT Retain Cache object's attributes, and the request metadata.
+     * @returns SempMetaOnlyResponse The error response.
      * @throws ApiError
      */
     public static async getMsgVpnMqttRetainCache(
@@ -9186,8 +9186,8 @@ export class AllService {
      * @param body The MQTT Retain Cache object's attributes.
      * @param opaquePassword Accept opaque attributes in the request or return opaque attributes in the response, encrypted with the specified password. See that documentation for the `opaquePassword` parameter.
      * @param select Include in the response only selected attributes of the object, or exclude from the response selected attributes of the object. See the documentation for the `select` parameter.
-     * @result MsgVpnMqttRetainCacheResponse The MQTT Retain Cache object's attributes after being updated, and the request metadata.
-     * @result SempMetaOnlyResponse The error response.
+     * @returns MsgVpnMqttRetainCacheResponse The MQTT Retain Cache object's attributes after being updated, and the request metadata.
+     * @returns SempMetaOnlyResponse The error response.
      * @throws ApiError
      */
     public static async updateMsgVpnMqttRetainCache(
@@ -9231,8 +9231,8 @@ export class AllService {
      * @param body The MQTT Retain Cache object's attributes.
      * @param opaquePassword Accept opaque attributes in the request or return opaque attributes in the response, encrypted with the specified password. See that documentation for the `opaquePassword` parameter.
      * @param select Include in the response only selected attributes of the object, or exclude from the response selected attributes of the object. See the documentation for the `select` parameter.
-     * @result MsgVpnMqttRetainCacheResponse The MQTT Retain Cache object's attributes after being replaced, and the request metadata.
-     * @result SempMetaOnlyResponse The error response.
+     * @returns MsgVpnMqttRetainCacheResponse The MQTT Retain Cache object's attributes after being replaced, and the request metadata.
+     * @returns SempMetaOnlyResponse The error response.
      * @throws ApiError
      */
     public static async replaceMsgVpnMqttRetainCache(
@@ -9278,8 +9278,8 @@ export class AllService {
      * @param opaquePassword Accept opaque attributes in the request or return opaque attributes in the response, encrypted with the specified password. See that documentation for the `opaquePassword` parameter.
      * @param where Include in the response only objects where certain conditions are true. See the the documentation for the `where` parameter.
      * @param select Include in the response only selected attributes of the object, or exclude from the response selected attributes of the object. See the documentation for the `select` parameter.
-     * @result MsgVpnMqttSessionsResponse The list of MQTT Session objects' attributes, and the request metadata.
-     * @result SempMetaOnlyResponse The error response.
+     * @returns MsgVpnMqttSessionsResponse The list of MQTT Session objects' attributes, and the request metadata.
+     * @returns SempMetaOnlyResponse The error response.
      * @throws ApiError
      */
     public static async getMsgVpnMqttSessions(
@@ -9338,8 +9338,8 @@ export class AllService {
      * @param body The MQTT Session object's attributes.
      * @param opaquePassword Accept opaque attributes in the request or return opaque attributes in the response, encrypted with the specified password. See that documentation for the `opaquePassword` parameter.
      * @param select Include in the response only selected attributes of the object, or exclude from the response selected attributes of the object. See the documentation for the `select` parameter.
-     * @result MsgVpnMqttSessionResponse The MQTT Session object's attributes after being created, and the request metadata.
-     * @result SempMetaOnlyResponse The error response.
+     * @returns MsgVpnMqttSessionResponse The MQTT Session object's attributes after being created, and the request metadata.
+     * @returns SempMetaOnlyResponse The error response.
      * @throws ApiError
      */
     public static async createMsgVpnMqttSession(
@@ -9372,7 +9372,7 @@ export class AllService {
      * @param msgVpnName The name of the Message VPN.
      * @param mqttSessionClientId The Client ID of the MQTT Session, which corresponds to the ClientId provided in the MQTT CONNECT packet.
      * @param mqttSessionVirtualRouter The virtual router of the MQTT Session.
-     * @result SempMetaOnlyResponse The request metadata.
+     * @returns SempMetaOnlyResponse The request metadata.
      * @throws ApiError
      */
     public static async deleteMsgVpnMqttSession(
@@ -9410,8 +9410,8 @@ export class AllService {
      * @param mqttSessionVirtualRouter The virtual router of the MQTT Session.
      * @param opaquePassword Accept opaque attributes in the request or return opaque attributes in the response, encrypted with the specified password. See that documentation for the `opaquePassword` parameter.
      * @param select Include in the response only selected attributes of the object, or exclude from the response selected attributes of the object. See the documentation for the `select` parameter.
-     * @result MsgVpnMqttSessionResponse The MQTT Session object's attributes, and the request metadata.
-     * @result SempMetaOnlyResponse The error response.
+     * @returns MsgVpnMqttSessionResponse The MQTT Session object's attributes, and the request metadata.
+     * @returns SempMetaOnlyResponse The error response.
      * @throws ApiError
      */
     public static async getMsgVpnMqttSession(
@@ -9469,8 +9469,8 @@ export class AllService {
      * @param body The MQTT Session object's attributes.
      * @param opaquePassword Accept opaque attributes in the request or return opaque attributes in the response, encrypted with the specified password. See that documentation for the `opaquePassword` parameter.
      * @param select Include in the response only selected attributes of the object, or exclude from the response selected attributes of the object. See the documentation for the `select` parameter.
-     * @result MsgVpnMqttSessionResponse The MQTT Session object's attributes after being updated, and the request metadata.
-     * @result SempMetaOnlyResponse The error response.
+     * @returns MsgVpnMqttSessionResponse The MQTT Session object's attributes after being updated, and the request metadata.
+     * @returns SempMetaOnlyResponse The error response.
      * @throws ApiError
      */
     public static async updateMsgVpnMqttSession(
@@ -9530,8 +9530,8 @@ export class AllService {
      * @param body The MQTT Session object's attributes.
      * @param opaquePassword Accept opaque attributes in the request or return opaque attributes in the response, encrypted with the specified password. See that documentation for the `opaquePassword` parameter.
      * @param select Include in the response only selected attributes of the object, or exclude from the response selected attributes of the object. See the documentation for the `select` parameter.
-     * @result MsgVpnMqttSessionResponse The MQTT Session object's attributes after being replaced, and the request metadata.
-     * @result SempMetaOnlyResponse The error response.
+     * @returns MsgVpnMqttSessionResponse The MQTT Session object's attributes after being replaced, and the request metadata.
+     * @returns SempMetaOnlyResponse The error response.
      * @throws ApiError
      */
     public static async replaceMsgVpnMqttSession(
@@ -9581,8 +9581,8 @@ export class AllService {
      * @param opaquePassword Accept opaque attributes in the request or return opaque attributes in the response, encrypted with the specified password. See that documentation for the `opaquePassword` parameter.
      * @param where Include in the response only objects where certain conditions are true. See the the documentation for the `where` parameter.
      * @param select Include in the response only selected attributes of the object, or exclude from the response selected attributes of the object. See the documentation for the `select` parameter.
-     * @result MsgVpnMqttSessionSubscriptionsResponse The list of Subscription objects' attributes, and the request metadata.
-     * @result SempMetaOnlyResponse The error response.
+     * @returns MsgVpnMqttSessionSubscriptionsResponse The list of Subscription objects' attributes, and the request metadata.
+     * @returns SempMetaOnlyResponse The error response.
      * @throws ApiError
      */
     public static async getMsgVpnMqttSessionSubscriptions(
@@ -9634,8 +9634,8 @@ export class AllService {
      * @param body The Subscription object's attributes.
      * @param opaquePassword Accept opaque attributes in the request or return opaque attributes in the response, encrypted with the specified password. See that documentation for the `opaquePassword` parameter.
      * @param select Include in the response only selected attributes of the object, or exclude from the response selected attributes of the object. See the documentation for the `select` parameter.
-     * @result MsgVpnMqttSessionSubscriptionResponse The Subscription object's attributes after being created, and the request metadata.
-     * @result SempMetaOnlyResponse The error response.
+     * @returns MsgVpnMqttSessionSubscriptionResponse The Subscription object's attributes after being created, and the request metadata.
+     * @returns SempMetaOnlyResponse The error response.
      * @throws ApiError
      */
     public static async createMsgVpnMqttSessionSubscription(
@@ -9671,7 +9671,7 @@ export class AllService {
      * @param mqttSessionClientId The Client ID of the MQTT Session, which corresponds to the ClientId provided in the MQTT CONNECT packet.
      * @param mqttSessionVirtualRouter The virtual router of the MQTT Session.
      * @param subscriptionTopic The MQTT subscription topic.
-     * @result SempMetaOnlyResponse The request metadata.
+     * @returns SempMetaOnlyResponse The request metadata.
      * @throws ApiError
      */
     public static async deleteMsgVpnMqttSessionSubscription(
@@ -9712,8 +9712,8 @@ export class AllService {
      * @param subscriptionTopic The MQTT subscription topic.
      * @param opaquePassword Accept opaque attributes in the request or return opaque attributes in the response, encrypted with the specified password. See that documentation for the `opaquePassword` parameter.
      * @param select Include in the response only selected attributes of the object, or exclude from the response selected attributes of the object. See the documentation for the `select` parameter.
-     * @result MsgVpnMqttSessionSubscriptionResponse The Subscription object's attributes, and the request metadata.
-     * @result SempMetaOnlyResponse The error response.
+     * @returns MsgVpnMqttSessionSubscriptionResponse The Subscription object's attributes, and the request metadata.
+     * @returns SempMetaOnlyResponse The error response.
      * @throws ApiError
      */
     public static async getMsgVpnMqttSessionSubscription(
@@ -9761,8 +9761,8 @@ export class AllService {
      * @param body The Subscription object's attributes.
      * @param opaquePassword Accept opaque attributes in the request or return opaque attributes in the response, encrypted with the specified password. See that documentation for the `opaquePassword` parameter.
      * @param select Include in the response only selected attributes of the object, or exclude from the response selected attributes of the object. See the documentation for the `select` parameter.
-     * @result MsgVpnMqttSessionSubscriptionResponse The Subscription object's attributes after being updated, and the request metadata.
-     * @result SempMetaOnlyResponse The error response.
+     * @returns MsgVpnMqttSessionSubscriptionResponse The Subscription object's attributes after being updated, and the request metadata.
+     * @returns SempMetaOnlyResponse The error response.
      * @throws ApiError
      */
     public static async updateMsgVpnMqttSessionSubscription(
@@ -9812,8 +9812,8 @@ export class AllService {
      * @param body The Subscription object's attributes.
      * @param opaquePassword Accept opaque attributes in the request or return opaque attributes in the response, encrypted with the specified password. See that documentation for the `opaquePassword` parameter.
      * @param select Include in the response only selected attributes of the object, or exclude from the response selected attributes of the object. See the documentation for the `select` parameter.
-     * @result MsgVpnMqttSessionSubscriptionResponse The Subscription object's attributes after being replaced, and the request metadata.
-     * @result SempMetaOnlyResponse The error response.
+     * @returns MsgVpnMqttSessionSubscriptionResponse The Subscription object's attributes after being replaced, and the request metadata.
+     * @returns SempMetaOnlyResponse The error response.
      * @throws ApiError
      */
     public static async replaceMsgVpnMqttSessionSubscription(
@@ -9860,8 +9860,8 @@ export class AllService {
      * @param opaquePassword Accept opaque attributes in the request or return opaque attributes in the response, encrypted with the specified password. See that documentation for the `opaquePassword` parameter.
      * @param where Include in the response only objects where certain conditions are true. See the the documentation for the `where` parameter.
      * @param select Include in the response only selected attributes of the object, or exclude from the response selected attributes of the object. See the documentation for the `select` parameter.
-     * @result MsgVpnQueueTemplatesResponse The list of Queue Template objects' attributes, and the request metadata.
-     * @result SempMetaOnlyResponse The error response.
+     * @returns MsgVpnQueueTemplatesResponse The list of Queue Template objects' attributes, and the request metadata.
+     * @returns SempMetaOnlyResponse The error response.
      * @throws ApiError
      */
     public static async getMsgVpnQueueTemplates(
@@ -9919,8 +9919,8 @@ export class AllService {
      * @param body The Queue Template object's attributes.
      * @param opaquePassword Accept opaque attributes in the request or return opaque attributes in the response, encrypted with the specified password. See that documentation for the `opaquePassword` parameter.
      * @param select Include in the response only selected attributes of the object, or exclude from the response selected attributes of the object. See the documentation for the `select` parameter.
-     * @result MsgVpnQueueTemplateResponse The Queue Template object's attributes after being created, and the request metadata.
-     * @result SempMetaOnlyResponse The error response.
+     * @returns MsgVpnQueueTemplateResponse The Queue Template object's attributes after being created, and the request metadata.
+     * @returns SempMetaOnlyResponse The error response.
      * @throws ApiError
      */
     public static async createMsgVpnQueueTemplate(
@@ -9952,7 +9952,7 @@ export class AllService {
      * This has been available since 2.14.
      * @param msgVpnName The name of the Message VPN.
      * @param queueTemplateName The name of the Queue Template.
-     * @result SempMetaOnlyResponse The request metadata.
+     * @returns SempMetaOnlyResponse The request metadata.
      * @throws ApiError
      */
     public static async deleteMsgVpnQueueTemplate(
@@ -9987,8 +9987,8 @@ export class AllService {
      * @param queueTemplateName The name of the Queue Template.
      * @param opaquePassword Accept opaque attributes in the request or return opaque attributes in the response, encrypted with the specified password. See that documentation for the `opaquePassword` parameter.
      * @param select Include in the response only selected attributes of the object, or exclude from the response selected attributes of the object. See the documentation for the `select` parameter.
-     * @result MsgVpnQueueTemplateResponse The Queue Template object's attributes, and the request metadata.
-     * @result SempMetaOnlyResponse The error response.
+     * @returns MsgVpnQueueTemplateResponse The Queue Template object's attributes, and the request metadata.
+     * @returns SempMetaOnlyResponse The error response.
      * @throws ApiError
      */
     public static async getMsgVpnQueueTemplate(
@@ -10042,8 +10042,8 @@ export class AllService {
      * @param body The Queue Template object's attributes.
      * @param opaquePassword Accept opaque attributes in the request or return opaque attributes in the response, encrypted with the specified password. See that documentation for the `opaquePassword` parameter.
      * @param select Include in the response only selected attributes of the object, or exclude from the response selected attributes of the object. See the documentation for the `select` parameter.
-     * @result MsgVpnQueueTemplateResponse The Queue Template object's attributes after being updated, and the request metadata.
-     * @result SempMetaOnlyResponse The error response.
+     * @returns MsgVpnQueueTemplateResponse The Queue Template object's attributes after being updated, and the request metadata.
+     * @returns SempMetaOnlyResponse The error response.
      * @throws ApiError
      */
     public static async updateMsgVpnQueueTemplate(
@@ -10099,8 +10099,8 @@ export class AllService {
      * @param body The Queue Template object's attributes.
      * @param opaquePassword Accept opaque attributes in the request or return opaque attributes in the response, encrypted with the specified password. See that documentation for the `opaquePassword` parameter.
      * @param select Include in the response only selected attributes of the object, or exclude from the response selected attributes of the object. See the documentation for the `select` parameter.
-     * @result MsgVpnQueueTemplateResponse The Queue Template object's attributes after being replaced, and the request metadata.
-     * @result SempMetaOnlyResponse The error response.
+     * @returns MsgVpnQueueTemplateResponse The Queue Template object's attributes after being replaced, and the request metadata.
+     * @returns SempMetaOnlyResponse The error response.
      * @throws ApiError
      */
     public static async replaceMsgVpnQueueTemplate(
@@ -10145,8 +10145,8 @@ export class AllService {
      * @param opaquePassword Accept opaque attributes in the request or return opaque attributes in the response, encrypted with the specified password. See that documentation for the `opaquePassword` parameter.
      * @param where Include in the response only objects where certain conditions are true. See the the documentation for the `where` parameter.
      * @param select Include in the response only selected attributes of the object, or exclude from the response selected attributes of the object. See the documentation for the `select` parameter.
-     * @result MsgVpnQueuesResponse The list of Queue objects' attributes, and the request metadata.
-     * @result SempMetaOnlyResponse The error response.
+     * @returns MsgVpnQueuesResponse The list of Queue objects' attributes, and the request metadata.
+     * @returns SempMetaOnlyResponse The error response.
      * @throws ApiError
      */
     public static async getMsgVpnQueues(
@@ -10204,8 +10204,8 @@ export class AllService {
      * @param body The Queue object's attributes.
      * @param opaquePassword Accept opaque attributes in the request or return opaque attributes in the response, encrypted with the specified password. See that documentation for the `opaquePassword` parameter.
      * @param select Include in the response only selected attributes of the object, or exclude from the response selected attributes of the object. See the documentation for the `select` parameter.
-     * @result MsgVpnQueueResponse The Queue object's attributes after being created, and the request metadata.
-     * @result SempMetaOnlyResponse The error response.
+     * @returns MsgVpnQueueResponse The Queue object's attributes after being created, and the request metadata.
+     * @returns SempMetaOnlyResponse The error response.
      * @throws ApiError
      */
     public static async createMsgVpnQueue(
@@ -10237,7 +10237,7 @@ export class AllService {
      * This has been available since 2.0.
      * @param msgVpnName The name of the Message VPN.
      * @param queueName The name of the Queue.
-     * @result SempMetaOnlyResponse The request metadata.
+     * @returns SempMetaOnlyResponse The request metadata.
      * @throws ApiError
      */
     public static async deleteMsgVpnQueue(
@@ -10272,8 +10272,8 @@ export class AllService {
      * @param queueName The name of the Queue.
      * @param opaquePassword Accept opaque attributes in the request or return opaque attributes in the response, encrypted with the specified password. See that documentation for the `opaquePassword` parameter.
      * @param select Include in the response only selected attributes of the object, or exclude from the response selected attributes of the object. See the documentation for the `select` parameter.
-     * @result MsgVpnQueueResponse The Queue object's attributes, and the request metadata.
-     * @result SempMetaOnlyResponse The error response.
+     * @returns MsgVpnQueueResponse The Queue object's attributes, and the request metadata.
+     * @returns SempMetaOnlyResponse The error response.
      * @throws ApiError
      */
     public static async getMsgVpnQueue(
@@ -10331,8 +10331,8 @@ export class AllService {
      * @param body The Queue object's attributes.
      * @param opaquePassword Accept opaque attributes in the request or return opaque attributes in the response, encrypted with the specified password. See that documentation for the `opaquePassword` parameter.
      * @param select Include in the response only selected attributes of the object, or exclude from the response selected attributes of the object. See the documentation for the `select` parameter.
-     * @result MsgVpnQueueResponse The Queue object's attributes after being updated, and the request metadata.
-     * @result SempMetaOnlyResponse The error response.
+     * @returns MsgVpnQueueResponse The Queue object's attributes after being updated, and the request metadata.
+     * @returns SempMetaOnlyResponse The error response.
      * @throws ApiError
      */
     public static async updateMsgVpnQueue(
@@ -10392,8 +10392,8 @@ export class AllService {
      * @param body The Queue object's attributes.
      * @param opaquePassword Accept opaque attributes in the request or return opaque attributes in the response, encrypted with the specified password. See that documentation for the `opaquePassword` parameter.
      * @param select Include in the response only selected attributes of the object, or exclude from the response selected attributes of the object. See the documentation for the `select` parameter.
-     * @result MsgVpnQueueResponse The Queue object's attributes after being replaced, and the request metadata.
-     * @result SempMetaOnlyResponse The error response.
+     * @returns MsgVpnQueueResponse The Queue object's attributes after being replaced, and the request metadata.
+     * @returns SempMetaOnlyResponse The error response.
      * @throws ApiError
      */
     public static async replaceMsgVpnQueue(
@@ -10440,8 +10440,8 @@ export class AllService {
      * @param opaquePassword Accept opaque attributes in the request or return opaque attributes in the response, encrypted with the specified password. See that documentation for the `opaquePassword` parameter.
      * @param where Include in the response only objects where certain conditions are true. See the the documentation for the `where` parameter.
      * @param select Include in the response only selected attributes of the object, or exclude from the response selected attributes of the object. See the documentation for the `select` parameter.
-     * @result MsgVpnQueueSubscriptionsResponse The list of Queue Subscription objects' attributes, and the request metadata.
-     * @result SempMetaOnlyResponse The error response.
+     * @returns MsgVpnQueueSubscriptionsResponse The list of Queue Subscription objects' attributes, and the request metadata.
+     * @returns SempMetaOnlyResponse The error response.
      * @throws ApiError
      */
     public static async getMsgVpnQueueSubscriptions(
@@ -10490,8 +10490,8 @@ export class AllService {
      * @param body The Queue Subscription object's attributes.
      * @param opaquePassword Accept opaque attributes in the request or return opaque attributes in the response, encrypted with the specified password. See that documentation for the `opaquePassword` parameter.
      * @param select Include in the response only selected attributes of the object, or exclude from the response selected attributes of the object. See the documentation for the `select` parameter.
-     * @result MsgVpnQueueSubscriptionResponse The Queue Subscription object's attributes after being created, and the request metadata.
-     * @result SempMetaOnlyResponse The error response.
+     * @returns MsgVpnQueueSubscriptionResponse The Queue Subscription object's attributes after being created, and the request metadata.
+     * @returns SempMetaOnlyResponse The error response.
      * @throws ApiError
      */
     public static async createMsgVpnQueueSubscription(
@@ -10525,7 +10525,7 @@ export class AllService {
      * @param msgVpnName The name of the Message VPN.
      * @param queueName The name of the Queue.
      * @param subscriptionTopic The topic of the Subscription.
-     * @result SempMetaOnlyResponse The request metadata.
+     * @returns SempMetaOnlyResponse The request metadata.
      * @throws ApiError
      */
     public static async deleteMsgVpnQueueSubscription(
@@ -10563,8 +10563,8 @@ export class AllService {
      * @param subscriptionTopic The topic of the Subscription.
      * @param opaquePassword Accept opaque attributes in the request or return opaque attributes in the response, encrypted with the specified password. See that documentation for the `opaquePassword` parameter.
      * @param select Include in the response only selected attributes of the object, or exclude from the response selected attributes of the object. See the documentation for the `select` parameter.
-     * @result MsgVpnQueueSubscriptionResponse The Queue Subscription object's attributes, and the request metadata.
-     * @result SempMetaOnlyResponse The error response.
+     * @returns MsgVpnQueueSubscriptionResponse The Queue Subscription object's attributes, and the request metadata.
+     * @returns SempMetaOnlyResponse The error response.
      * @throws ApiError
      */
     public static async getMsgVpnQueueSubscription(
@@ -10608,8 +10608,8 @@ export class AllService {
      * @param opaquePassword Accept opaque attributes in the request or return opaque attributes in the response, encrypted with the specified password. See that documentation for the `opaquePassword` parameter.
      * @param where Include in the response only objects where certain conditions are true. See the the documentation for the `where` parameter.
      * @param select Include in the response only selected attributes of the object, or exclude from the response selected attributes of the object. See the documentation for the `select` parameter.
-     * @result MsgVpnReplayLogsResponse The list of Replay Log objects' attributes, and the request metadata.
-     * @result SempMetaOnlyResponse The error response.
+     * @returns MsgVpnReplayLogsResponse The list of Replay Log objects' attributes, and the request metadata.
+     * @returns SempMetaOnlyResponse The error response.
      * @throws ApiError
      */
     public static async getMsgVpnReplayLogs(
@@ -10655,8 +10655,8 @@ export class AllService {
      * @param body The Replay Log object's attributes.
      * @param opaquePassword Accept opaque attributes in the request or return opaque attributes in the response, encrypted with the specified password. See that documentation for the `opaquePassword` parameter.
      * @param select Include in the response only selected attributes of the object, or exclude from the response selected attributes of the object. See the documentation for the `select` parameter.
-     * @result MsgVpnReplayLogResponse The Replay Log object's attributes after being created, and the request metadata.
-     * @result SempMetaOnlyResponse The error response.
+     * @returns MsgVpnReplayLogResponse The Replay Log object's attributes after being created, and the request metadata.
+     * @returns SempMetaOnlyResponse The error response.
      * @throws ApiError
      */
     public static async createMsgVpnReplayLog(
@@ -10688,7 +10688,7 @@ export class AllService {
      * This has been available since 2.10.
      * @param msgVpnName The name of the Message VPN.
      * @param replayLogName The name of the Replay Log.
-     * @result SempMetaOnlyResponse The request metadata.
+     * @returns SempMetaOnlyResponse The request metadata.
      * @throws ApiError
      */
     public static async deleteMsgVpnReplayLog(
@@ -10723,8 +10723,8 @@ export class AllService {
      * @param replayLogName The name of the Replay Log.
      * @param opaquePassword Accept opaque attributes in the request or return opaque attributes in the response, encrypted with the specified password. See that documentation for the `opaquePassword` parameter.
      * @param select Include in the response only selected attributes of the object, or exclude from the response selected attributes of the object. See the documentation for the `select` parameter.
-     * @result MsgVpnReplayLogResponse The Replay Log object's attributes, and the request metadata.
-     * @result SempMetaOnlyResponse The error response.
+     * @returns MsgVpnReplayLogResponse The Replay Log object's attributes, and the request metadata.
+     * @returns SempMetaOnlyResponse The error response.
      * @throws ApiError
      */
     public static async getMsgVpnReplayLog(
@@ -10766,8 +10766,8 @@ export class AllService {
      * @param body The Replay Log object's attributes.
      * @param opaquePassword Accept opaque attributes in the request or return opaque attributes in the response, encrypted with the specified password. See that documentation for the `opaquePassword` parameter.
      * @param select Include in the response only selected attributes of the object, or exclude from the response selected attributes of the object. See the documentation for the `select` parameter.
-     * @result MsgVpnReplayLogResponse The Replay Log object's attributes after being updated, and the request metadata.
-     * @result SempMetaOnlyResponse The error response.
+     * @returns MsgVpnReplayLogResponse The Replay Log object's attributes after being updated, and the request metadata.
+     * @returns SempMetaOnlyResponse The error response.
      * @throws ApiError
      */
     public static async updateMsgVpnReplayLog(
@@ -10811,8 +10811,8 @@ export class AllService {
      * @param body The Replay Log object's attributes.
      * @param opaquePassword Accept opaque attributes in the request or return opaque attributes in the response, encrypted with the specified password. See that documentation for the `opaquePassword` parameter.
      * @param select Include in the response only selected attributes of the object, or exclude from the response selected attributes of the object. See the documentation for the `select` parameter.
-     * @result MsgVpnReplayLogResponse The Replay Log object's attributes after being replaced, and the request metadata.
-     * @result SempMetaOnlyResponse The error response.
+     * @returns MsgVpnReplayLogResponse The Replay Log object's attributes after being replaced, and the request metadata.
+     * @returns SempMetaOnlyResponse The error response.
      * @throws ApiError
      */
     public static async replaceMsgVpnReplayLog(
@@ -10857,8 +10857,8 @@ export class AllService {
      * @param opaquePassword Accept opaque attributes in the request or return opaque attributes in the response, encrypted with the specified password. See that documentation for the `opaquePassword` parameter.
      * @param where Include in the response only objects where certain conditions are true. See the the documentation for the `where` parameter.
      * @param select Include in the response only selected attributes of the object, or exclude from the response selected attributes of the object. See the documentation for the `select` parameter.
-     * @result MsgVpnReplicatedTopicsResponse The list of Replicated Topic objects' attributes, and the request metadata.
-     * @result SempMetaOnlyResponse The error response.
+     * @returns MsgVpnReplicatedTopicsResponse The list of Replicated Topic objects' attributes, and the request metadata.
+     * @returns SempMetaOnlyResponse The error response.
      * @throws ApiError
      */
     public static async getMsgVpnReplicatedTopics(
@@ -10904,8 +10904,8 @@ export class AllService {
      * @param body The Replicated Topic object's attributes.
      * @param opaquePassword Accept opaque attributes in the request or return opaque attributes in the response, encrypted with the specified password. See that documentation for the `opaquePassword` parameter.
      * @param select Include in the response only selected attributes of the object, or exclude from the response selected attributes of the object. See the documentation for the `select` parameter.
-     * @result MsgVpnReplicatedTopicResponse The Replicated Topic object's attributes after being created, and the request metadata.
-     * @result SempMetaOnlyResponse The error response.
+     * @returns MsgVpnReplicatedTopicResponse The Replicated Topic object's attributes after being created, and the request metadata.
+     * @returns SempMetaOnlyResponse The error response.
      * @throws ApiError
      */
     public static async createMsgVpnReplicatedTopic(
@@ -10937,7 +10937,7 @@ export class AllService {
      * This has been available since 2.1.
      * @param msgVpnName The name of the Message VPN.
      * @param replicatedTopic The topic for applying replication. Published messages matching this topic will be replicated to the standby site.
-     * @result SempMetaOnlyResponse The request metadata.
+     * @returns SempMetaOnlyResponse The request metadata.
      * @throws ApiError
      */
     public static async deleteMsgVpnReplicatedTopic(
@@ -10972,8 +10972,8 @@ export class AllService {
      * @param replicatedTopic The topic for applying replication. Published messages matching this topic will be replicated to the standby site.
      * @param opaquePassword Accept opaque attributes in the request or return opaque attributes in the response, encrypted with the specified password. See that documentation for the `opaquePassword` parameter.
      * @param select Include in the response only selected attributes of the object, or exclude from the response selected attributes of the object. See the documentation for the `select` parameter.
-     * @result MsgVpnReplicatedTopicResponse The Replicated Topic object's attributes, and the request metadata.
-     * @result SempMetaOnlyResponse The error response.
+     * @returns MsgVpnReplicatedTopicResponse The Replicated Topic object's attributes, and the request metadata.
+     * @returns SempMetaOnlyResponse The error response.
      * @throws ApiError
      */
     public static async getMsgVpnReplicatedTopic(
@@ -11015,8 +11015,8 @@ export class AllService {
      * @param body The Replicated Topic object's attributes.
      * @param opaquePassword Accept opaque attributes in the request or return opaque attributes in the response, encrypted with the specified password. See that documentation for the `opaquePassword` parameter.
      * @param select Include in the response only selected attributes of the object, or exclude from the response selected attributes of the object. See the documentation for the `select` parameter.
-     * @result MsgVpnReplicatedTopicResponse The Replicated Topic object's attributes after being updated, and the request metadata.
-     * @result SempMetaOnlyResponse The error response.
+     * @returns MsgVpnReplicatedTopicResponse The Replicated Topic object's attributes after being updated, and the request metadata.
+     * @returns SempMetaOnlyResponse The error response.
      * @throws ApiError
      */
     public static async updateMsgVpnReplicatedTopic(
@@ -11060,8 +11060,8 @@ export class AllService {
      * @param body The Replicated Topic object's attributes.
      * @param opaquePassword Accept opaque attributes in the request or return opaque attributes in the response, encrypted with the specified password. See that documentation for the `opaquePassword` parameter.
      * @param select Include in the response only selected attributes of the object, or exclude from the response selected attributes of the object. See the documentation for the `select` parameter.
-     * @result MsgVpnReplicatedTopicResponse The Replicated Topic object's attributes after being replaced, and the request metadata.
-     * @result SempMetaOnlyResponse The error response.
+     * @returns MsgVpnReplicatedTopicResponse The Replicated Topic object's attributes after being replaced, and the request metadata.
+     * @returns SempMetaOnlyResponse The error response.
      * @throws ApiError
      */
     public static async replaceMsgVpnReplicatedTopic(
@@ -11106,8 +11106,8 @@ export class AllService {
      * @param opaquePassword Accept opaque attributes in the request or return opaque attributes in the response, encrypted with the specified password. See that documentation for the `opaquePassword` parameter.
      * @param where Include in the response only objects where certain conditions are true. See the the documentation for the `where` parameter.
      * @param select Include in the response only selected attributes of the object, or exclude from the response selected attributes of the object. See the documentation for the `select` parameter.
-     * @result MsgVpnRestDeliveryPointsResponse The list of REST Delivery Point objects' attributes, and the request metadata.
-     * @result SempMetaOnlyResponse The error response.
+     * @returns MsgVpnRestDeliveryPointsResponse The list of REST Delivery Point objects' attributes, and the request metadata.
+     * @returns SempMetaOnlyResponse The error response.
      * @throws ApiError
      */
     public static async getMsgVpnRestDeliveryPoints(
@@ -11153,8 +11153,8 @@ export class AllService {
      * @param body The REST Delivery Point object's attributes.
      * @param opaquePassword Accept opaque attributes in the request or return opaque attributes in the response, encrypted with the specified password. See that documentation for the `opaquePassword` parameter.
      * @param select Include in the response only selected attributes of the object, or exclude from the response selected attributes of the object. See the documentation for the `select` parameter.
-     * @result MsgVpnRestDeliveryPointResponse The REST Delivery Point object's attributes after being created, and the request metadata.
-     * @result SempMetaOnlyResponse The error response.
+     * @returns MsgVpnRestDeliveryPointResponse The REST Delivery Point object's attributes after being created, and the request metadata.
+     * @returns SempMetaOnlyResponse The error response.
      * @throws ApiError
      */
     public static async createMsgVpnRestDeliveryPoint(
@@ -11186,7 +11186,7 @@ export class AllService {
      * This has been available since 2.0.
      * @param msgVpnName The name of the Message VPN.
      * @param restDeliveryPointName The name of the REST Delivery Point.
-     * @result SempMetaOnlyResponse The request metadata.
+     * @returns SempMetaOnlyResponse The request metadata.
      * @throws ApiError
      */
     public static async deleteMsgVpnRestDeliveryPoint(
@@ -11221,8 +11221,8 @@ export class AllService {
      * @param restDeliveryPointName The name of the REST Delivery Point.
      * @param opaquePassword Accept opaque attributes in the request or return opaque attributes in the response, encrypted with the specified password. See that documentation for the `opaquePassword` parameter.
      * @param select Include in the response only selected attributes of the object, or exclude from the response selected attributes of the object. See the documentation for the `select` parameter.
-     * @result MsgVpnRestDeliveryPointResponse The REST Delivery Point object's attributes, and the request metadata.
-     * @result SempMetaOnlyResponse The error response.
+     * @returns MsgVpnRestDeliveryPointResponse The REST Delivery Point object's attributes, and the request metadata.
+     * @returns SempMetaOnlyResponse The error response.
      * @throws ApiError
      */
     public static async getMsgVpnRestDeliveryPoint(
@@ -11265,8 +11265,8 @@ export class AllService {
      * @param body The REST Delivery Point object's attributes.
      * @param opaquePassword Accept opaque attributes in the request or return opaque attributes in the response, encrypted with the specified password. See that documentation for the `opaquePassword` parameter.
      * @param select Include in the response only selected attributes of the object, or exclude from the response selected attributes of the object. See the documentation for the `select` parameter.
-     * @result MsgVpnRestDeliveryPointResponse The REST Delivery Point object's attributes after being updated, and the request metadata.
-     * @result SempMetaOnlyResponse The error response.
+     * @returns MsgVpnRestDeliveryPointResponse The REST Delivery Point object's attributes after being updated, and the request metadata.
+     * @returns SempMetaOnlyResponse The error response.
      * @throws ApiError
      */
     public static async updateMsgVpnRestDeliveryPoint(
@@ -11311,8 +11311,8 @@ export class AllService {
      * @param body The REST Delivery Point object's attributes.
      * @param opaquePassword Accept opaque attributes in the request or return opaque attributes in the response, encrypted with the specified password. See that documentation for the `opaquePassword` parameter.
      * @param select Include in the response only selected attributes of the object, or exclude from the response selected attributes of the object. See the documentation for the `select` parameter.
-     * @result MsgVpnRestDeliveryPointResponse The REST Delivery Point object's attributes after being replaced, and the request metadata.
-     * @result SempMetaOnlyResponse The error response.
+     * @returns MsgVpnRestDeliveryPointResponse The REST Delivery Point object's attributes after being replaced, and the request metadata.
+     * @returns SempMetaOnlyResponse The error response.
      * @throws ApiError
      */
     public static async replaceMsgVpnRestDeliveryPoint(
@@ -11359,8 +11359,8 @@ export class AllService {
      * @param opaquePassword Accept opaque attributes in the request or return opaque attributes in the response, encrypted with the specified password. See that documentation for the `opaquePassword` parameter.
      * @param where Include in the response only objects where certain conditions are true. See the the documentation for the `where` parameter.
      * @param select Include in the response only selected attributes of the object, or exclude from the response selected attributes of the object. See the documentation for the `select` parameter.
-     * @result MsgVpnRestDeliveryPointQueueBindingsResponse The list of Queue Binding objects' attributes, and the request metadata.
-     * @result SempMetaOnlyResponse The error response.
+     * @returns MsgVpnRestDeliveryPointQueueBindingsResponse The list of Queue Binding objects' attributes, and the request metadata.
+     * @returns SempMetaOnlyResponse The error response.
      * @throws ApiError
      */
     public static async getMsgVpnRestDeliveryPointQueueBindings(
@@ -11409,8 +11409,8 @@ export class AllService {
      * @param body The Queue Binding object's attributes.
      * @param opaquePassword Accept opaque attributes in the request or return opaque attributes in the response, encrypted with the specified password. See that documentation for the `opaquePassword` parameter.
      * @param select Include in the response only selected attributes of the object, or exclude from the response selected attributes of the object. See the documentation for the `select` parameter.
-     * @result MsgVpnRestDeliveryPointQueueBindingResponse The Queue Binding object's attributes after being created, and the request metadata.
-     * @result SempMetaOnlyResponse The error response.
+     * @returns MsgVpnRestDeliveryPointQueueBindingResponse The Queue Binding object's attributes after being created, and the request metadata.
+     * @returns SempMetaOnlyResponse The error response.
      * @throws ApiError
      */
     public static async createMsgVpnRestDeliveryPointQueueBinding(
@@ -11444,7 +11444,7 @@ export class AllService {
      * @param msgVpnName The name of the Message VPN.
      * @param restDeliveryPointName The name of the REST Delivery Point.
      * @param queueBindingName The name of a queue in the Message VPN.
-     * @result SempMetaOnlyResponse The request metadata.
+     * @returns SempMetaOnlyResponse The request metadata.
      * @throws ApiError
      */
     public static async deleteMsgVpnRestDeliveryPointQueueBinding(
@@ -11482,8 +11482,8 @@ export class AllService {
      * @param queueBindingName The name of a queue in the Message VPN.
      * @param opaquePassword Accept opaque attributes in the request or return opaque attributes in the response, encrypted with the specified password. See that documentation for the `opaquePassword` parameter.
      * @param select Include in the response only selected attributes of the object, or exclude from the response selected attributes of the object. See the documentation for the `select` parameter.
-     * @result MsgVpnRestDeliveryPointQueueBindingResponse The Queue Binding object's attributes, and the request metadata.
-     * @result SempMetaOnlyResponse The error response.
+     * @returns MsgVpnRestDeliveryPointQueueBindingResponse The Queue Binding object's attributes, and the request metadata.
+     * @returns SempMetaOnlyResponse The error response.
      * @throws ApiError
      */
     public static async getMsgVpnRestDeliveryPointQueueBinding(
@@ -11528,8 +11528,8 @@ export class AllService {
      * @param body The Queue Binding object's attributes.
      * @param opaquePassword Accept opaque attributes in the request or return opaque attributes in the response, encrypted with the specified password. See that documentation for the `opaquePassword` parameter.
      * @param select Include in the response only selected attributes of the object, or exclude from the response selected attributes of the object. See the documentation for the `select` parameter.
-     * @result MsgVpnRestDeliveryPointQueueBindingResponse The Queue Binding object's attributes after being updated, and the request metadata.
-     * @result SempMetaOnlyResponse The error response.
+     * @returns MsgVpnRestDeliveryPointQueueBindingResponse The Queue Binding object's attributes after being updated, and the request metadata.
+     * @returns SempMetaOnlyResponse The error response.
      * @throws ApiError
      */
     public static async updateMsgVpnRestDeliveryPointQueueBinding(
@@ -11576,8 +11576,8 @@ export class AllService {
      * @param body The Queue Binding object's attributes.
      * @param opaquePassword Accept opaque attributes in the request or return opaque attributes in the response, encrypted with the specified password. See that documentation for the `opaquePassword` parameter.
      * @param select Include in the response only selected attributes of the object, or exclude from the response selected attributes of the object. See the documentation for the `select` parameter.
-     * @result MsgVpnRestDeliveryPointQueueBindingResponse The Queue Binding object's attributes after being replaced, and the request metadata.
-     * @result SempMetaOnlyResponse The error response.
+     * @returns MsgVpnRestDeliveryPointQueueBindingResponse The Queue Binding object's attributes after being replaced, and the request metadata.
+     * @returns SempMetaOnlyResponse The error response.
      * @throws ApiError
      */
     public static async replaceMsgVpnRestDeliveryPointQueueBinding(
@@ -11630,8 +11630,8 @@ export class AllService {
      * @param opaquePassword Accept opaque attributes in the request or return opaque attributes in the response, encrypted with the specified password. See that documentation for the `opaquePassword` parameter.
      * @param where Include in the response only objects where certain conditions are true. See the the documentation for the `where` parameter.
      * @param select Include in the response only selected attributes of the object, or exclude from the response selected attributes of the object. See the documentation for the `select` parameter.
-     * @result MsgVpnRestDeliveryPointRestConsumersResponse The list of REST Consumer objects' attributes, and the request metadata.
-     * @result SempMetaOnlyResponse The error response.
+     * @returns MsgVpnRestDeliveryPointRestConsumersResponse The list of REST Consumer objects' attributes, and the request metadata.
+     * @returns SempMetaOnlyResponse The error response.
      * @throws ApiError
      */
     public static async getMsgVpnRestDeliveryPointRestConsumers(
@@ -11698,8 +11698,8 @@ export class AllService {
      * @param body The REST Consumer object's attributes.
      * @param opaquePassword Accept opaque attributes in the request or return opaque attributes in the response, encrypted with the specified password. See that documentation for the `opaquePassword` parameter.
      * @param select Include in the response only selected attributes of the object, or exclude from the response selected attributes of the object. See the documentation for the `select` parameter.
-     * @result MsgVpnRestDeliveryPointRestConsumerResponse The REST Consumer object's attributes after being created, and the request metadata.
-     * @result SempMetaOnlyResponse The error response.
+     * @returns MsgVpnRestDeliveryPointRestConsumerResponse The REST Consumer object's attributes after being created, and the request metadata.
+     * @returns SempMetaOnlyResponse The error response.
      * @throws ApiError
      */
     public static async createMsgVpnRestDeliveryPointRestConsumer(
@@ -11733,7 +11733,7 @@ export class AllService {
      * @param msgVpnName The name of the Message VPN.
      * @param restDeliveryPointName The name of the REST Delivery Point.
      * @param restConsumerName The name of the REST Consumer.
-     * @result SempMetaOnlyResponse The request metadata.
+     * @returns SempMetaOnlyResponse The request metadata.
      * @throws ApiError
      */
     public static async deleteMsgVpnRestDeliveryPointRestConsumer(
@@ -11776,8 +11776,8 @@ export class AllService {
      * @param restConsumerName The name of the REST Consumer.
      * @param opaquePassword Accept opaque attributes in the request or return opaque attributes in the response, encrypted with the specified password. See that documentation for the `opaquePassword` parameter.
      * @param select Include in the response only selected attributes of the object, or exclude from the response selected attributes of the object. See the documentation for the `select` parameter.
-     * @result MsgVpnRestDeliveryPointRestConsumerResponse The REST Consumer object's attributes, and the request metadata.
-     * @result SempMetaOnlyResponse The error response.
+     * @returns MsgVpnRestDeliveryPointRestConsumerResponse The REST Consumer object's attributes, and the request metadata.
+     * @returns SempMetaOnlyResponse The error response.
      * @throws ApiError
      */
     public static async getMsgVpnRestDeliveryPointRestConsumer(
@@ -11850,8 +11850,8 @@ export class AllService {
      * @param body The REST Consumer object's attributes.
      * @param opaquePassword Accept opaque attributes in the request or return opaque attributes in the response, encrypted with the specified password. See that documentation for the `opaquePassword` parameter.
      * @param select Include in the response only selected attributes of the object, or exclude from the response selected attributes of the object. See the documentation for the `select` parameter.
-     * @result MsgVpnRestDeliveryPointRestConsumerResponse The REST Consumer object's attributes after being updated, and the request metadata.
-     * @result SempMetaOnlyResponse The error response.
+     * @returns MsgVpnRestDeliveryPointRestConsumerResponse The REST Consumer object's attributes after being updated, and the request metadata.
+     * @returns SempMetaOnlyResponse The error response.
      * @throws ApiError
      */
     public static async updateMsgVpnRestDeliveryPointRestConsumer(
@@ -11926,8 +11926,8 @@ export class AllService {
      * @param body The REST Consumer object's attributes.
      * @param opaquePassword Accept opaque attributes in the request or return opaque attributes in the response, encrypted with the specified password. See that documentation for the `opaquePassword` parameter.
      * @param select Include in the response only selected attributes of the object, or exclude from the response selected attributes of the object. See the documentation for the `select` parameter.
-     * @result MsgVpnRestDeliveryPointRestConsumerResponse The REST Consumer object's attributes after being replaced, and the request metadata.
-     * @result SempMetaOnlyResponse The error response.
+     * @returns MsgVpnRestDeliveryPointRestConsumerResponse The REST Consumer object's attributes after being replaced, and the request metadata.
+     * @returns SempMetaOnlyResponse The error response.
      * @throws ApiError
      */
     public static async replaceMsgVpnRestDeliveryPointRestConsumer(
@@ -11976,8 +11976,8 @@ export class AllService {
      * @param opaquePassword Accept opaque attributes in the request or return opaque attributes in the response, encrypted with the specified password. See that documentation for the `opaquePassword` parameter.
      * @param where Include in the response only objects where certain conditions are true. See the the documentation for the `where` parameter.
      * @param select Include in the response only selected attributes of the object, or exclude from the response selected attributes of the object. See the documentation for the `select` parameter.
-     * @result MsgVpnRestDeliveryPointRestConsumerTlsTrustedCommonNamesResponse The list of Trusted Common Name objects' attributes, and the request metadata.
-     * @result SempMetaOnlyResponse The error response.
+     * @returns MsgVpnRestDeliveryPointRestConsumerTlsTrustedCommonNamesResponse The list of Trusted Common Name objects' attributes, and the request metadata.
+     * @returns SempMetaOnlyResponse The error response.
      * @throws ApiError
      */
     public static async getMsgVpnRestDeliveryPointRestConsumerTlsTrustedCommonNames(
@@ -12026,8 +12026,8 @@ export class AllService {
      * @param body The Trusted Common Name object's attributes.
      * @param opaquePassword Accept opaque attributes in the request or return opaque attributes in the response, encrypted with the specified password. See that documentation for the `opaquePassword` parameter.
      * @param select Include in the response only selected attributes of the object, or exclude from the response selected attributes of the object. See the documentation for the `select` parameter.
-     * @result MsgVpnRestDeliveryPointRestConsumerTlsTrustedCommonNameResponse The Trusted Common Name object's attributes after being created, and the request metadata.
-     * @result SempMetaOnlyResponse The error response.
+     * @returns MsgVpnRestDeliveryPointRestConsumerTlsTrustedCommonNameResponse The Trusted Common Name object's attributes after being created, and the request metadata.
+     * @returns SempMetaOnlyResponse The error response.
      * @throws ApiError
      */
     public static async createMsgVpnRestDeliveryPointRestConsumerTlsTrustedCommonName(
@@ -12064,7 +12064,7 @@ export class AllService {
      * @param restDeliveryPointName The name of the REST Delivery Point.
      * @param restConsumerName The name of the REST Consumer.
      * @param tlsTrustedCommonName The expected trusted common name of the remote certificate.
-     * @result SempMetaOnlyResponse The request metadata.
+     * @returns SempMetaOnlyResponse The request metadata.
      * @throws ApiError
      */
     public static async deleteMsgVpnRestDeliveryPointRestConsumerTlsTrustedCommonName(
@@ -12106,8 +12106,8 @@ export class AllService {
      * @param tlsTrustedCommonName The expected trusted common name of the remote certificate.
      * @param opaquePassword Accept opaque attributes in the request or return opaque attributes in the response, encrypted with the specified password. See that documentation for the `opaquePassword` parameter.
      * @param select Include in the response only selected attributes of the object, or exclude from the response selected attributes of the object. See the documentation for the `select` parameter.
-     * @result MsgVpnRestDeliveryPointRestConsumerTlsTrustedCommonNameResponse The Trusted Common Name object's attributes, and the request metadata.
-     * @result SempMetaOnlyResponse The error response.
+     * @returns MsgVpnRestDeliveryPointRestConsumerTlsTrustedCommonNameResponse The Trusted Common Name object's attributes, and the request metadata.
+     * @returns SempMetaOnlyResponse The error response.
      * @throws ApiError
      */
     public static async getMsgVpnRestDeliveryPointRestConsumerTlsTrustedCommonName(
@@ -12152,8 +12152,8 @@ export class AllService {
      * @param opaquePassword Accept opaque attributes in the request or return opaque attributes in the response, encrypted with the specified password. See that documentation for the `opaquePassword` parameter.
      * @param where Include in the response only objects where certain conditions are true. See the the documentation for the `where` parameter.
      * @param select Include in the response only selected attributes of the object, or exclude from the response selected attributes of the object. See the documentation for the `select` parameter.
-     * @result MsgVpnSequencedTopicsResponse The list of Sequenced Topic objects' attributes, and the request metadata.
-     * @result SempMetaOnlyResponse The error response.
+     * @returns MsgVpnSequencedTopicsResponse The list of Sequenced Topic objects' attributes, and the request metadata.
+     * @returns SempMetaOnlyResponse The error response.
      * @throws ApiError
      */
     public static async getMsgVpnSequencedTopics(
@@ -12199,8 +12199,8 @@ export class AllService {
      * @param body The Sequenced Topic object's attributes.
      * @param opaquePassword Accept opaque attributes in the request or return opaque attributes in the response, encrypted with the specified password. See that documentation for the `opaquePassword` parameter.
      * @param select Include in the response only selected attributes of the object, or exclude from the response selected attributes of the object. See the documentation for the `select` parameter.
-     * @result MsgVpnSequencedTopicResponse The Sequenced Topic object's attributes after being created, and the request metadata.
-     * @result SempMetaOnlyResponse The error response.
+     * @returns MsgVpnSequencedTopicResponse The Sequenced Topic object's attributes after being created, and the request metadata.
+     * @returns SempMetaOnlyResponse The error response.
      * @throws ApiError
      */
     public static async createMsgVpnSequencedTopic(
@@ -12232,7 +12232,7 @@ export class AllService {
      * This has been available since 2.0.
      * @param msgVpnName The name of the Message VPN.
      * @param sequencedTopic Topic for applying sequence numbers.
-     * @result SempMetaOnlyResponse The request metadata.
+     * @returns SempMetaOnlyResponse The request metadata.
      * @throws ApiError
      */
     public static async deleteMsgVpnSequencedTopic(
@@ -12267,8 +12267,8 @@ export class AllService {
      * @param sequencedTopic Topic for applying sequence numbers.
      * @param opaquePassword Accept opaque attributes in the request or return opaque attributes in the response, encrypted with the specified password. See that documentation for the `opaquePassword` parameter.
      * @param select Include in the response only selected attributes of the object, or exclude from the response selected attributes of the object. See the documentation for the `select` parameter.
-     * @result MsgVpnSequencedTopicResponse The Sequenced Topic object's attributes, and the request metadata.
-     * @result SempMetaOnlyResponse The error response.
+     * @returns MsgVpnSequencedTopicResponse The Sequenced Topic object's attributes, and the request metadata.
+     * @returns SempMetaOnlyResponse The error response.
      * @throws ApiError
      */
     public static async getMsgVpnSequencedTopic(
@@ -12311,8 +12311,8 @@ export class AllService {
      * @param opaquePassword Accept opaque attributes in the request or return opaque attributes in the response, encrypted with the specified password. See that documentation for the `opaquePassword` parameter.
      * @param where Include in the response only objects where certain conditions are true. See the the documentation for the `where` parameter.
      * @param select Include in the response only selected attributes of the object, or exclude from the response selected attributes of the object. See the documentation for the `select` parameter.
-     * @result MsgVpnTopicEndpointTemplatesResponse The list of Topic Endpoint Template objects' attributes, and the request metadata.
-     * @result SempMetaOnlyResponse The error response.
+     * @returns MsgVpnTopicEndpointTemplatesResponse The list of Topic Endpoint Template objects' attributes, and the request metadata.
+     * @returns SempMetaOnlyResponse The error response.
      * @throws ApiError
      */
     public static async getMsgVpnTopicEndpointTemplates(
@@ -12370,8 +12370,8 @@ export class AllService {
      * @param body The Topic Endpoint Template object's attributes.
      * @param opaquePassword Accept opaque attributes in the request or return opaque attributes in the response, encrypted with the specified password. See that documentation for the `opaquePassword` parameter.
      * @param select Include in the response only selected attributes of the object, or exclude from the response selected attributes of the object. See the documentation for the `select` parameter.
-     * @result MsgVpnTopicEndpointTemplateResponse The Topic Endpoint Template object's attributes after being created, and the request metadata.
-     * @result SempMetaOnlyResponse The error response.
+     * @returns MsgVpnTopicEndpointTemplateResponse The Topic Endpoint Template object's attributes after being created, and the request metadata.
+     * @returns SempMetaOnlyResponse The error response.
      * @throws ApiError
      */
     public static async createMsgVpnTopicEndpointTemplate(
@@ -12403,7 +12403,7 @@ export class AllService {
      * This has been available since 2.14.
      * @param msgVpnName The name of the Message VPN.
      * @param topicEndpointTemplateName The name of the Topic Endpoint Template.
-     * @result SempMetaOnlyResponse The request metadata.
+     * @returns SempMetaOnlyResponse The request metadata.
      * @throws ApiError
      */
     public static async deleteMsgVpnTopicEndpointTemplate(
@@ -12438,8 +12438,8 @@ export class AllService {
      * @param topicEndpointTemplateName The name of the Topic Endpoint Template.
      * @param opaquePassword Accept opaque attributes in the request or return opaque attributes in the response, encrypted with the specified password. See that documentation for the `opaquePassword` parameter.
      * @param select Include in the response only selected attributes of the object, or exclude from the response selected attributes of the object. See the documentation for the `select` parameter.
-     * @result MsgVpnTopicEndpointTemplateResponse The Topic Endpoint Template object's attributes, and the request metadata.
-     * @result SempMetaOnlyResponse The error response.
+     * @returns MsgVpnTopicEndpointTemplateResponse The Topic Endpoint Template object's attributes, and the request metadata.
+     * @returns SempMetaOnlyResponse The error response.
      * @throws ApiError
      */
     public static async getMsgVpnTopicEndpointTemplate(
@@ -12493,8 +12493,8 @@ export class AllService {
      * @param body The Topic Endpoint Template object's attributes.
      * @param opaquePassword Accept opaque attributes in the request or return opaque attributes in the response, encrypted with the specified password. See that documentation for the `opaquePassword` parameter.
      * @param select Include in the response only selected attributes of the object, or exclude from the response selected attributes of the object. See the documentation for the `select` parameter.
-     * @result MsgVpnTopicEndpointTemplateResponse The Topic Endpoint Template object's attributes after being updated, and the request metadata.
-     * @result SempMetaOnlyResponse The error response.
+     * @returns MsgVpnTopicEndpointTemplateResponse The Topic Endpoint Template object's attributes after being updated, and the request metadata.
+     * @returns SempMetaOnlyResponse The error response.
      * @throws ApiError
      */
     public static async updateMsgVpnTopicEndpointTemplate(
@@ -12550,8 +12550,8 @@ export class AllService {
      * @param body The Topic Endpoint Template object's attributes.
      * @param opaquePassword Accept opaque attributes in the request or return opaque attributes in the response, encrypted with the specified password. See that documentation for the `opaquePassword` parameter.
      * @param select Include in the response only selected attributes of the object, or exclude from the response selected attributes of the object. See the documentation for the `select` parameter.
-     * @result MsgVpnTopicEndpointTemplateResponse The Topic Endpoint Template object's attributes after being replaced, and the request metadata.
-     * @result SempMetaOnlyResponse The error response.
+     * @returns MsgVpnTopicEndpointTemplateResponse The Topic Endpoint Template object's attributes after being replaced, and the request metadata.
+     * @returns SempMetaOnlyResponse The error response.
      * @throws ApiError
      */
     public static async replaceMsgVpnTopicEndpointTemplate(
@@ -12596,8 +12596,8 @@ export class AllService {
      * @param opaquePassword Accept opaque attributes in the request or return opaque attributes in the response, encrypted with the specified password. See that documentation for the `opaquePassword` parameter.
      * @param where Include in the response only objects where certain conditions are true. See the the documentation for the `where` parameter.
      * @param select Include in the response only selected attributes of the object, or exclude from the response selected attributes of the object. See the documentation for the `select` parameter.
-     * @result MsgVpnTopicEndpointsResponse The list of Topic Endpoint objects' attributes, and the request metadata.
-     * @result SempMetaOnlyResponse The error response.
+     * @returns MsgVpnTopicEndpointsResponse The list of Topic Endpoint objects' attributes, and the request metadata.
+     * @returns SempMetaOnlyResponse The error response.
      * @throws ApiError
      */
     public static async getMsgVpnTopicEndpoints(
@@ -12655,8 +12655,8 @@ export class AllService {
      * @param body The Topic Endpoint object's attributes.
      * @param opaquePassword Accept opaque attributes in the request or return opaque attributes in the response, encrypted with the specified password. See that documentation for the `opaquePassword` parameter.
      * @param select Include in the response only selected attributes of the object, or exclude from the response selected attributes of the object. See the documentation for the `select` parameter.
-     * @result MsgVpnTopicEndpointResponse The Topic Endpoint object's attributes after being created, and the request metadata.
-     * @result SempMetaOnlyResponse The error response.
+     * @returns MsgVpnTopicEndpointResponse The Topic Endpoint object's attributes after being created, and the request metadata.
+     * @returns SempMetaOnlyResponse The error response.
      * @throws ApiError
      */
     public static async createMsgVpnTopicEndpoint(
@@ -12688,7 +12688,7 @@ export class AllService {
      * This has been available since 2.1.
      * @param msgVpnName The name of the Message VPN.
      * @param topicEndpointName The name of the Topic Endpoint.
-     * @result SempMetaOnlyResponse The request metadata.
+     * @returns SempMetaOnlyResponse The request metadata.
      * @throws ApiError
      */
     public static async deleteMsgVpnTopicEndpoint(
@@ -12723,8 +12723,8 @@ export class AllService {
      * @param topicEndpointName The name of the Topic Endpoint.
      * @param opaquePassword Accept opaque attributes in the request or return opaque attributes in the response, encrypted with the specified password. See that documentation for the `opaquePassword` parameter.
      * @param select Include in the response only selected attributes of the object, or exclude from the response selected attributes of the object. See the documentation for the `select` parameter.
-     * @result MsgVpnTopicEndpointResponse The Topic Endpoint object's attributes, and the request metadata.
-     * @result SempMetaOnlyResponse The error response.
+     * @returns MsgVpnTopicEndpointResponse The Topic Endpoint object's attributes, and the request metadata.
+     * @returns SempMetaOnlyResponse The error response.
      * @throws ApiError
      */
     public static async getMsgVpnTopicEndpoint(
@@ -12782,8 +12782,8 @@ export class AllService {
      * @param body The Topic Endpoint object's attributes.
      * @param opaquePassword Accept opaque attributes in the request or return opaque attributes in the response, encrypted with the specified password. See that documentation for the `opaquePassword` parameter.
      * @param select Include in the response only selected attributes of the object, or exclude from the response selected attributes of the object. See the documentation for the `select` parameter.
-     * @result MsgVpnTopicEndpointResponse The Topic Endpoint object's attributes after being updated, and the request metadata.
-     * @result SempMetaOnlyResponse The error response.
+     * @returns MsgVpnTopicEndpointResponse The Topic Endpoint object's attributes after being updated, and the request metadata.
+     * @returns SempMetaOnlyResponse The error response.
      * @throws ApiError
      */
     public static async updateMsgVpnTopicEndpoint(
@@ -12843,8 +12843,8 @@ export class AllService {
      * @param body The Topic Endpoint object's attributes.
      * @param opaquePassword Accept opaque attributes in the request or return opaque attributes in the response, encrypted with the specified password. See that documentation for the `opaquePassword` parameter.
      * @param select Include in the response only selected attributes of the object, or exclude from the response selected attributes of the object. See the documentation for the `select` parameter.
-     * @result MsgVpnTopicEndpointResponse The Topic Endpoint object's attributes after being replaced, and the request metadata.
-     * @result SempMetaOnlyResponse The error response.
+     * @returns MsgVpnTopicEndpointResponse The Topic Endpoint object's attributes after being replaced, and the request metadata.
+     * @returns SempMetaOnlyResponse The error response.
      * @throws ApiError
      */
     public static async replaceMsgVpnTopicEndpoint(
@@ -12891,8 +12891,8 @@ export class AllService {
      * @param opaquePassword Accept opaque attributes in the request or return opaque attributes in the response, encrypted with the specified password. See that documentation for the `opaquePassword` parameter.
      * @param where Include in the response only objects where certain conditions are true. See the the documentation for the `where` parameter.
      * @param select Include in the response only selected attributes of the object, or exclude from the response selected attributes of the object. See the documentation for the `select` parameter.
-     * @result VirtualHostnamesResponse The list of Virtual Hostname objects' attributes, and the request metadata.
-     * @result SempMetaOnlyResponse The error response.
+     * @returns VirtualHostnamesResponse The list of Virtual Hostname objects' attributes, and the request metadata.
+     * @returns SempMetaOnlyResponse The error response.
      * @throws ApiError
      */
     public static async getVirtualHostnames(
@@ -12939,8 +12939,8 @@ export class AllService {
      * @param body The Virtual Hostname object's attributes.
      * @param opaquePassword Accept opaque attributes in the request or return opaque attributes in the response, encrypted with the specified password. See that documentation for the `opaquePassword` parameter.
      * @param select Include in the response only selected attributes of the object, or exclude from the response selected attributes of the object. See the documentation for the `select` parameter.
-     * @result VirtualHostnameResponse The Virtual Hostname object's attributes after being created, and the request metadata.
-     * @result SempMetaOnlyResponse The error response.
+     * @returns VirtualHostnameResponse The Virtual Hostname object's attributes after being created, and the request metadata.
+     * @returns SempMetaOnlyResponse The error response.
      * @throws ApiError
      */
     public static async createVirtualHostname(
@@ -12974,7 +12974,7 @@ export class AllService {
      *
      * This has been available since 2.17.
      * @param virtualHostname The virtual hostname.
-     * @result SempMetaOnlyResponse The request metadata.
+     * @returns SempMetaOnlyResponse The request metadata.
      * @throws ApiError
      */
     public static async deleteVirtualHostname(
@@ -13010,8 +13010,8 @@ export class AllService {
      * @param virtualHostname The virtual hostname.
      * @param opaquePassword Accept opaque attributes in the request or return opaque attributes in the response, encrypted with the specified password. See that documentation for the `opaquePassword` parameter.
      * @param select Include in the response only selected attributes of the object, or exclude from the response selected attributes of the object. See the documentation for the `select` parameter.
-     * @result VirtualHostnameResponse The Virtual Hostname object's attributes, and the request metadata.
-     * @result SempMetaOnlyResponse The error response.
+     * @returns VirtualHostnameResponse The Virtual Hostname object's attributes, and the request metadata.
+     * @returns SempMetaOnlyResponse The error response.
      * @throws ApiError
      */
     public static async getVirtualHostname(
@@ -13054,8 +13054,8 @@ export class AllService {
      * @param body The Virtual Hostname object's attributes.
      * @param opaquePassword Accept opaque attributes in the request or return opaque attributes in the response, encrypted with the specified password. See that documentation for the `opaquePassword` parameter.
      * @param select Include in the response only selected attributes of the object, or exclude from the response selected attributes of the object. See the documentation for the `select` parameter.
-     * @result VirtualHostnameResponse The Virtual Hostname object's attributes after being updated, and the request metadata.
-     * @result SempMetaOnlyResponse The error response.
+     * @returns VirtualHostnameResponse The Virtual Hostname object's attributes after being updated, and the request metadata.
+     * @returns SempMetaOnlyResponse The error response.
      * @throws ApiError
      */
     public static async updateVirtualHostname(
@@ -13100,8 +13100,8 @@ export class AllService {
      * @param body The Virtual Hostname object's attributes.
      * @param opaquePassword Accept opaque attributes in the request or return opaque attributes in the response, encrypted with the specified password. See that documentation for the `opaquePassword` parameter.
      * @param select Include in the response only selected attributes of the object, or exclude from the response selected attributes of the object. See the documentation for the `select` parameter.
-     * @result VirtualHostnameResponse The Virtual Hostname object's attributes after being replaced, and the request metadata.
-     * @result SempMetaOnlyResponse The error response.
+     * @returns VirtualHostnameResponse The Virtual Hostname object's attributes after being replaced, and the request metadata.
+     * @returns SempMetaOnlyResponse The error response.
      * @throws ApiError
      */
     public static async replaceVirtualHostname(

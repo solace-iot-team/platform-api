@@ -1,7 +1,8 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
-export interface SystemInformation {
+
+export type SystemInformation = {
     /**
      * The platform running the SEMP API.
      */

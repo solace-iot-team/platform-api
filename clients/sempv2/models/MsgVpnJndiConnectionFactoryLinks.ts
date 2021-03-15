@@ -1,7 +1,8 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
-export interface MsgVpnJndiConnectionFactoryLinks {
+
+export type MsgVpnJndiConnectionFactoryLinks = {
     /**
      * The URI of this JNDI Connection Factory object.
      */

@@ -1,7 +1,8 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
-export interface MsgVpnAuthenticationOauthProvider {
+
+export type MsgVpnAuthenticationOauthProvider = {
     /**
      * The audience claim name, indicating which part of the object to use for determining the audience. The default value is `"aud"`.
      */

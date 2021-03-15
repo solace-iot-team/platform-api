@@ -1,7 +1,8 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
-export interface ApplicationDomainStats {
+
+export type ApplicationDomainStats = {
     schemaCount?: number;
     eventCount?: number;
     applicationCount?: number;

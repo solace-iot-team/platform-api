@@ -1,7 +1,8 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
-export interface AboutUser {
+
+export type AboutUser = {
     /**
      * The global access level of the User. The allowed values and their meaning are:
      *

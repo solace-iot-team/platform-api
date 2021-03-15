@@ -1,7 +1,8 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
-export interface EventThresholdByValue {
+
+export type EventThresholdByValue = {
     /**
      * The clear threshold for the absolute value of this counter or rate. Falling below this value will trigger a corresponding event.
      */

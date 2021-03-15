@@ -1,7 +1,8 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
-export interface MsgVpnDistributedCacheClusterInstanceLinks {
+
+export type MsgVpnDistributedCacheClusterInstanceLinks = {
     /**
      * The URI of this Cache Instance object.
      */

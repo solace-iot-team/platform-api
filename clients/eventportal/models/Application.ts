@@ -1,7 +1,8 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
-export interface Application {
+
+export type Application = {
     readonly createdTime?: number;
     readonly updatedTime?: number;
     readonly createdBy?: string;

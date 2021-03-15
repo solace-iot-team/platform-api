@@ -11,7 +11,7 @@ export class AsyncApiService {
      * Use this API to generate the AsyncApi document of an application object.
      * @param id The ID of the application object
      * @param requestBody The version of the AsyncApi specification that you want to generate.
-     * @result string Returns the AsyncApi document as a string.
+     * @returns string Returns the AsyncApi document as a string.
      * @throws ApiError
      */
     public static async generateAsyncApi(

@@ -1,9 +1,10 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
+
 import type { AsyncAPIServer } from './AsyncAPIServer';
 
-export interface GenerateAsyncAPIRequest {
+export type GenerateAsyncAPIRequest = {
     asyncApiVersion: string;
     serverDTOList?: Array<AsyncAPIServer>;
     id?: string;

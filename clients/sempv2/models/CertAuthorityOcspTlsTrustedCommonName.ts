@@ -1,7 +1,8 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
-export interface CertAuthorityOcspTlsTrustedCommonName {
+
+export type CertAuthorityOcspTlsTrustedCommonName = {
     /**
      * The name of the Certificate Authority. Deprecated since 2.19. Replaced by clientCertAuthorities.
      */

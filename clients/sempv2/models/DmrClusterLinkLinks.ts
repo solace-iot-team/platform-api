@@ -1,7 +1,8 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
-export interface DmrClusterLinkLinks {
+
+export type DmrClusterLinkLinks = {
     /**
      * The URI of this Link's collection of Remote Address objects.
      */

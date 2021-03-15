@@ -1,12 +1,13 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
+
 import type { Application } from './Application';
 import type { ApplicationDomainStats } from './ApplicationDomainStats';
 import type { Event } from './Event';
 import type { EventSchema } from './EventSchema';
 
-export interface ApplicationDomain {
+export type ApplicationDomain = {
     readonly createdTime?: number;
     readonly updatedTime?: number;
     readonly createdBy?: string;

@@ -1,7 +1,8 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
-export interface MsgVpnBridgeRemoteMsgVpn {
+
+export type MsgVpnBridgeRemoteMsgVpn = {
     /**
      * The name of the Bridge.
      */

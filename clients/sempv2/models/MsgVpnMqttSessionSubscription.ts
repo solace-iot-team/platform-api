@@ -1,7 +1,8 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
-export interface MsgVpnMqttSessionSubscription {
+
+export type MsgVpnMqttSessionSubscription = {
     /**
      * The Client ID of the MQTT Session, which corresponds to the ClientId provided in the MQTT CONNECT packet.
      */

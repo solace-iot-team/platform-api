@@ -1,10 +1,11 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
+
 import type { EventThreshold } from './EventThreshold';
 import type { EventThresholdByPercent } from './EventThresholdByPercent';
 
-export interface MsgVpnClientProfile {
+export type MsgVpnClientProfile = {
     /**
      * Enable or disable allowing Bridge clients using the Client Profile to connect. Changing this setting does not affect existing Bridge client connections. The default value is `false`.
      */

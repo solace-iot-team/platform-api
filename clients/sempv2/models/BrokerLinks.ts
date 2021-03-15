@@ -1,7 +1,8 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
-export interface BrokerLinks {
+
+export type BrokerLinks = {
     /**
      * The URI of this Broker's About object.
      */

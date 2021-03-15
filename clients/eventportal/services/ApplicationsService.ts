@@ -10,7 +10,7 @@ export class ApplicationsService {
      * Retrieves an application object
      * Use this API to retrieve a single application by its ID.
      * @param id The ID of the application object.
-     * @result any The application object.
+     * @returns any The application object.
      * @throws ApiError
      */
     public static async get1(
@@ -36,7 +36,7 @@ export class ApplicationsService {
      * Deletes an application object
      * Use this API to delete an application. If the application never existed or is already deleted, the operation will still be successful.
      * @param id The ID of the Schema application
-     * @result any No content is returned.
+     * @returns any No content is returned.
      * @throws ApiError
      */
     public static async delete1(
@@ -63,7 +63,7 @@ export class ApplicationsService {
      * Use this API to update an application. You only need to specify the field that needs to be updated.
      * @param id The ID of the application object to update.
      * @param requestBody The application object.
-     * @result any The updated application object.
+     * @returns any The updated application object.
      * @throws ApiError
      */
     public static async update2(
@@ -96,7 +96,7 @@ export class ApplicationsService {
      * @param applicationDomainId Match only applications in the given application domain.
      * @param ids Match only applications with the given IDs separated by commas.
      * @param applicationClass Match only applications with the given application class.
-     * @result any Retrieve a list of applications and the accompanying metadata.
+     * @returns any Retrieve a list of applications and the accompanying metadata.
      * @throws ApiError
      */
     public static async list2(
@@ -135,7 +135,7 @@ export class ApplicationsService {
      * Creates an application object
      * To model your event-driven architecture, applications are a fundamental building block for modelling the producers and consumers of events. Use this API to create applications and model the events they produce and consume.
      * @param requestBody Applications have a name and live within an application domain. Events can be added to the application as produced or consumed.
-     * @result any Created. Returns the newly saved application object in the response body.
+     * @returns any Created. Returns the newly saved application object in the response body.
      * @throws ApiError
      */
     public static async create1(
@@ -162,7 +162,7 @@ export class ApplicationsService {
      * Retrieves the tags of an application
      * Use this API to retrieve all of the tags of an application. Tags are referenced by their tag ID.
      * @param id The ID of the application to retrieve the tags.
-     * @result IdsResponse An array of tags identified by their tag ID.
+     * @returns IdsResponse An array of tags identified by their tag ID.
      * @throws ApiError
      */
     public static async list3(
@@ -189,7 +189,7 @@ export class ApplicationsService {
      * Use this API to update all of the tags of an application. Tags are referenced by their tag ID.
      * @param id The ID of the application object to update.
      * @param requestBody A list of tag IDs
-     * @result IdsResponse An array of the updated tags identified by their tag ID
+     * @returns IdsResponse An array of the updated tags identified by their tag ID
      * @throws ApiError
      */
     public static async update3(
@@ -217,7 +217,7 @@ export class ApplicationsService {
      * Retrieves the owners of an application
      * Use this API to retrieve all of the owners of an application. Owners are referenced by their user ID.
      * @param id The ID of the application to retrieve the owners.
-     * @result IdsResponse An array of owners identified by their user ID.
+     * @returns IdsResponse An array of owners identified by their user ID.
      * @throws ApiError
      */
     public static async list4(
@@ -244,7 +244,7 @@ export class ApplicationsService {
      * Use this API to update all the owners of an application. Owners are referenced by their user ID.
      * @param id The ID of the application object to update.
      * @param requestBody A list of user IDs
-     * @result IdsResponse An array of updated owners identified by their user ID
+     * @returns IdsResponse An array of updated owners identified by their user ID
      * @throws ApiError
      */
     public static async update4(

@@ -1,7 +1,8 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
-export interface DmrClusterLinkTlsTrustedCommonNameLinks {
+
+export type DmrClusterLinkTlsTrustedCommonNameLinks = {
     /**
      * The URI of this Trusted Common Name object.
      */

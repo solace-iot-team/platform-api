@@ -1,7 +1,8 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
-export interface MsgVpnJndiTopic {
+
+export type MsgVpnJndiTopic = {
     /**
      * The name of the Message VPN.
      */

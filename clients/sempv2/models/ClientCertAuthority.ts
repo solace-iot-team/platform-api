@@ -1,7 +1,8 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
-export interface ClientCertAuthority {
+
+export type ClientCertAuthority = {
     /**
      * The name of the Certificate Authority.
      */

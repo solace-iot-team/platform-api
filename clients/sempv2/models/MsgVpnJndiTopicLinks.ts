@@ -1,7 +1,8 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
-export interface MsgVpnJndiTopicLinks {
+
+export type MsgVpnJndiTopicLinks = {
     /**
      * The URI of this JNDI Topic object.
      */

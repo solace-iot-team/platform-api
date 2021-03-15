@@ -1,7 +1,8 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
-export interface MsgVpnRestDeliveryPointLinks {
+
+export type MsgVpnRestDeliveryPointLinks = {
     /**
      * The URI of this REST Delivery Point's collection of Queue Binding objects.
      */

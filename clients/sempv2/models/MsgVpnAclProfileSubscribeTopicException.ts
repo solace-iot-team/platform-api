@@ -1,7 +1,8 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
-export interface MsgVpnAclProfileSubscribeTopicException {
+
+export type MsgVpnAclProfileSubscribeTopicException = {
     /**
      * The name of the ACL Profile.
      */

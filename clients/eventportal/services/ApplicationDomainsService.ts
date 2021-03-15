@@ -10,7 +10,7 @@ export class ApplicationDomainsService {
      * Retrieves an application domain object
      * Use this API to retrieve a single application domain by its ID.
      * @param id The ID of the application domain object.
-     * @result any The application domain object.
+     * @returns any The application domain object.
      * @throws ApiError
      */
     public static async get(
@@ -36,7 +36,7 @@ export class ApplicationDomainsService {
      * Deletes an application domain object
      * Use this API to delete an application domain. This action also deletes all applications, events, and schemas in the application domain. You cannot undo this operation.
      * @param id The ID of the application domain object.
-     * @result any No content is returned.
+     * @returns any No content is returned.
      * @throws ApiError
      */
     public static async delete(
@@ -63,7 +63,7 @@ export class ApplicationDomainsService {
      * Use this API to update an application domain. You only need to specify the field that needs to be updated.
      * @param id The ID of the application domain object.
      * @param requestBody The application domain object.
-     * @result any The updated application domain object.
+     * @returns any The updated application domain object.
      * @throws ApiError
      */
     public static async update(
@@ -95,7 +95,7 @@ export class ApplicationDomainsService {
      * @param name Name to be used to match the application domain.
      * @param ids Match only application domains with the given IDs separated by commas
      * @param topicDomain Match only application domains with the given topic domain.
-     * @result any Retrieve a list of application domains and the accompanying metadata.
+     * @returns any Retrieve a list of application domains and the accompanying metadata.
      * @throws ApiError
      */
     public static async list(
@@ -132,7 +132,7 @@ export class ApplicationDomainsService {
      * Creates an application domain object.
      * To help keep your event-driven architecture organized, use application domains to create namespaces for your applications, events and schemas.
      * @param requestBody Application domains have a name and topic domain.
-     * @result any Created. The newly saved application domain object is returned in the response body.
+     * @returns any Created. The newly saved application domain object is returned in the response body.
      * @throws ApiError
      */
     public static async create(
@@ -159,7 +159,7 @@ export class ApplicationDomainsService {
      * Retrieves the owners of an application domain.
      * Use this API to retrieve all of the owners of an application domain. Owners are referenced by their user ID.
      * @param id The ID of the application domain to retrieve the owners.
-     * @result IdsResponse An array of owners identified by their user ID.
+     * @returns IdsResponse An array of owners identified by their user ID.
      * @throws ApiError
      */
     public static async list1(
@@ -186,7 +186,7 @@ export class ApplicationDomainsService {
      * Use this API to update all of the owners of an application domain. Owners are referenced by their user ID.
      * @param id The ID of the application domain object to update.
      * @param requestBody A list of user IDs.
-     * @result IdsResponse The updated application domain object.
+     * @returns IdsResponse The updated application domain object.
      * @throws ApiError
      */
     public static async update1(

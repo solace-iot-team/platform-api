@@ -1,7 +1,8 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
-export interface MsgVpnMqttRetainCacheLinks {
+
+export type MsgVpnMqttRetainCacheLinks = {
     /**
      * The URI of this MQTT Retain Cache object.
      */

@@ -1,7 +1,8 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
-export interface MsgVpnQueueSubscriptionLinks {
+
+export type MsgVpnQueueSubscriptionLinks = {
     /**
      * The URI of this Queue Subscription object.
      */
