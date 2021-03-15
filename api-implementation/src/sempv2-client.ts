@@ -5,6 +5,4 @@ export class Sempv2Client {
 		 OpenAPI.BASE = base;
 		 OpenAPI.TOKEN = encode(`${username}:${password}`);
 	  }
-	 
-
 }
