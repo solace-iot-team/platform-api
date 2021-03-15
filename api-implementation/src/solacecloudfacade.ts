@@ -1,7 +1,7 @@
 import L from '../server/common/logger';
 
 import Environment = Components.Schemas.Environment;
-import { OpenAPI, Service, ServicesService, ServiceResponse, ServicesResponse, ApiError } from "./clients/solacecloud";
+import { OpenAPI, Service, ServicesService, ServiceResponse, ServicesResponse } from "./clients/solacecloud";
 
 import getToken from './cloudtokenhelper';
 import { ErrorResponseInternal } from '../server/api/middlewares/error.handler';
