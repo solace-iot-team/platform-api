@@ -19,7 +19,6 @@ import { Service } from '../../../src/clients/solacecloud';
 import {
   AllService, MsgVpnClientUsername,
   MsgVpnAclProfile,
-  MsgVpnAclProfileResponse,
   MsgVpnAclProfilePublishException,
   MsgVpnAclProfileSubscribeException,
   MsgVpnQueue,
