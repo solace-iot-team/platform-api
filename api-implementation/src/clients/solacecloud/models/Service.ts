@@ -1,7 +1,8 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
-export interface Service {
+
+export type Service = {
     type?: string;
     timestamp?: number;
     userId?: string;
