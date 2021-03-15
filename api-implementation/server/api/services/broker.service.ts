@@ -41,37 +41,21 @@ enum Direction {
 }
 
 class BrokerService {
-
-  getPermissions(app: App, developer: Developer, envName: string): Promise<Permissions> {
-    return new Promise<Permissions>((resolve, reject) => {
-      var environmentNames: string[] = [];
-
-      var apiProductPromises: Promise<APIProduct>[] = [];
-      app.apiProducts.forEach((productName: string) => {
-        L.info(productName);
-        apiProductPromises.push(ApiProductsService.byName(productName));
-      });
-
-      Promise.all(apiProductPromises).then(async (products: APIProduct[]) => {
-        products.forEach((product: APIProduct) => {
-          product.environments.forEach((e: string) => {
-            environmentNames.push(e);
-          })
-          L.info(`env: ${product.environments}`);
-        });
-        environmentNames = Array.from(new Set(environmentNames));
-
-        try {
-          var c: Permissions = await this.getClientACLExceptions(app, products, developer, envName);
-          resolve(c);
-
-        } catch (e) {
-          L.error("Get permissions error");
-          reject(new ErrorResponseInternal(500, e));
-        }
-      });
-    });
+  async getPermissions(app: App, developer: Developer, envName: string): Promise<Permissions> {
+    const products: APIProduct[] = [];
+    try {
+      for (const productName of app.apiProducts) {
+        const product = await ApiProductsService.byName(productName);
+        products.push(product);
+      }
+      var permissions: Permissions = await this.getClientACLExceptions(app, products, developer, envName);
+      return permissions;
+    } catch (err) {
+      L.error("Get permissions error");
+      throw new ErrorResponseInternal(500, err);
+    }
   }
+
   provisionApp(app: App, developer: Developer): Promise<void> {
     return new Promise<void>((resolve, reject) => {
       var apiProductPromises: Promise<APIProduct>[] = [];
