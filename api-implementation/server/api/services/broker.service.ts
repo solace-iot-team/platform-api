@@ -72,8 +72,8 @@ class BrokerService {
       });
     });
   }
-  provisionApp(app: App, developer: Developer): Promise<any> {
-    return new Promise<any>((resolve, reject) => {
+  provisionApp(app: App, developer: Developer): Promise<void> {
+    return new Promise<void>((resolve, reject) => {
       var apiProductPromises: Promise<APIProduct>[] = [];
       app.apiProducts.forEach((productName: string) => {
         L.info(productName);
@@ -111,7 +111,7 @@ class BrokerService {
             }
 
           }
-          resolve(null);
+          resolve();
         } catch (e) {
           L.error(`Provisioning error ${e}`);
           reject(new ErrorResponseInternal(500, e));
@@ -121,7 +121,7 @@ class BrokerService {
   }
 
   deprovisionApp(app: App) {
-    return new Promise<any>((resolve, reject) => {
+    return new Promise<void>((resolve, reject) => {
       var environmentNames: string[] = [];
 
       var apiProductPromises: Promise<APIProduct>[] = [];
@@ -145,7 +145,7 @@ class BrokerService {
           await this.deleteACLs(app, services);
           await this.deleteRDPs(app, services);
           await this.deleteQueues(app, services);
-          resolve(null);
+          resolve();
         } catch (e) {
           L.error('De-Provisioninig error');
           reject(new ErrorResponseInternal(500, e));
@@ -189,7 +189,7 @@ class BrokerService {
   }
 
   private createACLs(app: App, services: Service[]) {
-    return new Promise<any>(async (resolve, reject) => {
+    return new Promise<void>(async (resolve, reject) => {
       var allACLResponses: Promise<MsgVpnAclProfileResponse>[] = [];
       for (var service of services) {
 
@@ -222,7 +222,7 @@ class BrokerService {
   }
 
   private deleteACLs(app: App, services: Service[]) {
-    return new Promise<any>(async (resolve, reject) => {
+    return new Promise<void>(async (resolve, reject) => {
       for (var service of services) {
         var sempv2Client = this.getSEMPv2Client(service);
         try {
@@ -239,7 +239,7 @@ class BrokerService {
   }
 
   private deleteQueues(app: App, services: Service[]) {
-    return new Promise<any>(async (resolve, reject) => {
+    return new Promise<void>(async (resolve, reject) => {
       for (var service of services) {
         var sempv2Client = this.getSEMPv2Client(service);
         try {
@@ -257,7 +257,7 @@ class BrokerService {
   }
 
   private deleteRDPs(app: App, services: Service[]) {
-    return new Promise<any>(async (resolve, reject) => {
+    return new Promise<void>(async (resolve, reject) => {
       for (var service of services) {
         var sempv2Client = this.getSEMPv2Client(service);
         try {
@@ -272,8 +272,8 @@ class BrokerService {
       }
     });
   }
-  private createClientUsernames(app: App, services: Service[]): Promise<any> {
-    return new Promise<any>(async (resolve, reject) => {
+  private createClientUsernames(app: App, services: Service[]): Promise<void> {
+    return new Promise<void>(async (resolve, reject) => {
       for (var service of services) {
         var sempV2Client = this.getSEMPv2Client(service);
         var clientUsername: MsgVpnClientUsername = {
@@ -304,8 +304,8 @@ class BrokerService {
     });
   }
 
-  private deleteClientUsernames(app: App, services: Service[]): Promise<any> {
-    return new Promise<any>(async (resolve, reject) => {
+  private deleteClientUsernames(app: App, services: Service[]): Promise<void> {
+    return new Promise<void>(async (resolve, reject) => {
       for (var service of services) {
         var sempV2Client = this.getSEMPv2Client(service);
         var clientUsername: MsgVpnClientUsername = {
@@ -329,7 +329,7 @@ class BrokerService {
     });
   }
   private createClientACLExceptions(app: App, services: Service[], apiProducts: APIProduct[], developer: Developer): Promise<void> {
-    return new Promise<any>(async (resolve, reject) => {
+    return new Promise<void>(async (resolve, reject) => {
       var publishExceptions: string[] = [];
       var subscribeExceptions: string[] = [];
       // compile list of event destinations sub / pub separately
@@ -389,7 +389,7 @@ class BrokerService {
   }
 
   private createRDP(app: App, services: Service[], apiProducts: APIProduct[]): Promise<void> {
-    return new Promise<any>(async (resolve, reject) => {
+    return new Promise<void>(async (resolve, reject) => {
       L.info(`createRDP services: ${services}`);
       var subscribeExceptions: string[] = [];
       var useTls: boolean = false;
@@ -565,7 +565,7 @@ class BrokerService {
 
 
   private createQueues(app: App, services: Service[], apiProducts: APIProduct[], developer: Developer): Promise<void> {
-    return new Promise<any>(async (resolve, reject) => {
+    return new Promise<void>(async (resolve, reject) => {
       L.info(`createQueueSubscriptions services: ${services}`);
       var subscribeExceptions: string[] = [];
       for (var product of apiProducts) {
