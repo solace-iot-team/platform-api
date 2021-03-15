@@ -169,9 +169,9 @@ class BrokerService {
         returnServices.push(service);
       }
       return returnServices;
-    } catch (e) {
-      L.error(e);
-      throw e;
+    } catch (err) {
+      L.error(`getServices - ${JSON.stringify(err)}`);
+      throw err;
     }
   }
 
@@ -182,25 +182,26 @@ class BrokerService {
       L.info(env.serviceId);
       const service = await SolaceCloudFacade.getServiceByEnvironment(env);
       return service;
-    } catch (e) {
-      L.error(e);
-      throw e;
+    } catch (err) {
+      L.error(`getServiceByEnv - ${JSON.stringify(err)}`);
+      throw err;
     }
   }
 
   private createACLs(app: App, services: Service[]) {
     return new Promise<void>(async (resolve, reject) => {
-      var allACLResponses: Promise<MsgVpnAclProfileResponse>[] = [];
-      for (var service of services) {
+      for (const service of services) {
 
-        var sempv2Client = this.getSEMPv2Client(service);
-        var aclProfile: MsgVpnAclProfile = {
+        const sempv2Client = this.getSEMPv2Client(service);
+        const aclProfile: MsgVpnAclProfile = {
           aclProfileName: app.credentials.secret.consumerKey,
-          clientConnectDefaultAction: MsgVpnAclProfile.clientConnectDefaultAction.ALLOW,
-          publishTopicDefaultAction: MsgVpnAclProfile.publishTopicDefaultAction.DISALLOW,
-          subscribeTopicDefaultAction: MsgVpnAclProfile.subscribeTopicDefaultAction.DISALLOW,
-          msgVpnName: service.msgVpnName
-
+          clientConnectDefaultAction:
+            MsgVpnAclProfile.clientConnectDefaultAction.ALLOW,
+          publishTopicDefaultAction:
+            MsgVpnAclProfile.publishTopicDefaultAction.DISALLOW,
+          subscribeTopicDefaultAction:
+            MsgVpnAclProfile.subscribeTopicDefaultAction.DISALLOW,
+          msgVpnName: service.msgVpnName,
         };
         try {
           var getResponse = await AllService.getMsgVpnAclProfile(service.msgVpnName, app.credentials.secret.consumerKey);
@@ -845,55 +846,65 @@ class BrokerService {
   public getMessagingProtocols(app: App): Promise<AppEnvironment[]> {
 
     return new Promise<AppEnvironment[]>((resolve, reject) => {
-      var appEnvironments: AppEnvironment[] = [];
+      const appEnvironments: AppEnvironment[] = [];
 
-      var apiProductPromises: Promise<APIProduct>[] = [];
+      const apiProductPromises: Promise<APIProduct>[] = [];
       app.apiProducts.forEach((productName: string) => {
         L.info(productName);
         apiProductPromises.push(ApiProductsService.byName(productName));
       });
 
-      Promise.all(apiProductPromises).then(async (products: APIProduct[]) => {
-        for (var product of products) {
-          L.info(`getMessagingProtocols ${product.name}`);
-          for (var envName of product.environments) {
-            var appEnv = appEnvironments.find(ae => ae.name == envName);
-            if (appEnv === undefined) {
-              appEnv = {
-                name: envName
-              };
-              appEnvironments.push(appEnv);
-            }
-            const service = await this.getServiceByEnv(envName);
-            var endpoints: Endpoint[] = [];
-            for (var protocol of product.protocols) {
-              L.info(`getMessagingProtocols ${protocol.name}`);
-              var keys = ProtocolMapper.findByAsyncAPIProtocol(protocol).protocolKeys;
-              L.info(`getMessagingProtocols ${keys.name} ${keys.protocol}`);
-              var endpoint = service.messagingProtocols.find(mp => mp.name == keys.name).endPoints.find(ep => ep.transport == keys.protocol);
-              L.info(endpoint);
-              var newEndpoint: Endpoint = endpoints.find(ep => ep.uri == endpoint.uris[0]);
-              L.info(newEndpoint);
-              if (newEndpoint === undefined) {
-                newEndpoint = {
-                  compressed: endpoint.compressed == 'yes' ? 'yes' : 'no',
-                  secure: endpoint.secured == 'yes' ? 'yes' : 'no',
-                  protocol: protocol,
-                  transport: endpoint.transport,
-                  uri: endpoint.uris[0]
-                };
-                endpoints.push(newEndpoint);
+      Promise.all(apiProductPromises)
+        .then(async (products: APIProduct[]) => {
+          try {
+            for (const product of products) {
+              L.info(`getMessagingProtocols ${product.name}`);
+              for (const envName of product.environments) {
+                let appEnv = appEnvironments.find((ae) => ae.name == envName);
+                if (appEnv === undefined) {
+                  appEnv = {
+                    name: envName,
+                  };
+                  appEnvironments.push(appEnv);
+                }
+                const service = await this.getServiceByEnv(envName);
+                const endpoints: Endpoint[] = [];
+                for (const protocol of product.protocols) {
+                  L.info(`getMessagingProtocols ${protocol.name}`);
+                  const keys = ProtocolMapper.findByAsyncAPIProtocol(protocol)
+                    .protocolKeys;
+                  L.info(`getMessagingProtocols ${keys.name} ${keys.protocol}`);
+                  const endpoint = service.messagingProtocols
+                    .find((mp) => mp.name == keys.name)
+                    .endPoints.find((ep) => ep.transport == keys.protocol);
+                  L.info(endpoint);
+                  let newEndpoint: Endpoint = endpoints.find(
+                    (ep) => ep.uri == endpoint.uris[0]
+                  );
+                  L.info(newEndpoint);
+                  if (newEndpoint === undefined) {
+                    newEndpoint = {
+                      compressed: endpoint.compressed == 'yes' ? 'yes' : 'no',
+                      secure: endpoint.secured == 'yes' ? 'yes' : 'no',
+                      protocol: protocol,
+                      transport: endpoint.transport,
+                      uri: endpoint.uris[0],
+                    };
+                    endpoints.push(newEndpoint);
+                  }
+                }
+                appEnv.messagingProtocols = endpoints;
               }
             }
-            appEnv.messagingProtocols = endpoints;
+            resolve(appEnvironments);
+          } catch (error) {
+            reject(error);
           }
-        }
-        resolve(appEnvironments);
-
-      });
-
+        })
+        .catch((err) => {
+          reject(err);
+        });
     });
-
   }
 
   private getBindingsFromAsyncAPIs(apis: string[]): Promise<string[]> {
