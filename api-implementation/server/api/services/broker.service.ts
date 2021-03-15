@@ -573,6 +573,8 @@ class BrokerService {
         for (var s of strs) {
           subscribeExceptions.push(s);
         }
+        // add in the pubresources as well (again, AsyncAPI reverse )
+        subscribeExceptions = subscribeExceptions.concat(product.pubResources);
       }
       if (subscribeExceptions.length < 1) {
         resolve();
@@ -675,9 +677,10 @@ class BrokerService {
 
       //L.debug(publishExceptions);
       //L.debug(subscribeExceptions);
+      // reverse - Async API usage of verbs
       var permissions: Permissions = {
-        publish: publishExceptions,
-        subscribe: subscribeExceptions
+        publish: subscribeExceptions,
+        subscribe: publishExceptions
       }
       resolve(permissions);
     });
@@ -817,8 +820,8 @@ class BrokerService {
                 spec.channelNames().forEach((s: string) => {
 
                   var channel = spec.channel(s);
-
-                  if (channel.hasSubscribe() && (channel.subscribe().hasBinding('http') || channel.subscribe().hasBinding('https'))) {
+                  // publish means subscribe - async api transposition
+                  if (channel.hasPublishj() && (channel.publish().hasBinding('http') || channel.publish().hasBinding('https'))) {
                     L.info(`getRDPSubscriptionsFromAsyncAPIs subscribe ${s}`)
                     resources.push(s);
                   }
