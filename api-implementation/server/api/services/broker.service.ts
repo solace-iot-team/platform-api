@@ -130,9 +130,9 @@ class BrokerService {
           await this.deleteRDPs(app, services);
           await this.deleteQueues(app, services);
           resolve();
-        } catch (e) {
+        } catch (err) {
           L.error('De-Provisioninig error');
-          reject(new ErrorResponseInternal(500, e));
+          reject(new ErrorResponseInternal(500, err));
         }
       });
     });
@@ -284,29 +284,17 @@ class BrokerService {
     });
   }
 
-  private deleteClientUsernames(app: App, services: Service[]): Promise<void> {
-    return new Promise<void>(async (resolve, reject) => {
+  private async deleteClientUsernames(app: App, services: Service[]): Promise<void> {
       for (var service of services) {
-        var sempV2Client = this.getSEMPv2Client(service);
-        var clientUsername: MsgVpnClientUsername = {
-          aclProfileName: app.credentials.secret.consumerKey,
-          clientUsername: app.credentials.secret.consumerKey,
-          password: app.credentials.secret.consumerSecret,
-          clientProfileName: "default",
-          msgVpnName: service.msgVpnName,
-          enabled: true
-
-        };
+        const sempV2Client = this.getSEMPv2Client(service);
         try {
-          var getResponse = await AllService.deleteMsgVpnClientUsername(service.msgVpnName, app.credentials.secret.consumerKey);
-        } catch (e) {
-          if (!(e.body.meta.error.status == "NOT_FOUND")) {
-            reject(e);
+          const getResponse = await AllService.deleteMsgVpnClientUsername(service.msgVpnName, app.credentials.secret.consumerKey);
+        } catch (err) {
+          if (!(err.body.meta.error.status == "NOT_FOUND")) {
+            throw err;
           }
         }
       }
-      resolve();
-    });
   }
   private createClientACLExceptions(app: App, services: Service[], apiProducts: APIProduct[], developer: Developer): Promise<void> {
     return new Promise<void>(async (resolve, reject) => {
