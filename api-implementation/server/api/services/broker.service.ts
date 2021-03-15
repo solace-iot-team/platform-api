@@ -173,74 +173,74 @@ class BrokerService {
   }
 
   private async createACLs(app: App, services: Service[]): Promise<void> {
-      for (const service of services) {
-        const sempv2Client = this.getSEMPv2Client(service);
-        const aclProfile: MsgVpnAclProfile = {
-          aclProfileName: app.credentials.secret.consumerKey,
-          clientConnectDefaultAction:
-            MsgVpnAclProfile.clientConnectDefaultAction.ALLOW,
-          publishTopicDefaultAction:
-            MsgVpnAclProfile.publishTopicDefaultAction.DISALLOW,
-          subscribeTopicDefaultAction:
-            MsgVpnAclProfile.subscribeTopicDefaultAction.DISALLOW,
-          msgVpnName: service.msgVpnName,
-        };
-        try {
-          const getResponse = await AllService.getMsgVpnAclProfile(service.msgVpnName, app.credentials.secret.consumerKey);
-          L.debug(`ACL Looked up ${JSON.stringify(getResponse)}`);
-          const responseUpd = await AllService.updateMsgVpnAclProfile(service.msgVpnName, app.credentials.secret.consumerKey, aclProfile);
-          L.debug(`ACL updated ${JSON.stringify(responseUpd)}`);
-        } catch (e) {
-          try {
-            const response = await AllService.createMsgVpnAclProfile(service.msgVpnName, aclProfile);
-            L.debug(`ACL updated ${JSON.stringify(response)}`);
-          } catch (err) {
-            throw (err);
-          }
-        }
+    for (const service of services) {
+      const sempv2Client = this.getSEMPv2Client(service);
+      const aclProfile: MsgVpnAclProfile = {
+        aclProfileName: app.credentials.secret.consumerKey,
+        clientConnectDefaultAction:
+          MsgVpnAclProfile.clientConnectDefaultAction.ALLOW,
+        publishTopicDefaultAction:
+          MsgVpnAclProfile.publishTopicDefaultAction.DISALLOW,
+        subscribeTopicDefaultAction:
+          MsgVpnAclProfile.subscribeTopicDefaultAction.DISALLOW,
+        msgVpnName: service.msgVpnName,
       };
+      try {
+        const getResponse = await AllService.getMsgVpnAclProfile(service.msgVpnName, app.credentials.secret.consumerKey);
+        L.debug(`ACL Looked up ${JSON.stringify(getResponse)}`);
+        const responseUpd = await AllService.updateMsgVpnAclProfile(service.msgVpnName, app.credentials.secret.consumerKey, aclProfile);
+        L.debug(`ACL updated ${JSON.stringify(responseUpd)}`);
+      } catch (e) {
+        try {
+          const response = await AllService.createMsgVpnAclProfile(service.msgVpnName, aclProfile);
+          L.debug(`ACL updated ${JSON.stringify(response)}`);
+        } catch (err) {
+          throw (err);
+        }
+      }
+    };
   }
 
   private async deleteACLs(app: App, services: Service[]) {
-      for (var service of services) {
-        var sempv2Client = this.getSEMPv2Client(service);
-        try {
-          var getResponse = await AllService.deleteMsgVpnAclProfile(service.msgVpnName, app.credentials.secret.consumerKey);
-          L.info("ACL deleted");
-        } catch (err) {
-          if (!(err.body.meta.error.status == "NOT_FOUND")) {
-            throw err;
-          }
+    for (var service of services) {
+      var sempv2Client = this.getSEMPv2Client(service);
+      try {
+        var getResponse = await AllService.deleteMsgVpnAclProfile(service.msgVpnName, app.credentials.secret.consumerKey);
+        L.info("ACL deleted");
+      } catch (err) {
+        if (!(err.body.meta.error.status == "NOT_FOUND")) {
+          throw err;
         }
-      };
+      }
+    };
   }
 
   private async deleteQueues(app: App, services: Service[]) {
-      for (var service of services) {
-        var sempv2Client = this.getSEMPv2Client(service);
-        try {
-          var getResponse = await AllService.deleteMsgVpnQueue(service.msgVpnName, app.credentials.secret.consumerKey);
-          L.info('Queue deleted');
-        } catch (e) {
-          if (!(e.body.meta.error.status == "NOT_FOUND")) {
-            throw e;
-          }
-
+    for (var service of services) {
+      var sempv2Client = this.getSEMPv2Client(service);
+      try {
+        var getResponse = await AllService.deleteMsgVpnQueue(service.msgVpnName, app.credentials.secret.consumerKey);
+        L.info('Queue deleted');
+      } catch (e) {
+        if (!(e.body.meta.error.status == "NOT_FOUND")) {
+          throw e;
         }
-      };
+
+      }
+    };
   }
 
   private async deleteRDPs(app: App, services: Service[]) {
-      for (var service of services) {
-        var sempv2Client = this.getSEMPv2Client(service);
-        try {
-          var getResponse = await AllService.deleteMsgVpnRestDeliveryPoint(service.msgVpnName, app.credentials.secret.consumerKey);
-          L.info("RDP deleted");
-        } catch (e) {
-          if (!(e.body.meta.error.status == "NOT_FOUND"))
-            throw e;
-        }
+    for (var service of services) {
+      var sempv2Client = this.getSEMPv2Client(service);
+      try {
+        var getResponse = await AllService.deleteMsgVpnRestDeliveryPoint(service.msgVpnName, app.credentials.secret.consumerKey);
+        L.info("RDP deleted");
+      } catch (e) {
+        if (!(e.body.meta.error.status == "NOT_FOUND"))
+          throw e;
       }
+    }
   }
   private createClientUsernames(app: App, services: Service[]): Promise<void> {
     return new Promise<void>(async (resolve, reject) => {
@@ -275,16 +275,16 @@ class BrokerService {
   }
 
   private async deleteClientUsernames(app: App, services: Service[]): Promise<void> {
-      for (var service of services) {
-        const sempV2Client = this.getSEMPv2Client(service);
-        try {
-          const getResponse = await AllService.deleteMsgVpnClientUsername(service.msgVpnName, app.credentials.secret.consumerKey);
-        } catch (err) {
-          if (!(err.body.meta.error.status == "NOT_FOUND")) {
-            throw err;
-          }
+    for (var service of services) {
+      const sempV2Client = this.getSEMPv2Client(service);
+      try {
+        const getResponse = await AllService.deleteMsgVpnClientUsername(service.msgVpnName, app.credentials.secret.consumerKey);
+      } catch (err) {
+        if (!(err.body.meta.error.status == "NOT_FOUND")) {
+          throw err;
         }
       }
+    }
   }
   private createClientACLExceptions(app: App, services: Service[], apiProducts: APIProduct[], developer: Developer): Promise<void> {
     return new Promise<void>(async (resolve, reject) => {
@@ -601,29 +601,24 @@ class BrokerService {
     });
   }
 
-  public getClientACLExceptions(app: App, apiProducts: APIProduct[], developer: Developer, envName: string): Promise<Permissions> {
-    return new Promise<Permissions>(async (resolve, reject) => {
-
-      var publishExceptions: string[] = [];
-      var subscribeExceptions: string[] = [];
+  public async getClientACLExceptions(app: App, apiProducts: APIProduct[], developer: Developer, envName: string): Promise<Permissions> {
+    try {
+      let publishExceptions: string[] = [];
+      let subscribeExceptions: string[] = [];
       // compile list of event destinations sub / pub separately
-      for (var product of apiProducts) {
-        for (var env of product.environments) {
+      for (const product of apiProducts) {
+        for (const env of product.environments) {
           if (env == envName) {
             publishExceptions = this.getResources(product.pubResources).concat(publishExceptions);
             subscribeExceptions = this.getResources(product.subResources).concat(subscribeExceptions);
-            var strs: string[] = await this.getResourcesFromAsyncAPIs(product.apis, Direction.Subscribe);
-            for (var s of strs) {
-              subscribeExceptions.push(s);
-            }
+            let strs: string[] = await this.getResourcesFromAsyncAPIs(product.apis, Direction.Subscribe);
+            subscribeExceptions = subscribeExceptions.concat(strs);
             strs = await this.getResourcesFromAsyncAPIs(product.apis, Direction.Publish);
-            for (var s of strs) {
-              publishExceptions.push(s);
-            }
+            publishExceptions = publishExceptions.concat(strs);
           }
         }
       }
-      var attributes: any[] = this.getAttributes(app, developer, apiProducts);
+      let attributes: any[] = this.getAttributes(app, developer, apiProducts);
       subscribeExceptions = this.enrichTopics(subscribeExceptions, attributes);
       publishExceptions = this.enrichTopics(publishExceptions, attributes);
       publishExceptions.forEach((s, index, arr) => {
@@ -633,86 +628,71 @@ class BrokerService {
         arr[index] = this.scrubDestination(s);
       });
 
-      //L.debug(publishExceptions);
-      //L.debug(subscribeExceptions);
       // reverse - Async API usage of verbs
       var permissions: Permissions = {
         publish: subscribeExceptions,
         subscribe: publishExceptions
       }
-      resolve(permissions);
-    });
+      return permissions;
+    } catch (err) {
+      throw err;
+
+    }
   }
 
 
-  private addPublishTopicExceptions(app: App, services: Service[], exceptions: string[]): Promise<void> {
-    return new Promise<void>(async (resolve, reject) => {
-      for (var service of services) {
-        var sempV2Client = this.getSEMPv2Client(service);
-        for (var exception of exceptions) {
-          var aclException: MsgVpnAclProfilePublishException = {
-            aclProfileName: app.credentials.secret.consumerKey,
-            msgVpnName: service.msgVpnName,
-            publishExceptionTopic: exception,
-            topicSyntax: MsgVpnAclProfilePublishException.topicSyntax.SMF
-          };
-          //L.debug("createMsgVpnAclProfilePublishException");
-          //L.debug(aclException);
+  private async addPublishTopicExceptions(app: App, services: Service[], exceptions: string[]): Promise<void> {
+    for (var service of services) {
+      var sempV2Client = this.getSEMPv2Client(service);
+      for (var exception of exceptions) {
+        var aclException: MsgVpnAclProfilePublishException = {
+          aclProfileName: app.credentials.secret.consumerKey,
+          msgVpnName: service.msgVpnName,
+          publishExceptionTopic: exception,
+          topicSyntax: MsgVpnAclProfilePublishException.topicSyntax.SMF
+        };
+        try {
+          var getResponse = await AllService.getMsgVpnAclProfilePublishException(service.msgVpnName, app.credentials.secret.consumerKey, MsgVpnAclProfilePublishException.topicSyntax.SMF, encodeURIComponent(exception));
+          L.info("ACL Looked up");
+        } catch (e) {
+          L.info(`addPublishTopicExceptions lookup  failed ${e}`);
           try {
-
-            var getResponse = await AllService.getMsgVpnAclProfilePublishException(service.msgVpnName, app.credentials.secret.consumerKey, MsgVpnAclProfilePublishException.topicSyntax.SMF, encodeURIComponent(exception));
-            L.info("ACL Looked up");
-          } catch (e) {
-            L.info(`addPublishTopicExceptions lookup  failed ${e}`);
-            try {
-              let response = await AllService.createMsgVpnAclProfilePublishException(service.msgVpnName, app.credentials.secret.consumerKey, aclException);
-              L.info("created  PublishException");
-            } catch (e) {
-              L.info(`addPublishTopicExceptions add failed ${e}`);
-              reject(e);
-            }
+            let response = await AllService.createMsgVpnAclProfilePublishException(service.msgVpnName, app.credentials.secret.consumerKey, aclException);
+            L.info("created PublishException");
+          } catch (err) {
+            L.info(`addPublishTopicExceptions add failed ${err}`);
+            throw err;
           }
         }
-
       }
-      L.info("addPublishTopicExceptions resolved");
-      resolve();
-    });
-
+    }
   }
-  private addSubscribeTopicExceptions(app: App, services: Service[], exceptions: string[]): Promise<void> {
-    return new Promise<void>(async (resolve, reject) => {
-      for (var service of services) {
-        var sempV2Client = this.getSEMPv2Client(service);
-        for (var exception of exceptions) {
-          var aclException: MsgVpnAclProfileSubscribeException = {
-            aclProfileName: app.credentials.secret.consumerKey,
-            msgVpnName: service.msgVpnName,
-            subscribeExceptionTopic: exception,
-            topicSyntax: MsgVpnAclProfileSubscribeException.topicSyntax.SMF
-          };
-          //L.debug("createMsgVpnAclProfileSubscribeException");
-          //L.debug(aclException);
+  private async addSubscribeTopicExceptions(app: App, services: Service[], exceptions: string[]): Promise<void> {
+    for (var service of services) {
+      var sempV2Client = this.getSEMPv2Client(service);
+      for (var exception of exceptions) {
+        var aclException: MsgVpnAclProfileSubscribeException = {
+          aclProfileName: app.credentials.secret.consumerKey,
+          msgVpnName: service.msgVpnName,
+          subscribeExceptionTopic: exception,
+          topicSyntax: MsgVpnAclProfileSubscribeException.topicSyntax.SMF
+        };
+        try {
+          var getResponse = await AllService.getMsgVpnAclProfileSubscribeException(service.msgVpnName, app.credentials.secret.consumerKey, MsgVpnAclProfileSubscribeException.topicSyntax.SMF, encodeURIComponent(exception));
+          L.debug("addSubscribeTopicExceptions: exception exists");
+        } catch (e) {
+          L.warn(`addSubscribeTopicExceptions lookup  failed ${JSON.stringify(e)}`);
           try {
-            var getResponse = await AllService.getMsgVpnAclProfileSubscribeException(service.msgVpnName, app.credentials.secret.consumerKey, MsgVpnAclProfileSubscribeException.topicSyntax.SMF, encodeURIComponent(exception));
-            L.info("addSubscribeTopicExceptions: exception exists");
-          } catch (e) {
-            L.warn(`addSubscribeTopicExceptions lookup  failed ${JSON.stringify(e)}`);
-            try {
-              let response = await AllService.createMsgVpnAclProfileSubscribeException(service.msgVpnName, app.credentials.secret.consumerKey, aclException);
-              //L.debug("created  SubscribeException");
-            } catch (e) {
-              L.error(`addSubscribeTopicExceptions add failed ${e}`);
-              reject(e);
-            }
-
+            let response = await AllService.createMsgVpnAclProfileSubscribeException(service.msgVpnName, app.credentials.secret.consumerKey, aclException);
+            L.debug("created SubscribeException");
+          } catch (err) {
+            L.error(`addSubscribeTopicExceptions add failed ${err}`);
+            throw err;
           }
+
         }
-
       }
-      resolve();
-    });
-
+    }
   }
 
   private getResourcesFromAsyncAPIs(apis: string[], direction: Direction): Promise<string[]> {
@@ -736,11 +716,9 @@ class BrokerService {
                   var channel = spec.channel(s);
 
                   if (direction == Direction.Subscribe && channel.hasSubscribe()) {
-                    //L.debug(`Subscribe ${s}`)
                     resources.push(s);
                   }
                   if (direction == Direction.Publish && channel.hasPublish()) {
-                    //L.debug(`Publish ${s}`)
                     resources.push(s);
                   }
                 });
