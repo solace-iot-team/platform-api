@@ -1,7 +1,8 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
-export interface AsyncAPIServer {
+
+export type AsyncAPIServer = {
     name?: string;
     url?: string;
     protocol?: string;

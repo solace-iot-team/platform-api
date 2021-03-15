@@ -15,7 +15,7 @@ export class SchemasService {
      * @param shared Match only with shared or unshared schemas.
      * @param applicationDomainId Match only schemas in the given application domain.
      * @param ids Match only schemas with the given IDs separated by commas
-     * @result any Retrieve a list of schemas and the accompanying metadata.
+     * @returns any Retrieve a list of schemas and the accompanying metadata.
      * @throws ApiError
      */
     public static async list8(
@@ -54,7 +54,7 @@ export class SchemasService {
      * Creates a schema object.
      * To model your event-driven architecture, schemas are a fundamental building block for modelling the payloads of the events flowing through your system. Use this API to create schemas that can later be referenced by events.
      * @param requestBody The schema requires a name, an application domain, and a content type (one of XML, JSON, Binary, or Text). For JSON and XML based schemas, the content field must be populated with a valid JSON schema or XML schema (XSD or DTD). A schema should be marked as shared when it is allowed to be used by other application domains. To avoid sharing a schema with other application domains, do not share it. The description field should be populated to describe to other users what the schema is and how it should be used (much like this description you're reading is describing the schema of this API).
-     * @result any Created. The newly saved schema object is returned in the response body.
+     * @returns any Created. The newly saved schema object is returned in the response body.
      * @throws ApiError
      */
     public static async add1(
@@ -81,7 +81,7 @@ export class SchemasService {
      * Retrieves a schema object
      * Use this API to retrieve a single schema by its ID.
      * @param id The ID of the schema object.
-     * @result any The schema object.
+     * @returns any The schema object.
      * @throws ApiError
      */
     public static async get3(
@@ -107,7 +107,7 @@ export class SchemasService {
      * Deletes a schema object
      * Use this API to delete a schema. The schema must not be in use by any events else it cannot be deleted.
      * @param id The ID of the schema object.
-     * @result any No content is returned.
+     * @returns any No content is returned.
      * @throws ApiError
      */
     public static async delete3(
@@ -134,7 +134,7 @@ export class SchemasService {
      * Use this API to update a schema. You only need to specify the field that needs to be updated.
      * @param id The ID of the schema object to update.
      * @param requestBody The schema object.
-     * @result any The updated schema object.
+     * @returns any The updated schema object.
      * @throws ApiError
      */
     public static async update8(
@@ -162,7 +162,7 @@ export class SchemasService {
      * Retrieves the tags of a schema
      * Use this API to retrieve all of the tags of a schema. Tags are referenced by their tag ID.
      * @param id The ID of the schema to retrieve the tags.
-     * @result IdsResponse An array of tags identified by their tag ID.
+     * @returns IdsResponse An array of tags identified by their tag ID.
      * @throws ApiError
      */
     public static async list9(
@@ -189,7 +189,7 @@ export class SchemasService {
      * Use this API to update all of the tags of a schema. Tags are referenced by their tag ID.
      * @param id The ID of the schema object to update.
      * @param requestBody A list of tag IDs
-     * @result IdsResponse An array of the updated tags identified by their tag ID.
+     * @returns IdsResponse An array of the updated tags identified by their tag ID.
      * @throws ApiError
      */
     public static async update9(
@@ -217,7 +217,7 @@ export class SchemasService {
      * Retrieves the owners of a schema
      * Use this API to retrieve all of the owners of a schema. Owners are referenced by their user ID.
      * @param id The ID of the schema to retrieve the owners.
-     * @result IdsResponse An array of owners identified by their user ID.
+     * @returns IdsResponse An array of owners identified by their user ID.
      * @throws ApiError
      */
     public static async list10(
@@ -244,7 +244,7 @@ export class SchemasService {
      * Use this API to update all of the owners of schema. Owners are referenced by their user ID.
      * @param id The ID of the schema object to update.
      * @param requestBody A list of user IDs
-     * @result IdsResponse An array of updated owners identified by their user ID.
+     * @returns IdsResponse An array of updated owners identified by their user ID.
      * @throws ApiError
      */
     public static async update10(

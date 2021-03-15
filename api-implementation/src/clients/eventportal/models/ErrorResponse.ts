@@ -1,7 +1,8 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
-export interface ErrorResponse {
+
+export type ErrorResponse = {
     message?: string;
     errorId?: string;
     meta?: Record<string, any>;
