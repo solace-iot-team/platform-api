@@ -1,9 +1,10 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
+
 import type { Tag } from './Tag';
 
-export interface TagsResponse {
+export type TagsResponse = {
     data?: Array<Tag>;
     meta?: Record<string, any>;
 }

@@ -1,7 +1,8 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
-export interface MsgVpnReplayLog {
+
+export type MsgVpnReplayLog = {
     /**
      * Enable or disable the transmission of messages from the Replay Log. The default value is `false`.
      */

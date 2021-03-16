@@ -1,9 +1,10 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
+
 import type { EventThreshold } from './EventThreshold';
 
-export interface MsgVpnQueueTemplate {
+export type MsgVpnQueueTemplate = {
     /**
      * The access type for delivering messages to consumer flows. The default value is `"exclusive"`. The allowed values and their meaning are:
      *

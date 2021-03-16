@@ -8,7 +8,7 @@ import { request as __request } from '../core/request';
 export class ServicesService {
 
     /**
-     * @result ServicesResponse list of services
+     * @returns ServicesResponse list of services
      * @throws ApiError
      */
     public static async listServices(): Promise<ServicesResponse> {
@@ -30,7 +30,7 @@ export class ServicesService {
 
     /**
      * @param serviceId the id of a cloud service
-     * @result ServiceResponse service
+     * @returns ServiceResponse service
      * @throws ApiError
      */
     public static async getService(

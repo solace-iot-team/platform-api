@@ -1,7 +1,8 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
-export interface MsgVpnReplicatedTopicLinks {
+
+export type MsgVpnReplicatedTopicLinks = {
     /**
      * The URI of this Replicated Topic object.
      */

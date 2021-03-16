@@ -1,9 +1,10 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
+
 import type { Application } from './Application';
 
-export interface ApplicationsResponse {
+export type ApplicationsResponse = {
     data?: Array<Application>;
     meta?: Record<string, any>;
 }

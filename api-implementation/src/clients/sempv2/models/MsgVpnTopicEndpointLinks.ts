@@ -1,7 +1,8 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
-export interface MsgVpnTopicEndpointLinks {
+
+export type MsgVpnTopicEndpointLinks = {
     /**
      * The URI of this Topic Endpoint object.
      */

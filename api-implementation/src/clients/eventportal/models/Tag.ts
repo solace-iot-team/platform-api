@@ -1,7 +1,8 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
-export interface Tag {
+
+export type Tag = {
     readonly createdTime?: number;
     readonly updatedTime?: number;
     readonly createdBy?: string;

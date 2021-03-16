@@ -1,7 +1,8 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
-export interface MsgVpnLinks {
+
+export type MsgVpnLinks = {
     /**
      * The URI of this Message VPN's collection of ACL Profile objects.
      */

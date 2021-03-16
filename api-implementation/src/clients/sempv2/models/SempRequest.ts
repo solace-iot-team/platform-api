@@ -1,7 +1,8 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
-export interface SempRequest {
+
+export type SempRequest = {
     /**
      * The HTTP method of the request which resulted in this response.
      */

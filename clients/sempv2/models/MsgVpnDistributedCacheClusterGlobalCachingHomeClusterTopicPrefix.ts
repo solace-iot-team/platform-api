@@ -1,7 +1,8 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
-export interface MsgVpnDistributedCacheClusterGlobalCachingHomeClusterTopicPrefix {
+
+export type MsgVpnDistributedCacheClusterGlobalCachingHomeClusterTopicPrefix = {
     /**
      * The name of the Distributed Cache.
      */

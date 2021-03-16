@@ -19,7 +19,7 @@ export class EventsService {
      * @param keySchemaId Match only events which use the given key schema
      * @param applicationDomainId Match only events in the given application domain
      * @param ids Match only events with the given ids separated by commas
-     * @result any Retrieve a list of events and the accompanying metadata.
+     * @returns any Retrieve a list of events and the accompanying metadata.
      * @throws ApiError
      */
     public static async list5(
@@ -66,7 +66,7 @@ export class EventsService {
      * Creates an event object
      * Events are the primary building block of an event-driven architecture. Applications publish and subscribe to events and events reference schemas. Events are created with a topic that they are published to, and subscribers subscribe to that topic to receive events from the event broker.In the event portal, an event is a type of event as opposed to a specific event instance.
      * @param requestBody The event requires a name and a topic.
-     * @result any Created. The newly saved event object is returned in the response body.
+     * @returns any Created. The newly saved event object is returned in the response body.
      * @throws ApiError
      */
     public static async add(
@@ -93,7 +93,7 @@ export class EventsService {
      * Retrieves an event object.
      * Use this API to retrieve a single event by its ID.
      * @param id The ID of the event object.
-     * @result any The event object.
+     * @returns any The event object.
      * @throws ApiError
      */
     public static async get2(
@@ -119,7 +119,7 @@ export class EventsService {
      * Deletes an event object
      * Use this API to delete an event. The event must not be in use by any applications else it cannot be deleted.
      * @param id The ID of the event object.
-     * @result any No content is returned.
+     * @returns any No content is returned.
      * @throws ApiError
      */
     public static async delete2(
@@ -146,7 +146,7 @@ export class EventsService {
      * Use this API to update an event. You only need to specify the field that needs to be updated.
      * @param id The ID of the event object to update.
      * @param requestBody The event object.
-     * @result any The updated event object.
+     * @returns any The updated event object.
      * @throws ApiError
      */
     public static async update5(
@@ -174,7 +174,7 @@ export class EventsService {
      * Retrieves the tags of an event
      * Use this API to retrieve all of the tags of an event. Tags are referenced by their tag ID.
      * @param id The ID of the event to retrieve the tags.
-     * @result IdsResponse An array of tags identified by their tag ID
+     * @returns IdsResponse An array of tags identified by their tag ID
      * @throws ApiError
      */
     public static async list6(
@@ -201,7 +201,7 @@ export class EventsService {
      * Use this API to update all of the tags of an event. Tags are referenced by their tag ID.
      * @param id The ID of the event object to update.
      * @param requestBody A list of tag IDs
-     * @result IdsResponse An array of the updated tags identified by their tag ID.
+     * @returns IdsResponse An array of the updated tags identified by their tag ID.
      * @throws ApiError
      */
     public static async update6(
@@ -229,7 +229,7 @@ export class EventsService {
      * Retrieves the owners of an event
      * Use this API to retrieve all of the owners of an event. Owners are referenced by their user ID.
      * @param id The ID of the event to retrieve the owners.
-     * @result IdsResponse An array of owners identified by their user ID.
+     * @returns IdsResponse An array of owners identified by their user ID.
      * @throws ApiError
      */
     public static async list7(
@@ -256,7 +256,7 @@ export class EventsService {
      * Use this API to update all of the owners of an event. Owners are referenced by their user ID.
      * @param id The ID of the event object to update.
      * @param requestBody A list of user IDs
-     * @result IdsResponse An array of updated owners identified by their user ID.
+     * @returns IdsResponse An array of updated owners identified by their user ID.
      * @throws ApiError
      */
     public static async update7(

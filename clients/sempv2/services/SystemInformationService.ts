@@ -15,8 +15,8 @@ export class SystemInformationService {
      * A SEMP client authorized with a minimum access scope/level of "global/none" is required to perform this operation.
      *
      * This has been deprecated since 2.2.
-     * @result SystemInformationResponse The System Information object's attributes, and the request metadata.
-     * @result SempMetaOnlyResponse The error response.
+     * @returns SystemInformationResponse The System Information object's attributes, and the request metadata.
+     * @returns SempMetaOnlyResponse The error response.
      * @throws ApiError
      */
     public static async getSystemInformation(): Promise<SystemInformationResponse | SempMetaOnlyResponse> {

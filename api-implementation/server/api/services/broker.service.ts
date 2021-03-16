@@ -19,7 +19,6 @@ import { Service } from '../../../src/clients/solacecloud';
 import {
   AllService, MsgVpnClientUsername,
   MsgVpnAclProfile,
-  MsgVpnAclProfileResponse,
   MsgVpnAclProfilePublishException,
   MsgVpnAclProfileSubscribeException,
   MsgVpnQueue,
@@ -41,39 +40,23 @@ enum Direction {
 }
 
 class BrokerService {
-
-  getPermissions(app: App, developer: Developer, envName: string): Promise<Permissions> {
-    return new Promise<Permissions>((resolve, reject) => {
-      var environmentNames: string[] = [];
-
-      var apiProductPromises: Promise<APIProduct>[] = [];
-      app.apiProducts.forEach((productName: string) => {
-        L.info(productName);
-        apiProductPromises.push(ApiProductsService.byName(productName));
-      });
-
-      Promise.all(apiProductPromises).then(async (products: APIProduct[]) => {
-        products.forEach((product: APIProduct) => {
-          product.environments.forEach((e: string) => {
-            environmentNames.push(e);
-          })
-          L.info(`env: ${product.environments}`);
-        });
-        environmentNames = Array.from(new Set(environmentNames));
-
-        try {
-          var c: Permissions = await this.getClientACLExceptions(app, products, developer, envName);
-          resolve(c);
-
-        } catch (e) {
-          L.error("Get permissions error");
-          reject(new ErrorResponseInternal(500, e));
-        }
-      });
-    });
+  async getPermissions(app: App, developer: Developer, envName: string): Promise<Permissions> {
+    const products: APIProduct[] = [];
+    try {
+      for (const productName of app.apiProducts) {
+        const product = await ApiProductsService.byName(productName);
+        products.push(product);
+      }
+      var permissions: Permissions = await this.getClientACLExceptions(app, products, developer, envName);
+      return permissions;
+    } catch (err) {
+      L.error("Get permissions error");
+      throw new ErrorResponseInternal(500, err);
+    }
   }
-  provisionApp(app: App, developer: Developer): Promise<any> {
-    return new Promise<any>((resolve, reject) => {
+
+  provisionApp(app: App, developer: Developer): Promise<void> {
+    return new Promise<void>((resolve, reject) => {
       var apiProductPromises: Promise<APIProduct>[] = [];
       app.apiProducts.forEach((productName: string) => {
         L.info(productName);
@@ -111,7 +94,7 @@ class BrokerService {
             }
 
           }
-          resolve(null);
+          resolve();
         } catch (e) {
           L.error(`Provisioning error ${e}`);
           reject(new ErrorResponseInternal(500, e));
@@ -120,8 +103,7 @@ class BrokerService {
     });
   }
 
-  deprovisionApp(app: App) {
-    return new Promise<any>((resolve, reject) => {
+  async deprovisionApp(app: App) {
       var environmentNames: string[] = [];
 
       var apiProductPromises: Promise<APIProduct>[] = [];
@@ -145,13 +127,11 @@ class BrokerService {
           await this.deleteACLs(app, services);
           await this.deleteRDPs(app, services);
           await this.deleteQueues(app, services);
-          resolve(null);
-        } catch (e) {
+        } catch (err) {
           L.error('De-Provisioninig error');
-          reject(new ErrorResponseInternal(500, e));
+          throw new ErrorResponseInternal(500, err.message);
         }
       });
-    });
   }
 
   private async getServices(environmentNames: string[]): Promise<Service[]> {
@@ -169,9 +149,9 @@ class BrokerService {
         returnServices.push(service);
       }
       return returnServices;
-    } catch (e) {
-      L.error(e);
-      throw e;
+    } catch (err) {
+      L.error(`getServices - ${JSON.stringify(err)}`);
+      throw err;
     }
   }
 
@@ -182,192 +162,159 @@ class BrokerService {
       L.info(env.serviceId);
       const service = await SolaceCloudFacade.getServiceByEnvironment(env);
       return service;
-    } catch (e) {
-      L.error(e);
-      throw e;
+    } catch (err) {
+      L.error(`getServiceByEnv - ${JSON.stringify(err)}`);
+      throw err;
     }
   }
 
-  private createACLs(app: App, services: Service[]) {
-    return new Promise<any>(async (resolve, reject) => {
-      var allACLResponses: Promise<MsgVpnAclProfileResponse>[] = [];
-      for (var service of services) {
-
-        var sempv2Client = this.getSEMPv2Client(service);
-        var aclProfile: MsgVpnAclProfile = {
-          aclProfileName: app.credentials.secret.consumerKey,
-          clientConnectDefaultAction: MsgVpnAclProfile.clientConnectDefaultAction.ALLOW,
-          publishTopicDefaultAction: MsgVpnAclProfile.publishTopicDefaultAction.DISALLOW,
-          subscribeTopicDefaultAction: MsgVpnAclProfile.subscribeTopicDefaultAction.DISALLOW,
-          msgVpnName: service.msgVpnName
-
-        };
-        try {
-          var getResponse = await AllService.getMsgVpnAclProfile(service.msgVpnName, app.credentials.secret.consumerKey);
-          L.info("ACL Looked up");
-          var responseUpd = await AllService.updateMsgVpnAclProfile(service.msgVpnName, app.credentials.secret.consumerKey, aclProfile);
-          L.info("ACL updated");
-        } catch (e) {
-
-          try {
-            let response = await AllService.createMsgVpnAclProfile(service.msgVpnName, aclProfile);
-            L.info("created  ACL");
-          } catch (e) {
-            reject(e);
-          }
-        }
+  private async createACLs(app: App, services: Service[]): Promise<void> {
+    for (const service of services) {
+      const sempv2Client = this.getSEMPv2Client(service);
+      const aclProfile: MsgVpnAclProfile = {
+        aclProfileName: app.credentials.secret.consumerKey,
+        clientConnectDefaultAction:
+          MsgVpnAclProfile.clientConnectDefaultAction.ALLOW,
+        publishTopicDefaultAction:
+          MsgVpnAclProfile.publishTopicDefaultAction.DISALLOW,
+        subscribeTopicDefaultAction:
+          MsgVpnAclProfile.subscribeTopicDefaultAction.DISALLOW,
+        msgVpnName: service.msgVpnName,
       };
-      resolve();
-    });
-  }
-
-  private deleteACLs(app: App, services: Service[]) {
-    return new Promise<any>(async (resolve, reject) => {
-      for (var service of services) {
-        var sempv2Client = this.getSEMPv2Client(service);
-        try {
-          var getResponse = await AllService.deleteMsgVpnAclProfile(service.msgVpnName, app.credentials.secret.consumerKey);
-          L.info("ACL deleted");
-        } catch (e) {
-          if (!(e.body.meta.error.status == "NOT_FOUND")) {
-            reject(e);
-          }
-        }
-      };
-      resolve();
-    });
-  }
-
-  private deleteQueues(app: App, services: Service[]) {
-    return new Promise<any>(async (resolve, reject) => {
-      for (var service of services) {
-        var sempv2Client = this.getSEMPv2Client(service);
-        try {
-          var getResponse = await AllService.deleteMsgVpnQueue(service.msgVpnName, app.credentials.secret.consumerKey);
-          L.info('Queue deleted');
-        } catch (e) {
-          if (!(e.body.meta.error.status == "NOT_FOUND")) {
-            reject(e);
-          }
-
-        }
-      };
-      resolve();
-    });
-  }
-
-  private deleteRDPs(app: App, services: Service[]) {
-    return new Promise<any>(async (resolve, reject) => {
-      for (var service of services) {
-        var sempv2Client = this.getSEMPv2Client(service);
-        try {
-          var getResponse = await AllService.deleteMsgVpnRestDeliveryPoint(service.msgVpnName, app.credentials.secret.consumerKey);
-          L.info("RDP deleted");
-        } catch (e) {
-          if (!(e.body.meta.error.status == "NOT_FOUND"))
-            reject(e);
-        }
-
-        resolve();
-      }
-    });
-  }
-  private createClientUsernames(app: App, services: Service[]): Promise<any> {
-    return new Promise<any>(async (resolve, reject) => {
-      for (var service of services) {
-        var sempV2Client = this.getSEMPv2Client(service);
-        var clientUsername: MsgVpnClientUsername = {
-          aclProfileName: app.credentials.secret.consumerKey,
-          clientUsername: app.credentials.secret.consumerKey,
-          password: app.credentials.secret.consumerSecret,
-          clientProfileName: "default",
-          msgVpnName: service.msgVpnName,
-          enabled: true
-
-        };
-        try {
-          var getResponse = await AllService.getMsgVpnClientUsername(service.msgVpnName, app.credentials.secret.consumerKey);
-          L.info("Client Username Looked up");
-          var responseUpd = await AllService.updateMsgVpnClientUsername(service.msgVpnName, app.credentials.secret.consumerKey, clientUsername);
-          L.info("Client Username updated");
-        } catch (e) {
-
-          try {
-            let response = await AllService.createMsgVpnClientUsername(service.msgVpnName, clientUsername);
-            L.info("created  Client Username");
-          } catch (e) {
-            reject(e);
-          }
-        }
-      }
-      resolve();
-    });
-  }
-
-  private deleteClientUsernames(app: App, services: Service[]): Promise<any> {
-    return new Promise<any>(async (resolve, reject) => {
-      for (var service of services) {
-        var sempV2Client = this.getSEMPv2Client(service);
-        var clientUsername: MsgVpnClientUsername = {
-          aclProfileName: app.credentials.secret.consumerKey,
-          clientUsername: app.credentials.secret.consumerKey,
-          password: app.credentials.secret.consumerSecret,
-          clientProfileName: "default",
-          msgVpnName: service.msgVpnName,
-          enabled: true
-
-        };
-        try {
-          var getResponse = await AllService.deleteMsgVpnClientUsername(service.msgVpnName, app.credentials.secret.consumerKey);
-        } catch (e) {
-          if (!(e.body.meta.error.status == "NOT_FOUND")) {
-            reject(e);
-          }
-        }
-      }
-      resolve();
-    });
-  }
-  private createClientACLExceptions(app: App, services: Service[], apiProducts: APIProduct[], developer: Developer): Promise<void> {
-    return new Promise<any>(async (resolve, reject) => {
-      var publishExceptions: string[] = [];
-      var subscribeExceptions: string[] = [];
-      // compile list of event destinations sub / pub separately
-      for (var product of apiProducts) {
-        publishExceptions = this.getResources(product.pubResources).concat(publishExceptions);
-        subscribeExceptions = this.getResources(product.subResources).concat(subscribeExceptions);
-        var strs: string[] = await this.getResourcesFromAsyncAPIs(product.apis, Direction.Subscribe);
-        for (var s of strs) {
-          subscribeExceptions.push(s);
-        }
-        strs = await this.getResourcesFromAsyncAPIs(product.apis, Direction.Publish);
-        for (var s of strs) {
-          publishExceptions.push(s);
-        }
-      }
-
-      // inject attribute values into parameters within subscriptions
-      var attributes: any[] = this.getAttributes(app, developer, apiProducts);
-      subscribeExceptions = this.enrichTopics(subscribeExceptions, attributes);
-      publishExceptions = this.enrichTopics(publishExceptions, attributes);
-      publishExceptions.forEach((s, index, arr) => {
-        arr[index] = this.scrubDestination(s);
-      });
-      subscribeExceptions.forEach((s, index, arr) => {
-        arr[index] = this.scrubDestination(s);
-      });
       try {
+        const getResponse = await AllService.getMsgVpnAclProfile(service.msgVpnName, app.credentials.secret.consumerKey);
+        L.debug(`ACL Looked up ${JSON.stringify(getResponse)}`);
+        const responseUpd = await AllService.updateMsgVpnAclProfile(service.msgVpnName, app.credentials.secret.consumerKey, aclProfile);
+        L.debug(`ACL updated ${JSON.stringify(responseUpd)}`);
+      } catch (e) {
+        try {
+          const response = await AllService.createMsgVpnAclProfile(service.msgVpnName, aclProfile);
+          L.debug(`ACL updated ${JSON.stringify(response)}`);
+        } catch (err) {
+          throw (err);
+        }
+      }
+    };
+  }
 
-        // need to reverse pubish->subscrobe due to Async API terminology
-        var q = await this.addPublishTopicExceptions(app, services, subscribeExceptions);
-        var r = await this.addSubscribeTopicExceptions(app, services, publishExceptions);
-        resolve();
+  private async deleteACLs(app: App, services: Service[]) {
+    for (var service of services) {
+      var sempv2Client = this.getSEMPv2Client(service);
+      try {
+        var getResponse = await AllService.deleteMsgVpnAclProfile(service.msgVpnName, app.credentials.secret.consumerKey);
+        L.info("ACL deleted");
+      } catch (err) {
+        if (!(err.body.meta.error.status == "NOT_FOUND")) {
+          throw err;
+        }
+      }
+    };
+  }
+
+  private async deleteQueues(app: App, services: Service[]) {
+    for (var service of services) {
+      var sempv2Client = this.getSEMPv2Client(service);
+      try {
+        var getResponse = await AllService.deleteMsgVpnQueue(service.msgVpnName, app.credentials.secret.consumerKey);
+        L.info('Queue deleted');
+      } catch (e) {
+        if (!(e.body.meta.error.status == "NOT_FOUND")) {
+          throw e;
+        }
+
+      }
+    };
+  }
+
+  private async deleteRDPs(app: App, services: Service[]) {
+    for (var service of services) {
+      var sempv2Client = this.getSEMPv2Client(service);
+      try {
+        var getResponse = await AllService.deleteMsgVpnRestDeliveryPoint(service.msgVpnName, app.credentials.secret.consumerKey);
+        L.info("RDP deleted");
+      } catch (e) {
+        if (!(e.body.meta.error.status == "NOT_FOUND"))
+          throw e;
+      }
+    }
+  }
+  private async createClientUsernames(app: App, services: Service[]): Promise<void> {
+    for (var service of services) {
+      var sempV2Client = this.getSEMPv2Client(service);
+      var clientUsername: MsgVpnClientUsername = {
+        aclProfileName: app.credentials.secret.consumerKey,
+        clientUsername: app.credentials.secret.consumerKey,
+        password: app.credentials.secret.consumerSecret,
+        clientProfileName: "default",
+        msgVpnName: service.msgVpnName,
+        enabled: true
+      };
+      try {
+        var getResponse = await AllService.getMsgVpnClientUsername(service.msgVpnName, app.credentials.secret.consumerKey);
+        L.info("Client Username Looked up");
+        var responseUpd = await AllService.updateMsgVpnClientUsername(service.msgVpnName, app.credentials.secret.consumerKey, clientUsername);
+        L.info("Client Username updated");
       } catch (e) {
 
-
-        reject(new ErrorResponseInternal(400, e));
+        try {
+          let response = await AllService.createMsgVpnClientUsername(service.msgVpnName, clientUsername);
+          L.info("created  Client Username");
+        } catch (e) {
+          throw e;
+        }
       }
+    }
+  }
+
+  private async deleteClientUsernames(app: App, services: Service[]): Promise<void> {
+    for (var service of services) {
+      const sempV2Client = this.getSEMPv2Client(service);
+      try {
+        const getResponse = await AllService.deleteMsgVpnClientUsername(service.msgVpnName, app.credentials.secret.consumerKey);
+      } catch (err) {
+        if (!(err.body.meta.error.status == "NOT_FOUND")) {
+          throw err;
+        }
+      }
+    }
+  }
+  private async createClientACLExceptions(app: App, services: Service[], apiProducts: APIProduct[], developer: Developer): Promise<void> {
+    var publishExceptions: string[] = [];
+    var subscribeExceptions: string[] = [];
+    // compile list of event destinations sub / pub separately
+    for (var product of apiProducts) {
+      publishExceptions = this.getResources(product.pubResources).concat(publishExceptions);
+      subscribeExceptions = this.getResources(product.subResources).concat(subscribeExceptions);
+      var strs: string[] = await this.getResourcesFromAsyncAPIs(product.apis, Direction.Subscribe);
+      for (var s of strs) {
+        subscribeExceptions.push(s);
+      }
+      strs = await this.getResourcesFromAsyncAPIs(product.apis, Direction.Publish);
+      for (var s of strs) {
+        publishExceptions.push(s);
+      }
+    }
+
+    // inject attribute values into parameters within subscriptions
+    var attributes: any[] = this.getAttributes(app, developer, apiProducts);
+    subscribeExceptions = this.enrichTopics(subscribeExceptions, attributes);
+    publishExceptions = this.enrichTopics(publishExceptions, attributes);
+    publishExceptions.forEach((s, index, arr) => {
+      arr[index] = this.scrubDestination(s);
     });
+    subscribeExceptions.forEach((s, index, arr) => {
+      arr[index] = this.scrubDestination(s);
+    });
+    try {
+
+      // need to reverse pubish->subscrobe due to Async API terminology
+      var q = await this.addPublishTopicExceptions(app, services, subscribeExceptions);
+      var r = await this.addSubscribeTopicExceptions(app, services, publishExceptions);
+
+    } catch (e) {
+      throw new ErrorResponseInternal(400, e);
+    }
+
   }
 
 
@@ -388,284 +335,258 @@ class BrokerService {
 
   }
 
-  private createRDP(app: App, services: Service[], apiProducts: APIProduct[]): Promise<void> {
-    return new Promise<any>(async (resolve, reject) => {
-      L.info(`createRDP services: ${services}`);
-      var subscribeExceptions: string[] = [];
-      var useTls: boolean = false;
-      for (var product of apiProducts) {
-        var strs: string[] = await this.getRDPSubscriptionsFromAsyncAPIs(product.apis);
-        for (var s of strs) {
-          subscribeExceptions.push(s);
-        }
-        for (var p of product.protocols) {
-          if (p.name == "https") {
-            useTls = true;
-          }
-        }
-
+  private async createRDP(app: App, services: Service[], apiProducts: APIProduct[]): Promise<void> {
+    L.info(`createRDP services: ${services}`);
+    var subscribeExceptions: string[] = [];
+    var useTls: boolean = false;
+    for (var product of apiProducts) {
+      var strs: string[] = await this.getRDPSubscriptionsFromAsyncAPIs(product.apis);
+      for (var s of strs) {
+        subscribeExceptions.push(s);
       }
-      if (subscribeExceptions.length < 1) {
-        resolve();
-        return;
-      }
-      // loop over services
-      for (var service of services) {
-        var restConsumerName = `Consumer`;
-        var rdpUrl: URL;
-        var webHooks: WebHook[] = [];
-        webHooks = app.webHooks.filter(w => w.environments == null || w.environments.find(e => e == service['environment']));
-        if (webHooks.length != 1) {
-          var msg: string = `Invalid webhook configuration for ${service['environment']}, found ${webHooks.length} matching configurations`;
-          L.warn(msg);
-          reject(new ErrorResponseInternal(400, msg))
-          return;
-        }
-        var webHook = webHooks[0];
-        try {
-          rdpUrl = new URL(webHook.uri);
-        } catch (e) {
-          reject(new ErrorResponseInternal(400, "Webhook URL not provided or invalid"));
-          return;
-        }
-
-        var protocol = rdpUrl.protocol.toUpperCase();
-        var port = rdpUrl.port;
-        if (protocol == "HTTPS:") {
+      for (var p of product.protocols) {
+        if (p.name == "https") {
           useTls = true;
         }
-        L.debug(`protocol is ${protocol}`);
-        if (port == "") {
-          if (useTls) {
-            port = '443';
-          } else {
-            port = '80';
-          }
-        }
-        //create RDPs
-        var sempV2Client = this.getSEMPv2Client(service);
-        var newRDP: MsgVpnRestDeliveryPoint = {
-          clientProfileName: "default",
-          msgVpnName: service.msgVpnName,
-          restDeliveryPointName: app.credentials.secret.consumerKey,
-          enabled: false
-        };
-        try {
-          var q = await AllService.getMsgVpnRestDeliveryPoint(service.msgVpnName, app.credentials.secret.consumerKey);
-          var updateResponse = await AllService.updateMsgVpnRestDeliveryPoint(service.msgVpnName, app.credentials.secret.consumerKey, newRDP);
-          L.debug(`createRDP updated ${app.credentials.secret.consumerKey}`);
-        } catch (e: any) {
-          L.debug(`createRDP lookup  failed ${JSON.stringify(e)}`);
-          try {
-            var q = await AllService.createMsgVpnRestDeliveryPoint(service.msgVpnName, newRDP);
-          } catch (e) {
-            L.warn(`createRDP creation  failed ${JSON.stringify(e)}`);
-            reject(e);
-            return;
-          }
-        }
-        var authScheme = webHook.authentication && webHook.authentication['username'] ? MsgVpnRestDeliveryPointRestConsumer.authenticationScheme.HTTP_BASIC : MsgVpnRestDeliveryPointRestConsumer.authenticationScheme.NONE;
-        if (authScheme == MsgVpnRestDeliveryPointRestConsumer.authenticationScheme.NONE) {
-          authScheme = webHook.authentication && webHook.authentication['headerName'] ? MsgVpnRestDeliveryPointRestConsumer.authenticationScheme.HTTP_HEADER : MsgVpnRestDeliveryPointRestConsumer.authenticationScheme.NONE;
-        }
-        var method = webHook.method == 'PUT' ? MsgVpnRestDeliveryPointRestConsumer.httpMethod.PUT : MsgVpnRestDeliveryPointRestConsumer.httpMethod.POST;
-
-        var connectionCount: number = 3;
-        if (webHook.mode == 'serial') {
-          connectionCount = 1;
-        }
-        var newRDPConsumer: MsgVpnRestDeliveryPointRestConsumer = {
-          msgVpnName: service.msgVpnName,
-          restDeliveryPointName: app.credentials.secret.consumerKey,
-          restConsumerName: restConsumerName,
-          remotePort: parseInt(port),
-          remoteHost: rdpUrl.hostname,
-          tlsEnabled: useTls,
-          enabled: false,
-          authenticationScheme: authScheme,
-          httpMethod: method,
-          maxPostWaitTime: 90,
-          outgoingConnectionCount: connectionCount,
-          retryDelay: 10
-        };
-
-        MsgVpnRestDeliveryPointRestConsumer.httpMethod.POST
-        if (authScheme == MsgVpnRestDeliveryPointRestConsumer.authenticationScheme.HTTP_BASIC) {
-          newRDPConsumer.authenticationHttpBasicUsername = webHook.authentication['username'];
-          newRDPConsumer.authenticationHttpBasicPassword = webHook.authentication['password'];
-        }
-        if (authScheme == MsgVpnRestDeliveryPointRestConsumer.authenticationScheme.HTTP_HEADER) {
-          newRDPConsumer.authenticationHttpHeaderName = webHook.authentication['headerName'];
-          newRDPConsumer.authenticationHttpHeaderValue = webHook.authentication['headerValue'];
-        }
-
-        try {
-          var r = await AllService.getMsgVpnRestDeliveryPointRestConsumer(service.msgVpnName, app.credentials.secret.consumerKey, restConsumerName);
-          var updateResponseRDPConsumer = await AllService.updateMsgVpnRestDeliveryPointRestConsumer(service.msgVpnName, app.credentials.secret.consumerKey, restConsumerName, newRDPConsumer);
-          L.debug(`createRDP consumer updated ${app.credentials.secret.consumerKey}`);
-        } catch (e: any) {
-          L.debug(`createRDP consumer lookup  failed ${JSON.stringify(e)}`);
-          try {
-            var r = await AllService.createMsgVpnRestDeliveryPointRestConsumer(service.msgVpnName, app.credentials.secret.consumerKey, newRDPConsumer);
-          } catch (e) {
-            L.warn(`createRDP consumer creation  failed ${JSON.stringify(e)}`);
-            reject(e);
-            return;
-          }
-        }
-        var newRDPQueueBinding: MsgVpnRestDeliveryPointQueueBinding = {
-          msgVpnName: service.msgVpnName,
-          restDeliveryPointName: app.credentials.secret.consumerKey,
-          postRequestTarget: `${rdpUrl.pathname}${rdpUrl.search}`,
-          queueBindingName: app.credentials.secret.consumerKey
-        };
-        try {
-          var b = await AllService.getMsgVpnRestDeliveryPointQueueBinding(service.msgVpnName, app.credentials.secret.consumerKey, app.credentials.secret.consumerKey);
-
-          var updateResponseQueueBinding = await AllService.updateMsgVpnRestDeliveryPointQueueBinding(service.msgVpnName, app.credentials.secret.consumerKey, app.credentials.secret.consumerKey, newRDPQueueBinding);
-          L.debug(`createRDP queue binding updated ${app.credentials.secret.consumerKey}`);
-        } catch (e: any) {
-          L.debug(`createRDP queue binding lookup  failed ${JSON.stringify(e)}`);
-          try {
-            var b = await AllService.createMsgVpnRestDeliveryPointQueueBinding(service.msgVpnName, app.credentials.secret.consumerKey, newRDPQueueBinding);
-          } catch (e) {
-            L.warn(`createRDP queue binding creation  failed ${JSON.stringify(e)}`);
-            reject(e);
-            return;
-          }
-        }
-
-        // enable the RDP
-        try {
-          var enableRDP: MsgVpnRestDeliveryPoint = {
-            enabled: true
-          }; var enableRDPResponse = await AllService.updateMsgVpnRestDeliveryPoint(service.msgVpnName, app.credentials.secret.consumerKey, enableRDP);
-          L.debug(`createRDP enabled ${app.credentials.secret.consumerKey}`);
-        } catch (e: any) {
-          L.error(`createRDP enable failed ${JSON.stringify(e)}`);
-          reject(new ErrorResponseInternal(500, e));
-        }
-
-        // enable the RDP consumer
-
-        try {
-          var enableRDPConsumer: MsgVpnRestDeliveryPointRestConsumer = {
-            enabled: true
-          };
-          var updateResponseRDPConsumer = await AllService.updateMsgVpnRestDeliveryPointRestConsumer(service.msgVpnName, app.credentials.secret.consumerKey, restConsumerName, enableRDPConsumer);
-          L.debug(`createRDP consumer enabled ${app.credentials.secret.consumerKey}`);
-        } catch (e: any) {
-          L.debug(`createRDP consumer enablement  failed ${JSON.stringify(e)}`);
-        }
-
       }
-      resolve();
-    });
+    }
+    if (subscribeExceptions.length < 1) {
+      return;
+    }
+    // loop over services
+    for (var service of services) {
+      var restConsumerName = `Consumer`;
+      var rdpUrl: URL;
+      var webHooks: WebHook[] = [];
+      webHooks = app.webHooks.filter(w => w.environments == null || w.environments.find(e => e == service['environment']));
+      if (webHooks.length != 1) {
+        var msg: string = `Invalid webhook configuration for ${service['environment']}, found ${webHooks.length} matching configurations`;
+        L.warn(msg);
+        throw new ErrorResponseInternal(400, msg);
+      }
+      var webHook = webHooks[0];
+      try {
+        rdpUrl = new URL(webHook.uri);
+      } catch (e) {
+        throw new ErrorResponseInternal(400, "Webhook URL not provided or invalid");
+      }
+
+      var protocol = rdpUrl.protocol.toUpperCase();
+      var port = rdpUrl.port;
+      if (protocol == "HTTPS:") {
+        useTls = true;
+      }
+      L.debug(`protocol is ${protocol}`);
+      if (port == "") {
+        if (useTls) {
+          port = '443';
+        } else {
+          port = '80';
+        }
+      }
+      //create RDPs
+      var sempV2Client = this.getSEMPv2Client(service);
+      var newRDP: MsgVpnRestDeliveryPoint = {
+        clientProfileName: "default",
+        msgVpnName: service.msgVpnName,
+        restDeliveryPointName: app.credentials.secret.consumerKey,
+        enabled: false
+      };
+      try {
+        var q = await AllService.getMsgVpnRestDeliveryPoint(service.msgVpnName, app.credentials.secret.consumerKey);
+        var updateResponse = await AllService.updateMsgVpnRestDeliveryPoint(service.msgVpnName, app.credentials.secret.consumerKey, newRDP);
+        L.debug(`createRDP updated ${app.credentials.secret.consumerKey}`);
+      } catch (e: any) {
+        L.debug(`createRDP lookup  failed ${JSON.stringify(e)}`);
+        try {
+          var q = await AllService.createMsgVpnRestDeliveryPoint(service.msgVpnName, newRDP);
+        } catch (e) {
+          L.warn(`createRDP creation  failed ${JSON.stringify(e)}`);
+          throw new ErrorResponseInternal(500, e);
+        }
+      }
+      var authScheme = webHook.authentication && webHook.authentication['username'] ? MsgVpnRestDeliveryPointRestConsumer.authenticationScheme.HTTP_BASIC : MsgVpnRestDeliveryPointRestConsumer.authenticationScheme.NONE;
+      if (authScheme == MsgVpnRestDeliveryPointRestConsumer.authenticationScheme.NONE) {
+        authScheme = webHook.authentication && webHook.authentication['headerName'] ? MsgVpnRestDeliveryPointRestConsumer.authenticationScheme.HTTP_HEADER : MsgVpnRestDeliveryPointRestConsumer.authenticationScheme.NONE;
+      }
+      var method = webHook.method == 'PUT' ? MsgVpnRestDeliveryPointRestConsumer.httpMethod.PUT : MsgVpnRestDeliveryPointRestConsumer.httpMethod.POST;
+
+      var connectionCount: number = 3;
+      if (webHook.mode == 'serial') {
+        connectionCount = 1;
+      }
+      var newRDPConsumer: MsgVpnRestDeliveryPointRestConsumer = {
+        msgVpnName: service.msgVpnName,
+        restDeliveryPointName: app.credentials.secret.consumerKey,
+        restConsumerName: restConsumerName,
+        remotePort: parseInt(port),
+        remoteHost: rdpUrl.hostname,
+        tlsEnabled: useTls,
+        enabled: false,
+        authenticationScheme: authScheme,
+        httpMethod: method,
+        maxPostWaitTime: 90,
+        outgoingConnectionCount: connectionCount,
+        retryDelay: 10
+      };
+
+      MsgVpnRestDeliveryPointRestConsumer.httpMethod.POST
+      if (authScheme == MsgVpnRestDeliveryPointRestConsumer.authenticationScheme.HTTP_BASIC) {
+        newRDPConsumer.authenticationHttpBasicUsername = webHook.authentication['username'];
+        newRDPConsumer.authenticationHttpBasicPassword = webHook.authentication['password'];
+      }
+      if (authScheme == MsgVpnRestDeliveryPointRestConsumer.authenticationScheme.HTTP_HEADER) {
+        newRDPConsumer.authenticationHttpHeaderName = webHook.authentication['headerName'];
+        newRDPConsumer.authenticationHttpHeaderValue = webHook.authentication['headerValue'];
+      }
+
+      try {
+        var r = await AllService.getMsgVpnRestDeliveryPointRestConsumer(service.msgVpnName, app.credentials.secret.consumerKey, restConsumerName);
+        var updateResponseRDPConsumer = await AllService.updateMsgVpnRestDeliveryPointRestConsumer(service.msgVpnName, app.credentials.secret.consumerKey, restConsumerName, newRDPConsumer);
+        L.debug(`createRDP consumer updated ${app.credentials.secret.consumerKey}`);
+      } catch (e: any) {
+        L.debug(`createRDP consumer lookup  failed ${JSON.stringify(e)}`);
+        try {
+          var r = await AllService.createMsgVpnRestDeliveryPointRestConsumer(service.msgVpnName, app.credentials.secret.consumerKey, newRDPConsumer);
+        } catch (e) {
+          L.warn(`createRDP consumer creation  failed ${JSON.stringify(e)}`);
+          throw new ErrorResponseInternal(500, e);
+        }
+      }
+      var newRDPQueueBinding: MsgVpnRestDeliveryPointQueueBinding = {
+        msgVpnName: service.msgVpnName,
+        restDeliveryPointName: app.credentials.secret.consumerKey,
+        postRequestTarget: `${rdpUrl.pathname}${rdpUrl.search}`,
+        queueBindingName: app.credentials.secret.consumerKey
+      };
+      try {
+        var b = await AllService.getMsgVpnRestDeliveryPointQueueBinding(service.msgVpnName, app.credentials.secret.consumerKey, app.credentials.secret.consumerKey);
+
+        var updateResponseQueueBinding = await AllService.updateMsgVpnRestDeliveryPointQueueBinding(service.msgVpnName, app.credentials.secret.consumerKey, app.credentials.secret.consumerKey, newRDPQueueBinding);
+        L.debug(`createRDP queue binding updated ${app.credentials.secret.consumerKey}`);
+      } catch (e: any) {
+        L.debug(`createRDP queue binding lookup  failed ${JSON.stringify(e)}`);
+        try {
+          var b = await AllService.createMsgVpnRestDeliveryPointQueueBinding(service.msgVpnName, app.credentials.secret.consumerKey, newRDPQueueBinding);
+        } catch (e) {
+          L.warn(`createRDP queue binding creation  failed ${JSON.stringify(e)}`);
+          throw new ErrorResponseInternal(500, e);
+        }
+      }
+
+      // enable the RDP
+      try {
+        var enableRDP: MsgVpnRestDeliveryPoint = {
+          enabled: true
+        }; var enableRDPResponse = await AllService.updateMsgVpnRestDeliveryPoint(service.msgVpnName, app.credentials.secret.consumerKey, enableRDP);
+        L.debug(`createRDP enabled ${app.credentials.secret.consumerKey}`);
+      } catch (e: any) {
+        L.error(`createRDP enable failed ${JSON.stringify(e)}`);
+        throw new ErrorResponseInternal(500, e);
+      }
+
+      // enable the RDP consumer
+
+      try {
+        var enableRDPConsumer: MsgVpnRestDeliveryPointRestConsumer = {
+          enabled: true
+        };
+        var updateResponseRDPConsumer = await AllService.updateMsgVpnRestDeliveryPointRestConsumer(service.msgVpnName, app.credentials.secret.consumerKey, restConsumerName, enableRDPConsumer);
+        L.debug(`createRDP consumer enabled ${app.credentials.secret.consumerKey}`);
+      } catch (e: any) {
+        L.debug(`createRDP consumer enablement  failed ${JSON.stringify(e)}`);
+        throw new ErrorResponseInternal(500, e);
+      }
+    }
   }
 
 
-  private createQueues(app: App, services: Service[], apiProducts: APIProduct[], developer: Developer): Promise<void> {
-    return new Promise<any>(async (resolve, reject) => {
-      L.info(`createQueueSubscriptions services: ${services}`);
-      var subscribeExceptions: string[] = [];
-      for (var product of apiProducts) {
-        var strs: string[] = await this.getRDPSubscriptionsFromAsyncAPIs(product.apis);
-        for (var s of strs) {
-          subscribeExceptions.push(s);
-        }
-        // add in the pubresources as well (again, AsyncAPI reverse )
-        subscribeExceptions = subscribeExceptions.concat(product.pubResources);
+  private async createQueues(app: App, services: Service[], apiProducts: APIProduct[], developer: Developer): Promise<void> {
+    L.info(`createQueueSubscriptions services: ${services}`);
+    var subscribeExceptions: string[] = [];
+    for (var product of apiProducts) {
+      var strs: string[] = await this.getRDPSubscriptionsFromAsyncAPIs(product.apis);
+      for (var s of strs) {
+        subscribeExceptions.push(s);
       }
-      if (subscribeExceptions.length < 1) {
-        resolve();
-        return;
-      }
-      // inject attribute values into parameters within subscriptions
-      var attributes: any[] = this.getAttributes(app, developer, apiProducts);
-      subscribeExceptions = this.enrichTopics(subscribeExceptions, attributes);
-      subscribeExceptions.forEach((s, index, arr) => {
-        arr[index] = this.scrubDestination(s);
-      });
+      // add in the pubresources as well (again, AsyncAPI reverse )
+      subscribeExceptions = subscribeExceptions.concat(product.pubResources);
+    }
+    if (subscribeExceptions.length < 1) {
+      return;
+    }
+    // inject attribute values into parameters within subscriptions
+    var attributes: any[] = this.getAttributes(app, developer, apiProducts);
+    subscribeExceptions = this.enrichTopics(subscribeExceptions, attributes);
+    subscribeExceptions.forEach((s, index, arr) => {
+      arr[index] = this.scrubDestination(s);
+    });
 
-      // loop over services
-      for (var service of services) {
-        //create queues
-        var sempV2Client = this.getSEMPv2Client(service);
-        var newQ: MsgVpnQueue = {
+    // loop over services
+    for (var service of services) {
+      //create queues
+      var sempV2Client = this.getSEMPv2Client(service);
+      var newQ: MsgVpnQueue = {
+        queueName: app.credentials.secret.consumerKey,
+        msgVpnName: service.msgVpnName,
+        ingressEnabled: true,
+        egressEnabled: true,
+        owner: app.credentials.secret.consumerKey,
+        permission: MsgVpnQueue.permission.CONSUME
+      };
+      try {
+        var q = await AllService.getMsgVpnQueue(service.msgVpnName, app.credentials.secret.consumerKey);
+        var updateResponseMsgVpnQueue = await AllService.updateMsgVpnQueue(service.msgVpnName, app.credentials.secret.consumerKey, newQ);
+        L.debug(`createQueues updated ${app.credentials.secret.consumerKey}`);
+      } catch (e: any) {
+        L.debug(`createQueues lookup  failed ${JSON.stringify(e)}`);
+        try {
+          var q = await AllService.createMsgVpnQueue(service.msgVpnName, newQ);
+        } catch (e) {
+          L.warn(`createQueues creation  failed ${JSON.stringify(e)}`);
+          throw new ErrorResponseInternal(500, e.message);
+        }
+      }
+
+      for (var subscription of subscribeExceptions) {
+        var queueSubscription: MsgVpnQueueSubscription = {
+          msgVpnName: service.msgVpnName,
           queueName: app.credentials.secret.consumerKey,
-          msgVpnName: service.msgVpnName,
-          ingressEnabled: true,
-          egressEnabled: true,
-          owner: app.credentials.secret.consumerKey,
-          permission: MsgVpnQueue.permission.CONSUME
-        };
+          subscriptionTopic: subscription
+        }
         try {
-          var q = await AllService.getMsgVpnQueue(service.msgVpnName, app.credentials.secret.consumerKey);
-          var updateResponseMsgVpnQueue = await AllService.updateMsgVpnQueue(service.msgVpnName, app.credentials.secret.consumerKey, newQ);
-          L.debug(`createQueues updated ${app.credentials.secret.consumerKey}`);
+          var subResult = await AllService.getMsgVpnQueueSubscription(service.msgVpnName, app.credentials.secret.consumerKey, encodeURIComponent(subscription));
         } catch (e: any) {
-          L.debug(`createQueues lookup  failed ${JSON.stringify(e)}`);
+          L.debug(`createQueues subscription lookup  failed ${JSON.stringify(e)}`);
           try {
-            var q = await AllService.createMsgVpnQueue(service.msgVpnName, newQ);
+            var subResult = await AllService.createMsgVpnQueueSubscription(service.msgVpnName, app.credentials.secret.consumerKey, queueSubscription);
           } catch (e) {
-            L.warn(`createQueues creation  failed ${JSON.stringify(e)}`);
-            reject(e);
-            return;
+            L.warn(`createQueues subscription creation  failed ${JSON.stringify(e)}`);
+            throw new ErrorResponseInternal(500, e.message);
           }
         }
-
-        for (var subscription of subscribeExceptions) {
-          var queueSubscription: MsgVpnQueueSubscription = {
-            msgVpnName: service.msgVpnName,
-            queueName: app.credentials.secret.consumerKey,
-            subscriptionTopic: subscription
-          }
-          try {
-            var subResult = await AllService.getMsgVpnQueueSubscription(service.msgVpnName, app.credentials.secret.consumerKey, encodeURIComponent(subscription));
-          } catch (e: any) {
-            L.debug(`createQueues subscription lookup  failed ${JSON.stringify(e)}`);
-            try {
-              var subResult = await AllService.createMsgVpnQueueSubscription(service.msgVpnName, app.credentials.secret.consumerKey, queueSubscription);
-            } catch (e) {
-              L.warn(`createQueues subscription creation  failed ${JSON.stringify(e)}`);
-              reject(e);
-              return;
-            }
-          }
-
-
-        }
-
-
-
       }
-      resolve();
-    });
+    }
   }
 
-  public getClientACLExceptions(app: App, apiProducts: APIProduct[], developer: Developer, envName: string): Promise<Permissions> {
-    return new Promise<Permissions>(async (resolve, reject) => {
-
-      var publishExceptions: string[] = [];
-      var subscribeExceptions: string[] = [];
+  public async getClientACLExceptions(app: App, apiProducts: APIProduct[], developer: Developer, envName: string): Promise<Permissions> {
+    try {
+      let publishExceptions: string[] = [];
+      let subscribeExceptions: string[] = [];
       // compile list of event destinations sub / pub separately
-      for (var product of apiProducts) {
-        for (var env of product.environments) {
+      for (const product of apiProducts) {
+        for (const env of product.environments) {
           if (env == envName) {
             publishExceptions = this.getResources(product.pubResources).concat(publishExceptions);
             subscribeExceptions = this.getResources(product.subResources).concat(subscribeExceptions);
-            var strs: string[] = await this.getResourcesFromAsyncAPIs(product.apis, Direction.Subscribe);
-            for (var s of strs) {
-              subscribeExceptions.push(s);
-            }
+            let strs: string[] = await this.getResourcesFromAsyncAPIs(product.apis, Direction.Subscribe);
+            subscribeExceptions = subscribeExceptions.concat(strs);
             strs = await this.getResourcesFromAsyncAPIs(product.apis, Direction.Publish);
-            for (var s of strs) {
-              publishExceptions.push(s);
-            }
+            publishExceptions = publishExceptions.concat(strs);
           }
         }
       }
-      var attributes: any[] = this.getAttributes(app, developer, apiProducts);
+      let attributes: any[] = this.getAttributes(app, developer, apiProducts);
       subscribeExceptions = this.enrichTopics(subscribeExceptions, attributes);
       publishExceptions = this.enrichTopics(publishExceptions, attributes);
       publishExceptions.forEach((s, index, arr) => {
@@ -675,86 +596,71 @@ class BrokerService {
         arr[index] = this.scrubDestination(s);
       });
 
-      //L.debug(publishExceptions);
-      //L.debug(subscribeExceptions);
       // reverse - Async API usage of verbs
       var permissions: Permissions = {
         publish: subscribeExceptions,
         subscribe: publishExceptions
       }
-      resolve(permissions);
-    });
+      return permissions;
+    } catch (err) {
+      throw err;
+
+    }
   }
 
 
-  private addPublishTopicExceptions(app: App, services: Service[], exceptions: string[]): Promise<void> {
-    return new Promise<void>(async (resolve, reject) => {
-      for (var service of services) {
-        var sempV2Client = this.getSEMPv2Client(service);
-        for (var exception of exceptions) {
-          var aclException: MsgVpnAclProfilePublishException = {
-            aclProfileName: app.credentials.secret.consumerKey,
-            msgVpnName: service.msgVpnName,
-            publishExceptionTopic: exception,
-            topicSyntax: MsgVpnAclProfilePublishException.topicSyntax.SMF
-          };
-          //L.debug("createMsgVpnAclProfilePublishException");
-          //L.debug(aclException);
+  private async addPublishTopicExceptions(app: App, services: Service[], exceptions: string[]): Promise<void> {
+    for (var service of services) {
+      var sempV2Client = this.getSEMPv2Client(service);
+      for (var exception of exceptions) {
+        var aclException: MsgVpnAclProfilePublishException = {
+          aclProfileName: app.credentials.secret.consumerKey,
+          msgVpnName: service.msgVpnName,
+          publishExceptionTopic: exception,
+          topicSyntax: MsgVpnAclProfilePublishException.topicSyntax.SMF
+        };
+        try {
+          var getResponse = await AllService.getMsgVpnAclProfilePublishException(service.msgVpnName, app.credentials.secret.consumerKey, MsgVpnAclProfilePublishException.topicSyntax.SMF, encodeURIComponent(exception));
+          L.info("ACL Looked up");
+        } catch (e) {
+          L.info(`addPublishTopicExceptions lookup  failed ${e}`);
           try {
-
-            var getResponse = await AllService.getMsgVpnAclProfilePublishException(service.msgVpnName, app.credentials.secret.consumerKey, MsgVpnAclProfilePublishException.topicSyntax.SMF, encodeURIComponent(exception));
-            L.info("ACL Looked up");
-          } catch (e) {
-            L.info(`addPublishTopicExceptions lookup  failed ${e}`);
-            try {
-              let response = await AllService.createMsgVpnAclProfilePublishException(service.msgVpnName, app.credentials.secret.consumerKey, aclException);
-              L.info("created  PublishException");
-            } catch (e) {
-              L.info(`addPublishTopicExceptions add failed ${e}`);
-              reject(e);
-            }
+            let response = await AllService.createMsgVpnAclProfilePublishException(service.msgVpnName, app.credentials.secret.consumerKey, aclException);
+            L.info("created PublishException");
+          } catch (err) {
+            L.info(`addPublishTopicExceptions add failed ${err}`);
+            throw err;
           }
         }
-
       }
-      L.info("addPublishTopicExceptions resolved");
-      resolve();
-    });
-
+    }
   }
-  private addSubscribeTopicExceptions(app: App, services: Service[], exceptions: string[]): Promise<void> {
-    return new Promise<void>(async (resolve, reject) => {
-      for (var service of services) {
-        var sempV2Client = this.getSEMPv2Client(service);
-        for (var exception of exceptions) {
-          var aclException: MsgVpnAclProfileSubscribeException = {
-            aclProfileName: app.credentials.secret.consumerKey,
-            msgVpnName: service.msgVpnName,
-            subscribeExceptionTopic: exception,
-            topicSyntax: MsgVpnAclProfileSubscribeException.topicSyntax.SMF
-          };
-          //L.debug("createMsgVpnAclProfileSubscribeException");
-          //L.debug(aclException);
+  private async addSubscribeTopicExceptions(app: App, services: Service[], exceptions: string[]): Promise<void> {
+    for (var service of services) {
+      var sempV2Client = this.getSEMPv2Client(service);
+      for (var exception of exceptions) {
+        var aclException: MsgVpnAclProfileSubscribeException = {
+          aclProfileName: app.credentials.secret.consumerKey,
+          msgVpnName: service.msgVpnName,
+          subscribeExceptionTopic: exception,
+          topicSyntax: MsgVpnAclProfileSubscribeException.topicSyntax.SMF
+        };
+        try {
+          var getResponse = await AllService.getMsgVpnAclProfileSubscribeException(service.msgVpnName, app.credentials.secret.consumerKey, MsgVpnAclProfileSubscribeException.topicSyntax.SMF, encodeURIComponent(exception));
+          L.debug("addSubscribeTopicExceptions: exception exists");
+        } catch (e) {
+          L.warn(`addSubscribeTopicExceptions lookup  failed ${JSON.stringify(e)}`);
           try {
-            var getResponse = await AllService.getMsgVpnAclProfileSubscribeException(service.msgVpnName, app.credentials.secret.consumerKey, MsgVpnAclProfileSubscribeException.topicSyntax.SMF, encodeURIComponent(exception));
-            L.info("addSubscribeTopicExceptions: exception exists");
-          } catch (e) {
-            L.warn(`addSubscribeTopicExceptions lookup  failed ${JSON.stringify(e)}`);
-            try {
-              let response = await AllService.createMsgVpnAclProfileSubscribeException(service.msgVpnName, app.credentials.secret.consumerKey, aclException);
-              //L.debug("created  SubscribeException");
-            } catch (e) {
-              L.error(`addSubscribeTopicExceptions add failed ${e}`);
-              reject(e);
-            }
-
+            let response = await AllService.createMsgVpnAclProfileSubscribeException(service.msgVpnName, app.credentials.secret.consumerKey, aclException);
+            L.debug("created SubscribeException");
+          } catch (err) {
+            L.error(`addSubscribeTopicExceptions add failed ${err}`);
+            throw err;
           }
+
         }
-
       }
-      resolve();
-    });
-
+    }
   }
 
   private getResourcesFromAsyncAPIs(apis: string[], direction: Direction): Promise<string[]> {
@@ -778,11 +684,9 @@ class BrokerService {
                   var channel = spec.channel(s);
 
                   if (direction == Direction.Subscribe && channel.hasSubscribe()) {
-                    //L.debug(`Subscribe ${s}`)
                     resources.push(s);
                   }
                   if (direction == Direction.Publish && channel.hasPublish()) {
-                    //L.debug(`Publish ${s}`)
                     resources.push(s);
                   }
                 });
@@ -845,55 +749,65 @@ class BrokerService {
   public getMessagingProtocols(app: App): Promise<AppEnvironment[]> {
 
     return new Promise<AppEnvironment[]>((resolve, reject) => {
-      var appEnvironments: AppEnvironment[] = [];
+      const appEnvironments: AppEnvironment[] = [];
 
-      var apiProductPromises: Promise<APIProduct>[] = [];
+      const apiProductPromises: Promise<APIProduct>[] = [];
       app.apiProducts.forEach((productName: string) => {
         L.info(productName);
         apiProductPromises.push(ApiProductsService.byName(productName));
       });
 
-      Promise.all(apiProductPromises).then(async (products: APIProduct[]) => {
-        for (var product of products) {
-          L.info(`getMessagingProtocols ${product.name}`);
-          for (var envName of product.environments) {
-            var appEnv = appEnvironments.find(ae => ae.name == envName);
-            if (appEnv === undefined) {
-              appEnv = {
-                name: envName
-              };
-              appEnvironments.push(appEnv);
-            }
-            const service = await this.getServiceByEnv(envName);
-            var endpoints: Endpoint[] = [];
-            for (var protocol of product.protocols) {
-              L.info(`getMessagingProtocols ${protocol.name}`);
-              var keys = ProtocolMapper.findByAsyncAPIProtocol(protocol).protocolKeys;
-              L.info(`getMessagingProtocols ${keys.name} ${keys.protocol}`);
-              var endpoint = service.messagingProtocols.find(mp => mp.name == keys.name).endPoints.find(ep => ep.transport == keys.protocol);
-              L.info(endpoint);
-              var newEndpoint: Endpoint = endpoints.find(ep => ep.uri == endpoint.uris[0]);
-              L.info(newEndpoint);
-              if (newEndpoint === undefined) {
-                newEndpoint = {
-                  compressed: endpoint.compressed == 'yes' ? 'yes' : 'no',
-                  secure: endpoint.secured == 'yes' ? 'yes' : 'no',
-                  protocol: protocol,
-                  transport: endpoint.transport,
-                  uri: endpoint.uris[0]
-                };
-                endpoints.push(newEndpoint);
+      Promise.all(apiProductPromises)
+        .then(async (products: APIProduct[]) => {
+          try {
+            for (const product of products) {
+              L.info(`getMessagingProtocols ${product.name}`);
+              for (const envName of product.environments) {
+                let appEnv = appEnvironments.find((ae) => ae.name == envName);
+                if (appEnv === undefined) {
+                  appEnv = {
+                    name: envName,
+                  };
+                  appEnvironments.push(appEnv);
+                }
+                const service = await this.getServiceByEnv(envName);
+                const endpoints: Endpoint[] = [];
+                for (const protocol of product.protocols) {
+                  L.info(`getMessagingProtocols ${protocol.name}`);
+                  const keys = ProtocolMapper.findByAsyncAPIProtocol(protocol)
+                    .protocolKeys;
+                  L.info(`getMessagingProtocols ${keys.name} ${keys.protocol}`);
+                  const endpoint = service.messagingProtocols
+                    .find((mp) => mp.name == keys.name)
+                    .endPoints.find((ep) => ep.transport == keys.protocol);
+                  L.info(endpoint);
+                  let newEndpoint: Endpoint = endpoints.find(
+                    (ep) => ep.uri == endpoint.uris[0]
+                  );
+                  L.info(newEndpoint);
+                  if (newEndpoint === undefined) {
+                    newEndpoint = {
+                      compressed: endpoint.compressed == 'yes' ? 'yes' : 'no',
+                      secure: endpoint.secured == 'yes' ? 'yes' : 'no',
+                      protocol: protocol,
+                      transport: endpoint.transport,
+                      uri: endpoint.uris[0],
+                    };
+                    endpoints.push(newEndpoint);
+                  }
+                }
+                appEnv.messagingProtocols = endpoints;
               }
             }
-            appEnv.messagingProtocols = endpoints;
+            resolve(appEnvironments);
+          } catch (error) {
+            reject(error);
           }
-        }
-        resolve(appEnvironments);
-
-      });
-
+        })
+        .catch((err) => {
+          reject(err);
+        });
     });
-
   }
 
   private getBindingsFromAsyncAPIs(apis: string[]): Promise<string[]> {
@@ -998,9 +912,5 @@ class BrokerService {
       sempProtocol.password);
     return sempv2Client;
   }
-
-
-
-
 }
 export default new BrokerService();

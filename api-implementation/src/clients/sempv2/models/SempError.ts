@@ -1,7 +1,8 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
-export interface SempError {
+
+export type SempError = {
     /**
      * The error code which uniquely identifies the error that has occurred.
      */

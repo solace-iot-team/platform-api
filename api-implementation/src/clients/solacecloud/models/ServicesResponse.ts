@@ -1,9 +1,10 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
+
 import type { Service } from './Service';
 
-export interface ServicesResponse {
+export type ServicesResponse = {
     data: Array<Service>;
     meta: {
         currentTime?: number,

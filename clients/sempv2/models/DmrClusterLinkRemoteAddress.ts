@@ -1,7 +1,8 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
-export interface DmrClusterLinkRemoteAddress {
+
+export type DmrClusterLinkRemoteAddress = {
     /**
      * The name of the Cluster.
      */

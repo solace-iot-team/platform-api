@@ -17,7 +17,7 @@ class EventPortalFacade {
 	public async validate(token: string): Promise<boolean> {
 		OpenAPI.TOKEN = token;
 		try {
-			var result: Promise<any> = await ApplicationDomainsService.list(100, 1);
+			const result: any = await ApplicationDomainsService.list(100, 1);
 			if (result != null) {
 				return true;
 			} else {

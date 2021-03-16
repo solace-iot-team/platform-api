@@ -1,9 +1,10 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
+
 import type { Event } from './Event';
 
-export interface EventsResponse {
+export type EventsResponse = {
     data?: Array<Event>;
     meta?: Record<string, any>;
 }

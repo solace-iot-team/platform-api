@@ -1,7 +1,8 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
-export interface MsgVpnRestDeliveryPointRestConsumerTlsTrustedCommonName {
+
+export type MsgVpnRestDeliveryPointRestConsumerTlsTrustedCommonName = {
     /**
      * The name of the Message VPN. Deprecated since (will be deprecated in next SEMP version). Common Name validation has been replaced by Server Certificate Name validation.
      */

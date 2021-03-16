@@ -1,7 +1,8 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
-export interface MsgVpnJndiQueueLinks {
+
+export type MsgVpnJndiQueueLinks = {
     /**
      * The URI of this JNDI Queue object.
      */

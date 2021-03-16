@@ -1,7 +1,8 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
-export interface AboutUserMsgVpnLinks {
+
+export type AboutUserMsgVpnLinks = {
     /**
      * The URI of this User Message VPN object.
      */

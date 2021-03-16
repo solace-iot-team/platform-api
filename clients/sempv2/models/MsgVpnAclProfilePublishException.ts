@@ -1,7 +1,8 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
-export interface MsgVpnAclProfilePublishException {
+
+export type MsgVpnAclProfilePublishException = {
     /**
      * The name of the ACL Profile. Deprecated since 2.14. Replaced by publishTopicExceptions.
      */

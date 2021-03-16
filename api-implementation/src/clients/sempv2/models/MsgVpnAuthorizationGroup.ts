@@ -1,7 +1,8 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
-export interface MsgVpnAuthorizationGroup {
+
+export type MsgVpnAuthorizationGroup = {
     /**
      * The ACL Profile of the LDAP Authorization Group. The default value is `"default"`.
      */

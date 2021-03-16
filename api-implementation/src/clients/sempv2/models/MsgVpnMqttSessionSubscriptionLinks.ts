@@ -1,7 +1,8 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
-export interface MsgVpnMqttSessionSubscriptionLinks {
+
+export type MsgVpnMqttSessionSubscriptionLinks = {
     /**
      * The URI of this Subscription object.
      */

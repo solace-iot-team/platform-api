@@ -1,7 +1,8 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
-export interface MsgVpnAuthorizationGroupLinks {
+
+export type MsgVpnAuthorizationGroupLinks = {
     /**
      * The URI of this LDAP Authorization Group object.
      */

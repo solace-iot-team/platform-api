@@ -1,7 +1,8 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
-export interface MsgVpnSequencedTopicLinks {
+
+export type MsgVpnSequencedTopicLinks = {
     /**
      * The URI of this Sequenced Topic object.
      */

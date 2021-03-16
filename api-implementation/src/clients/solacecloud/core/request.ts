@@ -1,5 +1,3 @@
-
-
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
@@ -18,6 +16,10 @@ function isDefined<T>(value: T | null | undefined): value is Exclude<T, null | u
 
 function isString(value: any): value is string {
     return typeof value === 'string';
+}
+
+function isStringWithValue(value: any): value is string {
+    return isString(value) && value !== '';
 }
 
 function isBinary(value: any): value is Buffer | ArrayBuffer | ArrayBufferView {
@@ -68,22 +70,34 @@ function getFormData(params: Record<string, any>): FormData {
     return formData;
 }
 
-async function getToken(): Promise<string> {
-    if (typeof OpenAPI.TOKEN === 'function') {
-        return OpenAPI.TOKEN();
+type Resolver<T> = (options: ApiRequestOptions) => Promise<T>;
+
+async function resolve<T>(options: ApiRequestOptions, resolver?: T | Resolver<T>): Promise<T | undefined> {
+    if (typeof resolver === 'function') {
+        return (resolver as Resolver<T>)(options);
     }
-    return OpenAPI.TOKEN;
+    return resolver;
 }
 
 async function getHeaders(options: ApiRequestOptions): Promise<Headers> {
+    const token = await resolve(options, OpenAPI.TOKEN);
+    const username = await resolve(options, OpenAPI.USERNAME);
+    const password = await resolve(options, OpenAPI.PASSWORD);
+    const defaultHeaders = await resolve(options, OpenAPI.HEADERS);
+
     const headers = new Headers({
         Accept: 'application/json',
+        ...defaultHeaders,
         ...options.headers,
     });
 
-    const token = await getToken();
-    if (isDefined(token) && token !== '') {
+    if (isStringWithValue(token)) {
         headers.append('Authorization', `Bearer ${token}`);
+    }
+
+    if (isStringWithValue(username) && isStringWithValue(password)) {
+        const credentials = Buffer.from(`${username}:${password}`).toString('base64');
+        headers.append('Authorization', `Basic ${credentials}`);
     }
 
     if (options.body) {
@@ -166,23 +180,22 @@ function catchErrors(options: ApiRequestOptions, result: ApiResult): void {
     }
 
     if (!result.ok) {
-        console.log(result.body);
         throw new ApiError(result, 'Generic Error');
     }
 }
 
 /**
-* Request using node-fetch client
-* @param options The request options from the the service
-* @result ApiResult
-* @throws ApiError
-*/
+ * Request using node-fetch client
+ * @param options The request options from the the service
+ * @returns ApiResult
+ * @throws ApiError
+ */
 export async function request(options: ApiRequestOptions): Promise<ApiResult> {
     const url = getUrl(options);
     const response = await sendRequest(options, url);
     const responseBody = await getResponseBody(response);
     const responseHeader = getResponseHeader(response, options.responseHeader);
-
+    console.log(JSON.stringify(responseBody));
     const result: ApiResult = {
         url,
         ok: response.ok,

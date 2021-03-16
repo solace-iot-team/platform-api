@@ -14,15 +14,15 @@ class SolaceCloudFacade {
 	public async getServiceByEnvironment(e: Environment): Promise<Service> {
 		try {
 			var result: ServiceResponse = await ServicesService.getService(e.serviceId);
-			if (result == null) {
+			if (result == null || result.data == null) {
 				throw new ErrorResponseInternal(404, `Service ${e.serviceId} does not exist`);
 			} else {
 				return result.data;
 			}
 		}
-		catch (e) {
-			L.error(e);
-			throw new ErrorResponseInternal(500, `API Error ${e}`);
+		catch (err) {
+			L.error(`getServiceByEnvironment ${JSON.stringify(err)}`);
+			throw new ErrorResponseInternal(500, `API Error ${err}`);
 		}
 	}
 
