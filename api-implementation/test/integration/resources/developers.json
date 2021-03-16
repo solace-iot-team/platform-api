@@ -1,0 +1,21 @@
+[
+  {
+    "email": "developer-1@service-co.com",
+    "firstName": "Dev-1",
+    "lastName": "Developer-1",
+    "userName": "developer-1"
+  },
+  {
+    "email": "developer-2@service-co.com",
+    "firstName": "Dev-2",
+    "lastName": "Developer-2",
+    "userName": "developer-2"
+  },
+  {
+    "email": "developer-3@service-co.com",
+    "firstName": "Dev-3",
+    "lastName": "Developer-3",
+    "userName": "developer-3"
+  }
+
+]

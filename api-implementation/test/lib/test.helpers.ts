@@ -1,5 +1,15 @@
 
 import fetch, { RequestInit, HeadersInit, Response } from "node-fetch";
+import fs from 'fs';
+import yaml from "js-yaml";
+import _ from 'lodash';
+
+export type Developer = {
+    userName: string,
+    email: string,
+    firstName: string,
+    lastName: string
+};
 
 export interface UserRegistry {
     org1_admin_user: string,
@@ -86,3 +96,45 @@ export class PlatformRequestHelper {
     } 
 }
 
+export class AsyncAPIHelper {
+	// getContentType(apiSpec: string): string {
+	// 	try {
+	// 		var o = JSON.parse(apiSpec);
+	// 		if (o && typeof o === "object") {
+	// 			return "application/json";
+	// 		} else {
+	// 			return "application/x-yaml";
+	// 		}
+	// 	}
+	// 	catch (e) {
+	// 		return "application/x-yaml";
+	// 	 }
+	// }
+
+	public static loadYamlFileAsJsonString(apiSpecPath: string): string {
+        const b: Buffer = fs.readFileSync(apiSpecPath);
+        const obj = yaml.load(b.toString());
+        return JSON.stringify(obj);
+	}
+	// JSONtoYAML(apiSpec: string): string{
+	// 	if (this.getContentType(apiSpec)=="application/json"){
+	// 		var o = JSON.parse(apiSpec);
+	// 		return YAML.dump(o);
+	// 	} else {
+	// 		throw new ErrorResponseInternal(500, "Invalid JSON");
+	// 	}
+		
+	// }
+}
+
+
+export function getObjectDifferences(object: any, base: any): any {
+	function changes(object: any, base: any): any {
+		return _.transform(object, function(result, value, key) {
+			if (!_.isEqual(value, base[key])) {
+				result[key] = (_.isObject(value) && _.isObject(base[key])) ? changes(value, base[key]) : value;
+			}
+		});
+	}
+	return changes(object, base);
+}

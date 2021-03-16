@@ -35,10 +35,18 @@ export APIM_INTEGRATION_TEST_APP_ID="integration-test"
 # 'fatal', 'error', 'warn', 'info', 'debug', 'trace' or 'silent'
 export APIM_INTEGRATION_TEST_LOG_LEVEL="debug"
 export APIM_INTEGRATION_TEST_FILE_USER_REGISTRY="$APIM_INTEGRATION_TEST_RESOURCES_HOME/organization_users.json"
-#
+# service ids
 export APIM_INTEGRATION_TEST_SOLACE_CLOUD_DEV_SERVICE_ID="1i5g7tif6z8n"
 export APIM_INTEGRATION_TEST_SOLACE_CLOUD_PROD_SERVICE_ID="1n34cqfgy8jp"
 export APIM_INTEGRATION_TEST_SOLACE_CLOUD_NO_MQTT_SERVICE_ID="1rvhmgxlxhvh"
+# specs & data
+export APIM_INTEGRATION_TEST_API_SPEC_MAINTENANCE_FILE="$APIM_INTEGRATION_TEST_HOME/resources/ApiMaintenance.async-api-spec.yml"
+# developers
+export APIM_INTEGRATION_TEST_DEVELOPERS_FILE="$APIM_INTEGRATION_TEST_HOME/resources/developers.json"
+# demo
+unset APIM_INTEGRATION_TEST_IS_BOOTSTRAP_DEMO
+# org1
+source "$APIM_INTEGRATION_TEST_HOME/source.env.org1.sh"
 
 env | grep APIM
 
