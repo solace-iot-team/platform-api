@@ -144,7 +144,6 @@ export class ProtocolMapper {
 					L.debug(`mapMessagingProtocols ${keys.name} ${keys.protocol}`);
 					var endpoint = protocol.endPoints.find(ep => ep.transport == serverEndpoint.transport);
 					var newEndpoint: Endpoint = endpoints.find(ep => ep.uri == endpoint.uris[0]);
-					L.debug(newEndpoint);
 					if (newEndpoint === undefined) {
 						newEndpoint = {
 							compressed: endpoint.compressed == 'yes' ? 'yes' : 'no',
