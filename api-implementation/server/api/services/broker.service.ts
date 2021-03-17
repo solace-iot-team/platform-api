@@ -84,7 +84,7 @@ class BrokerService {
             var c = await this.createClientACLExceptions(app, services, products, developer);
             L.info(`created acl exceptions ${app.name}`);
             // no webhook - no RDP
-            L.info(app.webHooks);
+            //L.info(app.webHooks);
             if (app.webHooks != null && app.webHooks.length > 0) {
               L.info("creating webhook");
               var d = await this.createQueues(app, services, products, developer);
@@ -104,34 +104,32 @@ class BrokerService {
   }
 
   async deprovisionApp(app: App) {
-      var environmentNames: string[] = [];
+    var environmentNames: string[] = [];
 
-      var apiProductPromises: Promise<APIProduct>[] = [];
-      app.apiProducts.forEach((productName: string) => {
-        L.info(productName);
-        apiProductPromises.push(ApiProductsService.byName(productName));
-      });
+    const products: APIProduct[] = [];
+    for (const productName of app.apiProducts){
+      L.info(productName);
+      const product = await ApiProductsService.byName(productName);
+      products.push(product);
+    }
+    products.forEach((product: APIProduct) => {
+      product.environments.forEach((e: string) => {
+        environmentNames.push(e);
+      })
+      L.info(`env: ${product.environments}`);
+    });
+    environmentNames = Array.from(new Set(environmentNames));
 
-      Promise.all(apiProductPromises).then(async (products: APIProduct[]) => {
-        products.forEach((product: APIProduct) => {
-          product.environments.forEach((e: string) => {
-            environmentNames.push(e);
-          })
-          L.info(`env: ${product.environments}`);
-        });
-        environmentNames = Array.from(new Set(environmentNames));
-
-        try {
-          const services = await this.getServices(environmentNames);
-          await this.deleteClientUsernames(app, services);
-          await this.deleteACLs(app, services);
-          await this.deleteRDPs(app, services);
-          await this.deleteQueues(app, services);
-        } catch (err) {
-          L.error('De-Provisioninig error');
-          throw new ErrorResponseInternal(500, err.message);
-        }
-      });
+    try {
+      const services = await this.getServices(environmentNames);
+      await this.deleteClientUsernames(app, services);
+      await this.deleteACLs(app, services);
+      await this.deleteRDPs(app, services);
+      await this.deleteQueues(app, services);
+    } catch (err) {
+      L.error('De-Provisioninig error');
+      throw new ErrorResponseInternal(500, err.message);
+    }
   }
 
   private async getServices(environmentNames: string[]): Promise<Service[]> {
@@ -725,7 +723,7 @@ class BrokerService {
 
                   var channel = spec.channel(s);
                   // publish means subscribe - async api transposition
-                  if (channel.hasPublishj() && (channel.publish().hasBinding('http') || channel.publish().hasBinding('https'))) {
+                  if (channel.hasPublish() && (channel.publish().hasBinding('http') || channel.publish().hasBinding('https'))) {
                     L.info(`getRDPSubscriptionsFromAsyncAPIs subscribe ${s}`)
                     resources.push(s);
                   }
@@ -780,11 +778,11 @@ class BrokerService {
                   const endpoint = service.messagingProtocols
                     .find((mp) => mp.name == keys.name)
                     .endPoints.find((ep) => ep.transport == keys.protocol);
-                  L.info(endpoint);
+                  //L.info(endpoint);
                   let newEndpoint: Endpoint = endpoints.find(
                     (ep) => ep.uri == endpoint.uris[0]
                   );
-                  L.info(newEndpoint);
+                  //L.info(newEndpoint);
                   if (newEndpoint === undefined) {
                     newEndpoint = {
                       compressed: endpoint.compressed == 'yes' ? 'yes' : 'no',
