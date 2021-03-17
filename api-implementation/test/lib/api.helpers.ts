@@ -46,3 +46,8 @@ export class PlatformAPIClient {
         this.doUse = PlatformAPIClient.UseManagementUser;
     }
 }
+
+export type ApiPermissions = Array<{
+    name: string,
+    value: string,
+  }>;

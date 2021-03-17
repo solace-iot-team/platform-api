@@ -5,11 +5,11 @@ import path from 'path';
 import { isEqual } from 'lodash';
 import { getBaseUrl, UserRegistry, getMandatoryEnvVarValue, getOptionalEnvVarValue, PlatformRequestHelper, LoggingHelper, AsyncAPIHelper, Developer, getObjectDifferences } from "../lib/test.helpers";
 import { PlatformManagementHelper } from "../lib/platform-management";
-import { isInstanceOfApiError, PlatformAPIClient } from '../lib/api.helpers';
+import { isInstanceOfApiError, PlatformAPIClient, ApiPermissions } from '../lib/api.helpers';
 import { PlatformManagementService } from '../lib/generated/openapi/services/PlatformManagementService';
 import type { Organization } from '../lib/generated/openapi/models/Organization';
 import type { History } from '../lib/generated/openapi/models/History';
-import { APIProduct, ApiProductsService, ApisService, App, AppsService, Credentials, DevelopersService, Environment, EnvironmentResponse, EnvironmentsService, ManagementService, Protocol } from "../lib/generated/openapi";
+import { APIProduct, APIProductPatch, ApiProductsService, ApisService, App, AppPatch, AppResponse, AppsService, Credentials, DevelopersService, Environment, EnvironmentResponse, EnvironmentsService, ManagementService, Protocol, WebHook } from "../lib/generated/openapi";
 
 
 const enableLoggingEnvVar: string = getOptionalEnvVarValue('APIM_INTEGRATION_TEST_ENABLE_LOGGING');
@@ -30,6 +30,8 @@ const testEnv = {
   SOLACE_CLOUD_TOKEN: getMandatoryEnvVarValue(scriptName, 'APIM_INTEGRATION_TEST_SOLACE_CLOUD_TOKEN'),
   // ENABLE_LOGGING: getOptionalEnvVarValue('APIM_INTEGRATION_TEST_ENABLE_LOGGING') != null ? true : false,
   DEV_SERVICE_ID: getMandatoryEnvVarValue(scriptName, 'APIM_INTEGRATION_TEST_SOLACE_CLOUD_DEV_SERVICE_ID'),
+  PROD_SERVICE_ID: getMandatoryEnvVarValue(scriptName, 'APIM_INTEGRATION_TEST_SOLACE_CLOUD_PROD_SERVICE_ID'),
+  NO_MQTT_SERVICE_ID: getMandatoryEnvVarValue(scriptName, 'APIM_INTEGRATION_TEST_SOLACE_CLOUD_NO_MQTT_SERVICE_ID'),
   ORG_NAME: getMandatoryEnvVarValue(scriptName, 'APIM_INTEGRATION_TEST_ORG_NAME'),
   ORG_API_USR: getMandatoryEnvVarValue(scriptName, 'APIM_INTEGRATION_TEST_ORG_API_USR'),
   ORG_API_PWD: getMandatoryEnvVarValue(scriptName, 'APIM_INTEGRATION_TEST_ORG_API_PWD'),
@@ -54,18 +56,36 @@ describe('uc-elevator-co test', () => {
     const platformManagement: PlatformManagementHelper = new PlatformManagementHelper(platformManagementRequest, logging);
 
     const orgName = testEnv.ORG_NAME;
+    const apiNameMaintenance: string = "api-maintenance";
+    const apiSpecMaintenance: string = AsyncAPIHelper.loadYamlFileAsJsonString(testEnv.API_SPEC_MAINTENANCE_FILE);
+    const apiMaintenacePermissions: ApiPermissions = [
+      // {resource_region_id}/{equipment_type}/{event_type}/{resource_type}/{resource_id}
+      { name: 'resource_region_id', value: 'fr, de, us-east, us-west' }, 
+      { name: 'resource_type', value: 'elev-make-1, elev-make-2' },
+      { name: 'resource_id', value: '*' }
+    ]
+    // development 
     const devEnvName = "development";
     const devEnv: Environment = {
       name: `${devEnvName}`,
-      description: `description of development`,
+      description: `description of ${devEnvName}`,
       serviceId: testEnv.DEV_SERVICE_ID
     };
-    const apiNameMaintenance: string = "api-maintenance";
-    const apiSpecMaintenance: string = AsyncAPIHelper.loadYamlFileAsJsonString(testEnv.API_SPEC_MAINTENANCE_FILE);
     const apiProductNameMaintenanceDevelopment: string = "elevator-maintenance-development";
-    const apiProductMaintenanceDevelopmentApprovalType: string = APIProduct.approvalType.AUTO;
+    const apiProductMaintenanceDevelopmentApprovalType: APIProduct.approvalType = APIProduct.approvalType.AUTO;
+    // production
+    const prodEnvName = "production";
+    const prodEnv: Environment = {
+      name: `${prodEnvName}`,
+      description: `description of ${prodEnvName}`,
+      serviceId: testEnv.PROD_SERVICE_ID
+    };
+    const apiProductNameMaintenanceProduction: string = "elevator-maintenance-production";
+    const apiProductMaintenanceProductionApprovalType: APIProduct.approvalType = APIProduct.approvalType.MANUAL;
+    // developers
     const developers: Array<Developer> = require(testEnv.DEVELOPERS_FILE);
-    const developerAppNameMaintenance: string = "elevator-maintenance";
+    const developerAppNameMaintenanceDevelopment: string = "elevator-maintenance-development";
+    const developerAppNameMaintenanceProduction: string = "elevator-maintenance-production";
 
     before(async() => {
       // ensure we start clean every time
@@ -123,13 +143,26 @@ describe('uc-elevator-co test', () => {
       }
     });
 
+    it("should register prod service with org", async() => {
+      platformApiClient.useApiUser();
+      try {
+        let response: Environment = await EnvironmentsService.createEnvironment(orgName, prodEnv);
+        logging.logMessage(testId, `response = ${JSON.stringify(response, null, 2)}`);
+        expect(isEqual(prodEnv, response)).to.be.true;
+      } catch (e) {
+        expect(isInstanceOfApiError(e), `error is not an instance of ApiError, err=${e.message}`).to.be.true;
+        expect(false, `register prod service with org='${orgName}', err=${JSON.stringify(e, null, 2)}`).to.be.true;
+      }
+    });
+
     it("should get environments", async() => {
       platformApiClient.useApiUser();
       try {
         let response: Array<Environment> = await EnvironmentsService.listEnvironments(orgName);
         logging.logMessage(testId, `response = ${JSON.stringify(response, null, 2)}`);
-        expect(response.length).to.equal(1);
+        expect(response.length).to.equal(2);
         expect(isEqual(devEnv, response[0])).to.be.true;
+        expect(isEqual(prodEnv, response[1])).to.be.true;
       } catch (e) {
         expect(isInstanceOfApiError(e), `error is not an instance of ApiError, err=${e.message}`).to.be.true;
         expect(false, `get envs for org='${orgName}', err=${JSON.stringify(e, null, 2)}`).to.be.true;
@@ -164,6 +197,19 @@ describe('uc-elevator-co test', () => {
       }
     });
 
+    it("should get prod environment", async() => {
+      platformApiClient.useApiUser();
+      try {
+        let response: EnvironmentResponse = await EnvironmentsService.getEnvironment(orgName, prodEnv.name);
+        logging.logMessage(testId, `response = ${JSON.stringify(response, null, 2)}`);
+        // could check if all mqtt endpoints have the correct name?
+        // expect(isEqual(prodEnv, response[0])).to.be.true;
+      } catch (e) {
+        expect(isInstanceOfApiError(e), `error is not an instance of ApiError, err=${e.message}`).to.be.true;
+        expect(false, `get prod env='${prodEnv}', err=${JSON.stringify(e, null, 2)}`).to.be.true;
+      }
+    });
+
     it("should create api maintenance", async() => {
       platformApiClient.useApiUser();
       let response: any;
@@ -184,15 +230,11 @@ describe('uc-elevator-co test', () => {
       platformApiClient.useApiUser();
       let apiProduct: APIProduct = {
         name: `${apiProductNameMaintenanceDevelopment}`,
-        displayName: `${apiProductNameMaintenanceDevelopment}`,
+        displayName: `display name for ${apiProductNameMaintenanceDevelopment}`,
         description: `description for ${apiProductNameMaintenanceDevelopment}`,
         apis: [ apiNameMaintenance ],
-        approvalType: APIProduct.approvalType.AUTO,
-        attributes: [
-          { name: 'resource_region_id', value: 'fr, de, us-east, us-west' }, 
-          { name: 'resource_type', value: 'elev-make-1, elev-make-2' }
-          // test: use an attribute that doesn't exist: name, value
-        ],
+        approvalType: apiProductMaintenanceDevelopmentApprovalType,
+        attributes: apiMaintenacePermissions,
         environments: [ `${devEnvName}` ],
         protocols: [ { name: Protocol.name.MQTT, version: '3.1.1' } ],
         pubResources: [],
@@ -210,6 +252,50 @@ describe('uc-elevator-co test', () => {
       expect(isEqual(apiProduct, response), 'response not equal to apiProduct').to.be.true;
     });
     
+    it("should add http protocol to api product maintenance-development", async() => {
+      platformApiClient.useApiUser();
+      let apiProductPatch: APIProductPatch = {
+        protocols: [ { name: Protocol.name.MQTT, version: '3.1.1' }, { name: Protocol.name.HTTP, version: '1.1'} ],
+        name: apiProductNameMaintenanceDevelopment
+      }
+      logging.logMessage(testId, `updating apiProductPatch = ${JSON.stringify(apiProductPatch, null, 2)}`);
+      let response: APIProduct;
+      try {
+        response = await ApiProductsService.updateApiProduct(orgName, apiProductNameMaintenanceDevelopment, apiProductPatch);
+      } catch (e) {
+        expect(isInstanceOfApiError(e), `error is not an instance of ApiError, err=${e.message}`).to.be.true;
+        expect(false, `update apiProduct='${apiProductNameMaintenanceDevelopment}', \napiProductPatch=${JSON.stringify(apiProductPatch, null, 2)}, \nerr=${JSON.stringify(e, null, 2)}\n`).to.be.true;
+      }
+      logging.logMessage(testId, `response = ${JSON.stringify(response, null, 2)}`);
+      expect(isEqual(apiProductPatch, response), 'response not equal to apiProductPatch').to.be.true;
+    });
+
+    it("should create api product maintenance-production", async() => {
+      platformApiClient.useApiUser();
+      let apiProduct: APIProduct = {
+        name: `${apiProductNameMaintenanceProduction}`,
+        displayName: `display name for ${apiProductNameMaintenanceProduction}`,
+        description: `description for ${apiProductNameMaintenanceProduction}`,
+        apis: [ apiNameMaintenance ],
+        approvalType: apiProductMaintenanceProductionApprovalType,
+        attributes: apiMaintenacePermissions,
+        environments: [ `${prodEnvName}` ],
+        protocols: [ { name: Protocol.name.MQTT, version: '3.1.1' } ],
+        pubResources: [],
+        subResources: []
+      };
+      logging.logMessage(testId, `creating apiProduct = ${JSON.stringify(apiProduct, null, 2)}`);
+      let response: APIProduct;
+      try {
+        response = await ApiProductsService.createApiProduct(orgName, apiProduct);
+      } catch (e) {
+        expect(isInstanceOfApiError(e), `error is not an instance of ApiError, err=${e.message}`).to.be.true;
+        expect(false, `create apiProduct='${apiProductNameMaintenanceProduction}', err=${JSON.stringify(e, null, 2)}`).to.be.true;
+      }
+      logging.logMessage(testId, `response = ${JSON.stringify(response, null, 2)}`);
+      expect(isEqual(apiProduct, response), 'response not equal to apiProduct').to.be.true;
+    });
+
     it("should create all developers", async() => {
       platformApiClient.useApiUser();
       let response: Developer;
@@ -225,7 +311,7 @@ describe('uc-elevator-co test', () => {
       }
     });
 
-    it("should create the app for all developers", async() => {
+    it("should create the development app for all developers", async() => {
       platformApiClient.useApiUser();
       let response: App;
       let app: App = {
@@ -238,7 +324,7 @@ describe('uc-elevator-co test', () => {
             consumerSecret: 'x'
           }
         }
-      };
+      }; 
       for(let developer of developers) {
         let credentials: Credentials = {
           expiresAt: -1,
@@ -248,10 +334,9 @@ describe('uc-elevator-co test', () => {
           }
         };
         app.credentials= credentials;
-        app.name = `${developerAppNameMaintenance}-${developer.userName}`
+        app.name = `${developerAppNameMaintenanceDevelopment}-${developer.userName}`
         try {
-          // change after regenerating openapi
-          response = await AppsService.createDeveloperApp(orgName, developer.userName, undefined, app); 
+          response = await AppsService.createDeveloperApp(orgName, developer.userName, app); 
         } catch (e) {
           expect(isInstanceOfApiError(e), `error is not an instance of ApiError, err=${e.message}`).to.be.true;
           expect(false, `create app=${JSON.stringify(app, null, 2)} for developer='${JSON.stringify(developer, null, 2)}', err=${JSON.stringify(e, null, 2)}`).to.be.true;
@@ -262,6 +347,40 @@ describe('uc-elevator-co test', () => {
         if(!areEqual) diff = getObjectDifferences(response, app);
         expect(!areEqual, `response not equal to app, diff=${JSON.stringify(diff, null, 2)}`).to.be.true;  
       }
+    });
+
+    it("should add webhook to development app for all developers", async() => {
+      platformApiClient.useApiUser();
+      let response: AppResponse;
+      let appName: string;
+      let appPatch: AppPatch = {
+      };
+      for(let developer of developers) {
+        appName = `${developerAppNameMaintenanceDevelopment}-${developer.userName}`
+        let webHook: WebHook = {
+          uri: `http://api.${developer.userName}.com/${developer.userName}/elevator/maintenance`,
+          method: WebHook.method.POST,
+          mode: WebHook.mode.SERIAL
+        };
+        appPatch.webHooks = [ webHook ];
+        try {
+          response = await AppsService.updateDeveloperApp(orgName, developer.userName, appName, appPatch);
+        } catch (e) {
+          expect(isInstanceOfApiError(e), `error is not an instance of ApiError, err=${e.message}`).to.be.true;
+          expect(false, `update app=${appName},\nappPatch=${JSON.stringify(appPatch, null, 2)},\ndeveloper='${JSON.stringify(developer, null, 2)}',\nerr=${JSON.stringify(e, null, 2)}`).to.be.true;
+        }
+        logging.logMessage(testId, `response = ${JSON.stringify(response, null, 2)}`);
+        let areEqual: boolean = isEqual(appPatch, response);
+        let diff: any;
+        if(!areEqual) diff = getObjectDifferences(response, appPatch);
+        expect(!areEqual, `response not equal to appPatch, diff=${JSON.stringify(diff, null, 2)}`).to.be.true;  
+      }
+    });
+
+    xit("should handle adding webhook without http protocol", async() => {
+      // testing with production product - no http protocol there
+
+
     });
 
     xit("should get app details for all developer apps", async() => {

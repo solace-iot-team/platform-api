@@ -19,9 +19,8 @@ npm install
 ````
 ## generate openapi client
 ````bash
-
+cd {root}/platform-api/api-implementation/test/integration
 npx openapi --input ../../server/common/api.yml --output ../lib/generated/openapi --client node
-
 
 ````
 
