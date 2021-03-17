@@ -59,23 +59,27 @@ export class ApiProductsService {
 
   }
 
-  update(name: string, body: APIProduct): Promise<APIProduct> {
-    return new Promise<APIProduct>(async (resolve, reject) => {
-      try {
-        const apiReferenceCheck = await this.validateReferences(body);
-        L.info(` reference check result ${apiReferenceCheck}`);
-        if (!apiReferenceCheck)
-          reject(new ErrorResponseInternal(422, ` reference check failed ${apiReferenceCheck}`));
-        this.persistenceService.update(name, body).then((p) => {
-          resolve(p);
-        }).catch((e) => {
-          reject(e);
-        });
-
-      } catch (e) {
-        reject(e);
+  async update(name: string, body: APIProduct): Promise<APIProduct> {
+    try {
+      // we need ot load the environment list so we can validate a new protocol that may be added
+      if (body.environments == null){
+        const oldProduct = await this.persistenceService.byName(name);
+        body.environments = oldProduct.environments;
       }
-    });
+      const apiReferenceCheck = await this.validateReferences(body);
+      L.info(` reference check result ${apiReferenceCheck}`);
+      if (!apiReferenceCheck)
+        throw new ErrorResponseInternal(422, ` reference check failed ${apiReferenceCheck}`);
+      const p = await this.persistenceService.update(name, body);
+      if (p != null) {
+        return p;
+      } else {
+        throw new ErrorResponseInternal(500, `Could not update object`);
+      }
+    } catch (e) {
+      L.debug(`apiProducts.update ${JSON.stringify(e)}`);
+      throw e;
+    }
   }
 
   private async canDelete(name: string): Promise<boolean> {
@@ -100,41 +104,46 @@ export class ApiProductsService {
     for (var protocol of product.protocols) {
       protocolPresent[protocol.name] = false;
     }
-    for (var apiName of product.apis) {
-      const errMsg = `Referenced API ${apiName} does not exist`;
-      try {
-        var api = await ApisService.byName(apiName);
-        if (api == null) {
+    if (product.apis != null) {
+      for (var apiName of product.apis) {
+        const errMsg = `Referenced API ${apiName} does not exist`;
+        try {
+          var api = await ApisService.byName(apiName);
+          if (api == null) {
+            throw new ErrorResponseInternal(422, errMsg);
+          }
+        } catch (e) {
           throw new ErrorResponseInternal(422, errMsg);
         }
-      } catch (e) {
-        throw new ErrorResponseInternal(422, errMsg);
       }
     }
 
     // all apis exist, now check environments
-    for (var envName of product.environments) {
-      const errMsg = `Referenced environment ${envName} does not exist`;
-      try {
-        var env = await EnvironmentsService.byName(envName);
-        if (env == null) {
-          throw new ErrorResponseInternal(422, errMsg);
-        } else {
-          for (var protocol of product.protocols) {
-            protocolPresent[protocol.name] = (env.messagingProtocols.find(e => e.protocol.name == protocol.name) != null);
+    if (product.environments != null) {
+      for (var envName of product.environments) {
+        const errMsg = `Referenced environment ${envName} does not exist`;
+        try {
+          var env = await EnvironmentsService.byName(envName);
+          if (env == null) {
+            throw new ErrorResponseInternal(422, errMsg);
+          } else {
+            for (var protocol of product.protocols) {
+              protocolPresent[protocol.name] = (env.messagingProtocols.find(e => e.protocol.name == protocol.name) != null);
+            }
           }
+        } catch (e) {
+          throw new ErrorResponseInternal(422, errMsg);
         }
-      } catch (e) {
-        throw new ErrorResponseInternal(422, errMsg);
       }
+      // throw error if protocol is missing from all environments, can not be used
+      Object.keys(protocolPresent).forEach(function (key, index) {
+        if (!protocolPresent[key]) {
+          throw new ErrorResponseInternal(422, `Referenced protocol ${key} does not exist in any environment`);
+        } else  {
+          L.debug(`protocol is present: ${key}`);
+        }
+      });
     }
-
-    // throw error if protocol is missing from all environments, can not be used
-    Object.keys(protocolPresent).forEach(function (key, index) {
-      if (!protocolPresent[key]) {
-        throw new ErrorResponseInternal(422, `Referenced protocol ${key} does not exist in any environment`);
-      }
-    });
     return true;
   }
 
