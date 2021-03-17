@@ -255,6 +255,18 @@ describe('uc-elevator-co test', () => {
     it("should add http protocol to api product maintenance-development", async() => {
       platformApiClient.useApiUser();
       let requestType = "APIProductPatch";
+      let apiProduct: APIProduct = {
+        name: `${apiProductNameMaintenanceDevelopment}`,
+        displayName: `display name for ${apiProductNameMaintenanceDevelopment}`,
+        description: `description for ${apiProductNameMaintenanceDevelopment}`,
+        apis: [ apiNameMaintenance ],
+        approvalType: apiProductMaintenanceDevelopmentApprovalType,
+        attributes: apiMaintenacePermissions,
+        environments: [ `${devEnvName}` ],
+        protocols: [ { name: Protocol.name.MQTT, version: '3.1.1' }, { name: Protocol.name.HTTP, version: '1.1'} ],
+        pubResources: [],
+        subResources: []
+      };
       let request: APIProductPatch = {
         protocols: [ { name: Protocol.name.MQTT, version: '3.1.1' }, { name: Protocol.name.HTTP, version: '1.1'} ],
       }
@@ -268,7 +280,7 @@ describe('uc-elevator-co test', () => {
         expect(false, `${LoggingHelper.createFailMessage(message,requestType, request, e )}`).to.be.true;
       }
       logging.logMessage(testId, `response = ${JSON.stringify(response, null, 2)}`);
-      expect(isEqual(request, response), 'response not equal to apiProductPatch').to.be.true;
+      expect(isEqual(apiProduct, response), 'response not equal to apiProduct').to.be.true;
     });
 
     it("should create api product maintenance-production", async() => {
