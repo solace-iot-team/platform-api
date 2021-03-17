@@ -254,20 +254,21 @@ describe('uc-elevator-co test', () => {
     
     it("should add http protocol to api product maintenance-development", async() => {
       platformApiClient.useApiUser();
-      let apiProductPatch: APIProductPatch = {
+      let requestType = "APIProductPatch";
+      let request: APIProductPatch = {
         protocols: [ { name: Protocol.name.MQTT, version: '3.1.1' }, { name: Protocol.name.HTTP, version: '1.1'} ],
-        name: apiProductNameMaintenanceDevelopment
       }
-      logging.logMessage(testId, `updating apiProductPatch = ${JSON.stringify(apiProductPatch, null, 2)}`);
+      logging.logMessage(testId, `updating apiProductPatch = ${JSON.stringify(request, null, 2)}`);
       let response: APIProduct;
       try {
-        response = await ApiProductsService.updateApiProduct(orgName, apiProductNameMaintenanceDevelopment, apiProductPatch);
+        response = await ApiProductsService.updateApiProduct(orgName, apiProductNameMaintenanceDevelopment, request);
       } catch (e) {
         expect(isInstanceOfApiError(e), `error is not an instance of ApiError, err=${e.message}`).to.be.true;
-        expect(false, `update apiProduct='${apiProductNameMaintenanceDevelopment}', \napiProductPatch=${JSON.stringify(apiProductPatch, null, 2)}, \nerr=${JSON.stringify(e, null, 2)}\n`).to.be.true;
+        let message = `update apiProduct=${apiProductNameMaintenanceDevelopment}`;
+        expect(false, `${LoggingHelper.createFailMessage(message,requestType, request, e )}`).to.be.true;
       }
       logging.logMessage(testId, `response = ${JSON.stringify(response, null, 2)}`);
-      expect(isEqual(apiProductPatch, response), 'response not equal to apiProductPatch').to.be.true;
+      expect(isEqual(request, response), 'response not equal to apiProductPatch').to.be.true;
     });
 
     it("should create api product maintenance-production", async() => {
@@ -353,7 +354,8 @@ describe('uc-elevator-co test', () => {
       platformApiClient.useApiUser();
       let response: AppResponse;
       let appName: string;
-      let appPatch: AppPatch = {
+      let requestType = "appPatch";
+      let request: AppPatch = {
       };
       for(let developer of developers) {
         appName = `${developerAppNameMaintenanceDevelopment}-${developer.userName}`
@@ -362,17 +364,18 @@ describe('uc-elevator-co test', () => {
           method: WebHook.method.POST,
           mode: WebHook.mode.SERIAL
         };
-        appPatch.webHooks = [ webHook ];
+        request.webHooks = [ webHook ];
         try {
-          response = await AppsService.updateDeveloperApp(orgName, developer.userName, appName, appPatch);
+          response = await AppsService.updateDeveloperApp(orgName, developer.userName, appName, request);
         } catch (e) {
           expect(isInstanceOfApiError(e), `error is not an instance of ApiError, err=${e.message}`).to.be.true;
-          expect(false, `update app=${appName},\nappPatch=${JSON.stringify(appPatch, null, 2)},\ndeveloper='${JSON.stringify(developer, null, 2)}',\nerr=${JSON.stringify(e, null, 2)}`).to.be.true;
+          let message = `update app=${appName}`;
+          expect(false, `${LoggingHelper.createFailMessage(message,requestType, request, e )}`).to.be.true;
         }
         logging.logMessage(testId, `response = ${JSON.stringify(response, null, 2)}`);
-        let areEqual: boolean = isEqual(appPatch, response);
+        let areEqual: boolean = isEqual(request, response);
         let diff: any;
-        if(!areEqual) diff = getObjectDifferences(response, appPatch);
+        if(!areEqual) diff = getObjectDifferences(response, request);
         expect(!areEqual, `response not equal to appPatch, diff=${JSON.stringify(diff, null, 2)}`).to.be.true;  
       }
     });

@@ -23,6 +23,7 @@ scriptName=$(basename $(test -L "$0" && readlink "$0" || echo "$0"));
 # Scripts
 
 declare -a testScripts=(
+  "generate.openapi-client.sh"
   "mongodb/start.mongo.sh"
   "start.server.background.sh"
   "run.npm.integration-tests.logfile.sh"

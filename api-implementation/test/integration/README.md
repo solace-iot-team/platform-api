@@ -17,14 +17,6 @@ npm install
 # # run tests
 # npm run test
 ````
-## generate openapi client
-````bash
-cd {root}/platform-api/api-implementation/test/integration
-npx openapi --input ../../server/common/api.yml --output ../lib/generated/openapi --client node
-
-````
-
-
 ## environment variables
 
 [Standard environment:](./source.env.sh)
@@ -38,7 +30,12 @@ source source.env.sh
 ````bash
 source source.secrets.env.sh
 ````
+## generate openapi client
+````bash
+cd {root}/platform-api/api-implementation/test/integration
+npx openapi --input ../../server/common/api.yml --output ../lib/generated/openapi --client node
 
+````
 ## start mongo in docker
 ````bash
 mongodb/start.mongo.sh
