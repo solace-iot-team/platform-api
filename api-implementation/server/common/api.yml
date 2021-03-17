@@ -386,11 +386,6 @@ components:
                   '{prod}'
                 type: string
               type: array
-          name:
-              description: 'The internal name of the API Product. Characters you can use in the name are restricted to: A-Z0-9._\-$ %.'
-              example:
-                '{name}'
-              type: string
           pubResources:
               description: A comma separated list of Publish API resources to be bundled in the API Product.
               items:
@@ -452,8 +447,6 @@ components:
           type: string
         lastName:
           type: string
-        userName:
-          type: string
         attributes:
           $ref: '#/components/schemas/attributes'
           
@@ -490,8 +483,6 @@ components:
       description: "Used for PATCH operation. An app associated with a developer. Associates the app with an API product, and auto-generates an API credentials for the app to use"
       type: object
       properties:
-        name: 
-          type: string
         apiProducts:
           type: array
           items:

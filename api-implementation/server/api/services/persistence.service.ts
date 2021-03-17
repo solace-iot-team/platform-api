@@ -181,7 +181,7 @@ export class PersistenceService {
       if (id == null) {
         id = body._id;
       }
-      if (id != _id) {
+      if (id != null && id != _id) {
         reject(new ErrorResponseInternal(400, `Can not change entity identifier `));
         return;
       }
