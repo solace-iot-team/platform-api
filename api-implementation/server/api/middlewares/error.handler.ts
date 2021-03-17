@@ -14,7 +14,8 @@ export default function errorHandler(
   if (!statusCode){
     statusCode = err['status'];
   }
-  L.debug(`${statusCode} - ${err.message}`);
+  L.debug(`errorHandler ${statusCode} - ${err.message}`);
+  L.debug(err);
   delete theError.statusCode;
   res.status(statusCode || 500).json(theError);
 }
