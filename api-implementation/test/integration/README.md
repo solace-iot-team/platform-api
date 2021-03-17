@@ -17,13 +17,7 @@ npm install
 # # run tests
 # npm run test
 ````
-
 ## environment variables
-
-[Add your secrets - see instructions here](./template.source.secrets.env.sh).
-````bash
-source source.secrets.env.sh
-````
 
 [Standard environment:](./source.env.sh)
 ````bash
@@ -32,6 +26,16 @@ source source.env.sh
 * Outputs: `APIM_INTEGRATION_TEST_WORKING_DIR`
 * Logfiles: `APIM_INTEGRATION_TEST_LOG_DIR`
 
+[Add your secrets - see instructions here](./template.source.secrets.env.sh).
+````bash
+source source.secrets.env.sh
+````
+## generate openapi client
+````bash
+cd {root}/platform-api/api-implementation/test/integration
+npx openapi --input ../../server/common/api.yml --output ../lib/generated/openapi --client node
+
+````
 ## start mongo in docker
 ````bash
 mongodb/start.mongo.sh
@@ -72,6 +76,14 @@ mongodb/stop.mongo.sh
 
 ````
 
+## Running against demo server
+Changing the values below allows certain tests to run against a live demo env.
+
+[Add your demo env secrets - see instructions here](./template.source.secrets.demo.sh).
+````bash
+source source.secrets.demo.sh
+npm run demo:bootstrap
+````
 
 
 ----

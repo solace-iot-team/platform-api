@@ -41,6 +41,7 @@ export class PlatformManagementHelper {
         return true;
     }
     deleteAllOrgs = async(): Promise<boolean> => {
+        let success: boolean = true;
         let request: RequestInit = null;
         let response: PlatformResponseHelper = null;
         request = {
@@ -52,29 +53,10 @@ export class PlatformManagementHelper {
             let orgs = response.body;
             let num = orgs ? orgs.length : 0;
             for (let i=0; i < num; i++) {
-                let success = await this.deleteOrg(orgs[i].name);
-                // let org = orgs[i];
-                // let apiPath: string = this.apiPath + "/" + org.name;
-                // console.log(`apiPath=${apiPath}`);
-                // console.log(`deleting org=${JSON.stringify(org, null, 2)}`);
+                success = await this.deleteOrg(orgs[i].name) && success;
             }
-
-
-            // await orgs.forEach(async(org) => {
-            //     let apiPath: string = this.apiPath + "/" + org.name;
-            //     request = {
-            //         method: "DELETE"
-            //     };
-            //     console.log(`apiPath=${apiPath}`);
-            //     console.log(`deleting org=${JSON.stringify(org, null, 2)}`);
-            //     response = await this.platformManagementRequest.fetch(apiPath, request); 
-                
-            //     console.log("why am i not seeing this?");
-                
-            //     this._logResponse(`delete org '${org.name}'` , response);
-            // });
         }
-        return true;
+        return success;
     }
 }
 
