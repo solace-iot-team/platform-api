@@ -195,7 +195,6 @@ export async function request(options: ApiRequestOptions): Promise<ApiResult> {
     const response = await sendRequest(options, url);
     const responseBody = await getResponseBody(response);
     const responseHeader = getResponseHeader(response, options.responseHeader);
-    console.log(JSON.stringify(responseBody));
     const result: ApiResult = {
         url,
         ok: response.ok,
