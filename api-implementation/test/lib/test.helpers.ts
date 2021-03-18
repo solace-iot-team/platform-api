@@ -42,8 +42,8 @@ export class LoggingHelper {
     logMessage = (component: string, msg: string) => {
         if(this.do_log) console.log(`[${component}] - ${msg}`);
     }
-    public static createFailMessage = (message: string, requestType: string, request: any, error: any): string => {
-        return `${message}\n${requestType}=${JSON.stringify(request, null, 2)}\nerror=${JSON.stringify(error, null, 2)}\n`;
+    public static createFailMessage = (message: string, requestType: string, request: any, response: any): string => {
+        return `${message}\n${requestType}=${JSON.stringify(request, null, 2)}\nresponse=${JSON.stringify(response, null, 2)}\n`;
     }
 }
 export class PlatformResponseHelper {

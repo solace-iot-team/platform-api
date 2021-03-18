@@ -33,11 +33,11 @@ source source.secrets.env.sh
 ## generate openapi client
 ````bash
 cd {root}/platform-api/api-implementation/test/integration
-npx openapi --input ../../server/common/api.yml --output ../lib/generated/openapi --client node
-
+./generate.openapi-client.sh
 ````
 ## start mongo in docker
 ````bash
+cd {root}/platform-api/api-implementation/test/integration
 mongodb/start.mongo.sh
 
 # check if user is automatically set-up / login ok
@@ -48,11 +48,13 @@ docker logs integration-mongodb
 ````
 ### stop mongo
 ````bash
+cd {root}/platform-api/api-implementation/test/integration
 mongodb/stop.mongo.sh
 ````
 
 ## start server
 ````bash
+cd {root}/platform-api/api-implementation/test/integration
 # in foreground for development
 ./start.server.sh
 
@@ -61,12 +63,14 @@ mongodb/stop.mongo.sh
 ````
 ### stop server
 ````bash
+cd {root}/platform-api/api-implementation/test/integration
 ./stop.server.sh
 ````
 
 ## tests
 
 ````bash
+cd {root}/platform-api/api-implementation/test/integration
 # development: output to console
 ./run.npm.integration-tests.sh
 
@@ -81,6 +85,7 @@ Changing the values below allows certain tests to run against a live demo env.
 
 [Add your demo env secrets - see instructions here](./template.source.secrets.demo.sh).
 ````bash
+cd {root}/platform-api/api-implementation/test/integration
 source source.secrets.demo.sh
 npm run demo:bootstrap
 ````

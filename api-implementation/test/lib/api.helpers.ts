@@ -51,3 +51,15 @@ export type ApiPermissions = Array<{
     name: string,
     value: string,
   }>;
+
+export function createConsumerKey(org:string, env: string, developer: string): string {
+    // let k = `key-${org}-${env}-${developer}`;
+    // if(k.length > 32) {
+    //     throw new Error(`key=${k}, len=${k.length}`);
+    // } 
+    // developer is alreay unique
+    return developer;
+}
+export function createConsumerSecret(org:string, env: string, developer: string): string {
+    return `secret-${org}-${env}-${developer}`;
+}
