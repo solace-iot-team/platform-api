@@ -1,4 +1,4 @@
-# integration-test
+# integration & concurreny tests
 
 ## prerequisites
 
@@ -9,22 +9,19 @@
 ````bash
 cd {root}/platform-api/api-implementation
 npm install
-# npm run compile
-#
-# # run in development mode
-# npm run dev
-#
-# # run tests
-# npm run test
 ````
 ## environment variables
 
 [Standard environment:](./source.env.sh)
 ````bash
 source source.env.sh
+
+# Output in:
+echo $APIM_INTEGRATION_TEST_WORKING_DIR
+# Logfiles in:
+echo $APIM_INTEGRATION_TEST_LOG_DIR
+
 ````
-* Outputs: `APIM_INTEGRATION_TEST_WORKING_DIR`
-* Logfiles: `APIM_INTEGRATION_TEST_LOG_DIR`
 
 [Add your secrets - see instructions here](./template.source.secrets.env.sh).
 ````bash
@@ -33,11 +30,11 @@ source source.secrets.env.sh
 ## generate openapi client
 ````bash
 cd {root}/platform-api/api-implementation/test/integration
-npx openapi --input ../../server/common/api.yml --output ../lib/generated/openapi --client node
-
+./generate.openapi-client.sh
 ````
 ## start mongo in docker
 ````bash
+cd {root}/platform-api/api-implementation/test/integration
 mongodb/start.mongo.sh
 
 # check if user is automatically set-up / login ok
@@ -48,11 +45,13 @@ docker logs integration-mongodb
 ````
 ### stop mongo
 ````bash
+cd {root}/platform-api/api-implementation/test/integration
 mongodb/stop.mongo.sh
 ````
 
 ## start server
 ````bash
+cd {root}/platform-api/api-implementation/test/integration
 # in foreground for development
 ./start.server.sh
 
@@ -61,12 +60,14 @@ mongodb/stop.mongo.sh
 ````
 ### stop server
 ````bash
+cd {root}/platform-api/api-implementation/test/integration
 ./stop.server.sh
 ````
 
-## tests
+## integration tests
 
 ````bash
+cd {root}/platform-api/api-implementation/test/integration
 # development: output to console
 ./run.npm.integration-tests.sh
 
@@ -76,13 +77,23 @@ mongodb/stop.mongo.sh
 
 ````
 
-## Running against demo server
+## concurrency tests
+````bash
+cd {root}/platform-api/api-implementation/test/integration
+# test: output to log file
+./run.npm.concurrency-tests.sh
+# log files:
+$APIM_INTEGRATION_TEST_LOG_DIR/concurrency-test/*.{orgx}.out
+````
+
+## bootstrapping demo
 Changing the values below allows certain tests to run against a live demo env.
 
-[Add your demo env secrets - see instructions here](./template.source.secrets.demo.sh).
+[Add your demo env secrets - see instructions here](./template.source.secrets.env.demo.sh).
 ````bash
-source source.secrets.demo.sh
-npm run demo:bootstrap
+cd {root}/platform-api/api-implementation/test/integration
+source source.secrets.env.demo.sh
+npm run test:bootstrap-demo
 ````
 
 

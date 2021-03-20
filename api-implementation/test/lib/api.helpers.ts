@@ -1,6 +1,6 @@
 
 import { OpenAPI } from './generated/openapi/core/OpenAPI';
-import { ApiError } from './generated/openapi';
+import { ApiError, Credentials } from './generated/openapi';
 
 export function isInstanceOfApiError(error: any): boolean {
     let apiError: ApiError = error;
@@ -11,39 +11,41 @@ export function isInstanceOfApiError(error: any): boolean {
     return true;
 }
 
+enum AuthUser {
+    ManagementUser,
+    ApiUser    
+}
 
-export class PlatformAPIClient {
-    private base: string;
-    private managementUser: string;
-    private managementPwd: string;
-    private apiUser: string;
-    private apiPwd: string;
-    private doUse: string = PlatformAPIClient.UseApiUser;
+export class PlatformAPIClient {    
+    private static base: string;
+    private static managementUser: string;
+    private static managementPwd: string;
+    private static apiUser: string;
+    private static apiPwd: string;
+    private static authUser: AuthUser = AuthUser.ApiUser;
 
-    private static UseManagementUser: string = "ManagementUser";
-    private static UseApiUser: string = "ApiUser";
-
-    getOpenApiUser = async(): Promise<string> => {
-        return (this.doUse == PlatformAPIClient.UseApiUser ? this.apiUser : this.managementUser);
+    public static getOpenApiUser = async(): Promise<string> => {
+        return (PlatformAPIClient.authUser === AuthUser.ApiUser ? PlatformAPIClient.apiUser : PlatformAPIClient.managementUser);
     }  
-    getOpenApiPwd = async(): Promise<string> => {
-        return (this.doUse == PlatformAPIClient.UseApiUser ? this.apiPwd : this.managementPwd);
+    public static getOpenApiPwd = async(): Promise<string> => {
+        return (PlatformAPIClient.authUser === AuthUser.ApiUser ? PlatformAPIClient.apiPwd : PlatformAPIClient.managementPwd);
     }  
-    constructor(base: string, managementUser: string , managementPwd: string, apiUser: string, apiPwd: string) {
-        this.base = base;
-        this.managementUser = managementUser;
-        this.managementPwd = managementPwd;
-        this.apiUser = apiUser;
-        this.apiPwd = apiPwd;
-        OpenAPI.BASE = this.base;
-        OpenAPI.USERNAME = this.getOpenApiUser;
-        OpenAPI.PASSWORD = this.getOpenApiPwd;
+    public static initialize = (base: string, managementUser: string , managementPwd: string, apiUser: string, apiPwd: string) => {
+        PlatformAPIClient.base = base;
+        PlatformAPIClient.managementUser = managementUser;
+        PlatformAPIClient.managementPwd = managementPwd;
+        PlatformAPIClient.apiUser = apiUser;
+        PlatformAPIClient.apiPwd = apiPwd;
+        OpenAPI.BASE = base;
+        OpenAPI.USERNAME = PlatformAPIClient.getOpenApiUser;
+        OpenAPI.PASSWORD = PlatformAPIClient.getOpenApiPwd;
+
     }
-    useApiUser = () => {
-        this.doUse = PlatformAPIClient.UseApiUser;
+    public static setApiUser = () => {
+        PlatformAPIClient.authUser = AuthUser.ApiUser;
     }
-    useManagementUser = () => {
-        this.doUse = PlatformAPIClient.UseManagementUser;
+    public static setManagementUser = () => {
+        PlatformAPIClient.authUser = AuthUser.ManagementUser;
     }
 }
 
@@ -51,3 +53,21 @@ export type ApiPermissions = Array<{
     name: string,
     value: string,
   }>;
+
+// export function createConsumerKey(org:string, env: string, developer: string): string {
+//     // let k = `key-${org}-${env}-${developer}`;
+//     // if(k.length > 32) {
+//     //     throw new Error(`key=${k}, len=${k.length}`);
+//     // } 
+//     // developer is alreay unique
+//     return developer;
+// }
+// export function createConsumerSecret(org:string, env: string, developer: string): string {
+//     return `secret-${org}-${env}-${developer}`;
+// }
+
+export function createDefaultCredentials() : Credentials {
+    return {
+        expiresAt: -1
+    };
+}

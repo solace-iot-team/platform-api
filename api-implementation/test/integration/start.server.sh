@@ -27,20 +27,22 @@ echo " >>> Starting server ..."
   export LOG_LEVEL=$APIM_INTEGRATION_TEST_LOG_LEVEL
   export FILE_USER_REGISTRY=$APIM_INTEGRATION_TEST_FILE_USER_REGISTRY
 
+  startServerScript="npm run server:dev"
+
   if [ -z "$IS_BACKGROUND" ]; then
-    npm run dev
+    $startServerScript
     if [[ $? != 0 ]]; then echo " >>> ERROR: starting server"; exit 1; fi
   else
-    echo "starting in background ..."
+    echo " >>> starting in background ..."
     # npm run start, re-direct output to log file or define log file location
-    logFileName="$MY_LOG_DIR/npm-run-dev.log"
-    nohup npm run dev > $logFileName 2>&1 &
+    logFileName="$MY_LOG_DIR/$scriptName.log"
+    nohup $startServerScript > $logFileName 2>&1 &
     if [[ $? != 0 ]]; then echo " >>> ERROR: starting server"; exit 1; fi
-    serverPid="$!"; echo $serverPid > $MY_PID_FILE
-    echo "pid:"; cat $MY_PID_FILE
+    # serverPid="$!"; echo $serverPid > $MY_PID_FILE
+    # echo "pid:"; cat $MY_PID_FILE
 
     # grep log file for ERRORS
-    echo " >>> waiting for server to start ..."
+    echo " >>> waiting 15 seconds for server to start ..."
     echo " >>> log file: $logFileName"
     sleep 15s
     # cat $logFileName

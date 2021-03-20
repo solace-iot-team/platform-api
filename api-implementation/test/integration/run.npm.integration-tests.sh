@@ -11,13 +11,14 @@ scriptName=$(basename $(test -L "$0" && readlink "$0" || echo "$0"));
 # Run
 
 IS_BACKGROUND=$1
+MY_LOG_DIR="$APIM_INTEGRATION_TEST_LOG_DIR/test-integration"; rm -rf $MY_LOG_DIR/*.out
+runScript="npm run test:integration"
 
 echo ">>> Starting integration tests ..."
-  runScript="npm run test:integration"
   if [ -z "$IS_BACKGROUND" ]; then
     $runScript
   else
-    logFile="$APIM_INTEGRATION_TEST_LOG_DIR/$scriptName.out"; mkdir -p "$(dirname "$logFile")";
+    logFile="$MY_LOG_DIR/$scriptName.out"; mkdir -p "$(dirname "$logFile")";
     $runScript > $logFile 2>&1
   fi
   code=$?;

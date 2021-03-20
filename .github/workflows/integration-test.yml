@@ -10,10 +10,10 @@ on:
   # push:
   #   branches:
   #     integration-test
-  # # production
-  # schedule:
-  # #   # - cron: '0 7 * * MON'
-  #   - cron: '0 7 * * *'
+  # production
+  schedule:
+  #   # - cron: '0 7 * * MON'
+    - cron: '0 7 * * *'
   # pull_request:
   #   branches:
   #     - main
@@ -21,8 +21,8 @@ env:
   DEBUG_FLAG: ${{ true }}
   # DEBUG_FLAG: ${{ false }}
   TEST_PLATFORM_DIR: "api-implementation"
-  TEST_TEST_RUNNER_OUTPUT_DIR: "tmp"
-  TEST_OUTPUT_NAME: "platform-api-test-output"
+  TEST_TEST_RUNNER_OUTPUT_DIR: "api-implementation/test/integration/tmp"
+  TEST_OUTPUT_NAME: "api-implementation-test-integration"
 jobs:
   run_tests:
     runs-on: ubuntu-18.04

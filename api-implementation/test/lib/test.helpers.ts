@@ -4,6 +4,14 @@ import fs from 'fs';
 import yaml from "js-yaml";
 import _ from 'lodash';
 
+import * as sinon from 'sinon';
+import * as __requestLib from '../lib/generated/openapi/core/request';
+
+import { ApiRequestOptions } from "./generated/openapi/core/ApiRequestOptions";
+import { v4 } from "uuid";
+import { ApiResult } from "./generated/openapi/core/ApiResult";
+import { ApiError } from "./generated/openapi";
+
 export type Developer = {
     userName: string,
     email: string,
@@ -30,22 +38,35 @@ export function getBaseUrl(platformProtocol: string, platformHost: string, platf
 export function getRequestAuthHeader(usr: string, pwd: string): string {
     return "Basic " + Buffer.from(usr + ":" + pwd).toString("base64");
 }
-export class LoggingHelper {
-    private do_log: boolean = false;
-    constructor(do_log: boolean) {
-        this.do_log = do_log;
+export class TestLogger {
+    private static do_log: boolean = true;
+    public static setLogging = (do_log: boolean) => { TestLogger.do_log = do_log; }
+    public static logResponse = (msg: string, response: PlatformResponseHelper) => {
+        if(TestLogger.do_log) console.log(`[response] - ${msg}:\n${response.toJson()}`);
     }
-    setLogging = (do_log: boolean) => { this.do_log = do_log; }
-    logResponse = (msg: string, response: PlatformResponseHelper) => {
-        if(this.do_log) console.log(`[response] - ${msg}:\n${response.toJson()}`);
+    public static logMessage = (component: string, msg: string) => {
+        if(TestLogger.do_log) console.log(`[${component}] - ${msg}`);
     }
-    logMessage = (component: string, msg: string) => {
-        if(this.do_log) console.log(`[${component}] - ${msg}`);
+    public static logApiRequestOptions = (id: string, options: ApiRequestOptions) => {
+        if(!TestLogger.do_log) return;
+        console.log(`[${id}]: ApiRequestOptions=\n${JSON.stringify(options, null, 2)}\n`);
     }
-    public static createFailMessage = (message: string, requestType: string, request: any, error: any): string => {
-        return `${message}\n${requestType}=${JSON.stringify(request, null, 2)}\nerror=${JSON.stringify(error, null, 2)}\n`;
+    public static logApiResult = (id: string, result: ApiResult) => {
+        if(!TestLogger.do_log) return;
+        console.log(`[${id}]: ApiResult=\n${JSON.stringify(result, null, 2)}\n`);
+    }
+    public static logApiError = (id: string, apiError: ApiError) => {
+        if(!TestLogger.do_log) return;
+        console.log(`[${id}]: ApiError=\n${JSON.stringify(apiError, null, 2)}\n`);
+    }
+    public static createTestFailMessage = (message: string): string => {
+        return `[${TestContext.getItId()}]: ${message}\napiRequestOptions=${JSON.stringify(TestContext.getApiRequestOptions(), null, 2)}\napiResult=${JSON.stringify(TestContext.getApiResult(), null, 2)}\napiError=${JSON.stringify(TestContext.getApiError(), null, 2)}\n`;
+    }
+    public static createNotApiErrorMesssage = (message: string): string => {
+        return `[${TestContext.getItId()}]: error is not an instance of ApiError, error=${message}`;
     }
 }
+
 export class PlatformResponseHelper {
     public status;
     public statusText;
@@ -131,7 +152,7 @@ export class AsyncAPIHelper {
 }
 
 
-export function getObjectDifferences(object: any, base: any): any {
+export function _getObjectDifferences(object: any, base: any): any {
 	function changes(object: any, base: any): any {
 		return _.transform(object, function(result, value, key) {
 			if (!_.isEqual(value, base[key])) {
@@ -139,5 +160,84 @@ export function getObjectDifferences(object: any, base: any): any {
 			}
 		});
 	}
+    let _changes = changes(object, base);
+        // check for empty keys
+
 	return changes(object, base);
 }
+export function getObjectDifferences(object: any, base: any): any {
+    let leftDiff: any = _getObjectDifferences(object, base);
+    let rightDiff: any = _getObjectDifferences(base, object);
+    // warning: overrides arrays
+    return _.merge(leftDiff, rightDiff);
+}
+
+export type ExpectDiff = {
+    diff: any,
+    message: string
+}
+export function getExpectEqualDiff(expected: any, received: any): ExpectDiff {
+    let diff = getObjectDifferences(expected, received);
+    let message = `\nexpected response=${JSON.stringify(expected, null, 2)}, \nactual response=${JSON.stringify(received, null, 2)}, \ndiff=${JSON.stringify(diff, null, 2)}`;
+    return { diff: diff, message: message };
+}
+export function getExpectContainedDiff(containedObject: any, object: any): ExpectDiff {
+    let compositeObject = _.merge(_.cloneDeep(containedObject), object);
+    let diff = getObjectDifferences(compositeObject, object);
+    let message = `\nexpected response contained=${JSON.stringify(containedObject, null, 2)}, \nactual response=${JSON.stringify(object, null, 2)}, \ndiff not contained in response=${JSON.stringify(diff, null, 2)}`;
+    return { diff: diff, message: message };
+}
+
+export class TestContext {
+
+    private static itId: string;
+    private static apiRequestOptions: ApiRequestOptions;
+    private static apiResult: ApiResult;
+    private static apiError: ApiError;
+
+    public static newItId() {
+        TestContext.itId = v4().replace(/-/g, '_');
+    }
+    public static getItId(): string {
+        return TestContext.itId;
+    }
+    public static setApiRequestOptions(options: ApiRequestOptions) {
+        TestContext.apiRequestOptions = options;
+    }
+    public static getApiRequestOptions(): ApiRequestOptions {
+        return TestContext.apiRequestOptions;
+    }
+    public static setApiResult(result: ApiResult) {
+        TestContext.apiResult = result;
+    }
+    public static getApiResult(): ApiResult {
+        return TestContext.apiResult;
+    }
+    public static setApiError(error: ApiError) {
+        TestContext.apiError = error;
+    }
+    public static getApiError(): ApiError {
+        return TestContext.apiError;
+    }
+}
+
+// +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+// Stubbing global request from openapi
+let requestStub = sinon.stub(__requestLib, 'request')
+.callsFake(
+  async(options: ApiRequestOptions): Promise<ApiResult> => {
+    TestContext.setApiRequestOptions(options);
+    TestContext.setApiResult(undefined);
+    TestContext.setApiError(undefined);
+    TestLogger.logApiRequestOptions(TestContext.getItId(), TestContext.getApiRequestOptions());    
+    try {
+      TestContext.setApiResult(await (__requestLib.request as any).wrappedMethod(options));
+      TestLogger.logApiResult(TestContext.getItId(), TestContext.getApiResult());
+    } catch(e) {
+      TestContext.setApiError(e);
+      TestLogger.logApiError(TestContext.getItId(), TestContext.getApiError());
+      throw e;
+    }
+    return TestContext.getApiResult();  
+});
+

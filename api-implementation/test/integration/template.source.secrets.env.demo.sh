@@ -1,10 +1,10 @@
 #
 # template for running against live demo server
 #
-# cp template.source.secrets.demo.sh source.secrets.demo.sh
-# vi source.secrets.demo.sh
+# cp template.source.secrets.env.demo.sh source.secrets.env.demo.sh
+# vi source.secrets.env.demo.sh
 #  ... enter secrets
-# source source.secrets.demo.sh
+# source source.secrets.env.demo.sh
 #
 
 export APIM_INTEGRATION_TEST_IS_BOOTSTRAP_DEMO="true"
