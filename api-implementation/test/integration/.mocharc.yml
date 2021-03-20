@@ -2,7 +2,7 @@ require: 'ts-node/register'
 file:
   - test/integration/setup.spec.ts
 timeout: 30000
-bail: false
+bail: true
 exit: true
 parallel: false
 extension:
