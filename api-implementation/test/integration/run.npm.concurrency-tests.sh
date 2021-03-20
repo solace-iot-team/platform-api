@@ -13,13 +13,15 @@ scriptName=$(basename $(test -L "$0" && readlink "$0" || echo "$0"));
 declare -a orgs=(
   "org1"
   "org2"
-  # "org3"
+  "org3"
+  "org4"
+  # "org5"
 )
-runScript="npm run test:load"
-MY_LOG_DIR="$APIM_INTEGRATION_TEST_LOG_DIR/load-test"; rm -rf $MY_LOG_DIR/*.out
+runScript="npm run test:concurrency"
+MY_LOG_DIR="$APIM_INTEGRATION_TEST_LOG_DIR/test-concurreny"; rm -rf $MY_LOG_DIR/*.out
 
 loadScriptPids=""
-echo ">>> Starting load tests ..."
+echo ">>> Starting concurrency tests ..."
   for org in ${orgs[@]}; do
     echo "org=$org"
     source "$scriptDir/source.env.org.sh" $org
@@ -39,9 +41,9 @@ while true; do
       # 127:
       # last background job has exited successfully
       # or: command was not found
-      echo ">>> SUCCESS: all load scripts ran successfully"
+      echo ">>> SUCCESS: all concurrency scripts ran successfully"
     else
-      echo ">>> ERROR: 1 or more load scripts failed with code=$code"
+      echo ">>> ERROR: 1 or more concurrency scripts failed, log files in '$MY_LOG_DIR'"
       exit 1
     fi
     break

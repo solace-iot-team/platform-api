@@ -1,4 +1,4 @@
-# integration-test
+# integration & concurreny tests
 
 ## prerequisites
 
@@ -9,22 +9,19 @@
 ````bash
 cd {root}/platform-api/api-implementation
 npm install
-# npm run compile
-#
-# # run in development mode
-# npm run dev
-#
-# # run tests
-# npm run test
 ````
 ## environment variables
 
 [Standard environment:](./source.env.sh)
 ````bash
 source source.env.sh
+
+# Output in:
+echo $APIM_INTEGRATION_TEST_WORKING_DIR
+# Logfiles in:
+echo $APIM_INTEGRATION_TEST_LOG_DIR
+
 ````
-* Outputs: `APIM_INTEGRATION_TEST_WORKING_DIR`
-* Logfiles: `APIM_INTEGRATION_TEST_LOG_DIR`
 
 [Add your secrets - see instructions here](./template.source.secrets.env.sh).
 ````bash
@@ -67,7 +64,7 @@ cd {root}/platform-api/api-implementation/test/integration
 ./stop.server.sh
 ````
 
-## tests
+## integration tests
 
 ````bash
 cd {root}/platform-api/api-implementation/test/integration
@@ -80,14 +77,23 @@ cd {root}/platform-api/api-implementation/test/integration
 
 ````
 
-## Running against demo server
-Changing the values below allows certain tests to run against a live demo env.
-
-[Add your demo env secrets - see instructions here](./template.source.secrets.demo.sh).
+## concurrency tests
 ````bash
 cd {root}/platform-api/api-implementation/test/integration
-source source.secrets.demo.sh
-npm run demo:bootstrap
+# test: output to log file
+./run.npm.concurrency-tests.sh
+# log files:
+$APIM_INTEGRATION_TEST_LOG_DIR/concurrency-test/*.{orgx}.out
+````
+
+## bootstrapping demo
+Changing the values below allows certain tests to run against a live demo env.
+
+[Add your demo env secrets - see instructions here](./template.source.secrets.env.demo.sh).
+````bash
+cd {root}/platform-api/api-implementation/test/integration
+source source.secrets.env.demo.sh
+npm run test:bootstrap-demo
 ````
 
 

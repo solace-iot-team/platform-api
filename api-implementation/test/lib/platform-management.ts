@@ -1,18 +1,16 @@
 import { RequestInit } from "node-fetch";
-import { LoggingHelper, PlatformRequestHelper, PlatformResponseHelper } from "./test.helpers";
+import { TestLogger, PlatformRequestHelper, PlatformResponseHelper } from "./test.helpers";
 
 export class PlatformManagementHelper {
 
     private platformManagementRequest: PlatformRequestHelper;
     private apiPath: string = "organizations"
-    private logging: LoggingHelper = null;
 
-    constructor(platformManagementRequest: PlatformRequestHelper, logging: LoggingHelper) {
+    constructor(platformManagementRequest: PlatformRequestHelper) {
         this.platformManagementRequest = platformManagementRequest;
-        this.logging = logging;
     }
     private _logResponse = (msg: string, response: PlatformResponseHelper) => { 
-        this.logging.logResponse(`platformManagement:${msg}`, response);
+        TestLogger.logResponse(`platformManagement:${msg}`, response);
     }
     createOrg = async (orgName: string): Promise<boolean> => {
         let body = {
@@ -23,7 +21,7 @@ export class PlatformManagementHelper {
           body: JSON.stringify(body)
         };
         let response: PlatformResponseHelper = await this.platformManagementRequest.fetch(this.apiPath, request);
-        this.logging.logResponse(`create org: ${orgName}`, response);
+        TestLogger.logResponse(`create org: ${orgName}`, response);
         return true;
     }
     deleteOrg = async (orgName: string): Promise<boolean> => {

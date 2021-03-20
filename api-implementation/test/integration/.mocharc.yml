@@ -1,0 +1,11 @@
+require: 'ts-node/register'
+file:
+  - test/integration/setup.spec.ts
+timeout: 30000
+bail: false
+exit: true
+parallel: false
+extension:
+  - 'ts'
+full-trace: true
+diff: true

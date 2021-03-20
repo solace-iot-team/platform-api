@@ -1,60 +1,46 @@
 import "mocha";
 import * as chai from "chai";
 const expect = chai.expect;
+const sinonChai = require('sinon-chai');
+chai.use(sinonChai);
 import path from 'path';
-import { isEqual } from 'lodash';
-import { getBaseUrl, UserRegistry, getMandatoryEnvVarValue, getOptionalEnvVarValue, PlatformRequestHelper, LoggingHelper, AsyncAPIHelper, Developer, getObjectDifferences } from "../lib/test.helpers";
+import _ from 'lodash';
+
+import { getBaseUrl, UserRegistry, getMandatoryEnvVarValue, getOptionalEnvVarValue, PlatformRequestHelper, AsyncAPIHelper, Developer, getObjectDifferences, ExpectDiff, getExpectEqualDiff, TestLogger, TestContext, getExpectContainedDiff } from "../lib/test.helpers";
 import { PlatformManagementHelper } from "../lib/platform-management";
-import { isInstanceOfApiError, PlatformAPIClient, ApiPermissions, createConsumerKey, createConsumerSecret } from '../lib/api.helpers';
+import { isInstanceOfApiError, PlatformAPIClient, ApiPermissions, createDefaultCredentials } from '../lib/api.helpers';
 import { PlatformManagementService } from '../lib/generated/openapi/services/PlatformManagementService';
 import type { Organization } from '../lib/generated/openapi/models/Organization';
 import type { History } from '../lib/generated/openapi/models/History';
-import { APIProduct, APIProductPatch, ApiProductsService, ApisService, App, AppListItem, AppPatch, AppResponse, AppsService, AppStatus, Credentials, DevelopersService, Environment, EnvironmentResponse, EnvironmentsService, ManagementService, Protocol, WebHook } from "../lib/generated/openapi";
-
+import { APIProduct, APIProductPatch, ApiProductsService, ApisService, App, AppEnvironment, AppListItem, AppPatch, AppResponse, AppsService, AppStatus, Credentials, DevelopersService, Endpoint, Environment, EnvironmentResponse, EnvironmentsService, ManagementService, Protocol, WebHook } from "../lib/generated/openapi";
 
 const enableLoggingEnvVar: string = getOptionalEnvVarValue('APIM_INTEGRATION_TEST_ENABLE_LOGGING');
-let logging: LoggingHelper = new LoggingHelper(enableLoggingEnvVar != null && enableLoggingEnvVar.toLowerCase() == "true" ? true : false);
-logging.setLogging(true);
+TestLogger.setLogging(enableLoggingEnvVar != null && enableLoggingEnvVar.toLowerCase() == "true" ? true : false);
+// +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+// TestLogger.setLogging(false);
+// +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 const scriptName: string = path.basename(__filename);
-logging.logMessage(scriptName, ">>> initializing ...");
+TestLogger.logMessage(scriptName, ">>> initializing ...");
 const testEnv = {
-  SCRIPT_NAME: scriptName,
-  PROJECT_HOME: getMandatoryEnvVarValue(scriptName, 'APIM_SOLACE_PLATFORM_API_PROJECT_HOME'),
-  WORKING_DIR: getMandatoryEnvVarValue(scriptName, 'APIM_INTEGRATION_TEST_WORKING_DIR'),
-  PLATFORM_PROTOCOL: getMandatoryEnvVarValue(scriptName, 'APIM_INTEGRATION_TEST_PLATFORM_PROTOCOL'),
-  PLATFORM_HOST: getMandatoryEnvVarValue(scriptName, 'APIM_INTEGRATION_TEST_PLATFORM_HOST'),
-  PLATFORM_PORT: getMandatoryEnvVarValue(scriptName, 'APIM_INTEGRATION_TEST_PLATFORM_PORT'),
-  PLATFORM_ADMIN_USER: getMandatoryEnvVarValue(scriptName, 'APIM_INTEGRATION_TEST_PLATFORM_ADMIN_USER'),
-  PLATFORM_ADMIN_PASSWORD: getMandatoryEnvVarValue(scriptName, 'APIM_INTEGRATION_TEST_PLATFORM_ADMIN_PASSWORD'),
   FILE_USER_REGISTRY: getMandatoryEnvVarValue(scriptName, 'APIM_INTEGRATION_TEST_FILE_USER_REGISTRY'),
   SOLACE_CLOUD_TOKEN: getMandatoryEnvVarValue(scriptName, 'APIM_INTEGRATION_TEST_SOLACE_CLOUD_TOKEN'),
-  // ENABLE_LOGGING: getOptionalEnvVarValue('APIM_INTEGRATION_TEST_ENABLE_LOGGING') != null ? true : false,
   DEV_SERVICE_ID: getMandatoryEnvVarValue(scriptName, 'APIM_INTEGRATION_TEST_SOLACE_CLOUD_DEV_SERVICE_ID'),
   PROD_SERVICE_ID: getMandatoryEnvVarValue(scriptName, 'APIM_INTEGRATION_TEST_SOLACE_CLOUD_PROD_SERVICE_ID'),
   NO_MQTT_SERVICE_ID: getMandatoryEnvVarValue(scriptName, 'APIM_INTEGRATION_TEST_SOLACE_CLOUD_NO_MQTT_SERVICE_ID'),
   ORG_NAME: getMandatoryEnvVarValue(scriptName, 'APIM_INTEGRATION_TEST_ORG_NAME'),
-  ORG_API_USR: getMandatoryEnvVarValue(scriptName, 'APIM_INTEGRATION_TEST_ORG_API_USR'),
-  ORG_API_PWD: getMandatoryEnvVarValue(scriptName, 'APIM_INTEGRATION_TEST_ORG_API_PWD'),
-  API_SPEC_MAINTENANCE_FILE: getMandatoryEnvVarValue(scriptName, 'APIM_INTEGRATION_TEST_API_SPEC_MAINTENANCE_FILE'),
+  API_SPEC_MAINTENANCE_FILE: getMandatoryEnvVarValue(scriptName, 'APIM_INTEGRATION_TEST_UC_ELEVATOR_CO_API_SPEC_MAINTENANCE_FILE'),
   DEVELOPERS_FILE: getMandatoryEnvVarValue(scriptName, 'APIM_INTEGRATION_TEST_DEVELOPERS_FILE'),  
   IS_BOOTSTRAP_DEMO: getOptionalEnvVarValue('APIM_INTEGRATION_TEST_IS_BOOTSTRAP_DEMO') != null ? true : false
 }
-logging.logMessage(scriptName, `testEnv = ${JSON.stringify(testEnv, null, 2)}`);
+TestLogger.logMessage(scriptName, `testEnv = ${JSON.stringify(testEnv, null, 2)}`);
 const userRegistry: UserRegistry = require(testEnv.FILE_USER_REGISTRY);
-logging.logMessage(scriptName, `userRegistry = ${JSON.stringify(userRegistry, null, 2)}`);
-logging.logMessage(scriptName, ">>> success.");
+TestLogger.logMessage(scriptName, `userRegistry = ${JSON.stringify(userRegistry, null, 2)}`);
+TestLogger.logMessage(scriptName, ">>> success.");
 
-describe('uc-elevator-co test', () => {
-  const testId: string = "uc-elevator-co";
+describe(`${scriptName}`, () => {
 
-  context("tests uc-elevator-co", () => {
+  context(`${scriptName}`, () => {
     
-    const base: string = getBaseUrl(testEnv.PLATFORM_PROTOCOL, testEnv.PLATFORM_HOST, testEnv.PLATFORM_PORT);
-    const platformApiClient: PlatformAPIClient = new PlatformAPIClient(base, testEnv.PLATFORM_ADMIN_USER, testEnv.PLATFORM_ADMIN_PASSWORD, testEnv.ORG_API_USR, testEnv.ORG_API_PWD);
-    
-    const platformManagementRequest: PlatformRequestHelper = new PlatformRequestHelper(testEnv.PLATFORM_PROTOCOL, testEnv.PLATFORM_HOST, testEnv.PLATFORM_PORT, testEnv.PLATFORM_ADMIN_USER, testEnv.PLATFORM_ADMIN_PASSWORD);
-    const platformManagement: PlatformManagementHelper = new PlatformManagementHelper(platformManagementRequest, logging);
-
     const orgName = testEnv.ORG_NAME;
     const apiNameMaintenance: string = "api-maintenance";
     const apiSpecMaintenance: string = AsyncAPIHelper.loadYamlFileAsJsonString(testEnv.API_SPEC_MAINTENANCE_FILE);
@@ -93,159 +79,160 @@ describe('uc-elevator-co test', () => {
     const developerAppNameMaintenanceProduction: string = "elevator-maintenance-production";
 
     before(async() => {
-      // ensure we start clean every time
-      logging.logMessage(testId, `before: delete org`);
-      let success: boolean = await platformManagement.deleteOrg(orgName);
-      expect(success, `deleting org = ${orgName}`).to.be.true;
+      TestContext.newItId();
+      try {
+        PlatformAPIClient.setManagementUser();
+        await PlatformManagementService.deleteOrganization(orgName);
+      } catch (e) {
+        expect(isInstanceOfApiError(e), `${TestLogger.createNotApiErrorMesssage(e.message)}`).to.be.true;
+        let message = `deleting org=${orgName}`;
+        expect(e.status, `${TestLogger.createTestFailMessage(message)}ApiError.status`).to.be.oneOf([201, 404]);
+      }
     });
 
     after(async() => {
       if(testEnv.IS_BOOTSTRAP_DEMO) return;
       // make sure the broker is de-provisioned again
-      logging.logMessage(testId, `after: delete org`);
-      let success: boolean = await platformManagement.deleteOrg(orgName);
-      expect(success, `deleting org = ${orgName}`).to.be.true;
-    });
-
-    it("should create org", async() => {
-      let org: Organization = {
-        name: orgName
-        // test ApiError:
-        // name: ""
-      }
-      platformApiClient.useManagementUser();
+      TestContext.newItId();
       try {
-        let response: Organization = await PlatformManagementService.createOrganization(org);
-        logging.logMessage(testId, `response = ${JSON.stringify(response, null, 2)}`);
-        expect(response.name).to.equal(orgName);
+        PlatformAPIClient.setManagementUser();
+        await PlatformManagementService.deleteOrganization(orgName);
       } catch (e) {
-        expect(isInstanceOfApiError(e), `error is not an instance of ApiError, err=${e.message}`).to.be.true;
-        expect(false, `creating org='${org.name}', err=${JSON.stringify(e, null, 2)}'`).to.be.true;
+        expect(isInstanceOfApiError(e), `${TestLogger.createNotApiErrorMesssage(e.message)}`).to.be.true;
+        let message = `deleting org=${orgName}`;
+        expect(e.status, `${TestLogger.createTestFailMessage(message)}ApiError.status`).to.be.oneOf([201, 404]);
       }
     });
 
-    it("should add token to org", async() => {
-      platformApiClient.useApiUser();
-      let requestType = "string";
+    beforeEach(() => {
+      TestContext.newItId();
+    });
+
+    it(`${scriptName}: should create org`, async() => {
+      PlatformAPIClient.setManagementUser();
+      let response: Organization;
+      let request: Organization = {
+        name: orgName
+      }
+      try {
+        response = await PlatformManagementService.createOrganization(request);
+      } catch (e) {
+        expect(isInstanceOfApiError(e), `${TestLogger.createNotApiErrorMesssage(e.message)}`).to.be.true;
+        let message = `creating org=${orgName}`;
+        expect(false, `${TestLogger.createTestFailMessage(message)}`).to.be.true;
+      }
+      expect(response.name, `${TestLogger.createTestFailMessage("name not equal")}`).to.equal(orgName);
+    });
+
+    it(`${scriptName}: should add token to org`, async() => {
+      PlatformAPIClient.setApiUser();
+      let response: string;
       let request: string = testEnv.SOLACE_CLOUD_TOKEN;
       try {
-        let response: string = await ManagementService.updateToken(orgName, request);
-        // logging.logMessage(testId, `response = ${JSON.stringify(response, null, 2)}`);
-        expect(response).to.equal(testEnv.SOLACE_CLOUD_TOKEN);
+        response = await ManagementService.updateToken(orgName, request);
       } catch (e) {
-        expect(isInstanceOfApiError(e), `error is not an instance of ApiError, err=${e.message}`).to.be.true;
+        expect(isInstanceOfApiError(e), `${TestLogger.createNotApiErrorMesssage(e.message)}`).to.be.true;
         let message = `update token for org=${orgName}`;
-        expect(false, `${LoggingHelper.createFailMessage(message, requestType, "***", e )}`).to.be.true;
-        // expect(false, `updating token for org='${orgName}', err=${JSON.stringify(e, null, 2)}`).to.be.true;
+        expect(false, `${TestLogger.createTestFailMessage(message)}`).to.be.true;
       }
+      expect(response, `${TestLogger.createTestFailMessage("token not equal")}`).to.equal(testEnv.SOLACE_CLOUD_TOKEN);
     });
 
-    it("should register dev service with org", async() => {
-      platformApiClient.useApiUser();
-      let requestType = "Environment";
+    it(`${scriptName}: should register dev service with org`, async() => {
+      let response: Environment;
       let request: Environment = devEnv;
       try {
-        let response: Environment = await EnvironmentsService.createEnvironment(orgName, request);
-        // logging.logMessage(testId, `response = ${JSON.stringify(response, null, 2)}`);
-        expect(isEqual(devEnv, response)).to.be.true;
+        response= await EnvironmentsService.createEnvironment(orgName, request);
       } catch (e) {
-        expect(isInstanceOfApiError(e), `error is not an instance of ApiError, err=${e.message}`).to.be.true;
+        expect(isInstanceOfApiError(e), `${TestLogger.createNotApiErrorMesssage(e.message)}`).to.be.true;
         let message = `register dev service=${devEnvName} with org=${orgName}`;
-        expect(false, `${LoggingHelper.createFailMessage(message, requestType, request, e )}`).to.be.true;
-        // expect(false, `register dev service with org='${orgName}', err=${JSON.stringify(e, null, 2)}`).to.be.true;
+        expect(false, `${TestLogger.createTestFailMessage(message)}`).to.be.true;
       }
+      expect(_.isEqual(devEnv, response), `${TestLogger.createTestFailMessage("response not equal")}`).to.be.true;
     });
 
-    it("should register prod service with org", async() => {
-      platformApiClient.useApiUser();
-      let requestType = "Environment";
+    it(`${scriptName}: should register prod service with org`, async() => {
+      let response: Environment;
       let request: Environment = prodEnv;
       try {
-        let response: Environment = await EnvironmentsService.createEnvironment(orgName, request);
-        // logging.logMessage(testId, `response = ${JSON.stringify(response, null, 2)}`);
-        expect(isEqual(prodEnv, response)).to.be.true;
+        response = await EnvironmentsService.createEnvironment(orgName, request);
       } catch (e) {
-        expect(isInstanceOfApiError(e), `error is not an instance of ApiError, err=${e.message}`).to.be.true;
+        expect(isInstanceOfApiError(e), `${TestLogger.createNotApiErrorMesssage(e.message)}`).to.be.true;
         let message = `register prod service=${prodEnvName} with org=${orgName}`;
-        expect(false, `${LoggingHelper.createFailMessage(message, requestType, request, e )}`).to.be.true;
-        // expect(false, `register prod service with org='${orgName}', err=${JSON.stringify(e, null, 2)}`).to.be.true;
+        expect(false, `${TestLogger.createTestFailMessage(message)}`).to.be.true;
       }
+      expect(_.isEqual(prodEnv, response), `${TestLogger.createTestFailMessage("response not equal")}`).to.be.true;
     });
 
-    it("should get environments", async() => {
-      platformApiClient.useApiUser();
+    it(`${scriptName}: should get environments`, async() => {
+      let response: Array<Environment>;
       try {
-        let response: Array<Environment> = await EnvironmentsService.listEnvironments(orgName);
-        logging.logMessage(testId, `response = ${JSON.stringify(response, null, 2)}`);
-        expect(response.length).to.equal(2);
-        expect(isEqual(devEnv, response[0])).to.be.true;
-        expect(isEqual(prodEnv, response[1])).to.be.true;
+        response = await EnvironmentsService.listEnvironments(orgName);
       } catch (e) {
-        expect(isInstanceOfApiError(e), `error is not an instance of ApiError, err=${e.message}`).to.be.true;
-        expect(false, `get envs for org='${orgName}', err=${JSON.stringify(e, null, 2)}`).to.be.true;
+        expect(isInstanceOfApiError(e), `${TestLogger.createNotApiErrorMesssage(e.message)}`).to.be.true;
+        let message = `get envs for org='${orgName}`;
+        expect(false, `${TestLogger.createTestFailMessage(message)}`).to.be.true;
       }
-    });
+      expect(response.length, `${TestLogger.createTestFailMessage("expected exactly 2 environments")}`).to.equal(2);
+      expect(_.isEqual(devEnv, response[0]), `${TestLogger.createTestFailMessage("devEnv not equal")}`).to.be.true;
+      expect(_.isEqual(prodEnv, response[1]), `${TestLogger.createTestFailMessage("prodEnv not equal")}`).to.be.true;
+  });
 
-    it("should get audit history", async() => {
-      platformApiClient.useApiUser();
+    it(`${scriptName}: should get audit history`, async() => {
+      let response: Array<History>;
       try {
-        let response: Array<History> = await ManagementService.listHistory(orgName);
-        logging.logMessage(testId, `response = ${JSON.stringify(response, null, 2)}`);
-
-        // expecting to see more history ...
-
-
+        response = await ManagementService.listHistory(orgName);
       } catch (e) {
-        expect(isInstanceOfApiError(e), `error is not an instance of ApiError, err=${e.message}`).to.be.true;
-        expect(false, `get dev env='${devEnv}', err=${JSON.stringify(e, null, 2)}`).to.be.true;
+        expect(isInstanceOfApiError(e), `${TestLogger.createNotApiErrorMesssage(e.message)}`).to.be.true;
+        let message = `get audit history for org='${orgName}`;
+        expect(false, `${TestLogger.createTestFailMessage(message)}`).to.be.true;
       }
-    });
 
-    it("should get dev environment", async() => {
-      platformApiClient.useApiUser();
+        // TODO: expecting to see more history ...
+
+      });
+
+    it(`${scriptName}: should get dev environment`, async() => {
+      let response: EnvironmentResponse;
       try {
-        let response: EnvironmentResponse = await EnvironmentsService.getEnvironment(orgName, devEnv.name);
-        logging.logMessage(testId, `response = ${JSON.stringify(response, null, 2)}`);
-        // could check if all mqtt endpoints have the correct name?
-        // expect(isEqual(devEnv, response[0])).to.be.true;
+        response = await EnvironmentsService.getEnvironment(orgName, devEnv.name);
       } catch (e) {
-        expect(isInstanceOfApiError(e), `error is not an instance of ApiError, err=${e.message}`).to.be.true;
-        expect(false, `get dev env='${devEnv}', err=${JSON.stringify(e, null, 2)}`).to.be.true;
+        expect(isInstanceOfApiError(e), `${TestLogger.createNotApiErrorMesssage(e.message)}`).to.be.true;
+        let message = `get dev env='${devEnv}`;
+        expect(false, `${TestLogger.createTestFailMessage(message)}`).to.be.true;
       }
-    });
+        // TODO: could check if all mqtt endpoints have the correct name?
+      });
 
-    it("should get prod environment", async() => {
-      platformApiClient.useApiUser();
+    it(`${scriptName}: should get prod environment`, async() => {
+      let response: EnvironmentResponse;
       try {
-        let response: EnvironmentResponse = await EnvironmentsService.getEnvironment(orgName, prodEnv.name);
-        logging.logMessage(testId, `response = ${JSON.stringify(response, null, 2)}`);
-        // could check if all mqtt endpoints have the correct name?
-        // expect(isEqual(prodEnv, response[0])).to.be.true;
+        response = await EnvironmentsService.getEnvironment(orgName, prodEnv.name);
       } catch (e) {
-        expect(isInstanceOfApiError(e), `error is not an instance of ApiError, err=${e.message}`).to.be.true;
-        expect(false, `get prod env='${prodEnv}', err=${JSON.stringify(e, null, 2)}`).to.be.true;
+        expect(isInstanceOfApiError(e), `${TestLogger.createNotApiErrorMesssage(e.message)}`).to.be.true;
+        let message = `get prod env='${prodEnv}`;
+        expect(false, `${TestLogger.createTestFailMessage(message)}`).to.be.true;
       }
-    });
+        // TODO: could check if all mqtt endpoints have the correct name?
+      });
 
-    it("should create api maintenance", async() => {
-      platformApiClient.useApiUser();
-      let response: any;
+    it(`${scriptName}: should create api`, async() => {
+      let response: string;
       try {
         response = await ApisService.createApi(orgName, apiNameMaintenance, apiSpecMaintenance);
       } catch (e) {
-        expect(isInstanceOfApiError(e), `error is not an instance of ApiError, err=${e.message}`).to.be.true;
-        expect(false, `create api='${apiNameMaintenance}', err=${JSON.stringify(e, null, 2)}`).to.be.true;
+        expect(isInstanceOfApiError(e), `${TestLogger.createNotApiErrorMesssage(e.message)}`).to.be.true;
+        let message = `create api='${apiNameMaintenance}`;
+        expect(false, `${TestLogger.createTestFailMessage(message)}`).to.be.true;
       }
-      // response is actually an object, test if it is
-      let responseVerified: string = JSON.parse(JSON.stringify(response));
-      logging.logMessage(testId, `response = ${JSON.stringify(response, null, 2)}`);
-      expect(response, "response is not type object").to.be.an('object');
-      expect(isEqual(JSON.parse(apiSpecMaintenance), responseVerified), 'response not equal to api spec').to.be.true;
+      expect(response, `${TestLogger.createTestFailMessage("response is not type object")}`).to.be.an('object');
+      let parsedResponse: string = JSON.parse(JSON.stringify(response));
+      expect(_.isEqual(JSON.parse(apiSpecMaintenance), parsedResponse), `${TestLogger.createTestFailMessage("response not equal to api spec")}`).to.be.true;
     });
 
-    it("should create api product maintenance-development", async() => {
-      platformApiClient.useApiUser();
-      let apiProduct: APIProduct = {
+    it(`${scriptName}: should create api product maintenance-development`, async() => {
+      let response: APIProduct;
+      let request: APIProduct = {
         name: `${apiProductNameMaintenanceDevelopment}`,
         displayName: `display name for ${apiProductNameMaintenanceDevelopment}`,
         description: `description for ${apiProductNameMaintenanceDevelopment}`,
@@ -257,56 +244,46 @@ describe('uc-elevator-co test', () => {
         pubResources: [],
         subResources: []
       };
-      logging.logMessage(testId, `org=${orgName}, creating apiProduct = ${JSON.stringify(apiProduct, null, 2)}`);
-      let response: APIProduct;
       try {
-        response = await ApiProductsService.createApiProduct(orgName, apiProduct);
+        response = await ApiProductsService.createApiProduct(orgName, request);
       } catch (e) {
-        expect(isInstanceOfApiError(e), `error is not an instance of ApiError, err=${e.message}`).to.be.true;
-        expect(false, `org=${orgName}, create apiProduct='${apiProductNameMaintenanceDevelopment}', err=${JSON.stringify(e, null, 2)}`).to.be.true;
+        expect(isInstanceOfApiError(e), `${TestLogger.createNotApiErrorMesssage(e.message)}`).to.be.true;
+        let message = `org=${orgName}, create apiProduct='${apiProductNameMaintenanceDevelopment}`;
+        expect(false, `${TestLogger.createTestFailMessage(message)}`).to.be.true;
       }
-      logging.logMessage(testId, `response = ${JSON.stringify(response, null, 2)}`);
-      expect(isEqual(apiProduct, response), 'response not equal to apiProduct').to.be.true;
+      expect(_.isEqual(request, response), `${TestLogger.createTestFailMessage('response not equal to request')}`).to.be.true;
     });
     
-
-    // patch always returns the full, updated api product (or any other entity) not just the data contained in the patch request.
-    // let apiProduct: APIProduct = {
-    //   name: `${apiProductNameMaintenanceDevelopment}`,
-    //   displayName: `display name for ${apiProductNameMaintenanceDevelopment}`,
-    //   description: `description for ${apiProductNameMaintenanceDevelopment}`,
-    //   apis: [ apiNameMaintenance ],
-    //   approvalType: apiProductMaintenanceDevelopmentApprovalType,
-    //   attributes: apiMaintenacePermissions,
-    //   environments: [ `${devEnvName}` ],
-    //   protocols: [ { name: Protocol.name.MQTT, version: '3.1.1' }, { name: Protocol.name.HTTP, version: '1.1'} ],
-    //   pubResources: [],
-    //   subResources: []
-    // };
-    // expect(isEqual(apiProduct, response), 'response not equal to apiProduct').to.be.true;
-
-    xit("should add http protocol to api product maintenance-development", async() => {
-      platformApiClient.useApiUser();
-      let requestType = "APIProductPatch";
-      let request: APIProductPatch = {
+    it(`${scriptName}: should add http protocol to api product maintenance-development`, async() => {
+      // get current APIProduct
+      let responseGet: APIProduct;
+      try {
+        responseGet = await ApiProductsService.getApiProduct(orgName, apiProductNameMaintenanceDevelopment);
+      } catch (e) {
+        expect(isInstanceOfApiError(e), `${TestLogger.createNotApiErrorMesssage(e.message)}`).to.be.true;
+        let message = `get apiProduct=${apiProductNameMaintenanceDevelopment}`;
+        expect(false, `${TestLogger.createTestFailMessage(message)}`).to.be.true;
+      }
+      let responsePatch: APIProduct;
+      let requestPatch: APIProductPatch = {
         protocols: [ { name: Protocol.name.MQTT, version: '3.1.1' }, { name: Protocol.name.HTTP, version: '1.1'} ],
       }
-      logging.logMessage(testId, `updating apiProductPatch = ${JSON.stringify(request, null, 2)}`);
-      let response: APIProduct;
+      let expectedResponsePatch: APIProduct = _.merge({}, responseGet, requestPatch);
       try {
-        response = await ApiProductsService.updateApiProduct(orgName, apiProductNameMaintenanceDevelopment, request);
+        responsePatch = await ApiProductsService.updateApiProduct(orgName, apiProductNameMaintenanceDevelopment, requestPatch);
       } catch (e) {
-        expect(isInstanceOfApiError(e), `error is not an instance of ApiError, err=${e.message}`).to.be.true;
+        expect(isInstanceOfApiError(e), `${TestLogger.createNotApiErrorMesssage(e.message)}`).to.be.true;
         let message = `update apiProduct=${apiProductNameMaintenanceDevelopment}`;
-        expect(false, `${LoggingHelper.createFailMessage(message,requestType, request, e )}`).to.be.true;
+        expect(false, `${TestLogger.createTestFailMessage(message)}`).to.be.true;
       }
-      logging.logMessage(testId, `response = ${JSON.stringify(response, null, 2)}`);
-      expect(isEqual(request, response), 'response not equal to apiProductPatch').to.be.true;
+      let expectDiff: ExpectDiff = getExpectEqualDiff(expectedResponsePatch, responsePatch);
+      let message = expectDiff.message;
+      expect(expectDiff.diff, `${TestLogger.createTestFailMessage(message)}`).to.be.empty;
     });
 
-    it("should create api product maintenance-production", async() => {
-      platformApiClient.useApiUser();
-      let apiProduct: APIProduct = {
+    it(`${scriptName}: should create api product maintenance-production`, async() => {
+      let response: APIProduct;
+      let request: APIProduct = {
         name: `${apiProductNameMaintenanceProduction}`,
         displayName: `display name for ${apiProductNameMaintenanceProduction}`,
         description: `description for ${apiProductNameMaintenanceProduction}`,
@@ -318,37 +295,34 @@ describe('uc-elevator-co test', () => {
         pubResources: [],
         subResources: []
       };
-      logging.logMessage(testId, `org=${orgName}, creating apiProduct = ${JSON.stringify(apiProduct, null, 2)}`);
-      let response: APIProduct;
       try {
-        response = await ApiProductsService.createApiProduct(orgName, apiProduct);
+        response = await ApiProductsService.createApiProduct(orgName, request);
       } catch (e) {
-        expect(isInstanceOfApiError(e), `error is not an instance of ApiError, err=${e.message}`).to.be.true;
-        expect(false, `create apiProduct='${apiProductNameMaintenanceProduction}', err=${JSON.stringify(e, null, 2)}`).to.be.true;
+        expect(isInstanceOfApiError(e), `${TestLogger.createNotApiErrorMesssage(e.message)}`).to.be.true;
+        let message = `create apiProduct='${apiProductNameMaintenanceProduction}`;
+        expect(false, `${TestLogger.createTestFailMessage(message)}`).to.be.true;
       }
-      logging.logMessage(testId, `response = ${JSON.stringify(response, null, 2)}`);
-      expect(isEqual(apiProduct, response), 'response not equal to apiProduct').to.be.true;
+      expect(_.isEqual(request, response), `${TestLogger.createTestFailMessage('response not equal to request')}`).to.be.true;
     });
 
-    it("should create all developers", async() => {
-      platformApiClient.useApiUser();
+    it(`${scriptName}: should create all developers`, async() => {
       let response: Developer;
       for(let developer of developers) {
+        let request = developer;
         try {
-          response = await DevelopersService.createDeveloper(orgName, developer);
+          response = await DevelopersService.createDeveloper(orgName, request);
         } catch (e) {
-          expect(isInstanceOfApiError(e), `error is not an instance of ApiError, err=${e.message}`).to.be.true;
-          expect(false, `create developer='${JSON.stringify(developer, null, 2)}', err=${JSON.stringify(e, null, 2)}`).to.be.true;
-        }
-        logging.logMessage(testId, `response = ${JSON.stringify(response, null, 2)}`);
-        expect(isEqual(developer, response), 'response not equal to developer').to.be.true;  
+          expect(isInstanceOfApiError(e), `${TestLogger.createNotApiErrorMesssage(e.message)}`).to.be.true;
+          let message = `create developer`;
+          expect(false, `${TestLogger.createTestFailMessage(message)}`).to.be.true;
+          }
+          expect(_.isEqual(request, response), `${TestLogger.createTestFailMessage('response not equal to request')}`).to.be.true;
       }
     });
 
-    it("should create the development app for all developers", async() => {
-      platformApiClient.useApiUser();
+    it(`${scriptName}: should create the development app for all developers`, async() => {
       let response: App;
-      let app: App = {
+      let request: App = {
         name: 'x',
         apiProducts: [ `${apiProductNameMaintenanceDevelopment}` ],
         credentials: {
@@ -360,65 +334,93 @@ describe('uc-elevator-co test', () => {
         }
       }; 
       for(let developer of developers) {
-        let credentials: Credentials = {
-          expiresAt: -1,
-          secret: {
-            consumerKey: createConsumerKey(orgName, devEnvName, developer.userName),
-            consumerSecret: createConsumerSecret(orgName, devEnvName, developer.userName)
-          }
-        };
-        app.credentials= credentials;
-        app.name = `${developerAppNameMaintenanceDevelopment}-${developer.userName}`
+        request.credentials= createDefaultCredentials();
+        request.name = `${developerAppNameMaintenanceDevelopment}-${developer.userName}`
         try {
-          response = await AppsService.createDeveloperApp(orgName, developer.userName, app); 
+          response = await AppsService.createDeveloperApp(orgName, developer.userName, request); 
         } catch (e) {
-          expect(isInstanceOfApiError(e), `error is not an instance of ApiError, err=${e.message}`).to.be.true;
-          expect(false, `create app=${JSON.stringify(app, null, 2)} for developer='${JSON.stringify(developer, null, 2)}', err=${JSON.stringify(e, null, 2)}`).to.be.true;
+          expect(isInstanceOfApiError(e), `${TestLogger.createNotApiErrorMesssage(e.message)}`).to.be.true;
+          let message = `create developer app`;
+          expect(false, `${TestLogger.createTestFailMessage(message)}`).to.be.true;
         }
-        logging.logMessage(testId, `response = ${JSON.stringify(response, null, 2)}`);
-        let areEqual: boolean = isEqual(app, response);
-        let diff: any;
-        if(!areEqual) diff = getObjectDifferences(response, app);
-        expect(!areEqual, `response not equal to app, diff=${JSON.stringify(diff, null, 2)}`).to.be.true;  
+        let expectDiff: ExpectDiff = getExpectContainedDiff(request, response);
+        let message = expectDiff.message;
+        expect(expectDiff.diff, `${TestLogger.createTestFailMessage(message)}`).to.be.empty;
       }
     });
 
-    xit("should add webhook to development app for all developers", async() => {
-      platformApiClient.useApiUser();
-      let response: AppResponse;
-      let appName: string;
-      let requestType = "appPatch";
-      let request: AppPatch = {
-      };
+    xit(`${scriptName}: developer app should only have mqtt in protocols`, async() => {
+      // TODO: discuss
+      // api spec only specifies http binding type=request
+      // so, only webhook supported
+      // but no http in-bound
       for(let developer of developers) {
-        appName = `${developerAppNameMaintenanceDevelopment}-${developer.userName}`
+        let appName = `${developerAppNameMaintenanceDevelopment}-${developer.userName}`
+        let responseGet: AppResponse;
+        try {
+          responseGet = await AppsService.getDeveloperApp(orgName, developer.userName, appName);
+        } catch (e) {
+          expect(isInstanceOfApiError(e), `${TestLogger.createNotApiErrorMesssage(e.message)}`).to.be.true;
+          let message = `getDeveloperApp=${appName}`;
+          expect(false, `${TestLogger.createTestFailMessage(message)}`).to.be.true;        
+        }
+        let environments: Array<AppEnvironment> = responseGet.environments;
+        expect(environments.length, `${TestLogger.createTestFailMessage("wrong number of environments")}`).to.equal(1);
+        for(let environment of environments) {
+          let endpoints: Array<Endpoint> = environment.messagingProtocols;
+          // check only mqtt is listed
+          for(let endpoint of endpoints) {
+            expect(endpoint.protocol.name, `${TestLogger.createTestFailMessage("wrong protocol")}`).to.equal("mqtt");
+          }
+        }
+      }
+    });
+
+    xit(`${scriptName}: should add webhook to development app for all developers`, async() => {
+      // TODO: CHECK
+      // the patch response does not contain the full get response
+      // is it supposed to?
+
+      for(let developer of developers) {
+        let appName = `${developerAppNameMaintenanceDevelopment}-${developer.userName}`
+        // get current DeveloperApp
+        let responseGet: AppResponse;
+        try {
+          responseGet = await AppsService.getDeveloperApp(orgName, developer.userName, appName);
+        } catch (e) {
+          expect(isInstanceOfApiError(e), `${TestLogger.createNotApiErrorMesssage(e.message)}`).to.be.true;
+          let message = `getDeveloperApp=${appName}`;
+          expect(false, `${TestLogger.createTestFailMessage(message)}`).to.be.true;        
+        }
+        // update app
+        let responsePatch: AppResponse;
+        let requestPatch: AppPatch = {
+        };
         let webHook: WebHook = {
           uri: `http://api.${developer.userName}.com/${developer.userName}/elevator/maintenance`,
           method: WebHook.method.POST,
           mode: WebHook.mode.SERIAL
         };
-        request.webHooks = [ webHook ];
+        requestPatch.webHooks = [ webHook ];
+        // warning: overrides arrays
+        let expectedResponsePatch: AppResponse = _.merge({}, responseGet, requestPatch);
         try {
-          response = await AppsService.updateDeveloperApp(orgName, developer.userName, appName, request);
+          responsePatch = await AppsService.updateDeveloperApp(orgName, developer.userName, appName, requestPatch);
         } catch (e) {
-          expect(isInstanceOfApiError(e), `error is not an instance of ApiError, err=${e.message}`).to.be.true;
-          let message = `update app=${appName}`;
-          expect(false, `${LoggingHelper.createFailMessage(message,requestType, request, e )}`).to.be.true;
+          expect(isInstanceOfApiError(e), `${TestLogger.createNotApiErrorMesssage(e.message)}`).to.be.true;
+          let message = `updateDeveloperApp=${appName}`;
+          expect(false, `${TestLogger.createTestFailMessage(message)}`).to.be.true;        
         }
-        logging.logMessage(testId, `response = ${JSON.stringify(response, null, 2)}`);
-        let areEqual: boolean = isEqual(request, response);
-        let diff: any;
-        if(!areEqual) diff = getObjectDifferences(response, request);
-        expect(!areEqual, `response not equal to appPatch, diff=${JSON.stringify(diff, null, 2)}`).to.be.true;  
+        let expectDiff: ExpectDiff = getExpectContainedDiff(expectedResponsePatch, responsePatch);
+        let message = expectDiff.message;
+        expect(expectDiff.diff, `${TestLogger.createTestFailMessage(message)}`).to.be.empty;
       }
     });
 
-    it("should create the production app for all developers", async() => {
+    it(`${scriptName}: should create the production app for all developers`, async() => {
       if(testEnv.IS_BOOTSTRAP_DEMO) return;
-      platformApiClient.useApiUser();
       let response: App;
       let appName: string;
-      let requestType = "App";
       let request: App = {
         name: 'x',
         apiProducts: [ `${apiProductNameMaintenanceProduction}` ],
@@ -432,163 +434,68 @@ describe('uc-elevator-co test', () => {
       }; 
       for(let developer of developers) {
         appName = `${developerAppNameMaintenanceProduction}-${developer.userName}`;
-        let credentials: Credentials = {
-          expiresAt: -1,
-          secret: {
-            consumerKey: createConsumerKey(orgName, prodEnvName, developer.userName),
-            consumerSecret: createConsumerSecret(orgName, prodEnvName, developer.userName)
-          }
-        };
-        request.credentials= credentials;
+        request.credentials= createDefaultCredentials();
         request.name = appName;
         try {
           response = await AppsService.createDeveloperApp(orgName, developer.userName, request); 
         } catch (e) {
-          expect(isInstanceOfApiError(e), `error is not an instance of ApiError, err=${e.message}`).to.be.true;
+          expect(isInstanceOfApiError(e), `${TestLogger.createNotApiErrorMesssage(e.message)}`).to.be.true;
           let message = `create app=${appName}`;
-          expect(false, `${LoggingHelper.createFailMessage(message,requestType, request, e )}`).to.be.true;
+          expect(false, `${TestLogger.createTestFailMessage(message)}`).to.be.true;        
         }
-        logging.logMessage(testId, `response = ${JSON.stringify(response, null, 2)}`);
-        let areEqual: boolean = isEqual(request, response);
-        let diff: any;
-        if(!areEqual) diff = getObjectDifferences(response, request);
-        let message = `response not equal to request`;
-        expect(!areEqual, `${LoggingHelper.createFailMessage(message,requestType, request, diff )}`).to.be.true;
+        let expectDiff: ExpectDiff = getExpectContainedDiff(request, response);
+        let message = expectDiff.message;
+        expect(expectDiff.diff, `${TestLogger.createTestFailMessage(message)}`).to.be.empty;
       }
     });
 
-    xit("should handle adding webhook without http protocol", async() => {
-      if(testEnv.IS_BOOTSTRAP_DEMO) return;
-      // testing with production product - no http protocol there
-      let success = false;
-      platformApiClient.useApiUser();
-      let response: AppResponse;
-      let appName: string;
-      let requestType = "appPatch";
-      let request: AppPatch = {
-      };
-      for(let developer of developers) {
-        appName = `${developerAppNameMaintenanceProduction}-${developer.userName}`
-        let webHook: WebHook = {
-          uri: `http://api.${developer.userName}.com/${developer.userName}/elevator/maintenance`,
-          method: WebHook.method.POST,
-          mode: WebHook.mode.SERIAL
-        };
-        request.webHooks = [ webHook ];
-        try {
-          response = await AppsService.updateDeveloperApp(orgName, developer.userName, appName, request);
-        } catch (e) {
-          expect(isInstanceOfApiError(e), `error is not an instance of ApiError, err=${e.message}`).to.be.true;
-          let message = `update app=${appName}`;
-          expect(false, `${LoggingHelper.createFailMessage(message,requestType, request, e )}`).to.be.true;
-        }
-        let message = `update app='${appName}' with webhook should fail`;
-        expect(false, `${LoggingHelper.createFailMessage(message,requestType, request, response )}`).to.be.true;
-        expect(success).to.be.true;
-      }
+    xit(`${scriptName}: should handle adding webhook without http protocol enabled`, async() => {
+      // TODO implement me
     });
 
-    it("should approve all apps that require approval", async() => {
-      platformApiClient.useApiUser();
-
+    it(`${scriptName}: should approve all apps that require approval`, async() => {
       // get a list of all apps that require approval
       let responseList: Array<AppListItem>;
-      let requestType = "GET";
-      let request = "<empty>";
       try {
         responseList = await AppsService.listApps(orgName, AppStatus.PENDING, 100, 1);
       } catch (e) {
-        expect(isInstanceOfApiError(e), `error is not an instance of ApiError, err=${e.message}`).to.be.true;
+        expect(isInstanceOfApiError(e), `${TestLogger.createNotApiErrorMesssage(e.message)}`).to.be.true;
         let message = `get all pending apps for org=${orgName}`;
-        expect(false, `${LoggingHelper.createFailMessage(message, undefined, undefined, e )}`).to.be.true;
+        expect(false, `${TestLogger.createTestFailMessage(message)}`).to.be.true;        
       }
-      // logging.logMessage(testId, `response = ${JSON.stringify(responseList, null, 2)}`);
-
-      // approve them all
       let message: string;
       for(let app of responseList) {
+        // check if status is actually pending
         message = `expecting status == pending for app=${app.name}`;
-        expect(app.status, `${LoggingHelper.createFailMessage(message, requestType, request, app)}`).to.equal(AppStatus.PENDING);
-
-        {
-          let response: AppResponse;
-          requestType = "appPatch";
-          let request: AppPatch = {
-            status: AppStatus.APPROVED
-          };
-          try {
-            response = await AppsService.updateDeveloperApp(orgName, app.ownerId, app.name, request);
-          } catch (e) {
-            expect(isInstanceOfApiError(e), `error is not an instance of ApiError, err=${e.message}`).to.be.true;
-            let message = `update (approve) app=${app.name}`;
-            expect(false, `${LoggingHelper.createFailMessage(message,requestType, request, e )}`).to.be.true;
-          }
-        }  
+        expect(app.status, `${TestLogger.createTestFailMessage(message)}`).to.equal(AppStatus.PENDING);
+        // approve them all
+        let responsePatch: AppResponse;
+        let requestPatch: AppPatch = {
+          status: AppStatus.APPROVED
+        };
+        try {
+          responsePatch = await AppsService.updateDeveloperApp(orgName, app.ownerId, app.name, requestPatch);
+        } catch (e) {
+          expect(isInstanceOfApiError(e), `${TestLogger.createNotApiErrorMesssage(e.message)}`).to.be.true;
+          message = `update (approve) app=${app.name}`;
+          expect(false, `${TestLogger.createTestFailMessage(message)}`).to.be.true;        
+        }
       }
-
-
-      // let request: AppPatch = {
-      // };
-      // for(let developer of developers) {
-      //   appName = `${developerAppNameMaintenanceProduction}-${developer.userName}`
-      //   let webHook: WebHook = {
-      //     uri: `http://api.${developer.userName}.com/${developer.userName}/elevator/maintenance`,
-      //     method: WebHook.method.POST,
-      //     mode: WebHook.mode.SERIAL
-      //   };
-      //   request.webHooks = [ webHook ];
-      //   try {
-      //     response = await AppsService.updateDeveloperApp(orgName, developer.userName, appName, request);
-      //   } catch (e) {
-      //     expect(isInstanceOfApiError(e), `error is not an instance of ApiError, err=${e.message}`).to.be.true;
-      //     let message = `update app=${appName}`;
-      //     expect(false, `${LoggingHelper.createFailMessage(message,requestType, request, e )}`).to.be.true;
-      //   }
-      //   let message = `update app='${appName}' with webhook should fail`;
-      //   expect(false, `${LoggingHelper.createFailMessage(message,requestType, request, response )}`).to.be.true;
-      // expect(success).to.be.true;
-      // }
-
-
     });
 
-    xit("should get app details for all developer apps", async() => {
-      // platformApiClient.useApiUser();
-      // let response: App;
-      // let app: App = {
-      //   name: 'x',
-      //   apiProducts: [ `${apiProductNameMaintenanceDevelopment}` ],
-      //   credentials: {
-      //     expiresAt: -1,
-      //     secret: {
-      //       consumerKey: 'x',
-      //       consumerSecret: 'x'
-      //     }
-      //   }
-      // };
-      // for(let developer of developers) {
-      //   let credentials: Credentials = {
-      //     expiresAt: -1,
-      //     secret: {
-      //       consumerKey: `consumerKey-${developer.userName}`,
-      //       consumerSecret: `consumerSecret-${developer.userName}`
-      //     }
-      //   };
-      //   app.credentials= credentials;
-      //   app.name = `${developerAppNameMaintenance}-${developer.userName}`
-      //   try {
-      //     // change after regenerating openapi
-      //     response = await AppsService.createDeveloperApp(orgName, developer.userName, undefined, app); 
-      //   } catch (e) {
-      //     expect(isInstanceOfApiError(e), `error is not an instance of ApiError, err=${e.message}`).to.be.true;
-      //     expect(false, `create app=${JSON.stringify(app, null, 2)} for developer='${JSON.stringify(developer, null, 2)}', err=${JSON.stringify(e, null, 2)}`).to.be.true;
-      //   }
-      //   logging.logMessage(testId, `response = ${JSON.stringify(response, null, 2)}`);
-      //   let areEqual: boolean = isEqual(app, response);
-      //   let diff: any;
-      //   if(!areEqual) diff = getObjectDifferences(response, app);
-      //   expect(!areEqual, `response not equal to app, diff=${JSON.stringify(diff, null, 2)}`).to.be.true;  
-      // }
+    xit(`${scriptName}: should check app details for all developer apps`, async() => {
+      // TODO
+      // get the developer app 
+      // check all is good
+      // including mqtt format for permissions
+      return;
+    });
+
+    xit(`${scriptName}: should check broker config for all developer apps`, async() => {
+      // TODO
+      // get the developer app 
+      // check all the expected broker configs ...
+      return;
     });
 
   });
