@@ -22,7 +22,7 @@ const testEnv = {
   FILE_USER_REGISTRY: getMandatoryEnvVarValue(scriptName, 'APIM_INTEGRATION_TEST_FILE_USER_REGISTRY'),
   SOLACE_CLOUD_TOKEN: getMandatoryEnvVarValue(scriptName, 'APIM_INTEGRATION_TEST_SOLACE_CLOUD_TOKEN'),
 }
-TestLogger.logMessage(scriptName, `testEnv = ${JSON.stringify(testEnv, null, 2)}`);
+TestLogger.logTestEnv(scriptName, testEnv);
 const userRegistry: UserRegistry = require(testEnv.FILE_USER_REGISTRY);
 TestLogger.logMessage(scriptName, `userRegistry = ${JSON.stringify(userRegistry, null, 2)}`);
 TestLogger.logMessage(scriptName, ">>> success.");

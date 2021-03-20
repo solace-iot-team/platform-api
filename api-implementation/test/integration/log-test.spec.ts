@@ -21,7 +21,7 @@ TestLogger.logMessage(scriptName, ">>> initializing ...");
 const testEnv = {
   ORG_NAME: getMandatoryEnvVarValue(scriptName, 'APIM_INTEGRATION_TEST_ORG_NAME'),
 }
-TestLogger.logMessage(scriptName, `testEnv = ${JSON.stringify(testEnv, null, 2)}`);
+TestLogger.logTestEnv(scriptName, testEnv);
 TestLogger.logMessage(scriptName, ">>> success.");
 
 describe(`${scriptName}`, () => {

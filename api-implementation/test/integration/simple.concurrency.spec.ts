@@ -35,7 +35,7 @@ const testEnv = {
   DEVELOPERS_FILE: getMandatoryEnvVarValue(scriptName, 'APIM_INTEGRATION_TEST_DEVELOPERS_FILE'),  
   IS_BOOTSTRAP_DEMO: getOptionalEnvVarValue('APIM_INTEGRATION_TEST_IS_BOOTSTRAP_DEMO') != null ? true : false
 }
-TestLogger.logMessage(scriptName, `testEnv = ${JSON.stringify(testEnv, null, 2)}`);
+TestLogger.logTestEnv(scriptName, testEnv);
 const userRegistry: UserRegistry = require(testEnv.FILE_USER_REGISTRY);
 TestLogger.logMessage(scriptName, `userRegistry = ${JSON.stringify(userRegistry, null, 2)}`);
 TestLogger.logMessage(scriptName, ">>> success.");

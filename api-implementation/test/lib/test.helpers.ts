@@ -44,23 +44,48 @@ export class TestLogger {
     public static logResponse = (msg: string, response: PlatformResponseHelper) => {
         if(TestLogger.do_log) console.log(`[response] - ${msg}:\n${response.toJson()}`);
     }
+    public static logTestEnv = (component: string, testEnv: any) => {
+        if(!TestLogger.do_log) return;
+        let te = testEnv;
+        if(testEnv.SOLACE_CLOUD_TOKEN) {
+            te = _.cloneDeep(testEnv);
+            te.SOLACE_CLOUD_TOKEN = "***";
+        }
+        console.log(`[${component}] - testEnv=${JSON.stringify(te, null, 2)}`);
+    }
     public static logMessage = (component: string, msg: string) => {
         if(TestLogger.do_log) console.log(`[${component}] - ${msg}`);
     }
+    public static getLoggingApiRequestOptions = (options: ApiRequestOptions): string => {
+        let logOptions:any = options;
+        if(options.path.includes('token')) {
+            logOptions = _.cloneDeep(options);
+            logOptions.body = "***";
+        }
+        return JSON.stringify(logOptions, null, 2);
+    }
+    public static getLoggingApiResult = (result: ApiResult): string => {
+        let logResult:any = result;
+        if(result && result.url.includes('token')) {
+            logResult = _.cloneDeep(result);
+            logResult.body = "***";
+        }
+        return JSON.stringify(logResult, null, 2);
+    }
     public static logApiRequestOptions = (id: string, options: ApiRequestOptions) => {
         if(!TestLogger.do_log) return;
-        console.log(`[${id}]: ApiRequestOptions=\n${JSON.stringify(options, null, 2)}\n`);
+        console.log(`[${id}]: ApiRequestOptions=\n${TestLogger.getLoggingApiRequestOptions(options)}\n`);
     }
     public static logApiResult = (id: string, result: ApiResult) => {
         if(!TestLogger.do_log) return;
-        console.log(`[${id}]: ApiResult=\n${JSON.stringify(result, null, 2)}\n`);
+        console.log(`[${id}]: ApiResult=\n${TestLogger.getLoggingApiResult(result)}\n`);
     }
     public static logApiError = (id: string, apiError: ApiError) => {
         if(!TestLogger.do_log) return;
         console.log(`[${id}]: ApiError=\n${JSON.stringify(apiError, null, 2)}\n`);
     }
     public static createTestFailMessage = (message: string): string => {
-        return `[${TestContext.getItId()}]: ${message}\napiRequestOptions=${JSON.stringify(TestContext.getApiRequestOptions(), null, 2)}\napiResult=${JSON.stringify(TestContext.getApiResult(), null, 2)}\napiError=${JSON.stringify(TestContext.getApiError(), null, 2)}\n`;
+        return `[${TestContext.getItId()}]: ${message}\napiRequestOptions=${TestLogger.getLoggingApiRequestOptions(TestContext.getApiRequestOptions())}\napiResult=${TestLogger.getLoggingApiResult(TestContext.getApiResult())}\napiError=${JSON.stringify(TestContext.getApiError(), null, 2)}\n`;
     }
     public static createNotApiErrorMesssage = (message: string): string => {
         return `[${TestContext.getItId()}]: error is not an instance of ApiError, error=${message}`;
