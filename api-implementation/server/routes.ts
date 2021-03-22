@@ -64,17 +64,18 @@ export default function routes(app: Application, auth: any): void {
         user = req.auth.user;
       }
       if (auditableVerbs.indexOf(req.method) > -1) {
+        const url: string = `${req.baseUrl}/${req.url}`.replace('//', '/');
         var h: History = {
           at: Date.now(),
           operation: req.method,
           requestBody: req.body,
-          requestURI: `${req.baseUrl}/${req.url}`,
-          title: `${req.method} ${req.baseUrl}/${req.url}`,
+          requestURI: url,
+          title: `${req.method} ${url}`,
           user: user,
           responseCode: res.statusCode
         };
         HistoryService.create(h);
-        L.debug(`auditable request: ${req.method}, ${req.baseUrl}/${req.url}, ${res.statusCode}`);
+        L.debug(`auditable request: ${req.method}, ${url}, ${res.statusCode}`);
         C.reset();
       };
       
