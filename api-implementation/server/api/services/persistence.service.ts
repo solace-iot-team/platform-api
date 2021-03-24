@@ -1,4 +1,5 @@
 import L from '../../common/logger';
+import { PlatformConstants, ContextConstants } from '../../common/constants';
 import { databaseaccess } from '../../../src/databaseaccess';
 import mongodb, { DeleteWriteOpResultObject, MongoError, CollectionInsertOneOptions, UpdateOneOptions } from 'mongodb';
 
@@ -12,15 +13,15 @@ export interface Paging {
 export class PersistenceService {
   private collection: string;
   private getCollection() {
-    var db: string = "platform";
+    var db: string = PlatformConstants.PLATFORM_DB;
     var org: string = null;
     if (ns != null) {
       L.debug(`PersistenceService: Found namespace ${JSON.stringify(ns.getStore())}`);
-      org = ns.getStore().get('org');
+      org = ns.getStore().get(ContextConstants.ORG_NAME);
     }
     if (org != null) {
       db = org;
-    } else if ('organizations' != this.collection && 'history' != this.collection) {
+    } else if (!PlatformConstants.PLATFORM_COLLECTIONS.includes(this.collection)) {
       throw new ErrorResponseInternal(500, `Can't write to  ${this.collection} in tenant ${db}`);
     }
 
@@ -42,7 +43,7 @@ export class PersistenceService {
     if (paging == null) {
       if (ns != null) {
         L.debug(`PersistenceService: Found namespace ${ns}`);
-        paging = ns.getStore().get('paging');
+        paging = ns.getStore().get(ContextConstants.PAGING);
         L.debug(`paging ${paging}`);
       }
     }
@@ -195,7 +196,6 @@ export class PersistenceService {
         j: true
       };
       collection.updateOne(q, { $set: body }, opts).then((v: mongodb.UpdateWriteOpResult) => {
-        //L.info(v);
         if (v.matchedCount == 0) {
           reject(new ErrorResponseInternal(404, `No entity ${_id} found `));
         }
@@ -213,11 +213,8 @@ export class PersistenceService {
     });
   }
 
-
-
   validateReferences(names: string[]): Promise<boolean> {
     return new Promise<boolean>((resolve, reject) => {
-      var isApproved: boolean = true;
       var results: Promise<boolean>[] = [];
       names.forEach((n) => {
         results.push(new Promise<boolean>((resolve, reject) => {
@@ -242,10 +239,10 @@ export class PersistenceService {
   private createPublicErrorMessage(error: MongoError): ErrorResponseInternal {
     if (error instanceof MongoError) {
       L.debug(`Initial mongo error ${error.message}`);
-      var errorCode = "E" + error.code;
-      var msg = error.message.replace(errorCode, "");
+      var errorCode = 'E' + error.code;
+      var msg = error.message.replace(errorCode, '');
       var statusCode = 422;
-      msg = msg.substring(0, msg.indexOf("error")).trim();
+      msg = msg.substring(0, msg.indexOf('error')).trim();
       let hexCode = '';
       if (error.code) {
         hexCode = error.code.toString(16);
@@ -263,7 +260,3 @@ export class PersistenceService {
   }
 
 }
-
-
-
-//export default new PersistenceService();
