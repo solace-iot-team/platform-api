@@ -6,5 +6,6 @@ export class PlatformConstants{
 
 export class ContextConstants{
   public static ORG_NAME = 'org';
+  public static CLOUD_TOKEN = 'cloud-token';
   public static PAGING = 'paging';
 }
