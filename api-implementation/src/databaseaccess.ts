@@ -1,8 +1,6 @@
 import mongo from 'mongodb';
 import L from '../server/common/logger';
 
-//const uri = "mongodb://api-user:Solace123@localhost:27017/solace-platform?retryWrites=true&w=majority";
-
 export class databaseaccess {
 	public static client: mongo.MongoClient;
 	constructor() {
