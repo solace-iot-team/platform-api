@@ -26,6 +26,7 @@
     "@types/cls-hooked": "^4.3.3",
     "@types/continuation-local-storage": "^3.2.2",
     "@types/node-fetch": "^2.5.7",
+    "axios": "^0.21.1",
     "base-64": "^1.0.0",
     "body-parser": "^1.19.0",
     "bunyan": "^1.8.14",

@@ -29,6 +29,7 @@ import {
 } from '../../../src/clients/sempv2';
 import SolaceCloudFacade from '../../../src/solacecloudfacade';
 import { Sempv2Client } from '../../../src/sempv2-client';
+import {ns} from '../middlewares/context.handler';
 
 import parser from '@asyncapi/parser';
 
@@ -904,11 +905,12 @@ class BrokerService {
   }
 
   private getSEMPv2Client(service: Service): Sempv2Client {
-    var sempProtocol = service.managementProtocols.find(i => i.name === "SEMP");
-    var sempv2Client = new Sempv2Client(sempProtocol.endPoints.find(j => j.name === "Secured SEMP Config").uris[0],
-      sempProtocol.username,
-      sempProtocol.password);
-    return sempv2Client;
+    var sempProtocol = service.managementProtocols.find(i => i.name === "SEMP"); 
+    ns.getStore().set(Sempv2Client.BASE, sempProtocol.endPoints.find(j => j.name === "Secured SEMP Config").uris[0]);
+    ns.getStore().set(Sempv2Client.USER, sempProtocol.username);
+    ns.getStore().set(Sempv2Client.PASSWORD, sempProtocol.password);
+
+    return Sempv2Client;
   }
 }
 export default new BrokerService();

@@ -1,9 +1,9 @@
 import L from '../../common/logger';
 import { databaseaccess } from '../../../src/databaseaccess';
 import mongodb, { DeleteWriteOpResultObject, MongoError, CollectionInsertOneOptions, UpdateOneOptions } from 'mongodb';
-import C from 'cls-hooked';
-import { ErrorResponseInternal } from '../middlewares/error.handler';
 
+import { ErrorResponseInternal } from '../middlewares/error.handler';
+import {ns} from '../middlewares/context.handler';
 export interface Paging {
   pageNumber: number,
   pageSize: number
@@ -11,19 +11,19 @@ export interface Paging {
 
 export class PersistenceService {
   private collection: string;
-  getCollection = () => {
-    var namespace = C.getNamespace('platform-api');
+  private getCollection() {
     var db: string = "platform";
     var org: string = null;
-    if (namespace != null) {
-      L.debug(`PersistenceService: Found namespace ${namespace}`);
-      namespace.run(function () {
-        org = namespace.get('org');
-      });
+    if (ns != null) {
+      L.debug(`PersistenceService: Found namespace ${JSON.stringify(ns.getStore())}`);
+      org = ns.getStore().get('org');
     }
     if (org != null) {
       db = org;
+    } else if ('organizations' != this.collection && 'history' != this.collection) {
+      throw new ErrorResponseInternal(500, `Can't write to  ${this.collection} in tenant ${db}`);
     }
+
     L.info(`db is ${db}`);
     return databaseaccess.client.db(db).collection(this.collection);
   }
@@ -40,12 +40,9 @@ export class PersistenceService {
     }
     // attempt to retrieve paging from context/namespace
     if (paging == null) {
-      var namespace = C.getNamespace('platform-api');
-      if (namespace != null) {
-        L.debug(`PersistenceService: Found namespace ${namespace}`);
-        namespace.run(function () {
-          paging = namespace.get('paging');
-        });
+      if (ns != null) {
+        L.debug(`PersistenceService: Found namespace ${ns}`);
+        paging = ns.getStore().get('paging');
         L.debug(`paging ${paging}`);
       }
     }
@@ -75,7 +72,7 @@ export class PersistenceService {
   async byName(name: string, query?: any): Promise<any> {
     const collection: mongodb.Collection = this.getCollection();
     var q = query;
-    if (q) {
+    if (q != null) {
       q._id = name;
     } else {
       q = { _id: name };
