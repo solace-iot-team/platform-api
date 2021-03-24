@@ -2,7 +2,7 @@ import { Request, Response, NextFunction } from 'express';
 import L from '../../common/logger';
 import { v4 } from 'uuid';
 import { ContextConstants } from '../../common/constants';
-const AsyncLocalStorage = require('async_hooks');
+const { AsyncLocalStorage } = require('async_hooks');
 
 export const ns = new AsyncLocalStorage();
 
