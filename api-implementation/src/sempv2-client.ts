@@ -2,6 +2,7 @@ import L from '../server/common/logger';
 import { OpenAPI } from './clients/sempv2/core/OpenAPI';
 import { ErrorResponseInternal } from '../server/api/middlewares/error.handler';
 import { ns } from '../server/api/middlewares/context.handler';
+import { ContextConstants } from '../server/common/constants';
 
 export class Sempv2Client {
   static BASE = 'sempv2BaseUrl';
@@ -31,7 +32,7 @@ async function getValue(key: string): Promise<string> {
   if (val == null) {
     throw new ErrorResponseInternal(
       500,
-      `${key} is not defined for ${ns.getStore().get('org')}`
+      `${key} is not defined for ${ns.getStore().get(ContextConstants.ORG_NAME)}`
     );
   }
   L.trace(`${key} is ${val}`);

@@ -1,11 +1,10 @@
 import { Request, Response, NextFunction } from 'express';
 import L from '../../common/logger';
 import { v4 } from 'uuid';
-
-const { AsyncLocalStorage } = require("async_hooks");
+import { ContextConstants } from '../../common/constants';
+const AsyncLocalStorage = require('async_hooks');
 
 export const ns = new AsyncLocalStorage();
-
 
 export default function contextHandler(
   req: Request,
@@ -16,14 +15,7 @@ export default function contextHandler(
   
   L.debug('create context and run next()');
   ns.run(new Map(), () => {
-    ns.getStore().set('requestId', v4());
+    ns.getStore().set(ContextConstants.REQUEST_ID, v4());
     next();
   });
 }
-
-
-
-
-
-
-
