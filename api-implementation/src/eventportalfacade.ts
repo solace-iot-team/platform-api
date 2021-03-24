@@ -4,30 +4,20 @@ import APIListItem = Components.Schemas.APIListItem;
 import APIDomain = Components.Schemas.APIDomain;
 import API = Components.Schemas.API;
 import { ApiError, AsyncApiService, Application, ApplicationDomainsResponse, ApplicationDomainsService, ApplicationResponse, ApplicationsService, OpenAPI, GenerateAsyncAPIRequest } from "./clients/eventportal";
-import C from 'cls-hooked';
 import { ErrorResponseInternal} from '../server/api/middlewares/error.handler';
 
-import getToken from './cloudtokenhelper';
+import getToken, {validateToken} from './cloudtokenhelper';
 
 class EventPortalFacade {
 	constructor() {
 		OpenAPI.TOKEN = getToken;
 	}
 
-	public async validate(token: string): Promise<boolean> {
-		OpenAPI.TOKEN = token;
-		try {
-			const result: any = await ApplicationDomainsService.list(100, 1);
-			if (result != null) {
-				return true;
-			} else {
-				return false;
-			}
+  public async validate(token: string): Promise<boolean> {
+    const url: string = `${OpenAPI.BASE}/api/v1/eventPortal/applicationDomains`;
+    return validateToken(token, url);
+  }
 
-		} catch (e) {
-			return false;
-		}
-	}
 	public async getApis(): Promise<APIListItem[]> {
 		return new Promise<APIListItem[]>((resolve, reject) => {
 			var result: Promise<any> = ApplicationDomainsService.list(100, 1);

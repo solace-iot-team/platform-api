@@ -1,16 +1,34 @@
-import C from 'cls-hooked';
 import L from '../server/common/logger';
 import { ErrorResponseInternal } from '../server/api/middlewares/error.handler';
+import {ns} from '../server/api/middlewares/context.handler';
+import axios, { AxiosRequestConfig } from 'axios';
 
-export default async function  getToken(): Promise<string> {
-	var namespace = C.getNamespace('platform-api');
-	var token: string = null;
-	namespace.run(function () {
-		token = namespace.get('cloud-token');
-		if (token == null) {
-			throw new ErrorResponseInternal(500, `Token is not defined for ${namespace.get('org')}`);
-		}
-	});
-	L.info(`token is ${token}`);
-	return token;
-} 
+export default async function getToken(): Promise<string> {
+  var token: string = null;
+    token = ns.getStore().get('cloud-token');
+    if (token == null) {
+      throw new ErrorResponseInternal(500, `Token is not defined for ${ns.getStore().get('org')}`);
+    }
+  L.trace(`token is ${token}`);
+  return token;
+}
+
+export async function validateToken(token: string, url: string): Promise<boolean> {
+  const config: AxiosRequestConfig = {
+    headers: { Authorization: `Bearer ${token}` },
+  };
+  try {
+    const response = await axios.get(url, config);
+    if (response.status > 299) {
+      return false;
+    } else {
+      return true;
+    }
+  }
+  catch (e) {
+    L.warn('validateToken');
+    L.warn(e);
+    return false;
+  }
+}
+

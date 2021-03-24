@@ -15,13 +15,12 @@ import HistoryService from './api/services/history.service';
 
 import L from './common/logger';
 import { Request, Response } from 'express';
-import C from 'cls-hooked';
 import Organization = Components.Schemas.Organization;
 import History = Components.Schemas.History;
 import basicAuth from 'express-basic-auth';
 import { ErrorResponseInternal } from './api/middlewares/error.handler';
 import pagingHandler from './api/middlewares/paging.handler';
-import contextHandler from './api/middlewares/context.handler';
+import contextHandler, {ns} from './api/middlewares/context.handler';
 import Router from 'express';
 
 export default function routes(app: Application, auth: any): void {
@@ -33,15 +32,16 @@ export default function routes(app: Application, auth: any): void {
     res.status(404).end();
   });
   router.param('org', function (req, res, next, org) {
-    var ns = C.getNamespace('platform-api');
-    L.info(`org in namespace is ${ns.get('org')}`);
-    L.debug("org param is " + org);
+    const url: string = `${req.baseUrl}/${req.url}`.replace('//', '/');
+    L.info(`extracting org for ${url}`);
+    L.info(`org in namespace is ${ns.getStore().get('org')}`);
+    L.trace("param org is " + org + ' '+ns.getStore().get('requestId') + ` ${JSON.stringify(ns)}`) ;
     OrganizationsService.byName(org).then((r: Organization) => {
-      ns.run(function () {
-        ns.set('org', org);
-        ns.set('cloud-token', r["cloud-token"]);
+      L.trace(`router.param org is  ${JSON.stringify(r)}`);
+        ns.getStore().set('org', org);
+        ns.getStore().set('cloud-token', r["cloud-token"]);
+        L.trace(`router.param ${url} ns org is `+ns.getStore().get('org') + ' ' + ns.getStore().get('requestId') + ` ${JSON.stringify(ns)}`);
         next();
-      });
     }).catch(e => {
       L.debug(`no org matching URI ${req.baseUrl} ${e}`);
       next(new ErrorResponseInternal(404, `Not found`));
@@ -49,7 +49,7 @@ export default function routes(app: Application, auth: any): void {
   });
   const authAdmin = basicAuth({
     users: { 'admin': 'p3zvZFF7ka4Wrj4p' },
-    challenge: true
+    challenge: true,
   });
 
   const auditableVerbs: string[] = ['POST', 'PUT', 'DELETE', 'PATCH'];
@@ -58,7 +58,7 @@ export default function routes(app: Application, auth: any): void {
       L.info("finish response");
       let auth = req.auth;
       let user: string = "";
-      if (!auth || auth==null){
+      if (!auth || auth == null) {
         user = "unknown";
       } else {
         user = req.auth.user;
@@ -76,18 +76,18 @@ export default function routes(app: Application, auth: any): void {
         };
         HistoryService.create(h);
         L.debug(`auditable request: ${req.method}, ${url}, ${res.statusCode}`);
-        C.reset();
+        //C.reset();
       };
-      
+
     });
     next();
-    
+
   });
 
 
 
 
-  router.use('/organizations',authAdmin , organizationsRouter);
+  router.use('/organizations', authAdmin, organizationsRouter);
   router.use('/:org/apis', auth, apisRouter);
   router.use('/:org/event-portal/apis', auth, eventPortalApisRouter);
   router.use('/:org/apiDomains', auth, apiDomainsRouter);

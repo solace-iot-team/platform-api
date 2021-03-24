@@ -49,9 +49,10 @@ function getQueryString(params: Record<string, any>): string {
     return '';
 }
 
-function getUrl(options: ApiRequestOptions): string {
+async function getUrl(options: ApiRequestOptions): Promise<string> {
     const path = options.path.replace(/[:]/g, '_');
-    const url = `${OpenAPI.BASE}${path}`;
+    const base = await resolve(options, OpenAPI.BASE);
+    const url = `${base}${path}`;
 
     if (options.query) {
         return `${url}${getQueryString(options.query)}`;
@@ -191,7 +192,7 @@ function catchErrors(options: ApiRequestOptions, result: ApiResult): void {
  * @throws ApiError
  */
 export async function request(options: ApiRequestOptions): Promise<ApiResult> {
-    const url = getUrl(options);
+    const url = await getUrl(options);
     const response = await sendRequest(options, url);
     const responseBody = await getResponseBody(response);
     const responseHeader = getResponseHeader(response, options.responseHeader);
