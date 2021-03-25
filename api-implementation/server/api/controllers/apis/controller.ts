@@ -1,7 +1,7 @@
 import L from '../../../common/logger'; import ApisService from '../../services/apis.service';
 import { NextFunction, Request, Response } from 'express';
 import { ErrorResponseInternal } from '../../middlewares/error.handler';
-import Format = Paths.$OrganizationApis$ApiName.Get.Parameters.Format;
+import Format = Paths.GetApi.Parameters.Format;
 import AsyncAPIHelper from '../../../../src/asyncapihelper'
 
 export class Controller {

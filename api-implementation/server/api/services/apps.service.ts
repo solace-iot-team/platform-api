@@ -10,6 +10,7 @@ import AppListItem = Components.Schemas.AppListItem;
 import AppResponse = Components.Schemas.AppResponse;
 import AppPatch = Components.Schemas.AppPatch;
 import ApiProduct = Components.Schemas.APIProduct;
+import TopicSyntax = Components.Parameters.TopicSyntax.TopicSyntax;
 
 import AsyncAPIHelper from '../../../src/asyncapihelper';
 import { AsyncAPIServer } from '../../../src/model/asyncapiserver';
@@ -33,7 +34,7 @@ export class AppsService {
   async list(query: any): Promise<AppListItem[]> {
     const apps = await this.persistenceService.all(query);
     const appList: AppListItem[] = [];
-    apps.forEach((app: AppPatch) => {
+    apps.forEach((app: AppResponse) => {
       const listItem: AppListItem = {
         name: app.name,
         apiProducts: app.apiProducts,
@@ -58,9 +59,9 @@ export class AppsService {
     return apiList;
   }
 
-  async byName(name: string): Promise<AppResponse> {
+  async byName(name: string, syntax: TopicSyntax): Promise<AppResponse> {
     const app: App = await this.persistenceService.byName(name);
-    const devApp = await DevelopersService.appByName(app['ownerId'], app.name);
+    const devApp = await DevelopersService.appByName(app['ownerId'], app.name, syntax);
     devApp['ownerId'] = app['ownerId'];
     return devApp;
   }

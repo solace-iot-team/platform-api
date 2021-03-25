@@ -2,7 +2,7 @@ openapi: 3.0.0
 info:
   title: Solace Platform API
   description: Solace Platform API
-  version: 0.0.7
+  version: 0.0.8
 servers:
   - url: /v1
 
@@ -99,6 +99,15 @@ components:
        type: integer
        format: int32
        default: 1
+    topicSyntax:
+      name: topicSyntax
+      in: query
+      schema:
+        type: string
+        default: smf
+        enum:
+        - smf
+        - mqtt
   schemas:
     ErrorResponse: 
      type: object
@@ -2737,6 +2746,8 @@ paths:
     - $ref: '#/components/parameters/app_name'
     get:
      operationId: getDeveloperApp
+     parameters: 
+     - $ref: '#/components/parameters/topicSyntax'
      tags:
      - apps
      - developers
@@ -2995,6 +3006,8 @@ paths:
     - $ref: '#/components/parameters/app_name'
     get:
      operationId: getApp
+     parameters:
+     - $ref: '#/components/parameters/topicSyntax'
      tags:
      - apps
      responses:

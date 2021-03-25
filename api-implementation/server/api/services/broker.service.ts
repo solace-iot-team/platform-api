@@ -8,6 +8,7 @@ import Permissions = Components.Schemas.Permissions;
 import Endpoint = Components.Schemas.Endpoint;
 import AppEnvironment = Components.Schemas.AppEnvironment;
 import WebHook = Components.Schemas.WebHook;
+import TopicSyntax = Components.Parameters.TopicSyntax.TopicSyntax;
 
 import ApiProductsService from './apiProducts.service';
 import ApisService from './apis.service';
@@ -29,11 +30,12 @@ import {
 } from '../../../src/clients/sempv2';
 import SolaceCloudFacade from '../../../src/solacecloudfacade';
 import { Sempv2Client } from '../../../src/sempv2-client';
-import {ns} from '../middlewares/context.handler';
+import { ns } from '../middlewares/context.handler';
 
 import parser from '@asyncapi/parser';
 
 import { ErrorResponseInternal } from '../middlewares/error.handler';
+import { TopicWildcards } from '../../common/constants';
 
 enum Direction {
   Publish = 'Publish',
@@ -41,14 +43,14 @@ enum Direction {
 }
 
 class BrokerService {
-  async getPermissions(app: App, developer: Developer, envName: string): Promise<Permissions> {
+  async getPermissions(app: App, developer: Developer, envName: string, syntax: TopicSyntax): Promise<Permissions> {
     const products: APIProduct[] = [];
     try {
       for (const productName of app.apiProducts) {
         const product = await ApiProductsService.byName(productName);
         products.push(product);
       }
-      var permissions: Permissions = await this.getClientACLExceptions(app, products, developer, envName);
+      var permissions: Permissions = await this.getClientACLExceptions(app, products, developer, envName, syntax);
       return permissions;
     } catch (err) {
       L.error("Get permissions error");
@@ -108,7 +110,7 @@ class BrokerService {
     var environmentNames: string[] = [];
 
     const products: APIProduct[] = [];
-    for (const productName of app.apiProducts){
+    for (const productName of app.apiProducts) {
       L.info(productName);
       const product = await ApiProductsService.byName(productName);
       products.push(product);
@@ -568,7 +570,7 @@ class BrokerService {
     }
   }
 
-  public async getClientACLExceptions(app: App, apiProducts: APIProduct[], developer: Developer, envName: string): Promise<Permissions> {
+  public async getClientACLExceptions(app: App, apiProducts: APIProduct[], developer: Developer, envName: string, syntax?: TopicSyntax): Promise<Permissions> {
     try {
       let publishExceptions: string[] = [];
       let subscribeExceptions: string[] = [];
@@ -589,11 +591,13 @@ class BrokerService {
       subscribeExceptions = this.enrichTopics(subscribeExceptions, attributes);
       publishExceptions = this.enrichTopics(publishExceptions, attributes);
       publishExceptions.forEach((s, index, arr) => {
-        arr[index] = this.scrubDestination(s);
+        arr[index] = this.scrubDestination(s, syntax);
       });
       subscribeExceptions.forEach((s, index, arr) => {
-        arr[index] = this.scrubDestination(s);
+        arr[index] = this.scrubDestination(s, syntax);
       });
+      subscribeExceptions = Array.from(new Set(subscribeExceptions));
+      publishExceptions = Array.from(new Set(publishExceptions));
 
       // reverse - Async API usage of verbs
       var permissions: Permissions = {
@@ -861,8 +865,18 @@ class BrokerService {
     return returnResources;
   }
 
-  private scrubDestination(destination: string) {
-    return destination.replace(/\{[^\/]*\}(?!$)/g, "*").replace(/\{[^\/]*\}$/, ">");
+  private scrubDestination(destination: string, syntax?: TopicSyntax) {
+    L.debug(`scrub ${destination}`);
+    let scrubbed = destination;
+    if (syntax == 'mqtt') {
+      scrubbed =  destination.replace(/\{[^\/]*\}(?!$)/gi, TopicWildcards.SINGLE_LEVEL_MQTT)
+        .replace(/\{[^\/]*\}$/gi, TopicWildcards.MULTI_LEVEL_MQTT)
+        .replace(/\/[a-z0-9]*\*/gi, `/${TopicWildcards.SINGLE_LEVEL_MQTT}`);
+    } else {
+      scrubbed = destination.replace(/\{[^\/]*\}(?!$)/gi, TopicWildcards.SINGLE_LEVEL_SMF).replace(/\{[^\/]*\}$/gi, TopicWildcards.MULTI_LEVEL_SMF);
+    }
+    L.debug(`scrubbed ${scrubbed}`);
+    return scrubbed;
   }
 
   private enrichTopics(destinations: string[], attributes: any[]): string[] {
@@ -905,7 +919,7 @@ class BrokerService {
   }
 
   private getSEMPv2Client(service: Service): Sempv2Client {
-    var sempProtocol = service.managementProtocols.find(i => i.name === "SEMP"); 
+    var sempProtocol = service.managementProtocols.find(i => i.name === "SEMP");
     ns.getStore().set(Sempv2Client.BASE, sempProtocol.endPoints.find(j => j.name === "Secured SEMP Config").uris[0]);
     ns.getStore().set(Sempv2Client.USER, sempProtocol.username);
     ns.getStore().set(Sempv2Client.PASSWORD, sempProtocol.password);

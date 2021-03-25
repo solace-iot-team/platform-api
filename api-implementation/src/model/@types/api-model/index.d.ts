@@ -36,6 +36,9 @@ declare namespace Components {
         namespace PageSize {
             export type PageSize = number; // int32
         }
+        namespace TopicSyntax {
+            export type TopicSyntax = "smf" | "mqtt";
+        }
     }
     namespace Schemas {
         /**
@@ -290,12 +293,6 @@ declare namespace Components {
              */
             environments?: string[];
             /**
-             * The internal name of the API Product. Characters you can use in the name are restricted to: A-Z0-9._\-$ %.
-             * example:
-             * {name}
-             */
-            name?: string;
-            /**
              * A comma separated list of Publish API resources to be bundled in the API Product.
              */
             pubResources?: string[];
@@ -347,7 +344,6 @@ declare namespace Components {
          * Used for PATCH operation. An app associated with a developer. Associates the app with an API product, and auto-generates an API credentials for the app to use
          */
         export interface AppPatch {
-            name?: string;
             apiProducts?: string[];
             attributes?: Attributes;
             /**
@@ -411,7 +407,6 @@ declare namespace Components {
             email?: string;
             firstName?: string;
             lastName?: string;
-            userName?: string;
             attributes?: Attributes;
         }
         export interface Endpoint {
@@ -553,7 +548,7 @@ declare namespace Components {
              * example:
              * myorg
              */
-            name: string;
+            name: string; // ^[^\/\\\.\s"\$]{4,64}$
             /**
              * a Solace Cloud API Token, requires "get services" and "event portal read" permissions
              * example:
@@ -748,166 +743,7 @@ declare namespace Components {
     }
 }
 declare namespace Paths {
-    namespace $OrganizationApiProducts {
-        namespace Get {
-            namespace Responses {
-                export type $200 = /* An API product consists of a list of API resources (URIs) and custom metadata required by the API provider. API products enable you to bundle and distribute your APIs to multiple developer groups simultaneously */ Components.Schemas.APIProduct[];
-                export type $400 = Components.Schemas.ErrorResponse;
-                export type $401 = Components.Schemas.ErrorResponse;
-                export type $403 = Components.Schemas.ErrorResponse;
-                export type $404 = Components.Schemas.ErrorResponse;
-                export type $500 = Components.Schemas.ErrorResponse;
-                export type $503 = Components.Schemas.ErrorResponse;
-                export type $504 = Components.Schemas.ErrorResponse;
-            }
-        }
-        namespace Post {
-            export type RequestBody = /* An API product consists of a list of API resources (URIs) and custom metadata required by the API provider. API products enable you to bundle and distribute your APIs to multiple developer groups simultaneously */ Components.Schemas.APIProduct;
-            namespace Responses {
-                export type $201 = /* An API product consists of a list of API resources (URIs) and custom metadata required by the API provider. API products enable you to bundle and distribute your APIs to multiple developer groups simultaneously */ Components.Schemas.APIProduct;
-                export type $400 = Components.Schemas.ErrorResponse;
-                export type $401 = Components.Schemas.ErrorResponse;
-                export type $403 = Components.Schemas.ErrorResponse;
-                export type $404 = Components.Schemas.ErrorResponse;
-                export type $422 = Components.Schemas.ErrorResponse;
-                export type $500 = Components.Schemas.ErrorResponse;
-                export type $503 = Components.Schemas.ErrorResponse;
-                export type $504 = Components.Schemas.ErrorResponse;
-            }
-        }
-    }
-    namespace $OrganizationApiProducts$ApiProductName {
-        namespace Delete {
-            namespace Responses {
-                export interface $204 {
-                }
-                export type $400 = Components.Schemas.ErrorResponse;
-                export type $401 = Components.Schemas.ErrorResponse;
-                export type $403 = Components.Schemas.ErrorResponse;
-                export type $404 = Components.Schemas.ErrorResponse;
-                export type $422 = Components.Schemas.ErrorResponse;
-                export type $500 = Components.Schemas.ErrorResponse;
-                export type $503 = Components.Schemas.ErrorResponse;
-                export type $504 = Components.Schemas.ErrorResponse;
-            }
-        }
-        namespace Get {
-            namespace Responses {
-                export type $200 = /* An API product consists of a list of API resources (URIs) and custom metadata required by the API provider. API products enable you to bundle and distribute your APIs to multiple developer groups simultaneously */ Components.Schemas.APIProduct;
-                export type $400 = Components.Schemas.ErrorResponse;
-                export type $401 = Components.Schemas.ErrorResponse;
-                export type $403 = Components.Schemas.ErrorResponse;
-                export type $404 = Components.Schemas.ErrorResponse;
-                export type $500 = Components.Schemas.ErrorResponse;
-                export type $503 = Components.Schemas.ErrorResponse;
-                export type $504 = Components.Schemas.ErrorResponse;
-            }
-        }
-        namespace Patch {
-            export type RequestBody = /* Used for PATCH operation, An API product consists of a list of API resources (URIs) and custom metadata required by the API provider. API products enable you to bundle and distribute your APIs to multiple developer groups simultaneously */ Components.Schemas.APIProductPatch;
-            namespace Responses {
-                export type $200 = /* An API product consists of a list of API resources (URIs) and custom metadata required by the API provider. API products enable you to bundle and distribute your APIs to multiple developer groups simultaneously */ Components.Schemas.APIProduct;
-                export type $400 = Components.Schemas.ErrorResponse;
-                export type $401 = Components.Schemas.ErrorResponse;
-                export type $403 = Components.Schemas.ErrorResponse;
-                export type $404 = Components.Schemas.ErrorResponse;
-                export type $422 = Components.Schemas.ErrorResponse;
-                export type $500 = Components.Schemas.ErrorResponse;
-                export type $503 = Components.Schemas.ErrorResponse;
-                export type $504 = Components.Schemas.ErrorResponse;
-            }
-        }
-    }
-    namespace $OrganizationApis {
-        namespace Get {
-            namespace Responses {
-                export type $200 = string[];
-                export type $400 = Components.Schemas.ErrorResponse;
-                export type $401 = Components.Schemas.ErrorResponse;
-                export type $403 = Components.Schemas.ErrorResponse;
-                export type $404 = Components.Schemas.ErrorResponse;
-                export type $500 = Components.Schemas.ErrorResponse;
-                export type $503 = Components.Schemas.ErrorResponse;
-                export type $504 = Components.Schemas.ErrorResponse;
-            }
-        }
-    }
-    namespace $OrganizationApis$ApiName {
-        namespace Delete {
-            namespace Responses {
-                export interface $204 {
-                }
-                export type $400 = Components.Schemas.ErrorResponse;
-                export type $401 = Components.Schemas.ErrorResponse;
-                export type $403 = Components.Schemas.ErrorResponse;
-                export type $404 = Components.Schemas.ErrorResponse;
-                export type $422 = Components.Schemas.ErrorResponse;
-                export type $500 = Components.Schemas.ErrorResponse;
-                export type $503 = Components.Schemas.ErrorResponse;
-                export type $504 = Components.Schemas.ErrorResponse;
-            }
-        }
-        namespace Get {
-            namespace Parameters {
-                export type Format = "application/json" | "application/x-yaml";
-            }
-            export interface QueryParameters {
-                format?: Parameters.Format;
-            }
-            namespace Responses {
-                export interface $200 {
-                }
-                export type $400 = Components.Schemas.ErrorResponse;
-                export type $401 = Components.Schemas.ErrorResponse;
-                export type $403 = Components.Schemas.ErrorResponse;
-                export type $404 = Components.Schemas.ErrorResponse;
-                export type $500 = Components.Schemas.ErrorResponse;
-                export type $503 = Components.Schemas.ErrorResponse;
-                export type $504 = Components.Schemas.ErrorResponse;
-            }
-        }
-        namespace Patch {
-            export type RequestBody = string;
-            namespace Responses {
-                export type $200 = string;
-                export type $400 = Components.Schemas.ErrorResponse;
-                export type $401 = Components.Schemas.ErrorResponse;
-                export type $403 = Components.Schemas.ErrorResponse;
-                export type $404 = Components.Schemas.ErrorResponse;
-                export type $422 = Components.Schemas.ErrorResponse;
-                export type $500 = Components.Schemas.ErrorResponse;
-                export type $503 = Components.Schemas.ErrorResponse;
-                export type $504 = Components.Schemas.ErrorResponse;
-            }
-        }
-        namespace Put {
-            export type RequestBody = string;
-            namespace Responses {
-                export type $201 = string;
-                export type $400 = Components.Schemas.ErrorResponse;
-                export type $401 = Components.Schemas.ErrorResponse;
-                export type $403 = Components.Schemas.ErrorResponse;
-                export type $404 = Components.Schemas.ErrorResponse;
-                export type $422 = Components.Schemas.ErrorResponse;
-                export type $500 = Components.Schemas.ErrorResponse;
-                export type $503 = Components.Schemas.ErrorResponse;
-                export type $504 = Components.Schemas.ErrorResponse;
-            }
-        }
-    }
     namespace $OrganizationApps {
-        namespace Get {
-            namespace Responses {
-                export type $200 = Components.Schemas.AppListItem[];
-                export type $400 = Components.Schemas.ErrorResponse;
-                export type $401 = Components.Schemas.ErrorResponse;
-                export type $403 = Components.Schemas.ErrorResponse;
-                export type $404 = Components.Schemas.ErrorResponse;
-                export type $500 = Components.Schemas.ErrorResponse;
-                export type $503 = Components.Schemas.ErrorResponse;
-                export type $504 = Components.Schemas.ErrorResponse;
-            }
-        }
         namespace Parameters {
             export type Status = Components.Schemas.AppStatus;
         }
@@ -915,479 +751,592 @@ declare namespace Paths {
             status?: Parameters.Status;
         }
     }
-    namespace $OrganizationApps$AppName {
-        namespace Get {
-            namespace Responses {
-                export type $200 = /* App Response Object - includes protocol binding information and app premissions. An app associated with a developer. Associates the app with an API product, and auto-generates an API credentials for the app to use. */ Components.Schemas.AppResponse;
-                export type $400 = Components.Schemas.ErrorResponse;
-                export type $401 = Components.Schemas.ErrorResponse;
-                export type $403 = Components.Schemas.ErrorResponse;
-                export type $404 = Components.Schemas.ErrorResponse;
-                export type $500 = Components.Schemas.ErrorResponse;
-                export type $503 = Components.Schemas.ErrorResponse;
-                export type $504 = Components.Schemas.ErrorResponse;
-            }
+    namespace CreateApi {
+        export type RequestBody = string;
+        namespace Responses {
+            export type $201 = string;
+            export type $400 = Components.Schemas.ErrorResponse;
+            export type $401 = Components.Schemas.ErrorResponse;
+            export type $403 = Components.Schemas.ErrorResponse;
+            export type $404 = Components.Schemas.ErrorResponse;
+            export type $422 = Components.Schemas.ErrorResponse;
+            export type $500 = Components.Schemas.ErrorResponse;
+            export type $503 = Components.Schemas.ErrorResponse;
+            export type $504 = Components.Schemas.ErrorResponse;
         }
     }
-    namespace $OrganizationApps$AppNameApis {
-        namespace Get {
-            namespace Responses {
-                export type $200 = string[];
-                export type $400 = Components.Schemas.ErrorResponse;
-                export type $401 = Components.Schemas.ErrorResponse;
-                export type $403 = Components.Schemas.ErrorResponse;
-                export type $404 = Components.Schemas.ErrorResponse;
-                export type $500 = Components.Schemas.ErrorResponse;
-                export type $503 = Components.Schemas.ErrorResponse;
-                export type $504 = Components.Schemas.ErrorResponse;
-            }
+    namespace CreateApiProduct {
+        export type RequestBody = /* An API product consists of a list of API resources (URIs) and custom metadata required by the API provider. API products enable you to bundle and distribute your APIs to multiple developer groups simultaneously */ Components.Schemas.APIProduct;
+        namespace Responses {
+            export type $201 = /* An API product consists of a list of API resources (URIs) and custom metadata required by the API provider. API products enable you to bundle and distribute your APIs to multiple developer groups simultaneously */ Components.Schemas.APIProduct;
+            export type $400 = Components.Schemas.ErrorResponse;
+            export type $401 = Components.Schemas.ErrorResponse;
+            export type $403 = Components.Schemas.ErrorResponse;
+            export type $404 = Components.Schemas.ErrorResponse;
+            export type $422 = Components.Schemas.ErrorResponse;
+            export type $500 = Components.Schemas.ErrorResponse;
+            export type $503 = Components.Schemas.ErrorResponse;
+            export type $504 = Components.Schemas.ErrorResponse;
         }
     }
-    namespace $OrganizationApps$AppNameApis$ApiName {
-        namespace Get {
-            namespace Parameters {
-                export type Format = "application/json" | "application/x-yaml";
-            }
-            export interface QueryParameters {
-                format?: Parameters.Format;
-            }
-            namespace Responses {
-                export interface $200 {
-                }
-                export type $400 = Components.Schemas.ErrorResponse;
-                export type $401 = Components.Schemas.ErrorResponse;
-                export type $403 = Components.Schemas.ErrorResponse;
-                export type $404 = Components.Schemas.ErrorResponse;
-                export type $500 = Components.Schemas.ErrorResponse;
-                export type $503 = Components.Schemas.ErrorResponse;
-                export type $504 = Components.Schemas.ErrorResponse;
-            }
+    namespace CreateDeveloper {
+        export type RequestBody = /* A profile for a developer. After the developer is created, they can register an app and receive API credentials */ Components.Schemas.Developer;
+        namespace Responses {
+            export type $201 = /* A profile for a developer. After the developer is created, they can register an app and receive API credentials */ Components.Schemas.Developer;
+            export type $400 = Components.Schemas.ErrorResponse;
+            export type $401 = Components.Schemas.ErrorResponse;
+            export type $403 = Components.Schemas.ErrorResponse;
+            export type $404 = Components.Schemas.ErrorResponse;
+            export type $422 = Components.Schemas.ErrorResponse;
+            export type $500 = Components.Schemas.ErrorResponse;
+            export type $503 = Components.Schemas.ErrorResponse;
+            export type $504 = Components.Schemas.ErrorResponse;
         }
     }
-    namespace $OrganizationDevelopers {
-        namespace Get {
-            namespace Responses {
-                export type $200 = /* A profile for a developer. After the developer is created, they can register an app and receive API credentials */ Components.Schemas.Developer[];
-                export type $400 = Components.Schemas.ErrorResponse;
-                export type $401 = Components.Schemas.ErrorResponse;
-                export type $403 = Components.Schemas.ErrorResponse;
-                export type $404 = Components.Schemas.ErrorResponse;
-                export type $500 = Components.Schemas.ErrorResponse;
-                export type $503 = Components.Schemas.ErrorResponse;
-                export type $504 = Components.Schemas.ErrorResponse;
-            }
-        }
-        namespace Post {
-            export type RequestBody = /* A profile for a developer. After the developer is created, they can register an app and receive API credentials */ Components.Schemas.Developer;
-            namespace Responses {
-                export type $201 = /* A profile for a developer. After the developer is created, they can register an app and receive API credentials */ Components.Schemas.Developer;
-                export type $400 = Components.Schemas.ErrorResponse;
-                export type $401 = Components.Schemas.ErrorResponse;
-                export type $403 = Components.Schemas.ErrorResponse;
-                export type $404 = Components.Schemas.ErrorResponse;
-                export type $422 = Components.Schemas.ErrorResponse;
-                export type $500 = Components.Schemas.ErrorResponse;
-                export type $503 = Components.Schemas.ErrorResponse;
-                export type $504 = Components.Schemas.ErrorResponse;
-            }
+    namespace CreateDeveloperApp {
+        export type RequestBody = /* An app associated with a developer. Associates the app with an API product, and auto-generates an API credentials for the app to use */ Components.Schemas.App;
+        namespace Responses {
+            export type $201 = /* An app associated with a developer. Associates the app with an API product, and auto-generates an API credentials for the app to use */ Components.Schemas.App;
+            export type $400 = Components.Schemas.ErrorResponse;
+            export type $401 = Components.Schemas.ErrorResponse;
+            export type $403 = Components.Schemas.ErrorResponse;
+            export type $404 = Components.Schemas.ErrorResponse;
+            export type $422 = Components.Schemas.ErrorResponse;
+            export type $500 = Components.Schemas.ErrorResponse;
+            export type $503 = Components.Schemas.ErrorResponse;
+            export type $504 = Components.Schemas.ErrorResponse;
         }
     }
-    namespace $OrganizationDevelopers$DeveloperUsername {
-        namespace Delete {
-            namespace Responses {
-                export interface $204 {
-                }
-                export type $400 = Components.Schemas.ErrorResponse;
-                export type $401 = Components.Schemas.ErrorResponse;
-                export type $403 = Components.Schemas.ErrorResponse;
-                export type $404 = Components.Schemas.ErrorResponse;
-                export type $422 = Components.Schemas.ErrorResponse;
-                export type $500 = Components.Schemas.ErrorResponse;
-                export type $503 = Components.Schemas.ErrorResponse;
-                export type $504 = Components.Schemas.ErrorResponse;
-            }
-        }
-        namespace Get {
-            namespace Responses {
-                export type $200 = /* A profile for a developer. After the developer is created, they can register an app and receive API credentials */ Components.Schemas.Developer;
-                export type $400 = Components.Schemas.ErrorResponse;
-                export type $401 = Components.Schemas.ErrorResponse;
-                export type $403 = Components.Schemas.ErrorResponse;
-                export type $404 = Components.Schemas.ErrorResponse;
-                export type $500 = Components.Schemas.ErrorResponse;
-                export type $503 = Components.Schemas.ErrorResponse;
-                export type $504 = Components.Schemas.ErrorResponse;
-            }
-        }
-        namespace Patch {
-            export type RequestBody = /* Used for PATCH operation, A profile for a developer. After the developer is created, they can register an app and receive API credentials */ Components.Schemas.DeveloperPatch;
-            namespace Responses {
-                export type $200 = /* A profile for a developer. After the developer is created, they can register an app and receive API credentials */ Components.Schemas.Developer;
-                export type $400 = Components.Schemas.ErrorResponse;
-                export type $401 = Components.Schemas.ErrorResponse;
-                export type $403 = Components.Schemas.ErrorResponse;
-                export type $404 = Components.Schemas.ErrorResponse;
-                export type $422 = Components.Schemas.ErrorResponse;
-                export type $500 = Components.Schemas.ErrorResponse;
-                export type $503 = Components.Schemas.ErrorResponse;
-                export type $504 = Components.Schemas.ErrorResponse;
-            }
+    namespace CreateEnvironment {
+        export type RequestBody = /* an environment */ Components.Schemas.Environment;
+        namespace Responses {
+            export type $201 = /* an environment */ Components.Schemas.Environment;
+            export type $400 = Components.Schemas.ErrorResponse;
+            export type $401 = Components.Schemas.ErrorResponse;
+            export type $403 = Components.Schemas.ErrorResponse;
+            export type $404 = Components.Schemas.ErrorResponse;
+            export type $422 = Components.Schemas.ErrorResponse;
+            export type $500 = Components.Schemas.ErrorResponse;
+            export type $503 = Components.Schemas.ErrorResponse;
+            export type $504 = Components.Schemas.ErrorResponse;
         }
     }
-    namespace $OrganizationDevelopers$DeveloperUsernameApps {
-        namespace Get {
-            namespace Responses {
-                export type $200 = /* An app associated with a developer. Associates the app with an API product, and auto-generates an API credentials for the app to use */ Components.Schemas.App[];
-                export type $400 = Components.Schemas.ErrorResponse;
-                export type $401 = Components.Schemas.ErrorResponse;
-                export type $403 = Components.Schemas.ErrorResponse;
-                export type $404 = Components.Schemas.ErrorResponse;
-                export type $500 = Components.Schemas.ErrorResponse;
-                export type $503 = Components.Schemas.ErrorResponse;
-                export type $504 = Components.Schemas.ErrorResponse;
-            }
+    namespace CreateOrganization {
+        export type RequestBody = Components.Schemas.Organization;
+        namespace Responses {
+            export type $200 = Components.Schemas.Organization;
+            export type $400 = Components.Schemas.ErrorResponse;
+            export type $401 = Components.Schemas.ErrorResponse;
+            export type $403 = Components.Schemas.ErrorResponse;
+            export type $404 = Components.Schemas.ErrorResponse;
+            export type $422 = Components.Schemas.ErrorResponse;
+            export type $500 = Components.Schemas.ErrorResponse;
+            export type $503 = Components.Schemas.ErrorResponse;
+            export type $504 = Components.Schemas.ErrorResponse;
         }
+    }
+    namespace DeleteApi {
+        namespace Responses {
+            export interface $204 {
+            }
+            export type $400 = Components.Schemas.ErrorResponse;
+            export type $401 = Components.Schemas.ErrorResponse;
+            export type $403 = Components.Schemas.ErrorResponse;
+            export type $404 = Components.Schemas.ErrorResponse;
+            export type $422 = Components.Schemas.ErrorResponse;
+            export type $500 = Components.Schemas.ErrorResponse;
+            export type $503 = Components.Schemas.ErrorResponse;
+            export type $504 = Components.Schemas.ErrorResponse;
+        }
+    }
+    namespace DeleteApiProduct {
+        namespace Responses {
+            export interface $204 {
+            }
+            export type $400 = Components.Schemas.ErrorResponse;
+            export type $401 = Components.Schemas.ErrorResponse;
+            export type $403 = Components.Schemas.ErrorResponse;
+            export type $404 = Components.Schemas.ErrorResponse;
+            export type $422 = Components.Schemas.ErrorResponse;
+            export type $500 = Components.Schemas.ErrorResponse;
+            export type $503 = Components.Schemas.ErrorResponse;
+            export type $504 = Components.Schemas.ErrorResponse;
+        }
+    }
+    namespace DeleteDeveloper {
+        namespace Responses {
+            export interface $204 {
+            }
+            export type $400 = Components.Schemas.ErrorResponse;
+            export type $401 = Components.Schemas.ErrorResponse;
+            export type $403 = Components.Schemas.ErrorResponse;
+            export type $404 = Components.Schemas.ErrorResponse;
+            export type $422 = Components.Schemas.ErrorResponse;
+            export type $500 = Components.Schemas.ErrorResponse;
+            export type $503 = Components.Schemas.ErrorResponse;
+            export type $504 = Components.Schemas.ErrorResponse;
+        }
+    }
+    namespace DeleteDeveloperApp {
+        namespace Responses {
+            export interface $204 {
+            }
+            export type $400 = Components.Schemas.ErrorResponse;
+            export type $401 = Components.Schemas.ErrorResponse;
+            export type $403 = Components.Schemas.ErrorResponse;
+            export type $404 = Components.Schemas.ErrorResponse;
+            export type $422 = Components.Schemas.ErrorResponse;
+            export type $500 = Components.Schemas.ErrorResponse;
+            export type $503 = Components.Schemas.ErrorResponse;
+            export type $504 = Components.Schemas.ErrorResponse;
+        }
+    }
+    namespace DeleteEnvironment {
+        namespace Responses {
+            export interface $204 {
+            }
+            export type $400 = Components.Schemas.ErrorResponse;
+            export type $401 = Components.Schemas.ErrorResponse;
+            export type $403 = Components.Schemas.ErrorResponse;
+            export type $404 = Components.Schemas.ErrorResponse;
+            export type $422 = Components.Schemas.ErrorResponse;
+            export type $500 = Components.Schemas.ErrorResponse;
+            export type $503 = Components.Schemas.ErrorResponse;
+            export type $504 = Components.Schemas.ErrorResponse;
+        }
+    }
+    namespace DeleteOrganization {
+        namespace Responses {
+            export interface $204 {
+            }
+            export type $400 = Components.Schemas.ErrorResponse;
+            export type $401 = Components.Schemas.ErrorResponse;
+            export type $403 = Components.Schemas.ErrorResponse;
+            export type $404 = Components.Schemas.ErrorResponse;
+            export type $422 = Components.Schemas.ErrorResponse;
+            export type $500 = Components.Schemas.ErrorResponse;
+            export type $503 = Components.Schemas.ErrorResponse;
+            export type $504 = Components.Schemas.ErrorResponse;
+        }
+    }
+    namespace GetApi {
+        namespace Parameters {
+            export type Format = "application/json" | "application/x-yaml";
+        }
+        export interface QueryParameters {
+            format?: Parameters.Format;
+        }
+        namespace Responses {
+            export interface $200 {
+            }
+            export type $400 = Components.Schemas.ErrorResponse;
+            export type $401 = Components.Schemas.ErrorResponse;
+            export type $403 = Components.Schemas.ErrorResponse;
+            export type $404 = Components.Schemas.ErrorResponse;
+            export type $500 = Components.Schemas.ErrorResponse;
+            export type $503 = Components.Schemas.ErrorResponse;
+            export type $504 = Components.Schemas.ErrorResponse;
+        }
+    }
+    namespace GetApiProduct {
+        namespace Responses {
+            export type $200 = /* An API product consists of a list of API resources (URIs) and custom metadata required by the API provider. API products enable you to bundle and distribute your APIs to multiple developer groups simultaneously */ Components.Schemas.APIProduct;
+            export type $400 = Components.Schemas.ErrorResponse;
+            export type $401 = Components.Schemas.ErrorResponse;
+            export type $403 = Components.Schemas.ErrorResponse;
+            export type $404 = Components.Schemas.ErrorResponse;
+            export type $500 = Components.Schemas.ErrorResponse;
+            export type $503 = Components.Schemas.ErrorResponse;
+            export type $504 = Components.Schemas.ErrorResponse;
+        }
+    }
+    namespace GetApp {
+        namespace Responses {
+            export type $200 = /* App Response Object - includes protocol binding information and app premissions. An app associated with a developer. Associates the app with an API product, and auto-generates an API credentials for the app to use. */ Components.Schemas.AppResponse;
+            export type $400 = Components.Schemas.ErrorResponse;
+            export type $401 = Components.Schemas.ErrorResponse;
+            export type $403 = Components.Schemas.ErrorResponse;
+            export type $404 = Components.Schemas.ErrorResponse;
+            export type $500 = Components.Schemas.ErrorResponse;
+            export type $503 = Components.Schemas.ErrorResponse;
+            export type $504 = Components.Schemas.ErrorResponse;
+        }
+    }
+    namespace GetAppApiSpecification {
+        namespace Parameters {
+            export type Format = "application/json" | "application/x-yaml";
+        }
+        export interface QueryParameters {
+            format?: Parameters.Format;
+        }
+        namespace Responses {
+            export interface $200 {
+            }
+            export type $400 = Components.Schemas.ErrorResponse;
+            export type $401 = Components.Schemas.ErrorResponse;
+            export type $403 = Components.Schemas.ErrorResponse;
+            export type $404 = Components.Schemas.ErrorResponse;
+            export type $500 = Components.Schemas.ErrorResponse;
+            export type $503 = Components.Schemas.ErrorResponse;
+            export type $504 = Components.Schemas.ErrorResponse;
+        }
+    }
+    namespace GetDeveloper {
+        namespace Responses {
+            export type $200 = /* A profile for a developer. After the developer is created, they can register an app and receive API credentials */ Components.Schemas.Developer;
+            export type $400 = Components.Schemas.ErrorResponse;
+            export type $401 = Components.Schemas.ErrorResponse;
+            export type $403 = Components.Schemas.ErrorResponse;
+            export type $404 = Components.Schemas.ErrorResponse;
+            export type $500 = Components.Schemas.ErrorResponse;
+            export type $503 = Components.Schemas.ErrorResponse;
+            export type $504 = Components.Schemas.ErrorResponse;
+        }
+    }
+    namespace GetDeveloperApp {
+        namespace Responses {
+            export type $200 = /* App Response Object - includes protocol binding information and app premissions. An app associated with a developer. Associates the app with an API product, and auto-generates an API credentials for the app to use. */ Components.Schemas.AppResponse;
+            export type $400 = Components.Schemas.ErrorResponse;
+            export type $401 = Components.Schemas.ErrorResponse;
+            export type $403 = Components.Schemas.ErrorResponse;
+            export type $404 = Components.Schemas.ErrorResponse;
+            export type $500 = Components.Schemas.ErrorResponse;
+            export type $503 = Components.Schemas.ErrorResponse;
+            export type $504 = Components.Schemas.ErrorResponse;
+        }
+    }
+    namespace GetEnvironment {
+        namespace Responses {
+            export type $200 = /* an environment */ Components.Schemas.EnvironmentResponse;
+            export type $400 = Components.Schemas.ErrorResponse;
+            export type $401 = Components.Schemas.ErrorResponse;
+            export type $403 = Components.Schemas.ErrorResponse;
+            export type $404 = Components.Schemas.ErrorResponse;
+            export type $500 = Components.Schemas.ErrorResponse;
+            export type $503 = Components.Schemas.ErrorResponse;
+            export type $504 = Components.Schemas.ErrorResponse;
+        }
+    }
+    namespace GetEventPortalApi {
+        namespace Responses {
+            export type $200 = /* Event Portal API information. Currently only provided as utiity to retrieve metadata from the Event Portal. */ Components.Schemas.API[];
+            export type $400 = Components.Schemas.ErrorResponse;
+            export type $401 = Components.Schemas.ErrorResponse;
+            export type $403 = Components.Schemas.ErrorResponse;
+            export type $404 = Components.Schemas.ErrorResponse;
+            export type $500 = Components.Schemas.ErrorResponse;
+            export type $503 = Components.Schemas.ErrorResponse;
+            export type $504 = Components.Schemas.ErrorResponse;
+        }
+    }
+    namespace GetEventPortalApiDomain {
+        namespace Responses {
+            export type $200 = /* Event Portal API Domain information. Currently only provided as utiity to retrieve metadata from the Event Portal. */ Components.Schemas.APIDomain;
+            export type $400 = Components.Schemas.ErrorResponse;
+            export type $401 = Components.Schemas.ErrorResponse;
+            export type $403 = Components.Schemas.ErrorResponse;
+            export type $404 = Components.Schemas.ErrorResponse;
+            export type $500 = Components.Schemas.ErrorResponse;
+            export type $503 = Components.Schemas.ErrorResponse;
+            export type $504 = Components.Schemas.ErrorResponse;
+        }
+    }
+    namespace GetEventPortalAsyncApiSpecification {
+        namespace Parameters {
+            /**
+             * example:
+             * 2.0.0
+             */
+            export type AsyncApiVersion = string;
+        }
+        export interface QueryParameters {
+            async_api_version?: /**
+             * example:
+             * 2.0.0
+             */
+            Parameters.AsyncApiVersion;
+        }
+        namespace Responses {
+            export type $200 = string;
+            export type $400 = Components.Schemas.ErrorResponse;
+            export type $401 = Components.Schemas.ErrorResponse;
+            export type $403 = Components.Schemas.ErrorResponse;
+            export type $404 = Components.Schemas.ErrorResponse;
+            export type $500 = Components.Schemas.ErrorResponse;
+            export type $503 = Components.Schemas.ErrorResponse;
+            export type $504 = Components.Schemas.ErrorResponse;
+        }
+    }
+    namespace GetOrganization {
+        namespace Responses {
+            export type $200 = Components.Schemas.Organization;
+            export type $400 = Components.Schemas.ErrorResponse;
+            export type $401 = Components.Schemas.ErrorResponse;
+            export type $403 = Components.Schemas.ErrorResponse;
+            export type $404 = Components.Schemas.ErrorResponse;
+            export type $500 = Components.Schemas.ErrorResponse;
+            export type $503 = Components.Schemas.ErrorResponse;
+            export type $504 = Components.Schemas.ErrorResponse;
+        }
+    }
+    namespace GetToken {
+        namespace Responses {
+            export type $200 = string;
+            export type $400 = Components.Schemas.ErrorResponse;
+            export type $401 = Components.Schemas.ErrorResponse;
+            export type $403 = Components.Schemas.ErrorResponse;
+            export type $404 = Components.Schemas.ErrorResponse;
+            export type $500 = Components.Schemas.ErrorResponse;
+            export type $503 = Components.Schemas.ErrorResponse;
+            export type $504 = Components.Schemas.ErrorResponse;
+        }
+    }
+    namespace ListApiProducts {
+        namespace Responses {
+            export type $200 = /* An API product consists of a list of API resources (URIs) and custom metadata required by the API provider. API products enable you to bundle and distribute your APIs to multiple developer groups simultaneously */ Components.Schemas.APIProduct[];
+            export type $400 = Components.Schemas.ErrorResponse;
+            export type $401 = Components.Schemas.ErrorResponse;
+            export type $403 = Components.Schemas.ErrorResponse;
+            export type $404 = Components.Schemas.ErrorResponse;
+            export type $500 = Components.Schemas.ErrorResponse;
+            export type $503 = Components.Schemas.ErrorResponse;
+            export type $504 = Components.Schemas.ErrorResponse;
+        }
+    }
+    namespace ListApis {
+        namespace Responses {
+            export type $200 = string[];
+            export type $400 = Components.Schemas.ErrorResponse;
+            export type $401 = Components.Schemas.ErrorResponse;
+            export type $403 = Components.Schemas.ErrorResponse;
+            export type $404 = Components.Schemas.ErrorResponse;
+            export type $500 = Components.Schemas.ErrorResponse;
+            export type $503 = Components.Schemas.ErrorResponse;
+            export type $504 = Components.Schemas.ErrorResponse;
+        }
+    }
+    namespace ListAppApiSpecifications {
+        namespace Responses {
+            export type $200 = string[];
+            export type $400 = Components.Schemas.ErrorResponse;
+            export type $401 = Components.Schemas.ErrorResponse;
+            export type $403 = Components.Schemas.ErrorResponse;
+            export type $404 = Components.Schemas.ErrorResponse;
+            export type $500 = Components.Schemas.ErrorResponse;
+            export type $503 = Components.Schemas.ErrorResponse;
+            export type $504 = Components.Schemas.ErrorResponse;
+        }
+    }
+    namespace ListApps {
+        namespace Responses {
+            export type $200 = Components.Schemas.AppListItem[];
+            export type $400 = Components.Schemas.ErrorResponse;
+            export type $401 = Components.Schemas.ErrorResponse;
+            export type $403 = Components.Schemas.ErrorResponse;
+            export type $404 = Components.Schemas.ErrorResponse;
+            export type $500 = Components.Schemas.ErrorResponse;
+            export type $503 = Components.Schemas.ErrorResponse;
+            export type $504 = Components.Schemas.ErrorResponse;
+        }
+    }
+    namespace ListDeveloperApps {
         namespace Parameters {
             export type Status = Components.Schemas.AppStatus;
-        }
-        namespace Post {
-            export type RequestBody = /* An app associated with a developer. Associates the app with an API product, and auto-generates an API credentials for the app to use */ Components.Schemas.App;
-            namespace Responses {
-                export type $201 = /* An app associated with a developer. Associates the app with an API product, and auto-generates an API credentials for the app to use */ Components.Schemas.App;
-                export type $400 = Components.Schemas.ErrorResponse;
-                export type $401 = Components.Schemas.ErrorResponse;
-                export type $403 = Components.Schemas.ErrorResponse;
-                export type $404 = Components.Schemas.ErrorResponse;
-                export type $422 = Components.Schemas.ErrorResponse;
-                export type $500 = Components.Schemas.ErrorResponse;
-                export type $503 = Components.Schemas.ErrorResponse;
-                export type $504 = Components.Schemas.ErrorResponse;
-            }
         }
         export interface QueryParameters {
             status?: Parameters.Status;
         }
-    }
-    namespace $OrganizationDevelopers$DeveloperUsernameApps$AppName {
-        namespace Delete {
-            namespace Responses {
-                export interface $204 {
-                }
-                export type $400 = Components.Schemas.ErrorResponse;
-                export type $401 = Components.Schemas.ErrorResponse;
-                export type $403 = Components.Schemas.ErrorResponse;
-                export type $404 = Components.Schemas.ErrorResponse;
-                export type $422 = Components.Schemas.ErrorResponse;
-                export type $500 = Components.Schemas.ErrorResponse;
-                export type $503 = Components.Schemas.ErrorResponse;
-                export type $504 = Components.Schemas.ErrorResponse;
-            }
-        }
-        namespace Get {
-            namespace Responses {
-                export type $200 = /* App Response Object - includes protocol binding information and app premissions. An app associated with a developer. Associates the app with an API product, and auto-generates an API credentials for the app to use. */ Components.Schemas.AppResponse;
-                export type $400 = Components.Schemas.ErrorResponse;
-                export type $401 = Components.Schemas.ErrorResponse;
-                export type $403 = Components.Schemas.ErrorResponse;
-                export type $404 = Components.Schemas.ErrorResponse;
-                export type $500 = Components.Schemas.ErrorResponse;
-                export type $503 = Components.Schemas.ErrorResponse;
-                export type $504 = Components.Schemas.ErrorResponse;
-            }
-        }
-        namespace Patch {
-            export type RequestBody = /* Used for PATCH operation. An app associated with a developer. Associates the app with an API product, and auto-generates an API credentials for the app to use */ Components.Schemas.AppPatch;
-            namespace Responses {
-                export type $200 = /* App Response Object - includes protocol binding information and app premissions. An app associated with a developer. Associates the app with an API product, and auto-generates an API credentials for the app to use. */ Components.Schemas.AppResponse;
-                export type $400 = Components.Schemas.ErrorResponse;
-                export type $401 = Components.Schemas.ErrorResponse;
-                export type $403 = Components.Schemas.ErrorResponse;
-                export type $404 = Components.Schemas.ErrorResponse;
-                export type $422 = Components.Schemas.ErrorResponse;
-                export type $500 = Components.Schemas.ErrorResponse;
-                export type $503 = Components.Schemas.ErrorResponse;
-                export type $504 = Components.Schemas.ErrorResponse;
-            }
+        namespace Responses {
+            export type $200 = /* An app associated with a developer. Associates the app with an API product, and auto-generates an API credentials for the app to use */ Components.Schemas.App[];
+            export type $400 = Components.Schemas.ErrorResponse;
+            export type $401 = Components.Schemas.ErrorResponse;
+            export type $403 = Components.Schemas.ErrorResponse;
+            export type $404 = Components.Schemas.ErrorResponse;
+            export type $500 = Components.Schemas.ErrorResponse;
+            export type $503 = Components.Schemas.ErrorResponse;
+            export type $504 = Components.Schemas.ErrorResponse;
         }
     }
-    namespace $OrganizationEnvironments {
-        namespace Get {
-            namespace Responses {
-                export type $200 = /* an environment */ Components.Schemas.Environment[];
-                export type $400 = Components.Schemas.ErrorResponse;
-                export type $401 = Components.Schemas.ErrorResponse;
-                export type $403 = Components.Schemas.ErrorResponse;
-                export type $404 = Components.Schemas.ErrorResponse;
-                export type $500 = Components.Schemas.ErrorResponse;
-                export type $503 = Components.Schemas.ErrorResponse;
-                export type $504 = Components.Schemas.ErrorResponse;
-            }
-        }
-        namespace Post {
-            export type RequestBody = /* an environment */ Components.Schemas.Environment;
-            namespace Responses {
-                export type $201 = /* an environment */ Components.Schemas.Environment;
-                export type $400 = Components.Schemas.ErrorResponse;
-                export type $401 = Components.Schemas.ErrorResponse;
-                export type $403 = Components.Schemas.ErrorResponse;
-                export type $404 = Components.Schemas.ErrorResponse;
-                export type $422 = Components.Schemas.ErrorResponse;
-                export type $500 = Components.Schemas.ErrorResponse;
-                export type $503 = Components.Schemas.ErrorResponse;
-                export type $504 = Components.Schemas.ErrorResponse;
-            }
+    namespace ListDevelopers {
+        namespace Responses {
+            export type $200 = /* A profile for a developer. After the developer is created, they can register an app and receive API credentials */ Components.Schemas.Developer[];
+            export type $400 = Components.Schemas.ErrorResponse;
+            export type $401 = Components.Schemas.ErrorResponse;
+            export type $403 = Components.Schemas.ErrorResponse;
+            export type $404 = Components.Schemas.ErrorResponse;
+            export type $500 = Components.Schemas.ErrorResponse;
+            export type $503 = Components.Schemas.ErrorResponse;
+            export type $504 = Components.Schemas.ErrorResponse;
         }
     }
-    namespace $OrganizationEnvironments$EnvName {
-        namespace Delete {
-            namespace Responses {
-                export interface $204 {
-                }
-                export type $400 = Components.Schemas.ErrorResponse;
-                export type $401 = Components.Schemas.ErrorResponse;
-                export type $403 = Components.Schemas.ErrorResponse;
-                export type $404 = Components.Schemas.ErrorResponse;
-                export type $422 = Components.Schemas.ErrorResponse;
-                export type $500 = Components.Schemas.ErrorResponse;
-                export type $503 = Components.Schemas.ErrorResponse;
-                export type $504 = Components.Schemas.ErrorResponse;
-            }
-        }
-        namespace Get {
-            namespace Responses {
-                export type $200 = /* an environment */ Components.Schemas.EnvironmentResponse;
-                export type $400 = Components.Schemas.ErrorResponse;
-                export type $401 = Components.Schemas.ErrorResponse;
-                export type $403 = Components.Schemas.ErrorResponse;
-                export type $404 = Components.Schemas.ErrorResponse;
-                export type $500 = Components.Schemas.ErrorResponse;
-                export type $503 = Components.Schemas.ErrorResponse;
-                export type $504 = Components.Schemas.ErrorResponse;
-            }
-        }
-        namespace Patch {
-            export type RequestBody = /* used for PATCH operation, an environment */ Components.Schemas.EnvironmentPatch;
-            namespace Responses {
-                export type $200 = /* an environment */ Components.Schemas.Environment;
-                export type $400 = Components.Schemas.ErrorResponse;
-                export type $401 = Components.Schemas.ErrorResponse;
-                export type $403 = Components.Schemas.ErrorResponse;
-                export type $404 = Components.Schemas.ErrorResponse;
-                export type $422 = Components.Schemas.ErrorResponse;
-                export type $500 = Components.Schemas.ErrorResponse;
-                export type $503 = Components.Schemas.ErrorResponse;
-                export type $504 = Components.Schemas.ErrorResponse;
-            }
+    namespace ListEnvironments {
+        namespace Responses {
+            export type $200 = /* an environment */ Components.Schemas.Environment[];
+            export type $400 = Components.Schemas.ErrorResponse;
+            export type $401 = Components.Schemas.ErrorResponse;
+            export type $403 = Components.Schemas.ErrorResponse;
+            export type $404 = Components.Schemas.ErrorResponse;
+            export type $500 = Components.Schemas.ErrorResponse;
+            export type $503 = Components.Schemas.ErrorResponse;
+            export type $504 = Components.Schemas.ErrorResponse;
         }
     }
-    namespace $OrganizationEventPortalApiDomains {
-        namespace Get {
-            namespace Responses {
-                export type $200 = /* Event Portal API Domain information. Currently only provided as utiity to retrieve metadata from the Event Portal. */ Components.Schemas.APIDomain[];
-                export type $400 = Components.Schemas.ErrorResponse;
-                export type $401 = Components.Schemas.ErrorResponse;
-                export type $403 = Components.Schemas.ErrorResponse;
-                export type $404 = Components.Schemas.ErrorResponse;
-                export type $500 = Components.Schemas.ErrorResponse;
-                export type $503 = Components.Schemas.ErrorResponse;
-                export type $504 = Components.Schemas.ErrorResponse;
-            }
+    namespace ListEventPortalApiDomains {
+        namespace Responses {
+            export type $200 = /* Event Portal API Domain information. Currently only provided as utiity to retrieve metadata from the Event Portal. */ Components.Schemas.APIDomain[];
+            export type $400 = Components.Schemas.ErrorResponse;
+            export type $401 = Components.Schemas.ErrorResponse;
+            export type $403 = Components.Schemas.ErrorResponse;
+            export type $404 = Components.Schemas.ErrorResponse;
+            export type $500 = Components.Schemas.ErrorResponse;
+            export type $503 = Components.Schemas.ErrorResponse;
+            export type $504 = Components.Schemas.ErrorResponse;
         }
     }
-    namespace $OrganizationEventPortalApiDomains$ApiDomainName {
-        namespace Get {
-            namespace Responses {
-                export type $200 = /* Event Portal API Domain information. Currently only provided as utiity to retrieve metadata from the Event Portal. */ Components.Schemas.APIDomain;
-                export type $400 = Components.Schemas.ErrorResponse;
-                export type $401 = Components.Schemas.ErrorResponse;
-                export type $403 = Components.Schemas.ErrorResponse;
-                export type $404 = Components.Schemas.ErrorResponse;
-                export type $500 = Components.Schemas.ErrorResponse;
-                export type $503 = Components.Schemas.ErrorResponse;
-                export type $504 = Components.Schemas.ErrorResponse;
-            }
+    namespace ListEventPortalApis {
+        namespace Parameters {
+            export type ApiDomainName = string;
+        }
+        export interface QueryParameters {
+            apiDomainName?: Parameters.ApiDomainName;
+        }
+        namespace Responses {
+            export type $200 = /* API List item (short info). Currently only provided as utiity to retrieve metadata from the Event Portal. */ Components.Schemas.APIListItem[];
+            export type $400 = Components.Schemas.ErrorResponse;
+            export type $401 = Components.Schemas.ErrorResponse;
+            export type $403 = Components.Schemas.ErrorResponse;
+            export type $404 = Components.Schemas.ErrorResponse;
+            export type $500 = Components.Schemas.ErrorResponse;
+            export type $503 = Components.Schemas.ErrorResponse;
+            export type $504 = Components.Schemas.ErrorResponse;
         }
     }
-    namespace $OrganizationEventPortalApis {
-        namespace Get {
-            namespace Parameters {
-                export type ApiDomainName = string;
-            }
-            export interface QueryParameters {
-                apiDomainName?: Parameters.ApiDomainName;
-            }
-            namespace Responses {
-                export type $200 = /* API List item (short info). Currently only provided as utiity to retrieve metadata from the Event Portal. */ Components.Schemas.APIListItem[];
-                export type $400 = Components.Schemas.ErrorResponse;
-                export type $401 = Components.Schemas.ErrorResponse;
-                export type $403 = Components.Schemas.ErrorResponse;
-                export type $404 = Components.Schemas.ErrorResponse;
-                export type $500 = Components.Schemas.ErrorResponse;
-                export type $503 = Components.Schemas.ErrorResponse;
-                export type $504 = Components.Schemas.ErrorResponse;
-            }
+    namespace ListHistory {
+        namespace Responses {
+            export type $200 = Components.Schemas.History[];
+            export type $400 = Components.Schemas.ErrorResponse;
+            export type $401 = Components.Schemas.ErrorResponse;
+            export type $403 = Components.Schemas.ErrorResponse;
+            export type $404 = Components.Schemas.ErrorResponse;
+            export type $500 = Components.Schemas.ErrorResponse;
+            export type $503 = Components.Schemas.ErrorResponse;
+            export type $504 = Components.Schemas.ErrorResponse;
         }
     }
-    namespace $OrganizationEventPortalApis$ApiName {
-        namespace Get {
-            namespace Responses {
-                export type $200 = /* Event Portal API information. Currently only provided as utiity to retrieve metadata from the Event Portal. */ Components.Schemas.API[];
-                export type $400 = Components.Schemas.ErrorResponse;
-                export type $401 = Components.Schemas.ErrorResponse;
-                export type $403 = Components.Schemas.ErrorResponse;
-                export type $404 = Components.Schemas.ErrorResponse;
-                export type $500 = Components.Schemas.ErrorResponse;
-                export type $503 = Components.Schemas.ErrorResponse;
-                export type $504 = Components.Schemas.ErrorResponse;
-            }
+    namespace ListOrganizations {
+        namespace Responses {
+            export type $200 = Components.Schemas.Organization[];
+            export type $400 = Components.Schemas.ErrorResponse;
+            export type $401 = Components.Schemas.ErrorResponse;
+            export type $403 = Components.Schemas.ErrorResponse;
+            export type $404 = Components.Schemas.ErrorResponse;
+            export type $500 = Components.Schemas.ErrorResponse;
+            export type $503 = Components.Schemas.ErrorResponse;
+            export type $504 = Components.Schemas.ErrorResponse;
         }
     }
-    namespace $OrganizationEventPortalApis$ApiNameSpec {
-        namespace Get {
-            namespace Parameters {
-                /**
-                 * example:
-                 * 2.0.0
-                 */
-                export type AsyncApiVersion = string;
-            }
-            export interface QueryParameters {
-                async_api_version?: /**
-                 * example:
-                 * 2.0.0
-                 */
-                Parameters.AsyncApiVersion;
-            }
-            namespace Responses {
-                export type $200 = string;
-                export type $400 = Components.Schemas.ErrorResponse;
-                export type $401 = Components.Schemas.ErrorResponse;
-                export type $403 = Components.Schemas.ErrorResponse;
-                export type $404 = Components.Schemas.ErrorResponse;
-                export type $500 = Components.Schemas.ErrorResponse;
-                export type $503 = Components.Schemas.ErrorResponse;
-                export type $504 = Components.Schemas.ErrorResponse;
-            }
+    namespace ListServices {
+        namespace Responses {
+            export type $200 = /* provides information about services in the Solace Cloud account. */ Components.Schemas.ServicesResponse[];
+            export type $400 = Components.Schemas.ErrorResponse;
+            export type $401 = Components.Schemas.ErrorResponse;
+            export type $403 = Components.Schemas.ErrorResponse;
+            export type $404 = Components.Schemas.ErrorResponse;
+            export type $500 = Components.Schemas.ErrorResponse;
+            export type $503 = Components.Schemas.ErrorResponse;
+            export type $504 = Components.Schemas.ErrorResponse;
         }
     }
-    namespace $OrganizationHistory {
-        namespace Get {
-            namespace Responses {
-                export type $200 = Components.Schemas.History[];
-                export type $400 = Components.Schemas.ErrorResponse;
-                export type $401 = Components.Schemas.ErrorResponse;
-                export type $403 = Components.Schemas.ErrorResponse;
-                export type $404 = Components.Schemas.ErrorResponse;
-                export type $500 = Components.Schemas.ErrorResponse;
-                export type $503 = Components.Schemas.ErrorResponse;
-                export type $504 = Components.Schemas.ErrorResponse;
-            }
+    namespace UpdateApi {
+        export type RequestBody = string;
+        namespace Responses {
+            export type $200 = string;
+            export type $400 = Components.Schemas.ErrorResponse;
+            export type $401 = Components.Schemas.ErrorResponse;
+            export type $403 = Components.Schemas.ErrorResponse;
+            export type $404 = Components.Schemas.ErrorResponse;
+            export type $422 = Components.Schemas.ErrorResponse;
+            export type $500 = Components.Schemas.ErrorResponse;
+            export type $503 = Components.Schemas.ErrorResponse;
+            export type $504 = Components.Schemas.ErrorResponse;
         }
     }
-    namespace $OrganizationServices {
-        namespace Get {
-            namespace Responses {
-                export type $200 = /* provides information about services in the Solace Cloud account. */ Components.Schemas.ServicesResponse[];
-                export type $400 = Components.Schemas.ErrorResponse;
-                export type $401 = Components.Schemas.ErrorResponse;
-                export type $403 = Components.Schemas.ErrorResponse;
-                export type $404 = Components.Schemas.ErrorResponse;
-                export type $500 = Components.Schemas.ErrorResponse;
-                export type $503 = Components.Schemas.ErrorResponse;
-                export type $504 = Components.Schemas.ErrorResponse;
-            }
+    namespace UpdateApiProduct {
+        export type RequestBody = /* Used for PATCH operation, An API product consists of a list of API resources (URIs) and custom metadata required by the API provider. API products enable you to bundle and distribute your APIs to multiple developer groups simultaneously */ Components.Schemas.APIProductPatch;
+        namespace Responses {
+            export type $200 = /* An API product consists of a list of API resources (URIs) and custom metadata required by the API provider. API products enable you to bundle and distribute your APIs to multiple developer groups simultaneously */ Components.Schemas.APIProduct;
+            export type $400 = Components.Schemas.ErrorResponse;
+            export type $401 = Components.Schemas.ErrorResponse;
+            export type $403 = Components.Schemas.ErrorResponse;
+            export type $404 = Components.Schemas.ErrorResponse;
+            export type $422 = Components.Schemas.ErrorResponse;
+            export type $500 = Components.Schemas.ErrorResponse;
+            export type $503 = Components.Schemas.ErrorResponse;
+            export type $504 = Components.Schemas.ErrorResponse;
         }
     }
-    namespace $OrganizationToken {
-        namespace Get {
-            namespace Responses {
-                export type $200 = string;
-                export type $400 = Components.Schemas.ErrorResponse;
-                export type $401 = Components.Schemas.ErrorResponse;
-                export type $403 = Components.Schemas.ErrorResponse;
-                export type $404 = Components.Schemas.ErrorResponse;
-                export type $500 = Components.Schemas.ErrorResponse;
-                export type $503 = Components.Schemas.ErrorResponse;
-                export type $504 = Components.Schemas.ErrorResponse;
-            }
-        }
-        namespace Put {
-            export type RequestBody = string;
-            namespace Responses {
-                export type $201 = string;
-                export type $400 = Components.Schemas.ErrorResponse;
-                export type $401 = Components.Schemas.ErrorResponse;
-            }
+    namespace UpdateDeveloper {
+        export type RequestBody = /* Used for PATCH operation, A profile for a developer. After the developer is created, they can register an app and receive API credentials */ Components.Schemas.DeveloperPatch;
+        namespace Responses {
+            export type $200 = /* A profile for a developer. After the developer is created, they can register an app and receive API credentials */ Components.Schemas.Developer;
+            export type $400 = Components.Schemas.ErrorResponse;
+            export type $401 = Components.Schemas.ErrorResponse;
+            export type $403 = Components.Schemas.ErrorResponse;
+            export type $404 = Components.Schemas.ErrorResponse;
+            export type $422 = Components.Schemas.ErrorResponse;
+            export type $500 = Components.Schemas.ErrorResponse;
+            export type $503 = Components.Schemas.ErrorResponse;
+            export type $504 = Components.Schemas.ErrorResponse;
         }
     }
-    namespace Organizations {
-        namespace Get {
-            namespace Responses {
-                export type $200 = Components.Schemas.Organization[];
-                export type $400 = Components.Schemas.ErrorResponse;
-                export type $401 = Components.Schemas.ErrorResponse;
-                export type $403 = Components.Schemas.ErrorResponse;
-                export type $404 = Components.Schemas.ErrorResponse;
-                export type $500 = Components.Schemas.ErrorResponse;
-                export type $503 = Components.Schemas.ErrorResponse;
-                export type $504 = Components.Schemas.ErrorResponse;
-            }
-        }
-        namespace Post {
-            export type RequestBody = Components.Schemas.Organization;
-            namespace Responses {
-                export type $200 = Components.Schemas.Organization;
-                export type $400 = Components.Schemas.ErrorResponse;
-                export type $401 = Components.Schemas.ErrorResponse;
-                export type $403 = Components.Schemas.ErrorResponse;
-                export type $404 = Components.Schemas.ErrorResponse;
-                export type $422 = Components.Schemas.ErrorResponse;
-                export type $500 = Components.Schemas.ErrorResponse;
-                export type $503 = Components.Schemas.ErrorResponse;
-                export type $504 = Components.Schemas.ErrorResponse;
-            }
+    namespace UpdateDeveloperApp {
+        export type RequestBody = /* Used for PATCH operation. An app associated with a developer. Associates the app with an API product, and auto-generates an API credentials for the app to use */ Components.Schemas.AppPatch;
+        namespace Responses {
+            export type $200 = /* App Response Object - includes protocol binding information and app premissions. An app associated with a developer. Associates the app with an API product, and auto-generates an API credentials for the app to use. */ Components.Schemas.AppResponse;
+            export type $400 = Components.Schemas.ErrorResponse;
+            export type $401 = Components.Schemas.ErrorResponse;
+            export type $403 = Components.Schemas.ErrorResponse;
+            export type $404 = Components.Schemas.ErrorResponse;
+            export type $422 = Components.Schemas.ErrorResponse;
+            export type $500 = Components.Schemas.ErrorResponse;
+            export type $503 = Components.Schemas.ErrorResponse;
+            export type $504 = Components.Schemas.ErrorResponse;
         }
     }
-    namespace Organizations$Organization {
-        namespace Delete {
-            namespace Responses {
-                export interface $204 {
-                }
-                export type $400 = Components.Schemas.ErrorResponse;
-                export type $401 = Components.Schemas.ErrorResponse;
-                export type $403 = Components.Schemas.ErrorResponse;
-                export type $404 = Components.Schemas.ErrorResponse;
-                export type $422 = Components.Schemas.ErrorResponse;
-                export type $500 = Components.Schemas.ErrorResponse;
-                export type $503 = Components.Schemas.ErrorResponse;
-                export type $504 = Components.Schemas.ErrorResponse;
-            }
+    namespace UpdateEnvironment {
+        export type RequestBody = /* used for PATCH operation, an environment */ Components.Schemas.EnvironmentPatch;
+        namespace Responses {
+            export type $200 = /* an environment */ Components.Schemas.Environment;
+            export type $400 = Components.Schemas.ErrorResponse;
+            export type $401 = Components.Schemas.ErrorResponse;
+            export type $403 = Components.Schemas.ErrorResponse;
+            export type $404 = Components.Schemas.ErrorResponse;
+            export type $422 = Components.Schemas.ErrorResponse;
+            export type $500 = Components.Schemas.ErrorResponse;
+            export type $503 = Components.Schemas.ErrorResponse;
+            export type $504 = Components.Schemas.ErrorResponse;
         }
-        namespace Get {
-            namespace Responses {
-                export type $200 = Components.Schemas.Organization;
-                export type $400 = Components.Schemas.ErrorResponse;
-                export type $401 = Components.Schemas.ErrorResponse;
-                export type $403 = Components.Schemas.ErrorResponse;
-                export type $404 = Components.Schemas.ErrorResponse;
-                export type $500 = Components.Schemas.ErrorResponse;
-                export type $503 = Components.Schemas.ErrorResponse;
-                export type $504 = Components.Schemas.ErrorResponse;
-            }
+    }
+    namespace UpdateOrganization {
+        export type RequestBody = Components.Schemas.Organization;
+        namespace Responses {
+            export type $200 = Components.Schemas.Organization;
+            export type $400 = Components.Schemas.ErrorResponse;
+            export type $401 = Components.Schemas.ErrorResponse;
+            export type $403 = Components.Schemas.ErrorResponse;
+            export type $404 = Components.Schemas.ErrorResponse;
+            export type $422 = Components.Schemas.ErrorResponse;
+            export type $500 = Components.Schemas.ErrorResponse;
+            export type $503 = Components.Schemas.ErrorResponse;
+            export type $504 = Components.Schemas.ErrorResponse;
         }
-        namespace Patch {
-            export type RequestBody = Components.Schemas.Organization;
-            namespace Responses {
-                export type $200 = Components.Schemas.Organization;
-                export type $400 = Components.Schemas.ErrorResponse;
-                export type $401 = Components.Schemas.ErrorResponse;
-                export type $403 = Components.Schemas.ErrorResponse;
-                export type $404 = Components.Schemas.ErrorResponse;
-                export type $422 = Components.Schemas.ErrorResponse;
-                export type $500 = Components.Schemas.ErrorResponse;
-                export type $503 = Components.Schemas.ErrorResponse;
-                export type $504 = Components.Schemas.ErrorResponse;
-            }
+    }
+    namespace UpdateToken {
+        export type RequestBody = string;
+        namespace Responses {
+            export type $201 = string;
+            export type $400 = Components.Schemas.ErrorResponse;
+            export type $401 = Components.Schemas.ErrorResponse;
         }
     }
 }

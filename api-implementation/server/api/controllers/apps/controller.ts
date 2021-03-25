@@ -2,7 +2,8 @@ import L from '../../../common/logger';
 import AppsService from '../../services/apps.service';
 import { NextFunction, Request, Response } from 'express';
 import { ErrorResponseInternal } from '../../middlewares/error.handler';
-import Format = Paths.$OrganizationApis$ApiName.Get.Parameters.Format;
+import Format = Paths.GetApi.Parameters.Format;
+import TopicSyntax = Components.Parameters.TopicSyntax.TopicSyntax;
 import AsyncAPIHelper from '../../../../src/asyncapihelper'
 
 export class Controller {
@@ -41,7 +42,9 @@ export class Controller {
   };
 
   byName(req: Request, res: Response, next: NextFunction): void {
-    AppsService.byName(req.params['name'])
+    const topicSyntax = req.query['topicSyntax']as TopicSyntax;
+    L.info(`topic syntax ${topicSyntax}`);
+    AppsService.byName(req.params['name'], topicSyntax)
       .then((r) => {
         if (r != null) {
           res.json(r).end();
