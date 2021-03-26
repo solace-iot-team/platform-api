@@ -42,6 +42,19 @@ jobs:
           echo ">>> environment: RELEASE_* "
           env | grep RELEASE
 
+      - name: Bootstrap node
+        run: |
+          cd "${TEST_PLATFORM_DIR}"
+          sudo npm install -g npm
+
+      - name: env after install
+        if: env.DEBUG_FLAG == 'true'
+        run: |
+          echo "bash --version: "; bash --version
+          echo "node --version: "; node --version
+          echo "npm --version: "; npm --version
+          echo "npm --version: "; npm --version
+
       - name: Release
         run: |
           export APIM_SOLACE_PLATFORM_API_PROJECT_HOME="$GITHUB_WORKSPACE"
