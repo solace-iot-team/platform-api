@@ -6,9 +6,8 @@ import EventPortalFacade from '../../../src/eventportalfacade';
 export class ApisService {
 
   all(): Promise<APIDomain[]> {
-    var apis = EventPortalFacade.getApiDomains();
-    L.info(apis, 'fetch all apis');
-    return Promise.resolve(apis);
+    var apiDomains = EventPortalFacade.getApiDomains();
+    return apiDomains;
   }
 
   byName(name: string): Promise<APIDomain> {

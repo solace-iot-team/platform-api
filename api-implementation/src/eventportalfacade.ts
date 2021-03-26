@@ -30,7 +30,7 @@ class EventPortalFacade {
     return validateToken(token, url);
   }
 
-  @Cache(apiDomainsCache, { ttl: 300 })
+  @Cache(apiDomainsCache, { ttl: 60 })
   public async getApiDomainsServiceCall(): Promise<ApplicationDomainsResponse> {
     var appDomains: ApplicationDomainsResponse = await ApplicationDomainsService.list(100, 1);
     return appDomains;
@@ -128,6 +128,44 @@ class EventPortalFacade {
   }
 
   public async getApiDomains(name?: string): Promise<APIDomain[]> {
+    L.info(`Looking up APIDomain ${name}`);
+    try {
+      var value: ApplicationDomainsResponse = await await ApplicationDomainsService.list(100, 1, name);
+      var apiDomainList: APIDomain[] = [];
+
+      if (value.data.length < 1) {
+        L.info(`Resolving ${value.data.length}`);
+        return apiDomainList;
+      } else {
+        for (const appDomain of value.data) {
+          const apis: string[] = [];
+          for (const applicationId of appDomain.applicationIds) {
+            const api = await this.getApplicationResponse(applicationId);
+            apis.push(api.data.name);
+          };
+          var d: APIDomain = {
+            name: appDomain.name,
+            createdTime: appDomain.createdTime,
+            updatedTime: appDomain.updatedTime,
+            createdBy: appDomain.createdBy,
+            changedBy: appDomain.changedBy,
+            id: appDomain.id,
+            description: appDomain.description,
+            topicDomain: appDomain.topicDomain,
+            enforceUniqueTopicNames: appDomain.enforceUniqueTopicNames,
+            type: appDomain.type,
+            apis: apis
+          };
+          apiDomainList.push(d);
+        }
+      }
+      return apiDomainList;
+    } catch (val) {
+      throw new ErrorResponseInternal(val.status, val.message);
+    }
+  }
+
+  public async getApiDomainsOld(name?: string): Promise<APIDomain[]> {
     return new Promise<APIDomain[]>((resolve, reject) => {
       L.info(`Looking up APIDomain ${name}`);
       var result: Promise<any> = this.getApiDomainsServiceCall();
@@ -179,6 +217,7 @@ class EventPortalFacade {
 
     });
   }
+
   public async getApi(name: string): Promise<API> {
     try {
       var result: ApplicationsResponse = await ApplicationsService.list2(100, 1, name);
