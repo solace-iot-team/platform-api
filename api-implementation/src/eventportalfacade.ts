@@ -165,59 +165,6 @@ class EventPortalFacade {
     }
   }
 
-  public async getApiDomainsOld(name?: string): Promise<APIDomain[]> {
-    return new Promise<APIDomain[]>((resolve, reject) => {
-      L.info(`Looking up APIDomain ${name}`);
-      var result: Promise<any> = this.getApiDomainsServiceCall();
-      var apiDomainList: APIDomain[] = [];
-
-      var appDomainPromises: Promise<string>[] = [];
-
-      result.then((value: ApplicationDomainsResponse) => {
-
-        if (value.data.length < 1) {
-          L.info(`Resolving ${value.data.length}`);
-          resolve(null);
-        } else {
-          value.data.forEach((appDomain) => {
-            appDomainPromises.push(new Promise<string>((resolve, reject) => {
-              var apiPromises: Promise<any>[] = [];
-              appDomain.applicationIds.forEach((applicationId) => {
-                apiPromises.push(ApplicationsService.get1(applicationId));
-
-
-              });
-              L.info(`appDomain ${appDomain.name}`)
-              Promise.all(apiPromises).then((apiResponses: ApplicationResponse[]) => {
-                var d: APIDomain = {
-                  name: appDomain.name,
-                  createdTime: appDomain.createdTime,
-                  updatedTime: appDomain.updatedTime,
-                  createdBy: appDomain.createdBy,
-                  changedBy: appDomain.changedBy,
-                  id: appDomain.id,
-                  description: appDomain.description,
-                  topicDomain: appDomain.topicDomain,
-                  enforceUniqueTopicNames: appDomain.enforceUniqueTopicNames,
-                  type: appDomain.type,
-                  apis: []
-                };
-                apiResponses.forEach((apiResponse: ApplicationResponse) => { d.apis.push(apiResponse.data.name) });
-                apiDomainList.push(d);
-                resolve(appDomain.name);
-              });
-            }));
-          });
-          Promise.all(appDomainPromises).then((promises) => {
-            resolve(apiDomainList);
-          });
-        }
-      });
-      result.catch((val: ApiError) => { reject(new ErrorResponseInternal(val.status, val.message)) });
-
-    });
-  }
-
   public async getApi(name: string): Promise<API> {
     try {
       var result: ApplicationsResponse = await ApplicationsService.list2(100, 1, name);
@@ -245,47 +192,38 @@ class EventPortalFacade {
   }
 
   public async getApiSpec(name: string, asyncAPIVersion?: string): Promise<string> {
-    return new Promise<string>((resolve, reject) => {
+    try {
       if (!asyncAPIVersion) {
         asyncAPIVersion = "2.0.0";
       }
-      var result: Promise<any> = ApplicationsService.list2(100, 1, name);
-      result.then(
-        (value: ApplicationResponse) => {
-          var app: Application = value.data[0];
-          if (!app) {
-            reject(new ErrorResponseInternal(404, `Entity ${name} does not exist`));
-          }
-          var apiId = app.id;
-          var asyncAPIRequestBody: GenerateAsyncAPIRequest = { asyncApiVersion: asyncAPIVersion };
-          L.debug(`Requesting Async API ${apiId} spec ${JSON.stringify(asyncAPIRequestBody)}`);
-          var asyncAPIResponse: Promise<any> = AsyncApiService.generateAsyncApi(apiId, asyncAPIRequestBody);
-          asyncAPIResponse.then((v: any) => {
-            L.debug(`Parsing API spec `);
+      var value: ApplicationResponse = await ApplicationsService.list2(100, 1, name);
+      var app: Application = value.data[0];
+      if (!app) {
+        throw new ErrorResponseInternal(404, `Entity ${name} does not exist`);
+      }
+      var apiId = app.id;
+      var asyncAPIRequestBody: GenerateAsyncAPIRequest = { asyncApiVersion: asyncAPIVersion };
+      L.debug(`Requesting Async API ${apiId} spec ${JSON.stringify(asyncAPIRequestBody)}`);
+      var asyncAPIResponse: any = await AsyncApiService.generateAsyncApi(apiId, asyncAPIRequestBody);
+      L.debug(`Parsing API spec `);
 
-            Object.keys(v.channels).forEach(e => {
-              var x = e.match(/(?<=\{)[^}]*(?=\})/g);
-              var parameters = {};
-              if (x) {
-                x.forEach(match => {
-                  parameters[match] = {
-                    description: match,
-                    schema: { type: "string" }
-                  };
-                });
-                v.channels[e].parameters = parameters;
-              }
-            });
-            resolve(v);
-          }).catch((e: ApiError) => { reject(new ErrorResponseInternal(e.status, e.message)) });
+      Object.keys(asyncAPIResponse.channels).forEach(e => {
+        var x = e.match(/(?<=\{)[^}]*(?=\})/g);
+        var parameters = {};
+        if (x) {
+          x.forEach(match => {
+            parameters[match] = {
+              description: match,
+              schema: { type: "string" }
+            };
+          });
+          asyncAPIResponse.channels[e].parameters = parameters;
         }
-      ).catch((val: ApiError) => {
-        reject(new ErrorResponseInternal(val.status, val.message));
       });
-
+      return asyncAPIResponse;
+    } catch (val) {
+      throw new ErrorResponseInternal(val.status, val.message);
     }
-
-    );
   }
 }
 
