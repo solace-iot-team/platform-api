@@ -1,6 +1,6 @@
 {
   "name": "example",
-  "description": "example for using @solace-iot-team/platform-api-openapi",
+  "description": "example for using @solace-iot-team/platform-api-openapi-client",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "scripts": {
@@ -17,6 +17,6 @@
   ],
   "license": "MIT",
   "dependencies": {
-    "@solace-iot-team/platform-api-openapi": "^0.0.9"
+    "@solace-iot-team/platform-api-openapi-client": "^0.0.3"
   }
 }

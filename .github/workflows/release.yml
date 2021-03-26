@@ -42,11 +42,6 @@ jobs:
           echo ">>> environment: RELEASE_* "
           env | grep RELEASE
 
-      - name: Bootstrap node
-        run: |
-          cd "${TEST_PLATFORM_DIR}"
-          sudo npm install -g npm
-
       - uses: actions/setup-node@v2
         with:
           node-version: '12.x'
@@ -65,8 +60,6 @@ jobs:
           export APIM_SOLACE_PLATFORM_API_PROJECT_HOME="$GITHUB_WORKSPACE"
           cd "$APIM_SOLACE_PLATFORM_API_PROJECT_HOME/${RELEASE_PLATFORM_DIR}"
           ./release.sh
-        # env:
-        #   NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
       - name: Archive logs
         if: ${{ (failure() && !cancelled()) || (always() && (github.event_name=='workflow_dispatch' || env.DEBUG_FLAG=='true') ) }}

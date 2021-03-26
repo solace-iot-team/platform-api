@@ -1,65 +1,10 @@
-// import s from 'shelljs';
-// import fs from 'fs';
-// import yaml from 'js-yaml';
-// import { HttpClient } from 'openapi-typescript-codegen';
-// const OpenAPI = require('openapi-typescript-codegen');
-// const config = require('./tsconfig.json');
-// const outDir = config.compilerOptions.outDir;
 
-// const apiImplementationDir = '../../api-implementation';
-// const packageJsonFile = './package.json';
-// const packageJson = require(`${packageJsonFile}`);
-
-// const inputApiSpecFile = `${apiImplementationDir}/server/common/api.yml`;
-// // const workingDir = "./tmp";
-// const outputSrcDir = `./src`;
-// const outputApiSpecFile = `${outputSrcDir}/api.yml`;
-
-// const loadYamlFileAsJson = (apiSpecPath: string): any => {
-//     const b: Buffer = fs.readFileSync(apiSpecPath);
-//     return yaml.load(b.toString());
-// }
-// const prepare = () => {
-//     s.rm('-rf', outDir);
-//     s.mkdir('-p', outDir);
-//     // s.rm('-rf', workingDir);
-//     // s.mkdir('-p', workingDir);
-//     s.rm('-rf', outputSrcDir);
-//     s.mkdir('-p', outputSrcDir);
-//     s.cp(`${inputApiSpecFile}`, `${outputApiSpecFile}`);
-// }
-// const updateVersion = () => {
-//     let apiSpec = loadYamlFileAsJson(inputApiSpecFile);
-//     let version = apiSpec.info.version;
-
-//     // test: take out again
-//     version = '0.0.9';
-
-//     packageJson.version = version;
-//     let newPackageJsonString = JSON.stringify(packageJson, null, 2);
-//     s.cp(`${packageJsonFile}`, `.package.json`);
-//     fs.writeFileSync(packageJsonFile, newPackageJsonString);
-// }
-// const generateCode = () => {
-//     OpenAPI.generate({
-//         input: inputApiSpecFile,
-//         output: outputSrcDir,
-//         httpClient: HttpClient.NODE
-//     })
-//         .then(() => {
-//             return;
-//         })
-//         .catch((error: any) => {
-//             console.log(error);
-//             process.exit(1);
-//         });
-
-// }
-
-// import path from 'path';
 import { PlatformAPIClient } from './platformapiclient';
-import type { Organization } from '@solace-iot-team/platform-api-openapi';
-import { PlatformManagementService, Environment, EnvironmentsService } from '@solace-iot-team/platform-api-openapi';
+import type { Organization } from '@solace-iot-team/platform-api-openapi-client';
+import { PlatformManagementService, Environment, EnvironmentsService, ApisService, APIProduct, Protocol, ApiProductsService, Developer, DevelopersService, App, AppsService } from '@solace-iot-team/platform-api-openapi-client';
+import fs from 'fs';
+import yaml from "js-yaml";
+
 
 const getMandatoryEnvVarValue = (envVar: string): string => {
     const value: any = (process.env[envVar] === undefined) ? null : process.env[envVar];
@@ -78,9 +23,23 @@ const sampleEnv = {
     SOLACE_CLOUD_TOKEN: getMandatoryEnvVarValue('APIM_INTEGRATION_TEST_SOLACE_CLOUD_TOKEN'),
     SOLACE_CLOUD_SERVICE_ID: getMandatoryEnvVarValue('APIM_INTEGRATION_TEST_SOLACE_CLOUD_DEV_SERVICE_ID'),
     ORG_NAME: "sample-org",
-    ENV_NAME: "dev-env"
+    ENV_NAME: "dev-env",
+    API_SPEC_FILE: "./ApiMaintenance.async-api-spec.yml",
+    API_NAME: "maintenance-api",
+    API_PRODUCT_NAME: "maintenance-product",
+    API_PERMISSIONS: [
+        { name: 'resource_region_id', value: 'fr, de, us-east, us-west' }, 
+        { name: 'resource_type', value: 'elev-make-1, elev-make-2' },
+        { name: 'resource_id', value: '*' }
+    ],
+    DEVELOPER_USERNAME: 'dev@sample.com'
   }
 
+const loadYamlFileAsJsonString = (apiSpecPath: string): string => {
+    const b: Buffer = fs.readFileSync(apiSpecPath);
+    const obj = yaml.load(b.toString());
+    return JSON.stringify(obj);
+}
 const initializeOpenAPI = () => {
     const base: string = PlatformAPIClient.getBaseUrl(sampleEnv.PLATFORM_PROTOCOL, sampleEnv.PLATFORM_HOST, sampleEnv.PLATFORM_PORT);
     PlatformAPIClient.initialize(base, sampleEnv.PLATFORM_ADMIN_USER, sampleEnv.PLATFORM_ADMIN_PASSWORD, sampleEnv.ORG_API_USR, sampleEnv.ORG_API_PWD);  
@@ -134,23 +93,76 @@ const registerSolaceCloudServiceWithOrg = async() => {
 }
 const createApi = async() => {
     console.log('create api ...');
-    PlatformAPIClient.setApiUser();
-    
-    TODO
-
-    let request: Environment = {
-        name: sampleEnv.ENV_NAME,
-        description: 'development solace cloud service',
-        serviceId: sampleEnv.SOLACE_CLOUD_SERVICE_ID
-    };
+    const apiSpec: string = loadYamlFileAsJsonString(sampleEnv.API_SPEC_FILE);
+    PlatformAPIClient.setApiUser();    
     try {
-        let response: Environment = await EnvironmentsService.createEnvironment(sampleEnv.ORG_NAME, request);
+        let response: string = await ApisService.createApi(sampleEnv.ORG_NAME, sampleEnv.API_NAME, apiSpec);
         console.log(`response=${JSON.stringify(response, null, 2)}`);
     } catch(e) {
         console.log(`>>> ERROR: ${JSON.stringify(e, null, 2)}`);
         process.exit(1);
     }
-    
+    console.log('success.');
+}
+const createApiProduct = async() => {
+    console.log('create api product ...');
+    PlatformAPIClient.setApiUser();    
+    let request: APIProduct = {
+        name: sampleEnv.API_PRODUCT_NAME,
+        displayName: sampleEnv.API_PRODUCT_NAME,
+        description: `description for ${sampleEnv.API_PRODUCT_NAME}`,
+        apis: [ sampleEnv.API_NAME ],
+        approvalType: APIProduct.approvalType.AUTO,
+        attributes: sampleEnv.API_PERMISSIONS,
+        environments: [ sampleEnv.ENV_NAME ],
+        protocols: [ { name: Protocol.name.MQTT, version: '3.1.1' } ],
+        pubResources: [],
+        subResources: []
+      };
+    try {
+        let response: APIProduct = await ApiProductsService.createApiProduct(sampleEnv.ORG_NAME, request);
+        console.log(`response=${JSON.stringify(response, null, 2)}`);
+    } catch(e) {
+        console.log(`>>> ERROR: ${JSON.stringify(e, null, 2)}`);
+        process.exit(1);
+    }
+    console.log('success.');
+}
+const createDeveloper = async() => {
+    console.log('create developer ...');
+    PlatformAPIClient.setApiUser();    
+    let request: Developer = {
+        email: 'dev1@sample.com',
+        firstName: 'dev1',
+        lastName: 'developer',
+        userName: sampleEnv.DEVELOPER_USERNAME
+    }
+    try {
+        let response: Developer = await DevelopersService.createDeveloper(sampleEnv.ORG_NAME, request);
+        console.log(`response=${JSON.stringify(response, null, 2)}`);
+    } catch(e) {
+        console.log(`>>> ERROR: ${JSON.stringify(e, null, 2)}`);
+        process.exit(1);
+    }
+    console.log('success.');
+}
+const createDeveloperApp = async() => {
+    console.log('create developer app ...');
+    PlatformAPIClient.setApiUser();    
+    let request: App = {
+        name: 'my-first-app',
+        apiProducts: [ sampleEnv.API_PRODUCT_NAME ],
+        credentials: {
+            expiresAt: -1
+        }
+    }
+    try {
+        let response: App = await AppsService.createDeveloperApp(sampleEnv.ORG_NAME, sampleEnv.DEVELOPER_USERNAME, request);
+        console.log(`response=${JSON.stringify(response, null, 2)}`);
+    } catch(e) {
+        console.log(`>>> ERROR: ${JSON.stringify(e, null, 2)}`);
+        process.exit(1);
+    }
     console.log('success.');
 }
 
@@ -160,6 +172,9 @@ const main = async() => {
     await createOrg();
     await registerSolaceCloudServiceWithOrg();
     await createApi();
+    await createApiProduct();
+    await createDeveloper();
+    await createDeveloperApp();
     await deleteOrg();
 }
 

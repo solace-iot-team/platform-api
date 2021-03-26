@@ -1,5 +1,5 @@
 
-import { OpenAPI } from '@solace-iot-team/platform-api-openapi';
+import { OpenAPI } from '@solace-iot-team/platform-api-openapi-client';
 
 enum PlatformAPIClientAuthUser {
     ManagementUser,

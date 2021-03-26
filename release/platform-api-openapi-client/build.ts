@@ -28,10 +28,6 @@ const getNpmLatestVersion = (): string => {
 const getNewVersion = (): string => {
     let apiSpec = loadYamlFileAsJson(inputApiSpecFile);
     let version = apiSpec.info.version;
-
-    // test: take out again
-    version = '0.0.3';
-
     return version;
 }
 const prepare = () => {
