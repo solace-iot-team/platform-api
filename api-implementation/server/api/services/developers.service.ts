@@ -4,6 +4,7 @@ import App = Components.Schemas.App;
 import AppPatch = Components.Schemas.AppPatch;
 import AppResponse = Components.Schemas.AppResponse;
 import WebHook = Components.Schemas.WebHook;
+import TopicSyntax = Components.Parameters.TopicSyntax.TopicSyntax;
 import ApiProductsService from './apiProducts.service';
 import BrokerService from './broker.service';
 
@@ -35,10 +36,7 @@ export class DevelopersService {
     return this.persistenceService.all();
   }
 
-  async allDevelopersApps(
-    name: string,
-    query: any
-  ): Promise<App[]> {
+  async allDevelopersApps(name: string, query: any): Promise<App[]> {
     query.ownerId = name;
     query.appType = 'developer';
     try {
@@ -59,7 +57,11 @@ export class DevelopersService {
     return this.persistenceService.byName(name);
   }
 
-  async appByName(developer: string, name: string): Promise<AppResponse> {
+  async appByName(
+    developer: string,
+    name: string,
+    syntax: TopicSyntax
+  ): Promise<AppResponse> {
     try {
       const ownerId = {
         ownerId: developer,
@@ -76,7 +78,8 @@ export class DevelopersService {
           const permissions = await BrokerService.getPermissions(
             app,
             dev,
-            appEnv.name
+            appEnv.name,
+            syntax
           );
           appEnv.permissions = permissions;
         }
@@ -220,7 +223,6 @@ export class DevelopersService {
     const app: DeveloperAppPatch = {
       ownerId: developer,
       appType: 'developer',
-      name: name,
     };
 
     if (body.apiProducts) {
@@ -246,7 +248,7 @@ export class DevelopersService {
       app
     );
     if (appPatch.status == 'approved') {
-      L.info(`provisioning app ${app.name}`);
+      L.info(`provisioning app ${name}`);
       const r = await BrokerService.provisionApp(appPatch as App, dev);
     }
     return appPatch;

@@ -1,9 +1,10 @@
 import L from '../../common/logger';
+import { PlatformConstants, ContextConstants } from '../../common/constants';
 import { databaseaccess } from '../../../src/databaseaccess';
 import mongodb, { DeleteWriteOpResultObject, MongoError, CollectionInsertOneOptions, UpdateOneOptions } from 'mongodb';
-import C from 'cls-hooked';
-import { ErrorResponseInternal } from '../middlewares/error.handler';
 
+import { ErrorResponseInternal } from '../middlewares/error.handler';
+import {ns} from '../middlewares/context.handler';
 export interface Paging {
   pageNumber: number,
   pageSize: number
@@ -11,19 +12,19 @@ export interface Paging {
 
 export class PersistenceService {
   private collection: string;
-  getCollection = () => {
-    var namespace = C.getNamespace('platform-api');
-    var db: string = "platform";
+  private getCollection() {
+    var db: string = PlatformConstants.PLATFORM_DB;
     var org: string = null;
-    if (namespace != null) {
-      L.debug(`PersistenceService: Found namespace ${namespace}`);
-      namespace.run(function () {
-        org = namespace.get('org');
-      });
+    if (ns != null) {
+      L.debug(`PersistenceService: Found namespace ${JSON.stringify(ns.getStore())}`);
+      org = ns.getStore().get(ContextConstants.ORG_NAME);
     }
     if (org != null) {
       db = org;
+    } else if (!PlatformConstants.PLATFORM_COLLECTIONS.includes(this.collection)) {
+      throw new ErrorResponseInternal(500, `Can't write to  ${this.collection} in tenant ${db}`);
     }
+
     L.info(`db is ${db}`);
     return databaseaccess.client.db(db).collection(this.collection);
   }
@@ -40,12 +41,9 @@ export class PersistenceService {
     }
     // attempt to retrieve paging from context/namespace
     if (paging == null) {
-      var namespace = C.getNamespace('platform-api');
-      if (namespace != null) {
-        L.debug(`PersistenceService: Found namespace ${namespace}`);
-        namespace.run(function () {
-          paging = namespace.get('paging');
-        });
+      if (ns != null) {
+        L.debug(`PersistenceService: Found namespace ${ns}`);
+        paging = ns.getStore().get(ContextConstants.PAGING);
         L.debug(`paging ${paging}`);
       }
     }
@@ -75,7 +73,7 @@ export class PersistenceService {
   async byName(name: string, query?: any): Promise<any> {
     const collection: mongodb.Collection = this.getCollection();
     var q = query;
-    if (q) {
+    if (q != null) {
       q._id = name;
     } else {
       q = { _id: name };
@@ -198,7 +196,6 @@ export class PersistenceService {
         j: true
       };
       collection.updateOne(q, { $set: body }, opts).then((v: mongodb.UpdateWriteOpResult) => {
-        //L.info(v);
         if (v.matchedCount == 0) {
           reject(new ErrorResponseInternal(404, `No entity ${_id} found `));
         }
@@ -216,11 +213,8 @@ export class PersistenceService {
     });
   }
 
-
-
   validateReferences(names: string[]): Promise<boolean> {
     return new Promise<boolean>((resolve, reject) => {
-      var isApproved: boolean = true;
       var results: Promise<boolean>[] = [];
       names.forEach((n) => {
         results.push(new Promise<boolean>((resolve, reject) => {
@@ -245,10 +239,10 @@ export class PersistenceService {
   private createPublicErrorMessage(error: MongoError): ErrorResponseInternal {
     if (error instanceof MongoError) {
       L.debug(`Initial mongo error ${error.message}`);
-      var errorCode = "E" + error.code;
-      var msg = error.message.replace(errorCode, "");
+      var errorCode = 'E' + error.code;
+      var msg = error.message.replace(errorCode, '');
       var statusCode = 422;
-      msg = msg.substring(0, msg.indexOf("error")).trim();
+      msg = msg.substring(0, msg.indexOf('error')).trim();
       let hexCode = '';
       if (error.code) {
         hexCode = error.code.toString(16);
@@ -266,7 +260,3 @@ export class PersistenceService {
   }
 
 }
-
-
-
-//export default new PersistenceService();

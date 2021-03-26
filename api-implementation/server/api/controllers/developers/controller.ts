@@ -1,8 +1,8 @@
 import DevelopersService from '../../services/developers.service';
 import { NextFunction, Request, Response } from 'express';
 import L from '../../../common/logger';
-import { Paging } from '../../services/persistence.service';
 import { ErrorResponseInternal } from '../../middlewares/error.handler';
+import TopicSyntax = Components.Parameters.TopicSyntax.TopicSyntax;
 
 export class Controller {
   all(req: Request, res: Response, next: NextFunction): void {
@@ -74,7 +74,7 @@ export class Controller {
     ;
   }
   appByName(req: Request, res: Response, next: NextFunction): void {
-    DevelopersService.appByName(req.params['developer'], req.params['name'])
+    DevelopersService.appByName(req.params['developer'], req.params['name'], req.query['topicSyntax'] as TopicSyntax)
       .then((r) => {
         if (r) res.json(r).end();
         else next(new ErrorResponseInternal(404, `Not found`));
