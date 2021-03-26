@@ -4,7 +4,12 @@ import { ErrorResponseInternal } from '../../middlewares/error.handler';
 
 export class Controller {
   all(req: Request, res: Response, next: NextFunction): void {
-    EventPortalApisService.all()
+    let tags: string[] = [];
+    const tagsParam: string = req.query['tags'] as string;
+    if (tagsParam !=null){
+      tags = tagsParam.split(',');
+    }
+    EventPortalApisService.all(tags, req.query['apiDomainName'] as string)
       .then((r) => res.json(r))
       .catch((e)=> next(e));
   }

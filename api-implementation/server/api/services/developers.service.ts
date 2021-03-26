@@ -8,7 +8,7 @@ import TopicSyntax = Components.Parameters.TopicSyntax.TopicSyntax;
 import ApiProductsService from './apiProducts.service';
 import BrokerService from './broker.service';
 
-import { Paging, PersistenceService } from './persistence.service';
+import { PersistenceService } from './persistence.service';
 import { ErrorResponseInternal } from '../middlewares/error.handler';
 
 import passwordGenerator from 'generate-password';

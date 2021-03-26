@@ -1,5 +1,5 @@
 import L from '../../common/logger';
-import { PersistenceService, Paging } from './persistence.service';
+import { PersistenceService } from './persistence.service';
 import History = Components.Schemas.History;
 import { v4 } from 'uuid';
 

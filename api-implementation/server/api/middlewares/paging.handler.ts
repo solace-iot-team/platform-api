@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 import L from '../../common/logger';
-import { Paging } from '../services/persistence.service';
+import { Paging } from '../../../src/model/paging';
 import { ErrorResponseInternal } from './error.handler';
 import { ns } from './context.handler';
 

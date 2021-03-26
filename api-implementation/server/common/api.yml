@@ -185,6 +185,14 @@ components:
         apiDomain: 
           type: string
           example: Acme Rideshare
+        description:
+          type: string
+          example: Manage billing information
+        tags:
+          type: array
+          items:
+            type: string
+            example: billing
     API: 
      description: "Event Portal API information. Currently only provided as utiity to retrieve metadata from the Event Portal."
      required: 
@@ -3590,6 +3598,13 @@ paths:
      parameters:
      - $ref: '#/components/parameters/page_size'
      - $ref: '#/components/parameters/page_number'
+     - name: tags
+       in: query
+       description: comma separated list of tags
+       example: maintenance,elevator
+       schema:
+        type: string
+        pattern: "^[a-zA-Z0-9:]+(?:,[a-zA-Z0-9:]+)*$"
      - name: apiDomainName
        schema:
          type: string
