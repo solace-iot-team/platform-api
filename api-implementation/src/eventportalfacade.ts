@@ -103,11 +103,11 @@ class EventPortalFacade {
         let matchesTag = true;
         const tagNames = await this.getApplicationTags(api.id);
         const apiDomainName = await this.getApiDomainNameById(api.applicationDomainId);
-        if (tags !=null && tags.length>0){
-          matchesTag = (tagNames.filter((s)=>tags.includes(s)).length>0);
+        if (tags != null && tags.length > 0) {
+          matchesTag = (tagNames.filter((s) => tags.includes(s)).length > 0);
         }
         let matchesDomain = true;
-        if (apiDomain != null && apiDomain != apiDomainName){
+        if (apiDomain != null && apiDomain != apiDomainName) {
           matchesDomain = false;
         }
         include = (matchesTag && matchesDomain);
@@ -127,11 +127,7 @@ class EventPortalFacade {
     }
   }
 
-  public async getAllApiDomains(): Promise<APIDomain[]> {
-    return this.getApiDomains(null);
-  }
-
-  public async getApiDomains(name: string): Promise<APIDomain[]> {
+  public async getApiDomains(name?: string): Promise<APIDomain[]> {
     return new Promise<APIDomain[]>((resolve, reject) => {
       L.info(`Looking up APIDomain ${name}`);
       var result: Promise<any> = this.getApiDomainsServiceCall();
@@ -184,38 +180,31 @@ class EventPortalFacade {
     });
   }
   public async getApi(name: string): Promise<API> {
-    return new Promise<API>((resolve, reject) => {
-      var result: Promise<any> = ApplicationsService.list2(100, 1, name);
-      result.then(
-        (value: ApplicationResponse) => {
-          var app: Application = value.data[0];
-          if (!app) {
-            reject(new ErrorResponseInternal(404, `Entity ${name} does not exist`))
-          }
-          var output: API = {
-            name: app.name,
-            createdTime: app.createdTime,
-            updatedTime: app.updatedTime,
-            createdBy: app.createdBy,
-            changedBy: app.changedBy,
-            id: app.id,
-            version: app.version,
-            description: app.description,
-            apiDomainName: app.applicationDomainId,
-            revisionNumber: app.revisionNumber,
-            apiClass: app.applicationClass
-          };
-          resolve(output);
-        }
-      ).catch((val: ApiError) => {
-        reject(new ErrorResponseInternal(val.status, val.message));
-      });
-
-
+    try {
+      var result: ApplicationsResponse = await ApplicationsService.list2(100, 1, name);
+      var app: Application = result.data[0];
+      if (!app) {
+        throw new ErrorResponseInternal(404, `Entity ${name} does not exist`);
+      }
+      var output: API = {
+        name: app.name,
+        createdTime: app.createdTime,
+        updatedTime: app.updatedTime,
+        createdBy: app.createdBy,
+        changedBy: app.changedBy,
+        id: app.id,
+        version: app.version,
+        description: app.description,
+        apiDomainName: await this.getApiDomainNameById(app.applicationDomainId),
+        revisionNumber: app.revisionNumber,
+        apiClass: app.applicationClass
+      };
+      return output;
+    } catch (val) {
+      throw new ErrorResponseInternal(val.status, val.message);
     }
-
-    );
   }
+
   public async getApiSpec(name: string, asyncAPIVersion?: string): Promise<string> {
     return new Promise<string>((resolve, reject) => {
       if (!asyncAPIVersion) {
