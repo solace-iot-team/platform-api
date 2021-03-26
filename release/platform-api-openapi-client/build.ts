@@ -30,7 +30,7 @@ const getNewVersion = (): string => {
     let version = apiSpec.info.version;
 
     // test: take out again
-    version = '0.0.2';
+    version = '0.0.3';
 
     return version;
 }
