@@ -42,71 +42,18 @@ jobs:
           echo ">>> environment: RELEASE_* "
           env | grep RELEASE
 
-      - name: exit
+      - name: Release
         run: |
-          exit 1
-
-      - name: Set up Python
-        uses: actions/setup-python@v2
-        with:
-          python-version: '3.x'
-
-      - name: Install ansible and collection dependencies
-        run: |
-          python -m pip install --upgrade pip
-          pip install ansible
-
-      - name: Build and install collection
-        run: |
-          cd ${TEST_ANSIBLE_SOLACE_COLLECTION_DIR}
-          ansible-galaxy collection build .
-          ansible-galaxy collection install *.gz
-
-      - name: Install docs make dependencies
-        run: |
-          pip install -r devel/devel.requirements.txt
-
-      - name: Make docs
-        run: |
-          export PROJECT_HOME="$GITHUB_WORKSPACE"
-          export LOG_DIR="$GITHUB_WORKSPACE/${TEST_RUNNER_LOGS_DIR}"
-          export RUN_FG=true
-          ./${DOCS_MAKE_SCRIPT}
-
-      - name: Check HTML dir
-        if: env.DEBUG_FLAG == 'true'
-        run: |
-          cd ${TEST_ANSIBLE_SOLACE_COLLECTION_DIR}
-          cd docs/build/html
-          ls -la
-
-      - name: Publish gh-pages
-        run: |
-          git fetch origin gh-pages
-          git worktree add gh-pages gh-pages
-          date > generated.txt
-          git config user.name github-actions
-          git config user.email github-actions@github.com
-          rsync -av ${TEST_ANSIBLE_SOLACE_COLLECTION_DIR}/docs/build/html/ gh-pages/
-          cd gh-pages
-          git add -A
-          git commit --allow-empty -F ../generated.txt
-          # git push -f -u origin gh-pages
-          git push -u origin gh-pages
-
-      - name: Publish collection
-        env:
-          ANSIBLE_GALAXY_TOKEN: ${{ secrets.ANSIBLE_GALAXY_TOKEN }}
-        run: |
-          cd ${TEST_ANSIBLE_SOLACE_COLLECTION_DIR}
-          ansible-galaxy collection publish *.tar.gz --api-key $ANSIBLE_GALAXY_TOKEN --import-timeout 300
+          export APIM_SOLACE_PLATFORM_API_PROJECT_HOME="$GITHUB_WORKSPACE"
+          cd "$APIM_SOLACE_PLATFORM_API_PROJECT_HOME/${RELEASE_PLATFORM_DIR}"
+          ./release.sh
 
       - name: Archive logs
-        if: ${{ always() && steps.auth.outputs.IS_AUTHORIZED != 'false' && github.event_name == 'workflow_dispatch' }}
+        if: ${{ (failure() && !cancelled()) || (always() && (github.event_name=='workflow_dispatch' || env.DEBUG_FLAG=='true') ) }}
         uses: actions/upload-artifact@v2
         with:
-          name: ${{ env.TEST_TEST_RUNNER_LOGS_NAME }}
-          path: ${{ github.workspace }}/${{ env.TEST_RUNNER_LOGS_DIR }}
+          name: ${{ env.TEST_OUTPUT_NAME }}
+          path: ${{ github.workspace }}/${{ env.TEST_TEST_RUNNER_OUTPUT_DIR }}
           if-no-files-found: error
 ###
 # The End.

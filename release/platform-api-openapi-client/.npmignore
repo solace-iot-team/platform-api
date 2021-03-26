@@ -4,3 +4,5 @@ src
 .package.json
 .cache
 example
+release.sh
+updateVersion.ts

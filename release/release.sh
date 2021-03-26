@@ -29,7 +29,7 @@ fi
 # Scripts
 
 declare -a releaseScripts=(
-  "platform-api-openapi/release.sh"
+  "platform-api-openapi-client/release.sh"
 )
 
 ############################################################################################################################
