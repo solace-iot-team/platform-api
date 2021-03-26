@@ -1,0 +1,22 @@
+{
+  "name": "example",
+  "description": "example for using @solace-iot-team/platform-api-openapi",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "prestart": "tsc",
+    "start": "node dist/index.js",
+    "test": "echo \"Error: no test specified\""
+  },
+  "author": "Solace Corporation",
+  "contributors": [
+    {
+      "name": "Ricardo Gomez-Ulmke",
+      "email": "ricardo.gomez-ulmke@solace.com"
+    }
+  ],
+  "license": "MIT",
+  "dependencies": {
+    "@solace-iot-team/platform-api-openapi": "^0.0.9"
+  }
+}

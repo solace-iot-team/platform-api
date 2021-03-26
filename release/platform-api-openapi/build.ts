@@ -19,6 +19,21 @@ const loadYamlFileAsJson = (apiSpecPath: string): any => {
     const b: Buffer = fs.readFileSync(apiSpecPath);
     return yaml.load(b.toString());
 }
+
+const getNpmLatestVersion = (): string => {
+    let packageName = packageJson.name;
+    let latestVersion = s.exec(`npm view ${packageName} version`).stdout.slice(0, -1);
+    return latestVersion;
+}
+const getNewVersion = (): string => {
+    let apiSpec = loadYamlFileAsJson(inputApiSpecFile);
+    let version = apiSpec.info.version;
+
+    // test: take out again
+    version = '0.0.10';
+
+    return version;
+}
 const prepare = () => {
     s.rm('-rf', outDir);
     s.mkdir('-p', outDir);
@@ -28,14 +43,8 @@ const prepare = () => {
     s.mkdir('-p', outputSrcDir);
     s.cp(`${inputApiSpecFile}`, `${outputApiSpecFile}`);
 }
-const updateVersion = () => {
-    let apiSpec = loadYamlFileAsJson(inputApiSpecFile);
-    let version = apiSpec.info.version;
-
-    // test: take out again
-    version = '0.0.10';
-
-    packageJson.version = version;
+const updateVersion = (newVersion: string) => {
+    packageJson.version = newVersion;
     let newPackageJsonString = JSON.stringify(packageJson, null, 2);
     s.cp(`${packageJsonFile}`, `.package.json`);
     fs.writeFileSync(packageJsonFile, newPackageJsonString);
@@ -53,9 +62,20 @@ const generateCode = () => {
             console.log(error);
             process.exit(1);
         });
+}
+const main = () => {
 
+    let npmVersion = getNpmLatestVersion();
+    let newVersion = getNewVersion();
+    console.log(`npm version='${npmVersion}', new version='${newVersion}'`);
+    if(newVersion === npmVersion) {
+        console.log('nothing to do, exiting.');
+        process.exit(2);
+    }
+    prepare();
+    updateVersion(newVersion);
+    generateCode();    
 }
 
-prepare();
-updateVersion();
-generateCode();
+main();
+
