@@ -183,7 +183,8 @@ class EventPortalFacade {
         description: app.description,
         apiDomainName: await this.getApiDomainNameById(app.applicationDomainId),
         revisionNumber: app.revisionNumber,
-        apiClass: app.applicationClass
+        apiClass: app.applicationClass,
+        tags: await this.getApplicationTags(app.id),
       };
       return output;
     } catch (val) {

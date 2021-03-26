@@ -91,6 +91,10 @@ declare namespace Components {
              */
             apiDomainName: string;
             /**
+             * tags of the API
+             */
+            tags?: string[];
+            /**
              * example:
              * Changed api name
              */
@@ -1202,10 +1206,10 @@ declare namespace Paths {
     namespace ListEventPortalApis {
         namespace Parameters {
             export type ApiDomainName = string;
-            export type Tags = string; // ([a-zA-Z0-9]+(,|$){1})*
+            export type Tags = string; // ^[a-zA-Z0-9:]+(?:,[a-zA-Z0-9:]+)*$
         }
         export interface QueryParameters {
-            tags?: Parameters.Tags /* ([a-zA-Z0-9]+(,|$){1})* */;
+            tags?: Parameters.Tags /* ^[a-zA-Z0-9:]+(?:,[a-zA-Z0-9:]+)*$ */;
             apiDomainName?: Parameters.ApiDomainName;
         }
         namespace Responses {

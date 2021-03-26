@@ -2,7 +2,7 @@ openapi: 3.0.0
 info:
   title: Solace Platform API
   description: Solace Platform API
-  version: 0.0.8
+  version: 0.0.9
 servers:
   - url: /v1
 
@@ -237,6 +237,12 @@ components:
       apiDomainName: 
        type: string
        example: Acme Rideshare
+      tags:
+        type: array
+        description: tags of the API
+        items:
+          type: string
+          example: elevator
       revisionComment: 
        maxLength: 255
        minLength: 0
