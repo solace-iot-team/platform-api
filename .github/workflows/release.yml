@@ -15,7 +15,7 @@ env:
   RELEASE_OUTPUT_NAME: "platform-api-release"
 
 jobs:
-  publish:
+  release:
     runs-on: ubuntu-18.04
     steps:
       - name: Check Auth
@@ -52,8 +52,8 @@ jobs:
         if: ${{ (failure() && !cancelled()) || (always() && (github.event_name=='workflow_dispatch' || env.DEBUG_FLAG=='true') ) }}
         uses: actions/upload-artifact@v2
         with:
-          name: ${{ env.TEST_OUTPUT_NAME }}
-          path: ${{ github.workspace }}/${{ env.TEST_TEST_RUNNER_OUTPUT_DIR }}
+          name: ${{ env.RELEASE_OUTPUT_NAME }}
+          path: ${{ github.workspace }}/${{ env.RELEASE_RUNNER_OUTPUT_DIR }}
           if-no-files-found: error
 ###
 # The End.
