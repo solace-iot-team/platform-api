@@ -47,19 +47,26 @@ jobs:
           cd "${TEST_PLATFORM_DIR}"
           sudo npm install -g npm
 
+      - uses: actions/setup-node@v2
+        with:
+          node-version: '12.x'
+          registry-url: 'https://registry.npmjs.org'
+
       - name: env after install
         if: env.DEBUG_FLAG == 'true'
         run: |
           echo "bash --version: "; bash --version
           echo "node --version: "; node --version
           echo "npm --version: "; npm --version
-          echo "npm --version: "; npm --version
 
       - name: Release
         run: |
+          export NODE_AUTH_TOKEN=${{ secrets.NPM_TOKEN }}
           export APIM_SOLACE_PLATFORM_API_PROJECT_HOME="$GITHUB_WORKSPACE"
           cd "$APIM_SOLACE_PLATFORM_API_PROJECT_HOME/${RELEASE_PLATFORM_DIR}"
           ./release.sh
+        # env:
+        #   NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
       - name: Archive logs
         if: ${{ (failure() && !cancelled()) || (always() && (github.event_name=='workflow_dispatch' || env.DEBUG_FLAG=='true') ) }}
