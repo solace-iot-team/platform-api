@@ -27,6 +27,7 @@ declare -a testScripts=(
   "$scriptDir/mongodb/start.mongo.sh"
   "$scriptDir/start.server.background.sh"
   "$scriptDir/run.npm.integration-tests.logfile.sh"
+  "$scriptDir/run.npm.concurrency-tests.sh"
 )
 
 ############################################################################################################################
