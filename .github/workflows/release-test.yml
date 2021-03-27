@@ -8,18 +8,21 @@ on:
   # for testing
   workflow_dispatch:
   # # production
-  # schedule:
-  # #   # - cron: '0 7 * * MON'
-  #   - cron: '0 7 * * *'
+  schedule:
+  #   # - cron: '0 7 * * MON'
+    - cron: '0 6 * * *'
 env:
   DEBUG_FLAG: ${{ true }}
   # DEBUG_FLAG: ${{ false }}
-  TEST_PLATFORM_DIR: "api-implementation"
-  TEST_TEST_RUNNER_OUTPUT_DIR: "api-implementation/test/integration/tmp"
-  TEST_OUTPUT_NAME: "api-implementation-test-integration"
+  RELEASE_TEST_DIR: "release/test"
+  RELEASE_TEST_RUNNER_OUTPUT_DIR: "release/test/tmp"
+  RELEASE_TEST_OUTPUT_NAME: "platform-api-release-test"
 jobs:
   run_tests:
     runs-on: ubuntu-18.04
+    strategy:
+      matrix:
+        node: [ '12', '14' ]
     steps:
       - name: Check Auth
         if: github.event_name == 'workflow_dispatch' && github.actor != 'ricardojosegomezulmke' && github.actor != '195858'
@@ -45,25 +48,10 @@ jobs:
           echo ">>> environment: TEST_* "
           env | grep TEST
 
-      # already pre-installed
-      # - name: Bootstrap docker
-      #   run: |
-      #     sudo apt-get update
-      #     sudo apt-get -y upgrade
-      #     echo ">>> docker =================================================="
-      #     sudo apt-get install apt-transport-https ca-certificates curl software-properties-common -y
-      #     curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
-      #     sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu bionic stable"
-      #     apt-cache policy docker-ce
-      #     sudo apt-get install --upgrade docker-ce -y
-      #     sudo apt-get update
-      #     sudo apt-get -y upgrade
-
-      - name: Bootstrap node
-        run: |
-          cd "${TEST_PLATFORM_DIR}"
-          sudo npm install -g npm
-          npm install
+      - name: setup node
+        uses: actions/setup-node@v2
+        with:
+          node-version: ${{ matrix.node }}
 
       - name: env after install
         if: env.DEBUG_FLAG == 'true'
@@ -73,21 +61,26 @@ jobs:
           echo "npm --version: "; npm --version
           echo "docker --version"; docker --version
 
+      - name: npm install
+        run: |
+          cd "${TEST_PLATFORM_DIR}"
+          npm install
+
       - name: Run Tests
         run: |
-          export APIM_INTEGRATION_TEST_SOLACE_CLOUD_TOKEN=${{ secrets.SOLACE_CLOUD_TOKEN }}
-          export APIM_INTEGRATION_TEST_PLATFORM_ADMIN_USER=${{ secrets.PLATFORM_ADMIN_USER }}
-          export APIM_INTEGRATION_TEST_PLATFORM_ADMIN_PASSWORD=${{ secrets.PLATFORM_ADMIN_PASSWORD }}
+          export APIM_RELEASE_TEST_SOLACE_CLOUD_TOKEN=${{ secrets.SOLACE_CLOUD_TOKEN }}
+          export APIM_RELEASE_TEST_PLATFORM_ADMIN_USER=${{ secrets.PLATFORM_ADMIN_USER }}
+          export APIM_RELEASE_TEST_PLATFORM_ADMIN_PASSWORD=${{ secrets.PLATFORM_ADMIN_PASSWORD }}
           export APIM_SOLACE_PLATFORM_API_PROJECT_HOME="$GITHUB_WORKSPACE"
-          cd "$APIM_SOLACE_PLATFORM_API_PROJECT_HOME/${TEST_PLATFORM_DIR}"
-          test/integration/run.sh
+          cd "$APIM_SOLACE_PLATFORM_API_PROJECT_HOME/${RELEASE_TEST_DIR}"
+          ./run.sh
 
       - name: Archive logs
         if: ${{ (failure() && !cancelled()) || (always() && (github.event_name=='workflow_dispatch' || env.DEBUG_FLAG=='true') ) }}
         uses: actions/upload-artifact@v2
         with:
-          name: ${{ env.TEST_OUTPUT_NAME }}
-          path: ${{ github.workspace }}/${{ env.TEST_TEST_RUNNER_OUTPUT_DIR }}
+          name: ${{ env.RELEASE_TEST_OUTPUT_NAME }}
+          path: ${{ github.workspace }}/${{ env.RELEASE_TEST_RUNNER_OUTPUT_DIR }}
           if-no-files-found: error
 
 ###
