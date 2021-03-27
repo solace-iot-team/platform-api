@@ -13,7 +13,13 @@ echo ">>> Npm install ..."
 echo ">>> Success";
 
 echo ">>> Run example test ..."
+
   cd "$scriptDir/.."
+
+  echo "pwd="; pwd
+  echo "ls -la"; ls -la
+
+
   runScript="npm test"
   $runScript
   code=$?; if [[ $code != 0 ]]; then echo " >>> ERROR - code=$code - runScript='$runScript' - $scriptName"; exit 1; fi
