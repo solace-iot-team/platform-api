@@ -5,10 +5,7 @@ import mongodb, { DeleteWriteOpResultObject, MongoError, CollectionInsertOneOpti
 
 import { ErrorResponseInternal } from '../middlewares/error.handler';
 import {ns} from '../middlewares/context.handler';
-export interface Paging {
-  pageNumber: number,
-  pageSize: number
-}
+import { Paging } from '../../../src/model/paging';
 
 export class PersistenceService {
   private collection: string;

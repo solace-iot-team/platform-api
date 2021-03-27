@@ -1,11 +1,11 @@
 import ApiDomainsService from '../../services/apiDomains.service';
 import { NextFunction, Request, Response } from 'express';
 import { ErrorResponseInternal } from '../../middlewares/error.handler';
-
+import L from '../../../common/logger';
 export class Controller {
   all(req: Request, res: Response, next: NextFunction): void {
     ApiDomainsService.all()
-      .then((r) => res.json(r).send())
+      .then((r) => res.json(r))
       .catch((e) => next(e));
     ;
   }
@@ -13,7 +13,7 @@ export class Controller {
   byName(req: Request, res: Response, next: NextFunction): void {
     ApiDomainsService.byName(req.params['name'])
       .then((r) => {
-        if (r) res.json(r).send();
+        if (r) res.json(r);
         else next(new ErrorResponseInternal(404, `Not found`));
       })
       .catch((e) => next(e));

@@ -91,6 +91,10 @@ declare namespace Components {
              */
             apiDomainName: string;
             /**
+             * tags of the API
+             */
+            tags?: string[];
+            /**
              * example:
              * Changed api name
              */
@@ -183,6 +187,12 @@ declare namespace Components {
              * Acme Rideshare
              */
             apiDomain?: string;
+            /**
+             * example:
+             * Manage billing information
+             */
+            description?: string;
+            tags?: string[];
         }
         /**
          * An API product consists of a list of API resources (URIs) and custom metadata required by the API provider. API products enable you to bundle and distribute your APIs to multiple developer groups simultaneously
@@ -1196,8 +1206,10 @@ declare namespace Paths {
     namespace ListEventPortalApis {
         namespace Parameters {
             export type ApiDomainName = string;
+            export type Tags = string; // ^[a-zA-Z0-9:]+(?:,[a-zA-Z0-9:]+)*$
         }
         export interface QueryParameters {
+            tags?: Parameters.Tags /* ^[a-zA-Z0-9:]+(?:,[a-zA-Z0-9:]+)*$ */;
             apiDomainName?: Parameters.ApiDomainName;
         }
         namespace Responses {

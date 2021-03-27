@@ -2,7 +2,7 @@ openapi: 3.0.0
 info:
   title: Solace Platform API
   description: Solace Platform API
-  version: 0.0.8
+  version: 0.0.9
 servers:
   - url: /v1
 
@@ -185,6 +185,14 @@ components:
         apiDomain: 
           type: string
           example: Acme Rideshare
+        description:
+          type: string
+          example: Manage billing information
+        tags:
+          type: array
+          items:
+            type: string
+            example: billing
     API: 
      description: "Event Portal API information. Currently only provided as utiity to retrieve metadata from the Event Portal."
      required: 
@@ -229,6 +237,12 @@ components:
       apiDomainName: 
        type: string
        example: Acme Rideshare
+      tags:
+        type: array
+        description: tags of the API
+        items:
+          type: string
+          example: elevator
       revisionComment: 
        maxLength: 255
        minLength: 0
@@ -3590,6 +3604,13 @@ paths:
      parameters:
      - $ref: '#/components/parameters/page_size'
      - $ref: '#/components/parameters/page_number'
+     - name: tags
+       in: query
+       description: comma separated list of tags
+       example: maintenance,elevator
+       schema:
+        type: string
+        pattern: "^[a-zA-Z0-9:]+(?:,[a-zA-Z0-9:]+)*$"
      - name: apiDomainName
        schema:
          type: string

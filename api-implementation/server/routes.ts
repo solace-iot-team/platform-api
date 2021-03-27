@@ -90,7 +90,7 @@ export default function routes(app: Application, auth: any): void {
   router.use('/organizations', authAdmin, organizationsRouter);
   router.use('/:org/apis', auth, apisRouter);
   router.use('/:org/event-portal/apis', auth, eventPortalApisRouter);
-  router.use('/:org/apiDomains', auth, apiDomainsRouter);
+  router.use('/:org/event-portal/apiDomains', auth, apiDomainsRouter);
   router.use('/:org/apiProducts', auth, apiProductsRouter);
   router.use('/:org/developers', auth, developersRouter);
   router.use('/:org/environments', auth, environmentsRouter);

@@ -4,7 +4,7 @@ import DevelopersService from './developers.service';
 import ApiProductsService from './apiProducts.service';
 import ApisService from './apis.service';
 import BrokerService from './broker.service';
-import { Paging, PersistenceService } from './persistence.service';
+import { PersistenceService } from './persistence.service';
 import App = Components.Schemas.App;
 import AppListItem = Components.Schemas.AppListItem;
 import AppResponse = Components.Schemas.AppResponse;

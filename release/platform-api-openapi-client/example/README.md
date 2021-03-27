@@ -1,35 +1,48 @@
-# OpenAPI Typescript Client for Solace Platform API
+# Example Using Solace Platform API OpenApi Client
 
-Generated Typescript Client for the [Solace Platform API](https://github.com/solace-iot-team/platform-api).
+Sequence (`index.ts`):
+
+- initialize the client library with the management & api user usernames & passwords (`platformapiclient.ts`)
+- delete the organization
+- create the organization
+- register Solace Cloud Service (the API Gateway) with the organization
+- create the API (`ApiMaintenance.async-api-spec.yml`)
+- create the API Product with the API
+- register a developer
+- create a developer app
+- delete the organization
+
+## Prerequisites
+
+- running instance of the Platform-Api Server
+- Solace Cloud account with rights to create a token
+- 1 service in Solace Cloud to act as the API Gateway
 
 ## Install
 
-````bash
-npm install @solace-iot-team/platform-api-openapi
-````
+```bash
+npm install
+```
 
-## Usage
+## Configure
 
-try in examples - build a small cli: platform-api-sample-cli
-- typescript project
-- compile
-- bin
+Set the environment variables defined in `template.source.env.sh`.
 
-- example bootstrap
-- server url
-- api_user
-- api-password
-- management-user
-- management-password
-- the switch
-- delete org, create org
-- add api, add product, add developer, create app, ...
+```bash
+cp template.source.env.sh source.env.sh
 
+# edit the values ...
 
+source source.env.sh
 
-  <!-- npm publish [<tarball>|<folder>] [--tag <tag>] [--access <public|restricted>] [--otp otpcode] [--dry-run]
+# check:
+env | grep APIM_EXAMPLE
+```
 
-  Publishes '.' if no argument supplied
-  Sets tag 'latest' if no --tag specified -->
+## Run
+
+```bash
+npm start
+```
 
 ---
