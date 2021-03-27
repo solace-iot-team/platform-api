@@ -4,8 +4,9 @@ on:
   # for testing
   workflow_dispatch:
 
-  release:
-    types: [created]
+  # # for production
+  # release:
+  #   types: [created]
 
 env:
   DEBUG_FLAG: ${{ true }}
