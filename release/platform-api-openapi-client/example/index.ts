@@ -1,10 +1,8 @@
-
+import fs from 'fs';
+import yaml from "js-yaml";
 import { PlatformAPIClient } from './platformapiclient';
 import type { Organization } from '@solace-iot-team/platform-api-openapi-client';
 import { PlatformManagementService, Environment, EnvironmentsService, ApisService, APIProduct, Protocol, ApiProductsService, Developer, DevelopersService, App, AppsService } from '@solace-iot-team/platform-api-openapi-client';
-import fs from 'fs';
-import yaml from "js-yaml";
-
 
 const getMandatoryEnvVarValue = (envVar: string): string => {
     const value: any = (process.env[envVar] === undefined) ? null : process.env[envVar];
