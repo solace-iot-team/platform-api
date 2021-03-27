@@ -32,6 +32,9 @@ echo " >>> Starting server ..."
     if [ -z "$APIM_SOLACE_PLATFORM_API_PROJECT_HOME" ]; then echo ">>> ERROR: - $scriptName - missing env var: APIM_SOLACE_PLATFORM_API_PROJECT_HOME"; exit 1; fi
     SERVER_DIR="$APIM_SOLACE_PLATFORM_API_PROJECT_HOME/api-implementation"
     cd $SERVER_DIR
+    runScript="npm install"
+    $runScript
+    code=$?; if [[ $code != 0 ]]; then echo ">>> ERROR - code=$code - runScript='$runScript' - $scriptName"; FAILED=1; fi
     startServerScript="npm run server:dev"
 
   # end fix
