@@ -27,6 +27,7 @@ declare -a testScripts=(
   "$scriptDir/mongodb/start.mongo.sh"
   "$scriptDir/start.server.background.sh"
   "$scriptDir/run.npm.integration-tests.logfile.sh"
+  "$APIM_SOLACE_PLATFORM_API_PROJECT_HOME/release/platform-api-openapi-client/example/test/run.sh"
 )
 
 ############################################################################################################################
