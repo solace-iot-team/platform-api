@@ -39,7 +39,7 @@ source source.env.sh
 env | grep APIM_EXAMPLE
 ```
 
-## Run
+## Run
 
 ```bash
 npm start
