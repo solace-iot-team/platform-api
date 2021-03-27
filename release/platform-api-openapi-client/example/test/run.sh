@@ -18,7 +18,9 @@ echo ">>> Run example test ..."
 
   echo "pwd="; pwd
   echo "ls -la"; ls -la
+  echo "ls -la test"; ls -la test
 
+  source "test/test.source.env.sh"
 
   runScript="npm test"
   $runScript
