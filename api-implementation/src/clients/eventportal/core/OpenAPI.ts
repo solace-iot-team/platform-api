@@ -7,7 +7,7 @@ type Resolver<T> = (options: ApiRequestOptions) => Promise<T>;
 type Headers = Record<string, string>;
 
 type Config = {
-    BASE: string;
+    BASE: string | Resolver<string>;
     VERSION: string;
     WITH_CREDENTIALS: boolean;
     TOKEN?: string | Resolver<string>;

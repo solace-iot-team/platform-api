@@ -12,7 +12,7 @@ import { ns } from '../server/api/middlewares/context.handler';
 import { Paging } from './model/paging';
 
 
-import getToken, { validateToken } from './cloudtokenhelper';
+import { getEventPortalBaseUrl, getEventPortalToken, validateToken } from './cloudtokenhelper';
 import { ContextConstants } from '../server/common/constants';
 
 const tagCache = new CacheContainer(new MemoryStorage());
@@ -22,11 +22,15 @@ const appTagsCache = new CacheContainer(new MemoryStorage());
 
 class EventPortalFacade {
   constructor() {
-    OpenAPI.TOKEN = getToken;
+    OpenAPI.TOKEN = getEventPortalToken;
+    OpenAPI.BASE = getEventPortalBaseUrl;
   }
 
-  public async validate(token: string): Promise<boolean> {
-    const url: string = `${OpenAPI.BASE}/api/v1/eventPortal/applicationDomains`;
+  public async validate(token: string, baseUrl?: string): Promise<boolean> {
+    let url: string = `${OpenAPI.BASE}/api/v1/eventPortal/applicationDomains`;
+    if (baseUrl !=null){
+      url = `${baseUrl}/api/v1/eventPortal/applicationDomains`;
+    }
     return validateToken(token, url);
   }
 
@@ -209,16 +213,18 @@ class EventPortalFacade {
       L.debug(`Parsing API spec `);
 
       Object.keys(asyncAPIResponse.channels).forEach(e => {
-        var x = e.match(/(?<=\{)[^}]*(?=\})/g);
-        var parameters = {};
-        if (x) {
-          x.forEach(match => {
-            parameters[match] = {
-              description: match,
-              schema: { type: "string" }
-            };
-          });
-          asyncAPIResponse.channels[e].parameters = parameters;
+        if (asyncAPIResponse.channels[e].parameters == null) {
+          var x = e.match(/(?<=\{)[^}]*(?=\})/g);
+          var parameters = {};
+          if (x) {
+            x.forEach(match => {
+              parameters[match] = {
+                description: match,
+                schema: { type: "string" }
+              };
+            });
+            asyncAPIResponse.channels[e].parameters = parameters;
+          }
         }
       });
       return asyncAPIResponse;

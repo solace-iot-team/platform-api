@@ -1,19 +1,37 @@
 import L from '../server/common/logger';
 import { ErrorResponseInternal } from '../server/api/middlewares/error.handler';
-import {ns} from '../server/api/middlewares/context.handler';
+import { ns } from '../server/api/middlewares/context.handler';
 import axios, { AxiosRequestConfig } from 'axios';
 import { ContextConstants } from '../server/common/constants';
+import { isString } from './typehelpers';
 
-export default async function getToken(): Promise<string> {
-  var token: string = null;
-    token = ns.getStore().get(ContextConstants.CLOUD_TOKEN);
-    if (token == null) {
-      throw new ErrorResponseInternal(500, `Token is not defined for ${ns.getStore().get(ContextConstants.ORG_NAME)}`);
-    }
+export async function getCloudToken(): Promise<string> {
+  var token: any = null;
+  token = ns.getStore().get(ContextConstants.CLOUD_TOKEN);
+  if (token == null) {
+    throw new ErrorResponseInternal(500, `Token is not defined for ${ns.getStore().get(ContextConstants.ORG_NAME)}`);
+  }
   L.trace(`token is ${token}`);
-  return token;
+  if (isString(token)) {
+    return token;
+  } else {
+    return token.cloud.token;
+  }
 }
 
+export async function getEventPortalToken(): Promise<string> {
+  var token: any = null;
+  token = ns.getStore().get(ContextConstants.CLOUD_TOKEN);
+  if (token == null) {
+    throw new ErrorResponseInternal(500, `Token is not defined for ${ns.getStore().get(ContextConstants.ORG_NAME)}`);
+  }
+  L.trace(`token is ${token}`);
+  if (isString(token)) {
+    return token;
+  } else {
+    return token.eventPortal.token;
+  }
+}
 export async function validateToken(token: string, url: string): Promise<boolean> {
   const config: AxiosRequestConfig = {
     headers: { Authorization: `Bearer ${token}` },
@@ -33,3 +51,30 @@ export async function validateToken(token: string, url: string): Promise<boolean
   }
 }
 
+export async function getCloudBaseUrl(): Promise<string> {
+  var token: any = null;
+  token = ns.getStore().get(ContextConstants.CLOUD_TOKEN);
+  if (token == null) {
+    throw new ErrorResponseInternal(500, `Token is not defined for ${ns.getStore().get(ContextConstants.ORG_NAME)}`);
+  }
+  L.trace(`token is ${token}`);
+  if (isString(token)) {
+    return 'https://api.solace.cloud/api/v0';
+  } else {
+    return token.cloud.baseUrl;
+  }
+}
+
+export async function getEventPortalBaseUrl(): Promise<string> {
+  var token: any = null;
+  token = ns.getStore().get(ContextConstants.CLOUD_TOKEN);
+  if (token == null) {
+    throw new ErrorResponseInternal(500, `Token is not defined for ${ns.getStore().get(ContextConstants.ORG_NAME)}`);
+  }
+  L.trace(`token is ${token}`);
+  if (isString(token)) {
+    return 'https://solace.cloud';
+  } else {
+    return token.eventPortal.baseUrl;
+  }
+}
