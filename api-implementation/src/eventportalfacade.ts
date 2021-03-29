@@ -12,7 +12,7 @@ import { ns } from '../server/api/middlewares/context.handler';
 import { Paging } from './model/paging';
 
 
-import { getEventPortalBaseUrl, getEventPortalToken, validateToken } from './cloudtokenhelper';
+import { getEventPortalBaseUrl, getEventPortalToken, validateToken, resolve } from './cloudtokenhelper';
 import { ContextConstants } from '../server/common/constants';
 
 const tagCache = new CacheContainer(new MemoryStorage());
@@ -27,7 +27,7 @@ class EventPortalFacade {
   }
 
   public async validate(token: string, baseUrl?: string): Promise<boolean> {
-    let url: string = `${OpenAPI.BASE}/api/v1/eventPortal/applicationDomains`;
+    let url: string = `${await resolve(OpenAPI.BASE)}/api/v1/eventPortal/applicationDomains`;
     if (baseUrl !=null){
       url = `${baseUrl}/api/v1/eventPortal/applicationDomains`;
     }

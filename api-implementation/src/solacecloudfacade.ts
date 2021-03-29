@@ -2,7 +2,7 @@ import L from '../server/common/logger';
 import Environment = Components.Schemas.Environment;
 import { OpenAPI, Service, ServicesService, ServiceResponse, ServicesResponse } from "./clients/solacecloud";
 import { ErrorResponseInternal } from '../server/api/middlewares/error.handler';
-import { getCloudBaseUrl, getCloudToken, validateToken } from './cloudtokenhelper';
+import { getCloudBaseUrl, getCloudToken, validateToken, resolve } from './cloudtokenhelper';
 
 class SolaceCloudFacade {
   constructor() {
@@ -41,7 +41,7 @@ class SolaceCloudFacade {
   }
 
   public async validate(token: string, baseUrl?: string): Promise<boolean> {
-    let url: string = `${OpenAPI.BASE}/services`;
+    let url: string = `${await resolve(OpenAPI.BASE)}/services`;
     if (baseUrl !=null){
       url = `${baseUrl}/services`;
     }
