@@ -11,11 +11,16 @@ scriptName=$(basename $(test -L "$0" && readlink "$0" || echo "$0"));
 # Run
 
 declare -a orgs=(
+  "org0"
   "org1"
   "org2"
   "org3"
   "org4"
-  # "org5"
+  "org5"
+  "org6"
+  "org7"
+  "org8"
+  "org9"
 )
 runScript="npm run test:concurrency"
 MY_LOG_DIR="$APIM_INTEGRATION_TEST_LOG_DIR/test-concurreny"; rm -rf $MY_LOG_DIR/*.out
