@@ -17,6 +17,10 @@ echo " >>> Success."
 
 echo " >>> Build Docker Image ..."
   cd $scriptDir
+# test workflow
+  echo "scriptDir = $scriptDir"
+  pwd; ls -la
+
   runScript="npm run build"
   $runScript
   code=$?;
