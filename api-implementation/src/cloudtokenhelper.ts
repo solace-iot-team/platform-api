@@ -57,7 +57,7 @@ export async function getCloudBaseUrl(): Promise<string> {
   token = ns.getStore().get(ContextConstants.CLOUD_TOKEN);
 
   if (token == null || isString(token)) {
-    L.debug('using default cloud base url');
+    L.trace('using default cloud base url');
     return 'https://api.solace.cloud/api/v0';
   } else {
     return token.cloud.baseUrl;
@@ -68,7 +68,7 @@ export async function getEventPortalBaseUrl(): Promise<string> {
   var token: any = null;
   token = ns.getStore().get(ContextConstants.CLOUD_TOKEN);
   if (token  == null || isString(token)) {
-    L.debug('using default event portal base url');
+    L.trace('using default event portal base url');
     return 'https://solace.cloud';
   } else {
     return token.eventPortal.baseUrl;
@@ -77,7 +77,7 @@ export async function getEventPortalBaseUrl(): Promise<string> {
 
 export async function resolve(resolver: any) {
   if (typeof resolver === 'function') {
-    L.debug('resolving url');
+    L.trace('resolving url');
     return resolver();
   } else {
     return resolver;
