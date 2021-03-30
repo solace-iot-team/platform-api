@@ -10,10 +10,11 @@ const dockerAssetDir = './assets';
 const dockerFile = './Dockerfile';
 const dockerContextDir = `${workingDir}/docker-context`;
 const dockerContextApiImplementationDir = `${dockerContextDir}/api-implementation`;
-const packageJson = require(`${workingApiImplmentationDir}/package.json`);
-const dockerImageName = packageJson.name;
-const dockerImageTag = `${dockerImageName}:${packageJson.version}`;
-const dockerImageTagLatest = `${dockerImageName}:latest`;
+
+let packageJson;
+let dockerImageName: string;
+let dockerImageTag: string;
+let dockerImageTagLatest: string;
 
 const dockerContextInclude = [
     'dist',
@@ -50,6 +51,12 @@ const buildDockerContext = () => {
         if(s.cp('-rf', `${includeFile}`, dockerContextApiImplementationDir).code !== 0) process.exit(1);
     }
 }
+const setPackageVars = () => {
+    packageJson = require(`${workingApiImplmentationDir}/package.json`);
+    dockerImageName = packageJson.name;
+    dockerImageTag = `${dockerImageName}:${packageJson.version}`;
+    dockerImageTagLatest = `${dockerImageName}:latest`;
+}
 const removeDockerContainersByImageName = () => {
     console.log(`[${scriptName}]: removing any existing containers for image: ${dockerImageName}`);
     let cmd = `docker ps | awk '{split($2,image,":"); print $1, image[1]}' | awk -v image=${dockerImageName} '$2 == image {print $1}'`;
@@ -73,10 +80,10 @@ const buildDockerImage = () => {
     if(s.exec(`docker tag ${dockerImageTag} ${dockerImageTagLatest}`).code !== 0) process.exit(1);
 }
 const main = () => {
-
     prepare();
     compile();
     buildDockerContext();
+    setPackageVars();
     removeDockerContainersByImageName();
     buildDockerImage();
 }
