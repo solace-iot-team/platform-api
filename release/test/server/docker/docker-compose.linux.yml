@@ -1,0 +1,53 @@
+version: "3.3"
+services:
+  platform-api-server:
+    container_name: "${CONTAINER_NAME}"
+    image: "${IMAGE}"
+    network_mode: host
+    volumes:
+      - ${PLATFORM_DATA_MOUNT_PATH}:${PLATFORM_DATA_INTERNAL_PATH}
+    # cap_add:
+    #   - NET_RAW
+    # ports:
+    #   - ${PLATFORM_PORT}:3000
+    restart: unless-stopped
+    environment:
+      - DB_URL=${DB_URL}
+      - LOG_LEVEL=${LOG_LEVEL}
+      - APP_ID=${APP_ID}
+      - FILE_USER_REGISTRY=${FILE_USER_REGISTRY}
+      - PLATFORM_PORT=${PLATFORM_PORT}
+
+# # docker-compose -f PubSubStandard_singleNode.yml up -d
+# version: "3.3"
+
+# services:
+#   primary:
+#     container_name: "PubSubSingleNode"
+#     image: "{{ docker_image }}"
+#     shm_size: 4g
+#     network_mode: host
+#     user: "4000"
+#     cap_drop:
+#     - ALL
+#     cap_add:
+#     - NET_RAW
+#     ulimits:
+#       core: -1
+#       memlock: -1
+#       nofile:
+#         soft: 65536
+#         hard: 65536
+#     restart: on-failure:3
+#     volumes:
+#       - "{{ bootstrap.broker.ext_storage.solace_mount_path }}/spool/softAdb:/usr/sw/internalSpool/softAdb:Z"
+#       - "{{ bootstrap.broker.ext_storage.solace_mount_path }}/spool:/usr/sw/internalSpool:Z"
+#       - "{{ bootstrap.broker.ext_storage.solace_mount_path }}/jail:/usr/sw/jail:Z"
+#       - "{{ bootstrap.broker.ext_storage.solace_mount_path }}/diagnostics:/var/lib/solace/diags:Z"
+#       - "{{ bootstrap.broker.ext_storage.solace_mount_path }}/adbBackup:/usr/sw/adb:Z"
+#       - "{{ bootstrap.broker.ext_storage.solace_mount_path }}/var:/usr/sw/var:Z"
+#     environment:
+#       - username_admin_globalaccesslevel=admin
+#       - username_admin_password=admin
+#       - system_scaling_maxconnectioncount={{ bootstrap.broker.docker_image.system_scaling_maxconnectioncount }}
+#       - TZ=Europe/London

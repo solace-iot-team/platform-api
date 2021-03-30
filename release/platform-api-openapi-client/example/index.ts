@@ -31,7 +31,8 @@ const sampleEnv = {
         { name: 'resource_id', value: '*' }
     ],
     DEVELOPER_USERNAME: 'dev@sample.com'
-  }
+}
+console.log(`sampleEnv=\n${JSON.stringify(sampleEnv, null, 2)}`);
 
 const loadYamlFileAsJsonString = (apiSpecPath: string): string => {
     const b: Buffer = fs.readFileSync(apiSpecPath);
@@ -49,6 +50,7 @@ const deleteOrg = async() => {
     try {
         await PlatformManagementService.deleteOrganization(sampleEnv.ORG_NAME);
     } catch(e) {
+        console.log(`deleteOrg error = ${JSON.stringify(e, null, 2)}`);
         if(e.status !== 404 && e.status !== 201) {
             console.log(`>>> ERROR: ${JSON.stringify(e, null, 2)}`);
             process.exit(1);
