@@ -57,12 +57,20 @@ jobs:
           echo "docker --version"; docker --version
           echo "docker-compose --version"; docker-compose --version
 
-      - name: "TEST: build docker image on ubuntu"
-        run: |
-          export NODE_AUTH_TOKEN=${{ secrets.NPM_TOKEN }}
-          export APIM_SOLACE_PLATFORM_API_PROJECT_HOME="$GITHUB_WORKSPACE"
-          cd "$APIM_SOLACE_PLATFORM_API_PROJECT_HOME/${RELEASE_PLATFORM_DIR}"
-          platform-api-server/docker/release.sh
+      - name: Login to Docker Hub
+        uses: docker/login-action@v1
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      # - name: "TEST: build docker image on ubuntu"
+      #   run: |
+      #     export NODE_AUTH_TOKEN=${{ secrets.NPM_TOKEN }}
+      #     export APIM_SOLACE_PLATFORM_API_PROJECT_HOME="$GITHUB_WORKSPACE"
+      #     cd "$APIM_SOLACE_PLATFORM_API_PROJECT_HOME/${RELEASE_PLATFORM_DIR}"
+      #     platform-api-server/docker/release.sh
+
+
 
       # - name: Release
       #   run: |

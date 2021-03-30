@@ -10,6 +10,7 @@ const dockerAssetDir = './assets';
 const dockerFile = './Dockerfile';
 const dockerContextDir = `${workingDir}/docker-context`;
 const dockerContextApiImplementationDir = `${dockerContextDir}/api-implementation`;
+const dockerHubUser = "solaceiotteam";
 
 let packageJson;
 let dockerImageName: string;
@@ -79,6 +80,16 @@ const buildDockerImage = () => {
     if(s.exec(`docker build --no-cache --tag ${dockerImageTag} -f ${dockerFile} ${dockerContextDir}`).code !== 0) process.exit(1);
     if(s.exec(`docker tag ${dockerImageTag} ${dockerImageTagLatest}`).code !== 0) process.exit(1);
 }
+const publishDockerImage = () => {
+    // docker tag platform-api-server:0.0.1 solaceiotteam/platform-api-server:0.0.1
+    // docker push solaceiotteam/platform-api-server:0.0.1
+    let publishedImageTag = `${dockerHubUser}/${dockerImageTag}`;
+    let publishedImageTagLatest = `${dockerHubUser}/${dockerImageTagLatest}`;
+    if(s.exec(`docker tag ${dockerImageTag} ${publishedImageTag}`).code !== 0) process.exit(1);
+    if(s.exec(`docker tag ${publishedImageTag} ${publishedImageTagLatest}`).code !== 0) process.exit(1);
+    if(s.exec(`docker push ${publishedImageTag}`).code !== 0) process.exit(1);
+    if(s.exec(`docker push ${publishedImageTagLatest}`).code !== 0) process.exit(1);
+}
 const main = () => {
     prepare();
     compile();
@@ -86,6 +97,7 @@ const main = () => {
     setPackageVars();
     removeDockerContainersByImageName();
     buildDockerImage();
+    publishDockerImage();
 }
 
 main();

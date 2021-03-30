@@ -1,6 +1,6 @@
 {
-  "name": "platform-api-server-test",
-  "version": "0.0.1",
+  "name": "platform-api-server",
+  "version": "0.0.2",
   "description": "TODO",
   "scripts": {
     "server:build": "ts-node build.ts && tsc",

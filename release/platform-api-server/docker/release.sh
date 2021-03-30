@@ -15,28 +15,13 @@ echo " >>> Npm install ..."
   if [[ $code != 0 ]]; then echo ">>> ERROR - code=$code - $runScript' - $scriptName"; exit 1; fi
 echo " >>> Success."
 
-echo " >>> Build Docker Image ..."
+echo " >>> Build & Push Docker Image ..."
   cd $scriptDir
-# test workflow
-  echo "scriptDir = $scriptDir"
-  pwd; ls -la
-
-  runScript="npm run build"
+  runScript="npm run build+push"
   $runScript
   code=$?;
   if [[ $code != 0 ]]; then echo ">>> ERROR - code=$code - $runScript' - $scriptName"; exit 1; fi
 echo " >>> Success."
-
-# echo " >>> Publish Docker Image ..."
-#   echo ">>> ERROR - publish the image to docker hub now ";
-#   exit 1;
-#   runScript="xxx"
-#   $runScript
-#   code=$?;
-#   if [[ $code != 0 ]]; then echo ">>> ERROR - code=$code - $runScript' - $scriptName"; exit 1; fi
-# echo " >>> Success."
-
-
 
 ###
 # The End.

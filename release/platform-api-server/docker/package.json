@@ -2,7 +2,7 @@
   "name": "@solace-iot-team/platform-api-server-docker-release",
   "version": "0.0.1",
   "scripts": {
-    "build": "ts-node build.ts"
+    "build+push": "ts-node build+push.ts"
   },
   "author": "Solace Corporation",
   "contributors": [
