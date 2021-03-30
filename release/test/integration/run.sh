@@ -13,6 +13,7 @@ scriptName=$(basename $(test -L "$0" && readlink "$0" || echo "$0"));
 # Prepare
 
   # LOG_DIR=$APIM_RELEASE_TEST_LOG_DIR; mkdir -p $LOG_DIR; rm -rf $LOG_DIR/*;
+  integrationLibDir="$APIM_SOLACE_PLATFORM_API_PROJECT_HOME/api-implementation/test/lib"
   integrationDir="$APIM_SOLACE_PLATFORM_API_PROJECT_HOME/api-implementation/test/integration"
   # map release test secrets env to integration test env
   export APIM_INTEGRATION_TEST_SOLACE_CLOUD_TOKEN=$APIM_RELEASE_TEST_SOLACE_CLOUD_TOKEN
@@ -23,6 +24,12 @@ scriptName=$(basename $(test -L "$0" && readlink "$0" || echo "$0"));
 # Run
 
 echo ">>> Run integration test ..."
+  # get the openapi client and copy to  $integrationLibDir
+  cd $scriptDir
+  npm install
+  mkdir -p $integrationLibDir/generated/openapi
+  cp -a ./node_modules/@solace-iot-team/platform-api-openapi-client/dist/* $integrationLibDir/generated/openapi
+  code=$?; if [[ $code != 0 ]]; then echo " >>> ERROR - code=$code - runScript='$runScript' - $scriptName"; exit 1; fi
   cd $integrationDir
   npm install
   source source.env.sh
