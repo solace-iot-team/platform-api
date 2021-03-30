@@ -54,13 +54,22 @@ jobs:
           echo "bash --version: "; bash --version
           echo "node --version: "; node --version
           echo "npm --version: "; npm --version
+          echo "docker --version"; docker --version
+          echo "docker-compose --version"; docker-compose --version
 
-      - name: Release
+      - name: "TEST: build docker image on ubuntu"
         run: |
           export NODE_AUTH_TOKEN=${{ secrets.NPM_TOKEN }}
           export APIM_SOLACE_PLATFORM_API_PROJECT_HOME="$GITHUB_WORKSPACE"
           cd "$APIM_SOLACE_PLATFORM_API_PROJECT_HOME/${RELEASE_PLATFORM_DIR}"
-          ./release.sh
+          platform-api-server/docker/release.sh
+
+      # - name: Release
+      #   run: |
+      #     export NODE_AUTH_TOKEN=${{ secrets.NPM_TOKEN }}
+      #     export APIM_SOLACE_PLATFORM_API_PROJECT_HOME="$GITHUB_WORKSPACE"
+      #     cd "$APIM_SOLACE_PLATFORM_API_PROJECT_HOME/${RELEASE_PLATFORM_DIR}"
+      #     ./release.sh
 
       - name: Archive logs
         if: ${{ (failure() && !cancelled()) || (always() && (github.event_name=='workflow_dispatch' || env.DEBUG_FLAG=='true') ) }}
