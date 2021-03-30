@@ -63,21 +63,12 @@ jobs:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
-      # - name: "TEST: build docker image on ubuntu"
-      #   run: |
-      #     export NODE_AUTH_TOKEN=${{ secrets.NPM_TOKEN }}
-      #     export APIM_SOLACE_PLATFORM_API_PROJECT_HOME="$GITHUB_WORKSPACE"
-      #     cd "$APIM_SOLACE_PLATFORM_API_PROJECT_HOME/${RELEASE_PLATFORM_DIR}"
-      #     platform-api-server/docker/release.sh
-
-
-
-      # - name: Release
-      #   run: |
-      #     export NODE_AUTH_TOKEN=${{ secrets.NPM_TOKEN }}
-      #     export APIM_SOLACE_PLATFORM_API_PROJECT_HOME="$GITHUB_WORKSPACE"
-      #     cd "$APIM_SOLACE_PLATFORM_API_PROJECT_HOME/${RELEASE_PLATFORM_DIR}"
-      #     ./release.sh
+      - name: Release
+        run: |
+          export NODE_AUTH_TOKEN=${{ secrets.NPM_TOKEN }}
+          export APIM_SOLACE_PLATFORM_API_PROJECT_HOME="$GITHUB_WORKSPACE"
+          cd "$APIM_SOLACE_PLATFORM_API_PROJECT_HOME/${RELEASE_PLATFORM_DIR}"
+          ./release.sh
 
       - name: Archive logs
         if: ${{ (failure() && !cancelled()) || (always() && (github.event_name=='workflow_dispatch' || env.DEBUG_FLAG=='true') ) }}
