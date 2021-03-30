@@ -28,22 +28,38 @@ class EventPortalFacade {
 
   public async validate(token: string, baseUrl?: string): Promise<boolean> {
     let url: string = `${await resolve(OpenAPI.BASE)}/api/v1/eventPortal/applicationDomains`;
-    if (baseUrl !=null){
+    if (baseUrl != null) {
       url = `${baseUrl}/api/v1/eventPortal/applicationDomains`;
     }
     return validateToken(token, url);
   }
 
-  @Cache(apiDomainsCache, { ttl: 60 })
   public async getApiDomainsServiceCall(): Promise<ApplicationDomainsResponse> {
-    var appDomains: ApplicationDomainsResponse = await ApplicationDomainsService.list(100, 1);
-    return appDomains;
+    const org: string = ns.getStore().get(ContextConstants.ORG_NAME);
+    const cachedResponse = await apiDomainsCache.getItem(org);
+    if (cachedResponse) {
+      L.trace(`returning cached api domains ${org}`);
+      return cachedResponse;
+    } else {
+      var appDomains: ApplicationDomainsResponse = await ApplicationDomainsService.list(100, 1);
+      await apiDomainsCache.setItem(org, appDomains, { ttl: 60 });
+      L.trace(`retrieved apiDomains ${org} from backend`);
+      return appDomains;
+    }
   }
 
-  @Cache(tagCache, { ttl: 3600 })
   public async getTags(): Promise<Tag[]> {
-    const tags: TagsResponse = await TagsService.list11(100, 1);
-    return tags.data;
+    const org: string = ns.getStore().get(ContextConstants.ORG_NAME);
+    const cachedResponse: Tag[] = await tagCache.getItem(org);
+    if (cachedResponse) {
+      L.trace(`returning cached tags ${org}`);
+      return cachedResponse;
+    } else {
+      const tags: TagsResponse = await TagsService.list11(100, 1);
+      await tagCache.setItem(org, tags.data, { ttl: 3600 });
+      L.trace(`retrieved tags ${org} from backend`);
+      return tags.data;
+    }
   }
 
   private async getApiDomainNameById(domainId: string): Promise<string> {
@@ -83,7 +99,7 @@ class EventPortalFacade {
       const tagIds: IdsResponse = await ApplicationsService.list3(applicationId);
       const tags = await this.getTagValuesByIds(tagIds.data);
       await appTagsCache.setItem(applicationId, tags, { ttl: 60 });
-      L.trace(`retrieved tag ${applicationId} from backend`);
+      L.trace(`retrieved tags ${applicationId} from backend`);
       return tags;
     }
   }
