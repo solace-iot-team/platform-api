@@ -17,12 +17,14 @@ const callback: serverCallback = async () => {
 
 };
 
-
 if (L.isLevelEnabled('debug')) {
   L.info('Activating unhandled promise logger');
   process.on('unhandledRejection', error => {
     L.debug(`unhandled rejection ${JSON.stringify(error)}`);
   });
+  for (const k in process.env) {
+    L.debug(`env: ${k}='${process.env[k]}'`);
+  }
 }
 
 const port = parseInt(process.env.PLATFORM_PORT) || 3000;
