@@ -41,7 +41,7 @@ echo " >>> Starting server in docker..."
   esac
 
   export CONTAINER_NAME="release-platform-api-server"
-  export IMAGE="platform-api-server-test:latest"
+  export IMAGE="solaceiotteam/platform-api-server:latest"
   export PLATFORM_DATA_MOUNT_PATH=$platformApiServerDataVolumeMountPath
   export PLATFORM_DATA_INTERNAL_PATH=$platformApiServerDataVolumeInternal
   export PLATFORM_PORT=$APIM_RELEASE_TEST_PLATFORM_PORT
