@@ -23,11 +23,10 @@ scriptName=$(basename $(test -L "$0" && readlink "$0" || echo "$0"));
 # Scripts
 
 declare -a testScripts=(
-  "$scriptDir/generate.openapi-client.sh"
-  "$scriptDir/mongodb/start.mongo.sh"
-  "$scriptDir/start.server.background.sh"
-  "$scriptDir/run.npm.integration-tests.logfile.sh"
-  "$scriptDir/run.npm.concurrency-tests.sh"
+  "generate.openapi-client.sh"
+  "mongodb/start.mongo.sh"
+  "start.server.background.sh"
+  "run.npm.integration-tests.logfile.sh"
 )
 
 ############################################################################################################################
@@ -40,12 +39,10 @@ declare -a testScripts=(
 
   for testScript in ${testScripts[@]}; do
     if [ "$FAILED" -eq 0 ]; then
-      runScript="$testScript"
+      runScript="$scriptDir/$testScript"
       echo "starting: $runScript ..."
       if [[ "$RUN_FG" == "false" ]]; then
-        _logFile=${testScript#"$APIM_SOLACE_PLATFORM_API_PROJECT_HOME"}
-        logFile="$LOG_DIR/$_logFile.out"; mkdir -p "$(dirname "$logFile")";
-        # logFile="$LOG_DIR/$testScript.out"; mkdir -p "$(dirname "$logFile")";
+        logFile="$LOG_DIR/$testScript.out"; mkdir -p "$(dirname "$logFile")";
         "$runScript" > $logFile 2>&1
       else
         "$runScript"

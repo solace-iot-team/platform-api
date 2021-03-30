@@ -2,11 +2,12 @@ import L from '../server/common/logger';
 import Environment = Components.Schemas.Environment;
 import { OpenAPI, Service, ServicesService, ServiceResponse, ServicesResponse } from "./clients/solacecloud";
 import { ErrorResponseInternal } from '../server/api/middlewares/error.handler';
-import getToken, { validateToken } from './cloudtokenhelper';
+import { getCloudBaseUrl, getCloudToken, validateToken, resolve } from './cloudtokenhelper';
 
 class SolaceCloudFacade {
   constructor() {
-    OpenAPI.TOKEN = getToken;
+    OpenAPI.TOKEN = getCloudToken;
+    OpenAPI.BASE = getCloudBaseUrl;
   }
 
   public async getServiceByEnvironment(e: Environment): Promise<Service> {
@@ -39,8 +40,11 @@ class SolaceCloudFacade {
     }
   }
 
-  public async validate(token: string): Promise<boolean> {
-    const url: string = `${OpenAPI.BASE}/services`;
+  public async validate(token: string, baseUrl?: string): Promise<boolean> {
+    let url: string = `${await resolve(OpenAPI.BASE)}/services`;
+    if (baseUrl !=null){
+      url = `${baseUrl}/services`;
+    }
     return validateToken(token, url);
   }
 }

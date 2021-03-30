@@ -9,6 +9,7 @@ import BrokerService from './broker.service';
 import SolaceCloudFacade from '../../../src/solacecloudfacade';
 import EventPortalFacade from '../../../src/eventportalfacade';
 import { ns } from '../middlewares/context.handler';
+import { isString } from '../../../src/typehelpers';
 
 export class OrganizationsService {
   private persistenceService: PersistenceService;
@@ -133,11 +134,18 @@ export class OrganizationsService {
     });
   }
 
-  async validateCloudToken(token: string): Promise<boolean> {
+  async validateCloudToken(token: any): Promise<boolean> {
     try {
-      const isServiceToken: boolean = await SolaceCloudFacade.validate(token);
-      const isPortalToken: boolean = await EventPortalFacade.validate(token);
-      return isServiceToken && isPortalToken;
+      if (isString(token)) {
+        const isServiceToken: boolean = await SolaceCloudFacade.validate(token);
+        const isPortalToken: boolean = await EventPortalFacade.validate(token);
+        return isServiceToken && isPortalToken;
+      } else {
+        const isServiceToken: boolean = await SolaceCloudFacade.validate(token.cloud.token, token.cloud.baseUrl);
+        const isPortalToken: boolean = await EventPortalFacade.validate(token.eventPortal.token, token.eventPortal.baseUrl);
+        return isServiceToken && isPortalToken;
+      }
+      
     } catch (e) {
       L.warn(e);
       return false;
