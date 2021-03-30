@@ -7,6 +7,8 @@ scriptName=$(basename $(test -L "$0" && readlink "$0" || echo "$0"));
 
   if [ -z "$APIM_RELEASE_TEST_MONGO_DATABASE" ]; then echo ">>> ERROR: - $scriptName - missing env var: APIM_RELEASE_TEST_MONGO_DATABASE"; exit 1; fi
   if [ -z "$APIM_RELEASE_TEST_MONGO_PORT" ]; then echo ">>> ERROR: - $scriptName - missing env var: APIM_RELEASE_TEST_MONGO_PORT"; exit 1; fi
+  if [ -z "$APIM_RELEASE_TEST_PLATFORM_PORT" ]; then echo ">>> ERROR: - $scriptName - missing env var: APIM_RELEASE_TEST_PLATFORM_PORT"; exit 1; fi
+
 
 ############################################################################################################################
 # Run
@@ -24,7 +26,7 @@ fileUserRegistry="$platformApiServerDataVolumeInternal/organization_users.json"
 echo " >>> Starting server in docker..."
 
   uName=$(uname -s)
-  case $uName in 
+  case $uName in
     Darwin)
       dockerComposeFile=$dockerComposeFileMac
       localMongoDBUrl=$localMongoDBUrlMac
@@ -38,11 +40,11 @@ echo " >>> Starting server in docker..."
       ;;
   esac
 
-  export CONTAINER_NAME="platform-api-server"
+  export CONTAINER_NAME="release-platform-api-server"
   export IMAGE="platform-api-server-test:latest"
   export PLATFORM_DATA_MOUNT_PATH=$platformApiServerDataVolumeMountPath
   export PLATFORM_DATA_INTERNAL_PATH=$platformApiServerDataVolumeInternal
-  export PLATFORM_PORT=3000
+  export PLATFORM_PORT=$APIM_RELEASE_TEST_PLATFORM_PORT
   export DB_URL=$localMongoDBUrl
   export LOG_LEVEL=debug
   export APP_ID=platform-api-server
@@ -58,4 +60,3 @@ echo " >>> Success."
 
 ###
 # The End.
-
