@@ -24,6 +24,7 @@ scriptName=$(basename $(test -L "$0" && readlink "$0" || echo "$0"));
 
 echo ">>> Run integration test ..."
   cd $integrationDir
+  npm install
   source source.env.sh
   export APIM_INTEGRATION_TEST_LOG_DIR=$APIM_RELEASE_TEST_LOG_DIR
   runScript="./run.npm.integration-tests.logfile.sh"
