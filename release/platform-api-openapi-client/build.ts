@@ -31,13 +31,13 @@ const getNewVersion = (): string => {
     return version;
 }
 const prepare = () => {
-    if(s.rm('-rf', outDir).code !== 0) process.exit(1);
-    if(s.mkdir('-p', outDir).code !== 0) process.exit(1);
+    s.rm('-rf', outDir);
+    s.mkdir('-p', outDir);
     // s.rm('-rf', workingDir);
     // s.mkdir('-p', workingDir);
-    if(s.rm('-rf', outputSrcDir).code !== 0) process.exit(1);
-    if(s.mkdir('-p', outputSrcDir).code !== 0) process.exit(1);
-    if(s.cp(`${inputApiSpecFile}`, `${outputApiSpecFile}`).code !== 0) process.exit(1);
+    s.rm('-rf', outputSrcDir);
+    s.mkdir('-p', outputSrcDir);
+    s.cp(`${inputApiSpecFile}`, `${outputApiSpecFile}`);
 }
 const generateCode = () => {
     OpenAPI.generate({

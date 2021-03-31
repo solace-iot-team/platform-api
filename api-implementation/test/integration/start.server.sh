@@ -27,8 +27,7 @@ echo " >>> Starting server ..."
   export LOG_LEVEL=$APIM_INTEGRATION_TEST_LOG_LEVEL
   export FILE_USER_REGISTRY=$APIM_INTEGRATION_TEST_FILE_USER_REGISTRY
 
-  # startServerScript="npm run server:dev"
-  startServerScript="npm start"
+  startServerScript="npm run server:dev"
 
   if [ -z "$IS_BACKGROUND" ]; then
     $startServerScript

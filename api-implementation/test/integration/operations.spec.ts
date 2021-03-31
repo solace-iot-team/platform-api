@@ -66,7 +66,7 @@ describe(`${scriptName}`, () => {
       response = await platformManagementRequest.fetch("organizations", request);
       TestLogger.logResponse(`get all orgs`, response);
       expect(response.status).to.equal(200);
-      expect(response.body.length, 'number of all orgs').to.equal(2);
+      expect(response.body.length).to.equal(2);
     });
 
     it(`${scriptName}: should handle invalid or missing token`, async() => {

@@ -30,7 +30,6 @@ fi
 
 declare -a releaseScripts=(
   "platform-api-openapi-client/release.sh"
-  "platform-api-server/docker/release.sh"
 )
 
 ############################################################################################################################

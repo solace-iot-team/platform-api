@@ -7,6 +7,9 @@ name: integration-test
 on:
   # for testing
   workflow_dispatch:
+  push:
+    branches:
+    - main
   # production
   schedule:
   #   # - cron: '0 7 * * MON'
@@ -21,7 +24,7 @@ env:
   TEST_TEST_RUNNER_OUTPUT_DIR: "api-implementation/test/integration/tmp"
   TEST_OUTPUT_NAME: "api-implementation-test-integration"
 jobs:
-  integration_test:
+  run_tests:
     runs-on: ubuntu-18.04
     strategy:
       matrix:

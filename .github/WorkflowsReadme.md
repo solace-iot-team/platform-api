@@ -9,7 +9,6 @@
 ## Release
 
 * **NPM_TOKEN** - npm automation token
-* **DOCKERHUB_USERNAME**
-* **DOCKERHUB_TOKEN**
+
 
 ---
