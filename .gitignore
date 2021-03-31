@@ -4,3 +4,4 @@ api-implementation/src/clients/.DS_Store
 api-implementation/dist
 tmp
 save*
+clients/node_modules
