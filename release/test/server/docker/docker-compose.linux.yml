@@ -7,6 +7,7 @@ services:
   platform-api-server:
     container_name: "${CONTAINER_NAME}"
     image: "${IMAGE}"
+    # network_mode: host
     volumes:
       - ${PLATFORM_DATA_MOUNT_PATH}:${PLATFORM_DATA_INTERNAL_PATH}
     ports:
