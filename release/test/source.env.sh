@@ -22,7 +22,7 @@ export APIM_RELEASE_TEST_MONGO_PORT=27017
 export APIM_RELEASE_TEST_DB_URL="mongodb://localhost:$APIM_RELEASE_TEST_MONGO_PORT/$APIM_RELEASE_TEST_MONGO_DATABASE?retryWrites=true&w=majority"
 export APIM_RELEASE_TEST_PLATFORM_PROTOCOL="http"
 export APIM_RELEASE_TEST_PLATFORM_HOST="localhost"
-export APIM_RELEASE_TEST_PLATFORM_PORT="3000"
+export APIM_RELEASE_TEST_PLATFORM_PORT="9090"
 export APIM_RELEASE_TEST_APP_ID="release-test"
 # 'fatal', 'error', 'warn', 'info', 'debug', 'trace' or 'silent'
 export APIM_RELEASE_TEST_LOG_LEVEL="debug"
