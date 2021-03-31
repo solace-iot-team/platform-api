@@ -1,0 +1,14 @@
+{
+  "name": "release-test-integration",
+  "author": "Solace Corporation",
+  "contributors": [
+    {
+      "name": "Ricardo Gomez-Ulmke",
+      "email": "ricardo.gomez-ulmke@solace.com"
+    }
+  ],
+  "license": "MIT",
+  "dependencies": {
+    "@solace-iot-team/platform-api-openapi-client": "^0.0.10"
+  }
+}

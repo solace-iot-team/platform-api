@@ -7,9 +7,6 @@ name: integration-test
 on:
   # for testing
   workflow_dispatch:
-  push:
-    branches:
-    - main
   # production
   schedule:
   #   # - cron: '0 7 * * MON'
