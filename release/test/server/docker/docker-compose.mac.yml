@@ -1,3 +1,7 @@
+#
+# Solace Platform API Server
+# MacOS
+#
 version: "3.3"
 services:
   platform-api-server:
