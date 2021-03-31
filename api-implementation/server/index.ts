@@ -4,10 +4,15 @@ import L from './common/logger';
 import routes from './routes';
 import { databaseaccess } from '../src/databaseaccess';
 import { loadUserRegistry} from './api/middlewares/file.authorizer';
+import printEnv from 'print-env';
+
 type serverCallback = () => void;
 
 const callback: serverCallback = async () => {
   L.info(`Listening on port ${port}`);
+  printEnv (function (s: string) {
+    L.info.apply(L, [s]);
+  });
   try {
     await databaseaccess.connect(process.env.DB_URL || `mongodb://@localhost:27017/solace-platform?retryWrites=true&w=majority`);
     L.info(`Connected to Mongo!`);
@@ -18,10 +23,10 @@ const callback: serverCallback = async () => {
 };
 
 
-if (L.isLevelEnabled('debug')) {
+if (L.isLevelEnabled('debug') || L.isLevelEnabled('trace')) {
   L.info('Activating unhandled promise logger');
   process.on('unhandledRejection', error => {
-    L.debug(`unhandled rejection ${JSON.stringify(error)}`);
+    L.error(error, `unhandled rejection ${JSON.stringify(error)}`);
   });
 }
 
