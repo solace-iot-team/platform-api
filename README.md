@@ -27,7 +27,8 @@ Integration server to connect API Management tools with [Solace PubSub+ Platform
   - make a note of the service-id
 * Create a Solace Cloud Token
   - Permissions:
-    - TODO
+    - Organization Services: Get Services
+    - Event Portal: Event Portal Read
   - make a note of the token
 
 ## Mongo DB
