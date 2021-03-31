@@ -1,1 +1,7 @@
 /node_modules/
+.settings
+.vscode
+.cfignore
+.eslintrc.js
+.prettierrc.js
+.project
