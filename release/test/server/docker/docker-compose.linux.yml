@@ -7,11 +7,9 @@ services:
   platform-api-server:
     container_name: "${CONTAINER_NAME}"
     image: "${IMAGE}"
-    # network_mode: host
+    network_mode: host
     volumes:
       - ${PLATFORM_DATA_MOUNT_PATH}:${PLATFORM_DATA_INTERNAL_PATH}
-    ports:
-      - ${PLATFORM_PORT}:${PLATFORM_PORT}
     restart: unless-stopped
     environment:
       - DB_URL=${DB_URL}

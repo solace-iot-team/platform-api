@@ -33,8 +33,7 @@ echo " >>> Starting server in docker..."
       ;;
     Linux)
       dockerComposeFile=$dockerComposeFileLinux
-      # localMongoDBUrl=$localMongoDBUrlLinux
-      localMongoDBUrl=$localMongoDBUrlMac
+      localMongoDBUrl=$localMongoDBUrlLinux
       ;;
     *)
       echo ">>> ERROR: unknown OS: $uName"; exit 1
