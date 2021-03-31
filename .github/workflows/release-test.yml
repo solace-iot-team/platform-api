@@ -18,7 +18,7 @@ env:
   RELEASE_TEST_RUNNER_OUTPUT_DIR: "release/test/tmp"
   RELEASE_TEST_OUTPUT_NAME: "platform-api-release-test"
 jobs:
-  run_tests:
+  release_tests:
     runs-on: ubuntu-18.04
     strategy:
       matrix:

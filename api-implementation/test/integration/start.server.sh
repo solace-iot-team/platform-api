@@ -19,6 +19,12 @@ MY_LOG_DIR="$APIM_INTEGRATION_TEST_LOG_DIR/server"; mkdir -p $MY_LOG_DIR;
 MY_PID_FILE="$MY_LOG_DIR/server.pid"
 IS_BACKGROUND=$1
 
+echo " >>> Building server ..."
+  runScript="npm run prestart"
+  $runScript
+  if [[ $? != 0 ]]; then echo " >>> ERROR: building server - $runScript"; exit 1; fi
+echo " >>> Success."
+
 echo " >>> Starting server ..."
   # map to server env
   export DB_URL=$APIM_INTEGRATION_TEST_DB_URL
@@ -27,7 +33,8 @@ echo " >>> Starting server ..."
   export LOG_LEVEL=$APIM_INTEGRATION_TEST_LOG_LEVEL
   export FILE_USER_REGISTRY=$APIM_INTEGRATION_TEST_FILE_USER_REGISTRY
 
-  startServerScript="npm run server:dev"
+  # startServerScript="npm run server:dev"
+  startServerScript="npm start"
 
   if [ -z "$IS_BACKGROUND" ]; then
     $startServerScript

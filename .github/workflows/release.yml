@@ -4,9 +4,9 @@ on:
   # for testing
   workflow_dispatch:
 
-  # # for production
-  # release:
-  #   types: [created]
+  # for production
+  release:
+    types: [created]
 
 env:
   DEBUG_FLAG: ${{ true }}
@@ -54,6 +54,13 @@ jobs:
           echo "bash --version: "; bash --version
           echo "node --version: "; node --version
           echo "npm --version: "; npm --version
+          echo "docker --version"; docker --version
+          echo "docker-compose --version"; docker-compose --version
+
+      - uses: docker/login-action@v1
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
 
       - name: Release
         run: |
