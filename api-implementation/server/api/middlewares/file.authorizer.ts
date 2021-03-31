@@ -2,14 +2,14 @@ import L from '../../common/logger';
 import basicAuth from 'express-basic-auth';
 import fs from 'fs';
 
-var userRegistry = null;
-setInterval(loadRegistry, 60*1000);
+let userRegistry = null;
+setInterval(loadUserRegistry, 60*1000);
 
 export default function fileAuthorizer(
   username: string, password: string
 ): boolean {
   if (userRegistry === null) {
-    loadRegistry();
+    loadUserRegistry();
     
   }
   L.debug(`Authorizing ${username}`);
@@ -23,9 +23,13 @@ export default function fileAuthorizer(
   return passwordMatches;
 }
 
-function loadRegistry(){
+export function loadUserRegistry(){
+  try {
     var fileName = process.env.FILE_USER_REGISTRY || 'example-users.json';
     var regFile = fs.readFileSync(fileName,'utf8');
     userRegistry = JSON.parse(regFile);
     L.info(`Loaded user registry from ${fileName}, number of users: ${Object.keys(userRegistry).length}`);
+  } catch (e){
+    L.error(e, `Error loading user registry from ${fileName}`);
+  }
 }

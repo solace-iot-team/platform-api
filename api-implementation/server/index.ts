@@ -3,7 +3,7 @@ import Server from './common/server';
 import L from './common/logger';
 import routes from './routes';
 import { databaseaccess } from '../src/databaseaccess';
-
+import { loadUserRegistry} from './api/middlewares/file.authorizer';
 type serverCallback = () => void;
 
 const callback: serverCallback = async () => {
@@ -14,7 +14,7 @@ const callback: serverCallback = async () => {
   } catch (err) {
     L.error(`Unable to connect to Mongo, err=${JSON.stringify(err)}`);
   }
-
+  loadUserRegistry();
 };
 
 
