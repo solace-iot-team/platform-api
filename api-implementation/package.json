@@ -1,7 +1,15 @@
 {
   "name": "platform-api-server",
-  "version": "0.0.2",
-  "description": "TODO",
+  "version": "0.0.10",
+  "description": "Solace Platform API Server",
+  "homepage": "https://github.com/solace-iot-team/platform-api",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/solace-iot-team/platform-api"
+  },
+  "bugs": {
+    "url": "https://github.com/solace-iot-team/platform-api/issues"
+  },
   "scripts": {
     "server:build": "ts-node build.ts && tsc",
     "server:start": "node dist/server/index.js",
@@ -10,16 +18,24 @@
     "dev": "nodemon server/index.ts | pino-pretty",
     "server:dev": "nodemon server/index.ts | pino-pretty",
     "dev:debug": "nodemon --exec \"node -r ts-node/register --inspect-brk\" server/index.ts | pino-pretty",
-    "lint": "eslint -c .eslintrc.js \"{server, test}/**/*.{js,ts,tsx}\" --quiet",
-    "lint:fix": "eslint -c .eslintrc.js \"{server, test}/**/*.{js,ts,tsx}\" --quiet --fix",
     "test:integration": "mocha --config test/integration/.mocharc.yml test/integration/**/*.spec.ts",
     "test:concurrency": "mocha --config test/integration/.mocharc.yml test/integration/**/*.concurrency.spec.ts --exit",
     "test:dev": "mocha --config test/integration/.mocharc.yml -b test/integration/**/log-test.spec.ts --exit",
     "test:bootstrap-demo": "mocha --config test/integration/.mocharc.yml test/integration/**/*.bootstrap-demo.spec.ts --exit",
     "test:debug": "mocha -r ts-node/register --inspect-brk test/**/*.ts --exit"
   },
-  "author": "",
-  "license": "ISC",
+  "author": "Solace Corporation",
+  "contributors": [
+    {
+      "name": "Swen-Helge Huber",
+      "email": "swen-helge.huber@solace.com"
+    },
+    {
+      "name": "Ricardo Gomez-Ulmke",
+      "email": "ricardo.gomez-ulmke@solace.com"
+    }
+  ],
+  "license": "MIT",
   "dependencies": {
     "@asyncapi/parser": "^1.1.1",
     "axios": "^0.21.1",
