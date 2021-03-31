@@ -1,6 +1,6 @@
 {
   "name": "@solace-iot-team/platform-api-openapi-client",
-  "version": "0.0.9",
+  "version": "0.0.2",
   "description": "Solace Platform-API - OpenAPI (Typescript)",
   "homepage": "https://github.com/solace-iot-team/platform-api",
   "repository": {
