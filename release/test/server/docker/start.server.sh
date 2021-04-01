@@ -5,10 +5,10 @@ scriptName=$(basename $(test -L "$0" && readlink "$0" || echo "$0"));
 ############################################################################################################################
 # Environment Variables
 
+  if [ -z "$APIM_RELEASE_TEST_DOCKER_CONTAINER_NAME" ]; then echo ">>> ERROR: - $scriptName - missing env var: APIM_RELEASE_TEST_DOCKER_CONTAINER_NAME"; exit 1; fi
   if [ -z "$APIM_RELEASE_TEST_MONGO_DATABASE" ]; then echo ">>> ERROR: - $scriptName - missing env var: APIM_RELEASE_TEST_MONGO_DATABASE"; exit 1; fi
   if [ -z "$APIM_RELEASE_TEST_MONGO_PORT" ]; then echo ">>> ERROR: - $scriptName - missing env var: APIM_RELEASE_TEST_MONGO_PORT"; exit 1; fi
   if [ -z "$APIM_RELEASE_TEST_PLATFORM_PORT" ]; then echo ">>> ERROR: - $scriptName - missing env var: APIM_RELEASE_TEST_PLATFORM_PORT"; exit 1; fi
-
 
 ############################################################################################################################
 # Run
@@ -40,7 +40,7 @@ echo " >>> Starting server in docker..."
       ;;
   esac
 
-  export CONTAINER_NAME="release-platform-api-server"
+  export CONTAINER_NAME=$APIM_RELEASE_TEST_DOCKER_CONTAINER_NAME
   export IMAGE="solaceiotteam/platform-api-server:latest"
   export PLATFORM_DATA_MOUNT_PATH=$platformApiServerDataVolumeMountPath
   export PLATFORM_DATA_INTERNAL_PATH=$platformApiServerDataVolumeInternal

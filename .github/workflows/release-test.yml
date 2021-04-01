@@ -21,6 +21,7 @@ jobs:
   release_tests:
     runs-on: ubuntu-18.04
     strategy:
+      max-parallel: 1
       matrix:
         node: [ '12', '14' ]
     steps:
@@ -60,11 +61,7 @@ jobs:
           echo "node --version: "; node --version
           echo "npm --version: "; npm --version
           echo "docker --version"; docker --version
-
-      - name: npm install
-        run: |
-          cd "${TEST_PLATFORM_DIR}"
-          npm install
+          echo "docker-compose --version"; docker-compose --version
 
       - name: Run Tests
         run: |

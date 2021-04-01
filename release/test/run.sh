@@ -17,7 +17,7 @@ scriptName=$(basename $(test -L "$0" && readlink "$0" || echo "$0"));
 ############################################################################################################################
 # Prepare
 
-  LOG_DIR=$APIM_RELEASE_TEST_LOG_DIR; mkdir -p $LOG_DIR; rm -rf $LOG_DIR/*;
+  LOG_DIR="$APIM_RELEASE_TEST_LOG_DIR"; mkdir -p $LOG_DIR; rm -rf $LOG_DIR/*;
 
 ############################################################################################################################
 # Scripts
@@ -50,6 +50,21 @@ declare -a testScripts=(
       code=$?; if [[ $code != 0 ]]; then echo ">>> ERROR - code=$code - runScript='$runScript' - $scriptName"; FAILED=1; fi
     fi
   done
+
+############################################################################################################################
+# Get Container Log files & Stop Container
+
+  runScript="$scriptDir/server/docker/stop.server.sh"
+  echo "starting: $runScript ..."
+  if [[ "$RUN_FG" == "false" ]]; then
+    _logFile=${testScript#"$APIM_SOLACE_PLATFORM_API_PROJECT_HOME/release/"}
+    # echo "_logFile = '$_logFile'";
+    logFile="$LOG_DIR/$_logFile.out"; mkdir -p "$(dirname "$logFile")";
+    "$runScript" > $logFile 2>&1
+  else
+    "$runScript"
+  fi
+  code=$?; if [[ $code != 0 ]]; then echo ">>> ERROR - code=$code - runScript='$runScript' - $scriptName"; FAILED=1; fi
 
 ##############################################################################################################################
 # Check for errors
