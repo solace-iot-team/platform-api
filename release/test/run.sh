@@ -28,6 +28,7 @@ declare -a testScripts=(
   "$scriptDir/server/docker/start.server.sh"
   "$APIM_SOLACE_PLATFORM_API_PROJECT_HOME/release/platform-api-openapi-client/example/test/run.sh"
   "$scriptDir/integration/run.sh"
+  "$scriptDir/server/docker/stop.server.sh"
 )
 
 ############################################################################################################################
