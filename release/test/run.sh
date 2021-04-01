@@ -17,7 +17,7 @@ scriptName=$(basename $(test -L "$0" && readlink "$0" || echo "$0"));
 ############################################################################################################################
 # Prepare
 
-  LOG_DIR=$APIM_RELEASE_TEST_LOG_DIR; mkdir -p $LOG_DIR; rm -rf $LOG_DIR/*;
+  LOG_DIR="$APIM_RELEASE_TEST_LOG_DIR"; mkdir -p $LOG_DIR; rm -rf $LOG_DIR/*;
 
 ############################################################################################################################
 # Scripts
