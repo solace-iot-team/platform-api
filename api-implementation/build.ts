@@ -70,10 +70,6 @@ const main = () => {
     prepare();
     buildAbout();
     copyAssets();
-
-    s.exec(`cat ${outDir}/public/about.json`);
-
-    process.exit(1);
 }
 
 main();
