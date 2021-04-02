@@ -18,9 +18,8 @@ const testEnv = {
   ORG_API_USR: getMandatoryEnvVarValue(scriptName, 'APIM_INTEGRATION_TEST_ORG_API_USR'),
   ORG_API_PWD: getMandatoryEnvVarValue(scriptName, 'APIM_INTEGRATION_TEST_ORG_API_PWD'),
 }
-TestLogger.logMessage(scriptName, `testEnv = ${JSON.stringify(testEnv, null, 2)}`);
+TestLogger.logTestEnv(scriptName, testEnv);
 TestLogger.logMessage(scriptName, ">>> success.");
-
 
 before(async() => {
   const base: string = getBaseUrl(testEnv.PLATFORM_PROTOCOL, testEnv.PLATFORM_HOST, testEnv.PLATFORM_PORT);
