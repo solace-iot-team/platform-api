@@ -78,9 +78,8 @@ export class TestLogger {
         return JSON.stringify(logOptions, null, 2);
     }
     public static getLoggingApiResult = (result: ApiResult): string => {
-        let logResult:any = result;
-        if(result && result.url.includes('token')) {
-            logResult = _.cloneDeep(result);
+        let logResult:any = TestLogger.cloneWithHidenSecrets(result);
+        if(logResult && logResult.url && logResult.url.includes('token')) {
             logResult.body = "***";
         }
         return JSON.stringify(logResult, null, 2);
