@@ -58,6 +58,18 @@ const setPackageVars = () => {
     dockerImageTag = `${dockerImageName}:${packageJson.version}`;
     dockerImageTagLatest = `${dockerImageName}:latest`;
 }
+const checkVersion = () => {
+    // docker manifest inspect solaceiotteam/platform-api-server:0.0.11 > /dev/null 2>&1
+    // code=$?
+    // if code == 1 then it doesn't exist
+    let code = s.exec(`docker manifest inspect ${dockerImageTag}`).code;
+    if(code===0) {
+        console.log(`aborting - image already exists: ${dockerImageTag}`);
+        process.exit(2);
+    } else {
+        console.log(`new image: ${dockerImageTag}`);
+    }
+}
 const removeDockerContainersByImageName = () => {
     console.log(`[${scriptName}]: removing any existing containers for image: ${dockerImageName}`);
     let cmd = `docker ps | awk '{split($2,image,":"); print $1, image[1]}' | awk -v image=${dockerImageName} '$2 == image {print $1}'`;
@@ -95,9 +107,10 @@ const main = () => {
     compile();
     buildDockerContext();
     setPackageVars();
-    removeDockerContainersByImageName();
-    buildDockerImage();
-    publishDockerImage();
+    checkVersion();
+    // removeDockerContainersByImageName();
+    // buildDockerImage();
+    // publishDockerImage();
 }
 
 main();
