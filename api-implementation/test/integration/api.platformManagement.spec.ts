@@ -71,7 +71,8 @@ describe(`${scriptName}`, () => {
       TestContext.newItId();
     });
 
-    it(`${scriptName}: should create org with cloud & event portal, same url & token`, async() => {
+    // not implemented in 0.0.11
+    xit(`${scriptName}: should create org with cloud & event portal, same url & token`, async() => {
       PlatformAPIClient.setManagementUser();
       let response: Organization;
       let request: Organization = {
@@ -87,6 +88,22 @@ describe(`${scriptName}`, () => {
 
           }
         }
+      }
+      try {
+        response = await PlatformManagementService.createOrganization(request);
+      } catch (e) {
+        expect(isInstanceOfApiError(e), `${TestLogger.createNotApiErrorMesssage(e.message)}`).to.be.true;
+        let message = `creating org=${orgName}`;
+        expect(false, `${TestLogger.createTestFailMessage(message)}`).to.be.true;
+      }
+      expect(response.name, `${TestLogger.createTestFailMessage("name not equal")}`).to.equal(orgName);
+    });
+
+    it(`${scriptName}: should create org without any token`, async() => {
+      PlatformAPIClient.setManagementUser();
+      let response: Organization;
+      let request: Organization = {
+        name: orgName
       }
       try {
         response = await PlatformManagementService.createOrganization(request);
