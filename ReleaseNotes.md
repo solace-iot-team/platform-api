@@ -8,7 +8,7 @@
 ### Features
 * **GET /about.json**
   - retrieve about information
-* **POST/PATCH Organization**
+* **PATCH Organization**
   - optional: accepts different urls & tokens for solace cloud & event portal
 
 ## Version 0.0.10
