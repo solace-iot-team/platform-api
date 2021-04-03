@@ -47,20 +47,21 @@ export class TestLogger {
     public static cloneWithHidenSecrets = (config: any) => _.transform(config, (r:any, v:any, k:string) => {
         if(_.isObject(v)) {
             r[k] = TestLogger.cloneWithHidenSecrets(v)
-        } else {
+        } else if(typeof k === 'string') {
             let _k = k.toLowerCase();
             if( _k.includes('token')        ||
                 _k.includes('pwd')          ||
                 _k.includes('service_id')   ||
                 _k.includes('portal_url')   ||
                 _k.includes('admin_user')   ||
-                _k.includes('password')     
-                ) {
+                _k.includes('password')     ) {
                     r[k] = '***';
             } else {
                 r[k] = v;
             }
-        }
+        } else {
+            r[k] = v;
+        }            
     })
     public static logTestEnv = (component: string, testEnv: any) => {
         if(!TestLogger.do_log) return;

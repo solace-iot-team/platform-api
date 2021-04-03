@@ -9,7 +9,7 @@
 * **GET /about.json**
   - retrieve about information
 * **POST/PATCH Organization**
-  - optional: accepts different tokens for solace cloud & event portal
+  - optional: accepts different urls & tokens for solace cloud & event portal
 
 ## Version 0.0.10
 

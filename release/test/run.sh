@@ -57,7 +57,7 @@ declare -a testScripts=(
   runScript="$scriptDir/server/docker/stop.server.sh"
   echo "starting: $runScript ..."
   if [[ "$RUN_FG" == "false" ]]; then
-    _logFile=${testScript#"$APIM_SOLACE_PLATFORM_API_PROJECT_HOME/release/"}
+    _logFile=${runScript#"$APIM_SOLACE_PLATFORM_API_PROJECT_HOME/release/"}
     # echo "_logFile = '$_logFile'";
     logFile="$LOG_DIR/$_logFile.out"; mkdir -p "$(dirname "$logFile")";
     "$runScript" > $logFile 2>&1
