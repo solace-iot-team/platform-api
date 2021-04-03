@@ -20,7 +20,11 @@ echo " >>> Build & Push Docker Image ..."
   runScript="npm run build+push"
   $runScript
   code=$?;
-  if [[ $code != 0 ]]; then echo ">>> ERROR - code=$code - $runScript' - $scriptName"; exit 1; fi
+  if [[ $code == 2 ]]; then
+    echo ">>> nothing to do, image already exists - code=$code - $runScript' - $scriptName"; exit 0;
+  elif [[ $code != 0 ]]; then
+    echo ">>> ERROR - code=$code - $runScript' - $scriptName"; exit 1;
+  fi
 echo " >>> Success."
 
 ###
