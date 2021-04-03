@@ -52,9 +52,19 @@ echo " >>> Starting server in docker..."
   export DOCKER_CLIENT_TIMEOUT=120
   export COMPOSE_HTTP_TIMEOUT=120
 
-  docker-compose -f "$dockerComposeFile" up -d
-  if [[ $? != 0 ]]; then echo " >>> ERROR: docker compose with '$dockerComposeFile'"; exit 1; fi
-  docker ps -a
+  echo "   >>> docker-compose up ..."
+    # try multiple times, sometimes the docker registry is not available
+    code=1; counter=0
+    until [[ $code -eq 0 || $counter -gt 10 ]]; do
+      ((counter++))
+      docker-compose -f "$dockerComposeFile" up -d
+      code=$?;
+      if [ $code -gt 0 ]; then sleep 2s; fi
+    done
+    echo "     - tries: $counter"
+    if [[ $code != 0 ]]; then echo " >>> ERROR: docker compose with '$dockerComposeFile', tries=$counter"; exit 1; fi
+    docker ps -a
+  echo "   >>> success."
 
   echo "   >>> check docker logs if server up ..."
     # wait until initialized
@@ -78,7 +88,7 @@ echo " >>> Starting server in docker..."
     done
     if [ $isInitialized -lt 3 ]; then echo " >>> ERROR: server is not initialized, checks=$checks"; exit 1; fi
   echo "   >>> success."
-  
+
 echo " >>> Success."
 
   # docker exec -ti platform-api-server bash
