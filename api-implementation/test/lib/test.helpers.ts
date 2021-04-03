@@ -44,30 +44,43 @@ export class TestLogger {
     public static logResponse = (msg: string, response: PlatformResponseHelper) => {
         if(TestLogger.do_log) console.log(`[response] - ${msg}:\n${response.toJson()}`);
     }
+    public static cloneWithHidenSecrets = (config: any) => _.transform(config, (r:any, v:any, k:string) => {
+        if(_.isObject(v)) {
+            r[k] = TestLogger.cloneWithHidenSecrets(v)
+        } else if(typeof k === 'string') {
+            let _k = k.toLowerCase();
+            if( _k.includes('token')        ||
+                _k.includes('pwd')          ||
+                _k.includes('service_id')   ||
+                _k.includes('portal_url')   ||
+                _k.includes('admin_user')   ||
+                _k.includes('password')     ) {
+                    r[k] = '***';
+            } else {
+                r[k] = v;
+            }
+        } else {
+            r[k] = v;
+        }            
+    })
     public static logTestEnv = (component: string, testEnv: any) => {
         if(!TestLogger.do_log) return;
-        let te = testEnv;
-        if(testEnv.SOLACE_CLOUD_TOKEN) {
-            te = _.cloneDeep(testEnv);
-            te.SOLACE_CLOUD_TOKEN = "***";
-        }
+        let te = TestLogger.cloneWithHidenSecrets(testEnv);
         console.log(`[${component}] - testEnv=${JSON.stringify(te, null, 2)}`);
     }
     public static logMessage = (component: string, msg: string) => {
         if(TestLogger.do_log) console.log(`[${component}] - ${msg}`);
     }
     public static getLoggingApiRequestOptions = (options: ApiRequestOptions): string => {
-        let logOptions:any = options;
-        if(options.path.includes('token')) {
-            logOptions = _.cloneDeep(options);
+        let logOptions:any = TestLogger.cloneWithHidenSecrets(options);
+        if(logOptions.path.includes('token')) {
             logOptions.body = "***";
         }
         return JSON.stringify(logOptions, null, 2);
     }
     public static getLoggingApiResult = (result: ApiResult): string => {
-        let logResult:any = result;
-        if(result && result.url.includes('token')) {
-            logResult = _.cloneDeep(result);
+        let logResult:any = TestLogger.cloneWithHidenSecrets(result);
+        if(logResult && logResult.url && logResult.url.includes('token')) {
             logResult.body = "***";
         }
         return JSON.stringify(logResult, null, 2);

@@ -1,6 +1,6 @@
 {
   "name": "platform-api-server",
-  "version": "0.0.10",
+  "version": "0.0.11",
   "description": "Solace Platform API Server",
   "homepage": "https://github.com/solace-iot-team/platform-api",
   "repository": {
@@ -18,10 +18,9 @@
     "dev": "nodemon server/index.ts | pino-pretty",
     "server:dev": "nodemon server/index.ts | pino-pretty",
     "dev:debug": "nodemon --exec \"node -r ts-node/register --inspect-brk\" server/index.ts | pino-pretty",
-    "test:integration": "mocha --config test/integration/.mocharc.yml test/integration/**/*.spec.ts",
+    "test:integration": "mocha --config test/integration/.mocharc.yml test/integration/**/**.spec.ts",
     "test:concurrency": "mocha --config test/integration/.mocharc.yml test/integration/**/*.concurrency.spec.ts --exit",
-    "test:dev": "mocha --config test/integration/.mocharc.yml -b test/integration/**/log-test.spec.ts --exit",
-    "test:bootstrap-demo": "mocha --config test/integration/.mocharc.yml test/integration/**/*.bootstrap-demo.spec.ts --exit",
+    "test:dev": "mocha --config test/integration/.mocharc.yml -b test/integration/**/uc-elevator-co.spec.ts --exit",
     "test:debug": "mocha -r ts-node/register --inspect-brk test/**/*.ts --exit"
   },
   "author": "Solace Corporation",

@@ -58,6 +58,17 @@ const setPackageVars = () => {
     dockerImageTag = `${dockerImageName}:${packageJson.version}`;
     dockerImageTagLatest = `${dockerImageName}:latest`;
 }
+const checkVersion = () => {
+    let publishedImageTag = `${dockerHubUser}/${dockerImageTag}`;
+    console.log(`checking if image already exists: ${publishedImageTag}`);
+    let code = s.exec(`docker manifest inspect ${publishedImageTag}`).code;
+    if(code===0) {
+        console.log(`aborting - image already exists: ${publishedImageTag}`);
+        process.exit(2);
+    } else {
+        console.log(`new image to publish: ${publishedImageTag}`);
+    }
+}
 const removeDockerContainersByImageName = () => {
     console.log(`[${scriptName}]: removing any existing containers for image: ${dockerImageName}`);
     let cmd = `docker ps | awk '{split($2,image,":"); print $1, image[1]}' | awk -v image=${dockerImageName} '$2 == image {print $1}'`;
@@ -95,6 +106,7 @@ const main = () => {
     compile();
     buildDockerContext();
     setPackageVars();
+    checkVersion();
     removeDockerContainersByImageName();
     buildDockerImage();
     publishDockerImage();
