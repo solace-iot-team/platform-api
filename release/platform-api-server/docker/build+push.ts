@@ -59,15 +59,14 @@ const setPackageVars = () => {
     dockerImageTagLatest = `${dockerImageName}:latest`;
 }
 const checkVersion = () => {
-    // docker manifest inspect solaceiotteam/platform-api-server:0.0.11 > /dev/null 2>&1
-    // code=$?
-    // if code == 1 then it doesn't exist
-    let code = s.exec(`docker manifest inspect ${dockerImageTag}`).code;
+    let publishedImageTag = `${dockerHubUser}/${dockerImageTag}`;
+    console.log(`checking if image already exists: ${publishedImageTag}`);
+    let code = s.exec(`docker manifest inspect ${publishedImageTag}`).code;
     if(code===0) {
-        console.log(`aborting - image already exists: ${dockerImageTag}`);
+        console.log(`aborting - image already exists: ${publishedImageTag}`);
         process.exit(2);
     } else {
-        console.log(`new image: ${dockerImageTag}`);
+        console.log(`new image to publish: ${publishedImageTag}`);
     }
 }
 const removeDockerContainersByImageName = () => {
@@ -108,9 +107,9 @@ const main = () => {
     buildDockerContext();
     setPackageVars();
     checkVersion();
-    // removeDockerContainersByImageName();
-    // buildDockerImage();
-    // publishDockerImage();
+    removeDockerContainersByImageName();
+    buildDockerImage();
+    publishDockerImage();
 }
 
 main();
