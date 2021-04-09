@@ -24,7 +24,6 @@ export class AsyncAPIHelper {
 		} else {
 			throw new ErrorResponseInternal(500, "Invalid YAMl");
 		}
-		
 	}
 	JSONtoYAML(apiSpec: string): string{
 		if (this.getContentType(apiSpec)=="application/json"){
@@ -33,8 +32,15 @@ export class AsyncAPIHelper {
 		} else {
 			throw new ErrorResponseInternal(500, "Invalid JSON");
 		}
-		
-	}
+  }
+	YAMLtoObject(apiSpec: string): any{
+		if (this.getContentType(apiSpec)=="application/x-yaml"){
+			var o = YAML.load(apiSpec);
+			return o;
+		} else {
+			throw new ErrorResponseInternal(500, "Invalid YAMl");
+		}
+	}  
 }
 
 export default new AsyncAPIHelper();
