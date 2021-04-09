@@ -316,7 +316,14 @@ declare namespace Components {
          * An app associated with a developer. Associates the app with an API product, and auto-generates an API credentials for the app to use
          */
         export interface App {
+            /**
+             * the uniuque name of this app, can not be updated
+             */
             name: string;
+            /**
+             * friendly name of the app that can be changed subsequently
+             */
+            displayName?: string;
             /**
              * A setting, in milliseconds, for the lifetime of the consumer key that will be  generated for the developer app. The default value, -1, indicates an infinite validity period. Once set, the expiration can't be updated.
              */
@@ -341,6 +348,7 @@ declare namespace Components {
         }
         export interface AppListItem {
             name?: string;
+            displayName?: string;
             appType?: "developer";
             /**
              * example:
@@ -354,6 +362,10 @@ declare namespace Components {
          * Used for PATCH operation. An app associated with a developer. Associates the app with an API product, and auto-generates an API credentials for the app to use
          */
         export interface AppPatch {
+            /**
+             * friendly name of the app that can be changed subsequently
+             */
+            displayName?: string;
             apiProducts?: string[];
             attributes?: Attributes;
             /**
@@ -368,7 +380,14 @@ declare namespace Components {
          * App Response Object - includes protocol binding information and app premissions. An app associated with a developer. Associates the app with an API product, and auto-generates an API credentials for the app to use.
          */
         export interface AppResponse {
+            /**
+             * the unique name of this app, can not be updated
+             */
             name: string;
+            /**
+             * friendly name of the app that can be changed subsequently
+             */
+            displayName?: string;
             /**
              * A setting, in milliseconds, for the lifetime of the consumer key that will be  generated for the developer app. The default value, -1, indicates an infinite validity period. Once set, the expiration can't be updated.
              */
