@@ -44,6 +44,7 @@ describe(`${scriptName}`, () => {
     const orgName = testEnv.ORG_NAME;
     const apiNameMaintenance: string = "api-maintenance";
     const apiSpecMaintenance: string = AsyncAPIHelper.loadYamlFileAsJsonString(testEnv.API_SPEC_MAINTENANCE_FILE);
+    const expectedApiSpecMaintenance: string = AsyncAPIHelper.loadYamlFileAsJsonString(`expected-${testEnv.API_SPEC_MAINTENANCE_FILE}`);
     const apiMaintenacePermissions: ApiPermissions = [
       // {resource_region_id}/{equipment_type}/{event_type}/{resource_type}/{resource_id}
       { name: 'resource_region_id', value: 'fr, de, us-east, us-west' }, 
@@ -227,7 +228,7 @@ describe(`${scriptName}`, () => {
       }
       expect(response, `${TestLogger.createTestFailMessage("response is not type object")}`).to.be.an('object');
       let parsedResponse: string = JSON.parse(JSON.stringify(response));
-      expect(_.isEqual(JSON.parse(apiSpecMaintenance), parsedResponse), `${TestLogger.createTestFailMessage("response not equal to api spec")}`).to.be.true;
+      expect(_.isEqual(JSON.parse(expectedApiSpecMaintenance), parsedResponse), `${TestLogger.createTestFailMessage("response not equal to api spec")}`).to.be.true;
     });
 
     it(`${scriptName}: should create api product maintenance-development`, async() => {
