@@ -1,5 +1,6 @@
 [![integration-test](https://github.com/solace-iot-team/platform-api/actions/workflows/integration-test.yml/badge.svg)](https://github.com/solace-iot-team/platform-api/actions/workflows/integration-test.yml)
 [![release-test](https://github.com/solace-iot-team/platform-api/actions/workflows/release-test.yml/badge.svg)](https://github.com/solace-iot-team/platform-api/actions/workflows/release-test.yml)
+[![release](https://github.com/solace-iot-team/platform-api/actions/workflows/release.yml/badge.svg)](https://github.com/solace-iot-team/platform-api/actions/workflows/release.yml)
 
 [Issues & Feature Requests](https://github.com/solace-iot-team/platform-api/issues) |
 [Release Notes](./ReleaseNotes.md)
