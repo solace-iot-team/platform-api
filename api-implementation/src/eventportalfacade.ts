@@ -227,7 +227,7 @@ class EventPortalFacade {
       L.debug(`Requesting Async API ${apiId} spec ${JSON.stringify(asyncAPIRequestBody)}`);
       var asyncAPIResponse: any = await AsyncApiService.generateAsyncApi(apiId, asyncAPIRequestBody);
       L.debug(`Parsing API spec `);
-
+      this.addAsyncAPIExtensionInfo(asyncAPIResponse.info);
       Object.keys(asyncAPIResponse.channels).forEach(e => {
         if (asyncAPIResponse.channels[e].parameters == null) {
           var x = e.match(/(?<=\{)[^}]*(?=\})/g);
@@ -247,6 +247,14 @@ class EventPortalFacade {
     } catch (val) {
       throw new ErrorResponseInternal(val.status, val.message);
     }
+  }
+
+  private addAsyncAPIExtensionInfo(info: any){
+    const origin = {
+      vendor: 'solace',
+      name: 'event-portal',
+    };
+    info['x-origin'] = origin;
   }
 }
 

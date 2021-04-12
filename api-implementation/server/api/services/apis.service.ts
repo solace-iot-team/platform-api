@@ -3,6 +3,7 @@ import { ErrorResponseInternal } from '../middlewares/error.handler';
 import { PersistenceService } from './persistence.service';
 import APIProductsService from './apiProducts.service';
 import parser from '@asyncapi/parser';
+import AsyncAPIHelper from '../../../src/asyncapihelper';
 
 export interface APISpecification {
   name: string;
@@ -71,7 +72,7 @@ export class ApisService {
       } else {
         const spec: APISpecification = {
           name: name,
-          specification: body,
+          specification: this.convertAPISpec(body),
         };
         this.persistenceService
           .create(name, spec)
@@ -96,7 +97,7 @@ export class ApisService {
         } else {
           const spec: APISpecification = {
             name: name,
-            specification: body,
+            specification: this.convertAPISpec(body),
           };
           this.persistenceService
             .update(name, spec)
@@ -144,6 +145,34 @@ export class ApisService {
         });
     });
   }
+
+  private convertAPISpec(spec: string): string {
+    const contentType = AsyncAPIHelper.getContentType(spec);
+    let parsedSpec = null;
+    if (contentType.indexOf('yaml') > -1) {
+      parsedSpec = AsyncAPIHelper.YAMLtoObject(spec);
+    } else {
+      parsedSpec = JSON.parse(spec);
+    }
+    this.addAsyncAPIExtensionInfo(parsedSpec);
+    return JSON.stringify(parsedSpec);
+  }
+
+  private addAsyncAPIExtensionInfo(spec: any) {
+    if (spec.info['x-origin']){
+      return;
+    }
+    if (spec.info == null) {
+      spec.info = {};
+    }
+
+    const origin = {
+      vendor: 'solace',
+      name: 'apim-connector',
+    };
+    spec.info['x-origin'] = origin;
+  }
+
 }
 
 export default new ApisService();

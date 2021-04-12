@@ -145,6 +145,7 @@ export class DevelopersService {
       ownerId: developer,
       appType: 'developer',
       name: body.name,
+      displayName: body.displayName,
       apiProducts: body.apiProducts,
       credentials: body.credentials,
     };
@@ -225,6 +226,9 @@ export class DevelopersService {
       appType: 'developer',
     };
 
+    if (body.displayName) {
+      app.displayName = body.displayName;
+    }
     if (body.apiProducts) {
       app.apiProducts = body.apiProducts;
     }

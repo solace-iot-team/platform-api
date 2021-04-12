@@ -37,6 +37,7 @@ export class AppsService {
     apps.forEach((app: AppResponse) => {
       const listItem: AppListItem = {
         name: app.name,
+        displayName: app.displayName?app.displayName:app.name,
         apiProducts: app.apiProducts,
         appType: app['appType'],
         status: app.status,
