@@ -23,6 +23,7 @@ import { ErrorResponseInternal } from './api/middlewares/error.handler';
 import pagingHandler from './api/middlewares/paging.handler';
 import contextHandler, { ns } from './api/middlewares/context.handler';
 import Router from 'express';
+import { authAdmin } from './index';
 
 export default function routes(app: Application, auth: any): void {
   const router = Router();
@@ -47,10 +48,6 @@ export default function routes(app: Application, auth: any): void {
       L.debug(`no org matching URI ${req.baseUrl} ${e}`);
       next(new ErrorResponseInternal(404, `Not found`));
     });
-  });
-  const authAdmin = basicAuth({
-    users: { 'admin': 'p3zvZFF7ka4Wrj4p' },
-    challenge: true,
   });
 
   const auditableVerbs: string[] = ['POST', 'PUT', 'DELETE', 'PATCH'];
