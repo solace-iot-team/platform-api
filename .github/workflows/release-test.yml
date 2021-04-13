@@ -23,7 +23,8 @@ jobs:
     strategy:
       max-parallel: 1
       matrix:
-        node: [ '12', '14' ]
+        # node: [ '12', '14' ]
+        node: [ '12' ]
     steps:
       - name: Check Auth
         if: github.event_name == 'workflow_dispatch' && github.actor != 'ricardojosegomezulmke' && github.actor != '195858'
@@ -34,6 +35,16 @@ jobs:
       - name: Cancel Workflow
         if: ${{ always() && steps.auth.outputs.IS_AUTHORIZED == 'false' }}
         uses: andymckay/cancel-action@0.2
+
+      - uses: oprypin/find-latest-tag@v1
+        with:
+          repository: solace-iot-team/platform-api #octokit/rest.js  # The repository to scan.
+          releases-only: true  # We know that all relevant tags have a GitHub release for them.
+        id: platform_api_release  # The step ID to refer to later.
+
+      - run: |
+          echo "release version ${{ steps.platform_api_release.outputs.tag }}"
+          exit 1
 
       - name: Checkout Current Branch
         uses: actions/checkout@master
