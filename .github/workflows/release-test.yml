@@ -43,13 +43,17 @@ jobs:
         id: platform_api_release  # The step ID to refer to later.
 
       - run: |
-          echo "release version ${{ steps.platform_api_release.outputs.tag }}"
-          exit 1
+          echo "platform api release version: ${{ steps.platform_api_release.outputs.tag }}"
 
-      - name: Checkout Current Branch
-        uses: actions/checkout@master
+      - name: Checkout Latest Release
+        uses: actions/checkout@v2
         with:
-          ref: ${{ github.ref }}
+          ref: ${{ steps.platform_api_release.outputs.tag }}
+
+      # - name: Checkout Current Branch
+      #   uses: actions/checkout@master
+      #   with:
+      #     ref: ${{ github.ref }}
 
       - name: env before install
         if: env.DEBUG_FLAG == 'true'
