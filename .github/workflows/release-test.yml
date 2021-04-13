@@ -35,10 +35,19 @@ jobs:
         if: ${{ always() && steps.auth.outputs.IS_AUTHORIZED == 'false' }}
         uses: andymckay/cancel-action@0.2
 
-      - name: Checkout Current Branch
-        uses: actions/checkout@master
+      - uses: oprypin/find-latest-tag@v1
         with:
-          ref: ${{ github.ref }}
+          repository: solace-iot-team/platform-api
+          releases-only: true
+        id: platform_api_release
+
+      - run: |
+          echo "platform api release version: ${{ steps.platform_api_release.outputs.tag }}"
+
+      - name: Checkout Latest Release
+        uses: actions/checkout@v2
+        with:
+          ref: ${{ steps.platform_api_release.outputs.tag }}
 
       - name: env before install
         if: env.DEBUG_FLAG == 'true'

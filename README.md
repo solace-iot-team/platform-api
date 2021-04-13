@@ -19,78 +19,37 @@ Integration server to connect API Management tools with [Solace PubSub+ Platform
 
 # How to Use
 
+_**Note: See [Reference Designs and Tutorials / API Management System](https://github.com/solace-iot-team/solace-apim-reference-designs/tree/main/apim-system) for
+detailed examples to manage deployments in public cloud environments - from self-contained to H/A setup.**_
+
 ## Prerequisites
 * Solace Cloud Account
+* docker, docker-compose
 
 ## Standup a Solace Broker Service
 * Solace Cloud: standup a Broker Service
-  - enable HTTP/S and MQTT/S messaging
-  - make a note of the service-id
+  - Enable at least HTTP/S and MQTT/S messaging
+  - Make a note of the service id
 * Create a Solace Cloud Token
   - Permissions:
     - Organization Services: Get Services
     - Event Portal: Event Portal Read
-  - make a note of the token
+  - Make a note of the Token
 
-## Mongo DB
-* use your own Mongo DB
-* standup a local Mongo DB
-
-Make a note of the `host` & `port`.
-
-### Local MongoDB
-
-Sample Docker compose file:
-
-````yaml
-version: "3.7"
-services:
-  mongodb:
-    container_name: platform-api-mongodb
-    image : mongo:latest
-    volumes:
-      - mongodbdata:/data/db
-    ports:
-      - 27017:27017
-    restart: unless-stopped
-volumes:
-  mongodbdata:
-
-````
-
-Bash:
+## Environment
+Set the following environment variables:
 ````bash
-$ docker-compose -f docker-compose.yml up -d
-````
-
-## Platform API Server
-
-### Environment
-
-````bash
-export CONTAINER_NAME="platform-api-server"
-export IMAGE="solaceiotteam/platform-api-server:latest"
-export PLATFORM_DATA_MOUNT_PATH="{local-path}/platform-api-server/data}"
-export PLATFORM_DATA_INTERNAL_PATH="/platform-api-server/data"
-export LOG_LEVEL="error|info|debug"
-export APP_ID="platform-api"
+export PROJECT_NAME="solace-apim-system"
+# create a {local-path} of your choice, create platform-api-server/data directories
+export PLATFORM_DATA_MOUNT_PATH="{local-path}/platform-api-server/data"
 export PLATFORM_PORT="3000"
 export FILE_USER_REGISTRY="$PLATFORM_DATA_MOUNT_PATH/organization_users.json"
-# Configure the URL for Mongo
-  # Linux Local
-  export MONGO_HOST="127.0.0.1"
-  export MONG_PORT="27017"
-  export DB_URL="mongodb://$MONGO_HOST:$MONGO_PORT/platform?retryWrites=true&w=majority"
-
-  # Mac Local
-  export MONGO_HOST="host.docker.internal"
-  export MONG_PORT="27017"
-  export DB_URL="mongodb://$MONGO_HOST:$MONGO_PORT/platform?retryWrites=true&w=majority"
-
+export ADMIN_USER="admin"
+export ADMIN_PASSWORD="admin"
 ````
 
-### User Registry
-Create a User Registry File `$PLATFORM_DATA_MOUNT_PATH/organization_users.json`:
+## User Registry
+Create a User Registry File `organization_users.json` in `$PLATFORM_DATA_MOUNT_PATH`:
 ````json
 {
 	"{org0_admin_user}": "{org0_admin_user_password}",
@@ -99,72 +58,49 @@ Create a User Registry File `$PLATFORM_DATA_MOUNT_PATH/organization_users.json`:
 }
 ````
 
-### Linux
-Sample Docker compose file `linux.docker-compose.yml`:
+## Docker Compose
+Create a Docker compose file `docker-compose.yml`:
 ````yaml
-#
-# Solace Platform API Server
-# Linux
-#
-version: "3.3"
+version: "3.7"
 services:
-  platform-api-server:
-    container_name: "${CONTAINER_NAME}"
-    image: "${IMAGE}"
-    network_mode: host
+  mongodb:
+    container_name: $PROJECT_NAME-mongodb
+    image : mongo:latest
     volumes:
-      - ${PLATFORM_DATA_MOUNT_PATH}:${PLATFORM_DATA_INTERNAL_PATH}
+      - mongodbdata:/data/db
     restart: unless-stopped
-    environment:
-      - DB_URL=${DB_URL}
-      - LOG_LEVEL=${LOG_LEVEL}
-      - APP_ID=${APP_ID}
-      - FILE_USER_REGISTRY=${FILE_USER_REGISTRY}
-      - PLATFORM_PORT=${PLATFORM_PORT}
-````
-
-````bash
-$ docker-compose -f linux.docker-compose.yml up -d
-````
-
-### Mac
-Sample Docker compose file `mac.docker-compose.yml`:
-````yaml
-#
-# Solace Platform API Server
-# MacOS
-#
-version: "3.3"
-services:
   platform-api-server:
-    container_name: "${CONTAINER_NAME}"
-    image: "${IMAGE}"
-    volumes:
-      - ${PLATFORM_DATA_MOUNT_PATH}:${PLATFORM_DATA_INTERNAL_PATH}
+    container_name: $PROJECT_NAME-platform-api-server
+    links:
+      - mongodb
+    image: solaceiotteam/platform-api-server:latest
     ports:
-      - ${PLATFORM_PORT}:${PLATFORM_PORT}
+      - ${PLATFORM_PORT}:3000
+    volumes:
+      - ${PLATFORM_DATA_MOUNT_PATH}:/platform-api-server/data
     restart: unless-stopped
     environment:
-      - DB_URL=${DB_URL}
-      - LOG_LEVEL=${LOG_LEVEL}
-      - APP_ID=${APP_ID}
+      - DB_URL=mongodb://mongodb:27017/platform?retryWrites=true&w=majority
+      # error|info|debug
+      - LOG_LEVEL=debug
+      - APP_ID=platform-api
       - FILE_USER_REGISTRY=${FILE_USER_REGISTRY}
-      - PLATFORM_PORT=${PLATFORM_PORT}
-
+      - PLATFORM_PORT=3000
+      - ADMIN_USER=${ADMIN_USER}
+      - ADMIN_PASSWORD=${ADMIN_PASSWORD}
+volumes:
+  mongodbdata:
 ````
 
 ````bash
-$ docker-compose -f mac.docker-compose.yml up -d
+$ docker-compose -p $PROJECT_NAME -f docker-compose.yml up -d
+# check the logs
+$ docker logs $PROJECT_NAME-platform-api-server
 ````
 
-### Check Docker Logs
-````bash
-$ docker logs $CONTAINER_NAME
-````
+## Bootstrap the System
 
-## Bootstrap Example
-
-[See Example](https://github.com/solace-iot-team/platform-api/tree/main/release/platform-api-openapi-client/example).
+See [Example Using Solace Platform API OpenApi Client](https://github.com/solace-iot-team/platform-api/tree/main/release/platform-api-openapi-client/example) to create a simple bootstraped configuration.
 
 
 
