@@ -33,6 +33,16 @@ export APIM_INTEGRATION_TEST_PLATFORM_PROTOCOL="http"
 export APIM_INTEGRATION_TEST_PLATFORM_HOST="localhost"
 export APIM_INTEGRATION_TEST_PLATFORM_PORT="9090"
 export APIM_INTEGRATION_TEST_APP_ID="integration-test"
+
+# JWT token validation properties
+export APIM_INTEGRATION_TEST_AUTH_EXTRACTION_USER_PRINCIPAL=$.upn
+export APIM_INTEGRATION_TEST_AUTH_EXTRACTION_ORGS=$.groups
+export APIM_INTEGRATION_TEST_AUTH_EXTRACTION_ROLES=$.resource_access['platform-api-server'].roles
+export APIM_INTEGRATION_TEST_AUTH_VERIFICATION_KEY="$APIM_INTEGRATION_TEST_RESOURCES_HOME/jwt_integration_test.pem"
+export APIM_INTEGRATION_TEST_AUTH_VERIFICATION_ISSUER=http://localhost:8180/auth/realms/default
+export APIM_INTEGRATION_TEST_AUTH_VERIFICATION_AUD=platform-api-server
+export APIM_INTEGRATION_TEST_AUTH_DISCOVERY_OIDC_URL=http://localhost:8180/auth/realms/default/.well-known/openid-configuration
+
 # 'fatal', 'error', 'warn', 'info', 'debug', 'trace' or 'silent'
 export APIM_INTEGRATION_TEST_LOG_LEVEL="debug"
 export APIM_INTEGRATION_TEST_FILE_USER_REGISTRY="$APIM_INTEGRATION_TEST_RESOURCES_HOME/organization_users.json"
