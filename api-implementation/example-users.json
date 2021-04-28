@@ -1,6 +1,32 @@
 {
-	"tom": "tomspassword",
-	"dick": "dickspassword",
-	"harry": "harryspassword",
-	"api-user": "Solace123!"
+  "tom": {
+    "password": "tomspassword",
+    "roles": [
+      "org-admin"
+    ]
+  },
+	"dick": {
+    "password": "dickspassword",
+    "roles": [
+      "org-admin"
+    ]
+  },
+	"harry": {
+    "password": "harryspassword",
+    "roles": [
+      "org-admin"
+    ]
+  },
+	"api-user": {
+    "password": "Solace123!",
+    "roles": [
+      "org-admin"
+    ]
+  },
+	"admin": {
+    "password": "p3zvZFF7ka4Wrj4p",
+    "roles": [
+      "platform-admin"
+    ]
+  }
 }

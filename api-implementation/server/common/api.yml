@@ -1,16 +1,24 @@
 openapi: 3.0.0
 info:
-  title: Solace Platform API
-  description: Solace Platform API
-  version: 0.0.12
+  title: Solace API Management Connector
+  description: 'Solace API Management Connector API. Note: basic authentication security mechanism is deprecated.'
+  version: 0.0.13
 servers:
   - url: /v1
 
 components:
   securitySchemes:
+    BearerAuth:            
+      type: http
+      scheme: bearer
+      bearerFormat: JWT 
     BasicAuth:
       type: http
       scheme: basic
+      description: Deprecated, may be removed in future version of the API
+    OpenId:
+      type: openIdConnect
+      openIdConnectUrl: http://localhost:8180/auth/realms/microcks/.well-known/openid-configuration
   parameters:
     organization:
       name: organization
@@ -1195,8 +1203,9 @@ components:
 
           
 security:
+  - OpenId: []
   - BasicAuth: []
-
+  - BearerAuth: []
 tags:
   - name: apis
     description: "Represents Async API specifications. The specifications must be compliant documents in JSON or YML format"

@@ -3,17 +3,9 @@ import Server from './common/server';
 import L from './common/logger';
 import routes from './routes';
 import { databaseaccess } from '../src/databaseaccess';
-import { loadUserRegistry } from './api/middlewares/file.authorizer';
 import printEnv from 'print-env';
-import basicAuth from 'express-basic-auth';
+import { loadUserRegistry } from './api/middlewares/file.authorizer';
 
-const adminUser = {};
-adminUser[process.env.ADMIN_USER || 'admin'] = process.env.ADMIN_PASSWORD || 'p3zvZFF7ka4Wrj4p';
-adminUser;
-export const authAdmin = basicAuth({
-  users: adminUser,
-  challenge: true,
-});
 type serverCallback = () => void;
 
 const callback: serverCallback = async () => {
@@ -28,13 +20,13 @@ const callback: serverCallback = async () => {
   } catch (err) {
     L.error(err, `Unable to connect to Mongo, err=${JSON.stringify(err)}`);
   }
-  loadUserRegistry();
   if (L.isLevelEnabled('debug') || L.isLevelEnabled('trace')) {
     L.info('Activating unhandled promise logger');
     process.on('unhandledRejection', error => {
       L.error(error, `unhandled rejection ${JSON.stringify(error)}`);
     });
   }
+  loadUserRegistry();
 };
 
 const port = parseInt(process.env.PLATFORM_PORT) || 3000;

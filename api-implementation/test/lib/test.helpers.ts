@@ -141,10 +141,17 @@ export class PlatformRequestHelper {
 
     private baseUrl: string;
     private headers: HeadersInit;
-    constructor(platformProtocol: string, platformHost: string, platformPort: string, platformAdminUser: string, platformAdminPassword: string) {
+    constructor(platformProtocol: string, platformHost: string, platformPort: string, platformAdminUser: string, platformAdminPassword: any) {
         this.baseUrl = getBaseUrl(platformProtocol, platformHost, platformPort);
+        let pw : string = null;
+        if (typeof platformAdminPassword === 'string' || platformAdminPassword instanceof String){
+          pw = platformAdminPassword as string;
+        } else {
+          pw = platformAdminPassword.password;
+        }
+        
         this.headers = {
-            Authorization: getRequestAuthHeader(platformAdminUser, platformAdminPassword)
+            Authorization: getRequestAuthHeader(platformAdminUser, pw)
             // "Content-Type": "application/json"
         }
     }
