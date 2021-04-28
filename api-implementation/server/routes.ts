@@ -18,18 +18,22 @@ import { ContextConstants } from './common/constants';
 import { Request, Response } from 'express';
 import Organization = Components.Schemas.Organization;
 import History = Components.Schemas.History;
-import basicAuth from 'express-basic-auth';
 import { ErrorResponseInternal } from './api/middlewares/error.handler';
 import pagingHandler from './api/middlewares/paging.handler';
 import contextHandler, { ns } from './api/middlewares/context.handler';
 import Router from 'express';
-import { authAdmin } from './index';
+import PassportFactory from './api/middlewares/passport.authentication';
+import { User } from '../src/model/user';
+import authorizedRoles from './api/middlewares/role.authorizer';
 
-export default function routes(app: Application, auth: any): void {
+
+export default function routes(app: Application): void {
   const router = Router();
+  const passport = PassportFactory.build();
+  router.use(passport.initialize());
   router.use(contextHandler);
   router.use(pagingHandler);
-
+  router.use('/*', passport.authenticate(['provider','basic'], PassportFactory.getAuthenticationOptions()));
   router.get('/', (req: Request, res: Response) => {
     res.status(404).end();
   });
@@ -38,6 +42,15 @@ export default function routes(app: Application, auth: any): void {
     L.info(`extracting org for ${url}`);
     L.info(`org in namespace is ${ns.getStore().get(ContextConstants.ORG_NAME)}`);
     L.trace("param org is " + org + ' ' + ns.getStore().get(ContextConstants.REQUEST_ID) + ` ${JSON.stringify(ns)}`);
+    let user: User = req['user'] as User;
+    let err: ErrorResponseInternal = null;
+    if (user.groups !== null  && !user.groups.includes(org)) {
+      err = new ErrorResponseInternal(401,
+        `User ${user.name} is not a member of [${org}]`
+      );
+      next(err);
+      return;
+    }
     OrganizationsService.byName(org).then((r: Organization) => {
       L.trace(`router.param org is  ${JSON.stringify(r)}`);
       ns.getStore().set(ContextConstants.ORG_NAME, org);
@@ -51,17 +64,11 @@ export default function routes(app: Application, auth: any): void {
   });
 
   const auditableVerbs: string[] = ['POST', 'PUT', 'DELETE', 'PATCH'];
-  router.use('/*', function (req: basicAuth.IBasicAuthedRequest, res, next) {
+  router.use('/*', function (req, res, next) {
     res.on("finish", function () {
       L.info("finish response");
       if (auditableVerbs.includes(req.method)) {
-        let auth = req.auth;
-        let user: string = "";
-        if (!auth || auth == null) {
-          user = "unknown";
-        } else {
-          user = req.auth.user;
-        }
+        let user: User = req['user'] as User;
         const url: string = `${req.baseUrl}/${req.url}`.replace('//', '/');
         var h: History = {
           at: Date.now(),
@@ -69,7 +76,7 @@ export default function routes(app: Application, auth: any): void {
           requestBody: req.body,
           requestURI: url,
           title: `${req.method} ${url}`,
-          user: user,
+          user: `${user.name} (${user.sub})`,
           responseCode: res.statusCode
         };
         HistoryService.create(h);
@@ -78,25 +85,18 @@ export default function routes(app: Application, auth: any): void {
 
     });
     next();
-
   });
-
-
-
-
-  router.use('/organizations', authAdmin, organizationsRouter);
-  router.use('/:org/apis', auth, apisRouter);
-  router.use('/:org/event-portal/apis', auth, eventPortalApisRouter);
-  router.use('/:org/event-portal/apiDomains', auth, apiDomainsRouter);
-  router.use('/:org/apiProducts', auth, apiProductsRouter);
-  router.use('/:org/developers', auth, developersRouter);
-  router.use('/:org/environments', auth, environmentsRouter);
-  router.use('/:org/services', auth, accountRouter);
-  router.use('/:org/history', auth, historyRouter);
-  router.use('/:org/token', auth, tokenRouter);
-  router.use('/:org/apps', auth, appsRouter);
+  router.use('/organizations', authorizedRoles(['platform-admin']), organizationsRouter);
+  router.use('/:org/apis', authorizedRoles(['org-admin']), apisRouter);
+  router.use('/:org/event-portal/apis', authorizedRoles(['org-admin']), eventPortalApisRouter);
+  router.use('/:org/event-portal/apiDomains', authorizedRoles(['org-admin']), apiDomainsRouter);
+  router.use('/:org/apiProducts', authorizedRoles(['org-admin']), apiProductsRouter);
+  router.use('/:org/developers', authorizedRoles(['org-admin']), developersRouter);
+  router.use('/:org/environments', authorizedRoles(['org-admin']), environmentsRouter);
+  router.use('/:org/services', authorizedRoles(['org-admin']), accountRouter);
+  router.use('/:org/history', authorizedRoles(['org-admin']), historyRouter);
+  router.use('/:org/token', authorizedRoles(['org-admin']), tokenRouter);
+  router.use('/:org/apps', authorizedRoles(['org-admin']), appsRouter);
 
   app.use('/v1', router);
-
-
 }

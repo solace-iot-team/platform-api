@@ -5,19 +5,19 @@ import http from 'http';
 import os from 'os';
 import cookieParser from 'cookie-parser';
 
+import OIDCDIscoveryRouter from './OIDCDIscoveryRouter';
+
 import l from './logger';
 
 import errorHandler from '../api/middlewares/error.handler';
-import fileAuthorizer from '../api/middlewares/file.authorizer';
 import * as OpenApiValidator from 'express-openapi-validator';
 
-import basicAuth from 'express-basic-auth';
 import cors from 'cors';
 
 const app = express();
 
 const corsOptions: cors.CorsOptions = {
- 
+  origin: true,
 };
 
 export default class ExpressServer {
@@ -50,17 +50,13 @@ export default class ExpressServer {
         ignorePaths: /.*\/spec(\/|$)/,
       })
     );
+
   }
 
-  router(routes: (app: Application, auth: any) => void): ExpressServer {
-
-    const auth = basicAuth({
-      authorizer: fileAuthorizer,
-      challenge: true,
-      realm: 'platform-api'
-    });
-    routes(app, auth);
+  router(routes: (app: Application) => void): ExpressServer {
+    routes(app);
     app.use(errorHandler);
+    app.use('/auth', OIDCDIscoveryRouter);
     app.options('*', cors(corsOptions));
     return this;
   }
