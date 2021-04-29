@@ -112,7 +112,8 @@ describe(`${scriptName}`, () => {
     });
 
     it(`${scriptName}: should add environments to orgs`, async() => {
-      let envNames = [ devEnvName, prodEnvName, noMqttEnvName];
+      // let envNames = [ devEnvName, prodEnvName, noMqttEnvName];
+      let envNames = [ devEnvName, prodEnvName];
       let serviceIds = [ testEnv.DEV_SERVICE_ID, testEnv.PROD_SERVICE_ID, testEnv.NO_MQTT_SERVICE_ID];
       // org1
       for (let i=0; i < envNames.length; i++) {
@@ -168,13 +169,14 @@ describe(`${scriptName}`, () => {
         response = await platformApiRequestOrg1.fetch(`${org1Name}/history`, request);
         TestLogger.logResponse(`history for ${org1Name}`, response);
         expect(response.status).to.equal(200);
-        expect(response.body.length).to.equal(3);
+        // expect(response.body.length).to.equal(3);
+        expect(response.body.length).to.equal(2);
 
         response = await platformApiRequestOrg2.fetch(`${org1Name}/history`, request);
         TestLogger.logResponse(`history for ${org2Name}`, response);
         expect(response.status).to.equal(200);
-        expect(response.body.length).to.equal(3);
-
+        // expect(response.body.length).to.equal(3);
+        expect(response.body.length).to.equal(2);
       });
 
   });

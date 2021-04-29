@@ -20,7 +20,7 @@
     "dev:debug": "nodemon --exec \"node -r ts-node/register --inspect-brk\" server/index.ts | pino-pretty",
     "test:integration": "mocha --config test/integration/.mocharc.yml test/integration/**/**.spec.ts",
     "test:concurrency": "mocha --config test/integration/.mocharc.yml test/integration/**/*.concurrency.spec.ts --exit",
-    "test:dev": "mocha --config test/integration/.mocharc.yml -b test/integration/**/uc-elevator-co.spec.ts --exit",
+    "test:dev": "mocha --config test/integration/.mocharc.yml -b test/integration/**/operations.spec.ts --exit",
     "test:debug": "mocha -r ts-node/register --inspect-brk test/**/*.ts --exit"
   },
   "author": "Solace Corporation",
