@@ -409,6 +409,21 @@ declare namespace Components {
             value: string;
         }[];
         /**
+         * a permission and its associated channel
+         */
+        export interface ChannelPermission {
+            /**
+             * example:
+             * [
+             *   "order/notifications/FR/>",
+             *   "order/notifications/DE/>"
+             * ]
+             */
+            permissions: string[];
+            channelId?: string;
+            isChannel?: boolean;
+        }
+        /**
          * Credentials object associated with an app
          */
         export interface Credentials {
@@ -602,23 +617,67 @@ declare namespace Components {
             /**
              * example:
              * [
-             *   "order/notifications/DE/>",
-             *   "order/cancellation/DE/>",
-             *   "order/notifications/FR/>",
-             *   "order/cancellation/FR/>"
+             *   {
+             *     "order/notifications/{country_id}/{order_id}": {
+             *       "permissions": [
+             *         "order/notifications/FR/>",
+             *         "order/notifications/DE/>"
+             *       ],
+             *       "channelId": "c1",
+             *       "isChannel": true
+             *     }
+             *   },
+             *   {
+             *     "another/random/exception/{resource_id}": {
+             *       "permissions": [
+             *         "another/random/exception/1",
+             *         "another/random/exception/2"
+             *       ],
+             *       "isChannel": false
+             *     }
+             *   }
              * ]
              */
-            subscribe?: string[];
+            subscribe?: {
+                [name: string]: /* a permission and its associated channel */ ChannelPermission;
+            }[];
             /**
              * example:
              * [
-             *   "order/create/DE/>",
-             *   "order/update/DE/>",
-             *   "order/create/FR/>",
-             *   "order/update/FR/>"
+             *   {
+             *     "order/create/{country_id}/{order_id}": {
+             *       "permissions": [
+             *         "order/create/FR/>",
+             *         "order/create/DE/>"
+             *       ],
+             *       "channelId": "c2",
+             *       "isChannel": true
+             *     }
+             *   },
+             *   {
+             *     "order/update/{country_id}/{order_id}": {
+             *       "permissions": [
+             *         "order/update/FR/>",
+             *         "order/update/DE/>"
+             *       ],
+             *       "channelId": "orderUpdateChannel",
+             *       "isChannel": true
+             *     }
+             *   },
+             *   {
+             *     "another/random/exception/{resource_id}": {
+             *       "permissions": [
+             *         "another/random/exception/3",
+             *         "another/random/exception/4"
+             *       ],
+             *       "isChannel": false
+             *     }
+             *   }
              * ]
              */
-            publish?: string[];
+            publish?: {
+                [name: string]: /* a permission and its associated channel */ ChannelPermission;
+            }[];
         }
         export interface Protocol {
             name: "amqp" | "amqps" | "http" | "https" | "jms" | "mqtt" | "secure-mqtt" | "ws-mqtt" | "wss-mqtt" | "ws" | "wss" | "smf" | "smfs";

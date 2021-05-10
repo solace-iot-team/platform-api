@@ -5,6 +5,7 @@ import Developer = Components.Schemas.Developer;
 import APIProduct = Components.Schemas.APIProduct;
 import Environment = Components.Schemas.Environment;
 import Permissions = Components.Schemas.Permissions;
+import ChannelPermission = Components.Schemas.ChannelPermission;
 import Endpoint = Components.Schemas.Endpoint;
 import AppEnvironment = Components.Schemas.AppEnvironment;
 import WebHook = Components.Schemas.WebHook;
@@ -572,32 +573,58 @@ class BrokerService {
 
   public async getClientACLExceptions(app: App, apiProducts: APIProduct[], developer: Developer, envName: string, syntax?: TopicSyntax): Promise<Permissions> {
     try {
-      let publishExceptions: string[] = [];
-      let subscribeExceptions: string[] = [];
+      let publishExceptions: {
+        [name: string]: ChannelPermission;
+      }[] = [];
+      let subscribeExceptions: {
+        [name: string]: ChannelPermission;
+      }[] = [];
       // compile list of event destinations sub / pub separately
       for (const product of apiProducts) {
         for (const env of product.environments) {
           if (env == envName) {
-            publishExceptions = this.getResources(product.pubResources).concat(publishExceptions);
-            subscribeExceptions = this.getResources(product.subResources).concat(subscribeExceptions);
-            let strs: string[] = await this.getResourcesFromAsyncAPIs(product.apis, Direction.Subscribe);
+            publishExceptions = this.getResourcesAsChannelPermissions(product.pubResources).concat(publishExceptions);
+            subscribeExceptions = this.getResourcesAsChannelPermissions(product.subResources).concat(subscribeExceptions);
+            let strs: {
+              [name: string]: ChannelPermission;
+            }[] = await this.getChannelPermissionsFromAsyncAPIs(product.apis, Direction.Subscribe);
             subscribeExceptions = subscribeExceptions.concat(strs);
-            strs = await this.getResourcesFromAsyncAPIs(product.apis, Direction.Publish);
+            strs = await this.getChannelPermissionsFromAsyncAPIs(product.apis, Direction.Publish);
             publishExceptions = publishExceptions.concat(strs);
           }
         }
       }
       let attributes: any[] = this.getAttributes(app, developer, apiProducts);
-      subscribeExceptions = this.enrichTopics(subscribeExceptions, attributes);
-      publishExceptions = this.enrichTopics(publishExceptions, attributes);
-      publishExceptions.forEach((s, index, arr) => {
-        arr[index] = this.scrubDestination(s, syntax);
+      publishExceptions.forEach((channel, index, arr) => {
+        const s: string[] = [];
+        L.info(channel);
+        s.push(Object.keys(channel)[0]);
+        const publishPermissions: string[] = this.enrichTopics(s, attributes);
+        publishPermissions.forEach((s, index, arr) => {
+          arr[index] = this.scrubDestination(s, syntax);
+        });
+        channel[Object.keys(channel)[0]].permissions = publishPermissions;
       });
-      subscribeExceptions.forEach((s, index, arr) => {
-        arr[index] = this.scrubDestination(s, syntax);
+      subscribeExceptions.forEach((channel, index, arr) => {
+        const s: string[] = [];
+        L.info(channel);
+        s.push(Object.keys(channel)[0]);
+        const subscribePermissions: string[] = this.enrichTopics(s, attributes);
+        subscribePermissions.forEach((s, index, arr) => {
+          arr[index] = this.scrubDestination(s, syntax);
+        });
+        channel[Object.keys(channel)[0]].permissions = subscribePermissions;
       });
-      subscribeExceptions = Array.from(new Set(subscribeExceptions));
-      publishExceptions = Array.from(new Set(publishExceptions));
+      // subscribeExceptions = this.enrichTopics(subscribeExceptions, attributes);
+      // publishExceptions = this.enrichTopics(publishExceptions, attributes);
+      // publishExceptions.forEach((s, index, arr) => {
+      //   arr[index] = this.scrubDestination(s, syntax);
+      // });
+      // subscribeExceptions.forEach((s, index, arr) => {
+      //   arr[index] = this.scrubDestination(s, syntax);
+      // });
+      //subscribeExceptions = Array.from(new Set(subscribeExceptions));
+      //publishExceptions = Array.from(new Set(publishExceptions));
 
       // reverse - Async API usage of verbs
       var permissions: Permissions = {
@@ -708,6 +735,27 @@ class BrokerService {
       }
     );
   }
+
+
+  private async getChannelPermissionsFromAsyncAPIs(apis: string[], direction: Direction): Promise<{
+    [name: string]: ChannelPermission;
+  }[]> {
+    const resources: string[] = await this.getResourcesFromAsyncAPIs(apis, direction);
+    let returnResources: {
+      [name: string]: ChannelPermission;
+    }[] = [];
+    resources.forEach((resource: string) => {
+      const channelPermission: ChannelPermission = {
+        permissions: [],
+        isChannel: true,
+      };
+      returnResources.push({ [resource]: channelPermission });
+    });
+    L.info(returnResources);
+    return returnResources;
+
+  }
+
   private getRDPSubscriptionsFromAsyncAPIs(apis: string[]): Promise<string[]> {
     return new Promise<string[]>(
       (resolve, reject) => {
@@ -865,11 +913,29 @@ class BrokerService {
     return returnResources;
   }
 
+  private getResourcesAsChannelPermissions(resources: string[]): {
+    [name: string]: ChannelPermission;
+  }[] {
+
+    let returnResources: {
+      [name: string]: ChannelPermission;
+    }[] = [];
+    resources.forEach((resource: string) => {
+      const channelPermission: ChannelPermission = {
+        permissions: [],
+        isChannel: false,
+      };
+      returnResources.push({ [resource]: channelPermission });
+    });
+    L.info(returnResources);
+    return returnResources;
+  }
+
   private scrubDestination(destination: string, syntax?: TopicSyntax) {
     L.debug(`scrub ${destination}`);
     let scrubbed = destination;
     if (syntax == 'mqtt') {
-      scrubbed =  destination.replace(/\{[^\/]*\}(?!$)/gi, TopicWildcards.SINGLE_LEVEL_MQTT)
+      scrubbed = destination.replace(/\{[^\/]*\}(?!$)/gi, TopicWildcards.SINGLE_LEVEL_MQTT)
         .replace(/\{[^\/]*\}$/gi, TopicWildcards.MULTI_LEVEL_MQTT)
         .replace(/\/[a-z0-9]*\*/gi, `/${TopicWildcards.SINGLE_LEVEL_MQTT}`);
     } else {
