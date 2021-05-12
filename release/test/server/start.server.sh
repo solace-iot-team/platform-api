@@ -12,6 +12,14 @@ scriptName=$(basename $(test -L "$0" && readlink "$0" || echo "$0"));
   if [ -z "$APIM_RELEASE_TEST_LOG_LEVEL" ]; then echo ">>> ERROR: - $scriptName - missing env var: APIM_RELEASE_TEST_LOG_LEVEL"; exit 1; fi
   if [ -z "$APIM_RELEASE_TEST_FILE_USER_REGISTRY" ]; then echo ">>> ERROR: - $scriptName - missing env var: APIM_RELEASE_TEST_FILE_USER_REGISTRY"; exit 1; fi
 
+  if [ -z "$APIM_RELEASE_TEST_AUTH_EXTRACTION_USER_PRINCIPAL" ]; then echo ">>> ERROR: - $scriptName - missing env var: APIM_RELEASE_TEST_AUTH_EXTRACTION_USER_PRINCIPAL"; exit 1; fi
+  if [ -z "$APIM_RELEASE_TEST_AUTH_EXTRACTION_ORGS" ]; then echo ">>> ERROR: - $scriptName - missing env var: APIM_RELEASE_TEST_AUTH_EXTRACTION_ORGS"; exit 1; fi
+  if [ -z "$APIM_RELEASE_TEST_AUTH_EXTRACTION_ROLES" ]; then echo ">>> ERROR: - $scriptName - missing env var: APIM_RELEASE_TEST_AUTH_EXTRACTION_ROLES"; exit 1; fi
+  if [ -z "$APIM_RELEASE_TEST_AUTH_VERIFICATION_KEY" ]; then echo ">>> ERROR: - $scriptName - missing env var: APIM_RELEASE_TEST_AUTH_VERIFICATION_KEY"; exit 1; fi
+  if [ -z "$APIM_RELEASE_TEST_AUTH_VERIFICATION_ISSUER" ]; then echo ">>> ERROR: - $scriptName - missing env var: APIM_RELEASE_TEST_AUTH_VERIFICATION_ISSUER"; exit 1; fi
+  if [ -z "$APIM_RELEASE_TEST_AUTH_VERIFICATION_AUD" ]; then echo ">>> ERROR: - $scriptName - missing env var: APIM_RELEASE_TEST_AUTH_VERIFICATION_AUD"; exit 1; fi
+  if [ -z "$APIM_RELEASE_TEST_AUTH_DISCOVERY_OIDC_URL" ]; then echo ">>> ERROR: - $scriptName - missing env var: APIM_RELEASE_TEST_AUTH_DISCOVERY_OIDC_URL  "; exit 1; fi
+
 ############################################################################################################################
 # Run
 
@@ -24,6 +32,13 @@ echo " >>> Starting server ..."
   export APP_ID=$APIM_RELEASE_TEST_APP_ID
   export LOG_LEVEL=$APIM_RELEASE_TEST_LOG_LEVEL
   export FILE_USER_REGISTRY=$APIM_RELEASE_TEST_FILE_USER_REGISTRY
+  export AUTH_EXTRACTION_USER_PRINCIPAL=$APIM_RELEASE_TEST_AUTH_EXTRACTION_USER_PRINCIPAL
+  export AUTH_EXTRACTION_ORGS=$APIM_RELEASE_TEST_AUTH_EXTRACTION_ORGS
+  export AUTH_EXTRACTION_ROLES=$APIM_RELEASE_TEST_AUTH_EXTRACTION_ROLES
+  export AUTH_VERIFICATION_KEY=$APIM_RELEASE_TEST_AUTH_VERIFICATION_KEY
+  export AUTH_VERIFICATION_ISSUER=$APIM_RELEASE_TEST_AUTH_VERIFICATION_ISSUER
+  export AUTH_VERIFICATION_AUD=$APIM_RELEASE_TEST_AUTH_VERIFICATION_AUD
+  export AUTH_DISCOVERY_OIDC_URL=$APIM_RELEASE_TEST_AUTH_DISCOVERY_OIDC_URL
 
   # **********************************************************************
   # temp fix until release is done
@@ -35,7 +50,8 @@ echo " >>> Starting server ..."
     runScript="npm install"
     $runScript
     code=$?; if [[ $code != 0 ]]; then echo ">>> ERROR - code=$code - runScript='$runScript' - $scriptName"; FAILED=1; fi
-    startServerScript="npm run server:dev"
+    # startServerScript="npm run server:dev"
+    startServerScript="npm start"
 
   # end fix
   # **********************************************************************

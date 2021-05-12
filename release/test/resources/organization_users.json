@@ -1,5 +1,26 @@
 {
-	"org_admin_user": "org_admin_user_password",
-	"org1_admin_user": "org1_admin_user_password",
-	"org2_admin_user": "org2_admin_user_password"
+	"org1_admin_user": {
+    "password": "org1_admin_user_password",
+    "roles": [
+      "org-admin"
+    ]
+  },
+	"org2_admin_user": {
+    "password": "org2_admin_user_password",
+    "roles": [
+      "org-admin"
+    ]
+  },
+	"org_admin_user": {
+    "password": "org_admin_user_password",
+    "roles": [
+      "org-admin"
+    ]
+  },
+	"admin": {
+    "password": "p3zvZFF7ka4Wrj4p",
+    "roles": [
+      "platform-admin"
+    ]
+  }
 }

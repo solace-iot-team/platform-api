@@ -1,3 +1,14 @@
 {
-	"api-user": "api-user-pwd"
+	"api-user": {
+    "password": "api-user-pwd",
+    "roles": [
+      "org-admin"
+    ]
+  },
+	"admin": {
+    "password": "p3zvZFF7ka4Wrj4p",
+    "roles": [
+      "platform-admin"
+    ]
+  }
 }
