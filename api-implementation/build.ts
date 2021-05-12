@@ -9,6 +9,7 @@ let about: About;
 
 type About = {
     name: string,
+    description: string,
     homepage: string,
     repository: {
         type: string,
@@ -37,6 +38,7 @@ const buildAbout = () => {
     let sha1 = s.exec('git rev-parse HEAD').stdout.slice(0, -1);
     about = {
         name: packageJson.name,
+        description: packageJson.description,
         homepage: packageJson.homepage,
         author: packageJson.author,
         license: packageJson.license,
@@ -59,6 +61,7 @@ const copyAssets = () => {
     if(s.cp(`${inputApiSpecFile}`, `${outDir}/server/common/api.yml`).code !== 0) process.exit(1);
     // public
     if(s.cp('-rf', 'public', `${outDir}/public`).code !== 0) process.exit(1);
+    if(s.cp(`${inputApiSpecFile}`, `${outDir}/public`).code !== 0) process.exit(1);
     try {
         fs.writeFileSync(`${outDir}/public/about.json`, JSON.stringify(about, null, 2));
     } catch(e) {

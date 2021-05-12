@@ -85,7 +85,7 @@ const removeDockerContainersByImageName = () => {
 const buildDockerImage = () => {
     console.log(`[${scriptName}]: removing any existing images, tags=${dockerImageTag}, ${dockerImageTagLatest}`);
     if(s.exec(`docker rmi -f ${dockerImageTag} ${dockerImageTagLatest}`, { silent: true }).code !== 0) process.exit(1);
-    
+
     console.log(`[${scriptName}]: building new image, tags=${dockerImageTag}, ${dockerImageTagLatest}`);
     // if(s.exec(`docker build --no-cache --build-arg PLATFORM_API_SERVER_NAME=${dockerImageName} --tag ${dockerImageTag} -f ${dockerFile} ${workingApiImplmentationDir}`).code !== 0) process.exit(1);
     if(s.exec(`docker build --no-cache --tag ${dockerImageTag} -f ${dockerFile} ${dockerContextDir}`).code !== 0) process.exit(1);
@@ -109,7 +109,7 @@ const main = () => {
     checkVersion();
     removeDockerContainersByImageName();
     buildDockerImage();
-    publishDockerImage();
+    // publishDockerImage();
 }
 
 main();
