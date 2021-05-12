@@ -109,7 +109,7 @@ const main = () => {
     checkVersion();
     removeDockerContainersByImageName();
     buildDockerImage();
-    // publishDockerImage();
+    publishDockerImage();
 }
 
 main();
