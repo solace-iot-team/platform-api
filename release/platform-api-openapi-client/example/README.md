@@ -1,4 +1,4 @@
-# Example Using Solace Platform API OpenApi Client
+# Example Using Solace API Management Connector Client for Node.js
 
 Sequence (`index.ts`):
 
@@ -14,7 +14,7 @@ Sequence (`index.ts`):
 
 ## Prerequisites
 
-- running instance of the Platform-Api Server
+- running instance of the API-M Connector Server
 - Solace Cloud account with rights to create a token
 - 1 service in Solace Cloud to act as the API Gateway
 

@@ -61,7 +61,8 @@ const copyAssets = () => {
     if(s.cp(`${inputApiSpecFile}`, `${outDir}/server/common/api.yml`).code !== 0) process.exit(1);
     // public
     if(s.cp('-rf', 'public', `${outDir}/public`).code !== 0) process.exit(1);
-    if(s.cp(`${inputApiSpecFile}`, `${outDir}/public`).code !== 0) process.exit(1);
+    // not required, url already in the swagger ui
+    // if(s.cp(`${inputApiSpecFile}`, `${outDir}/public`).code !== 0) process.exit(1);
     try {
         fs.writeFileSync(`${outDir}/public/about.json`, JSON.stringify(about, null, 2));
     } catch(e) {

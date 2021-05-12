@@ -2,16 +2,12 @@
 
 Generated Typescript Open API Client for the [Solace API Management Connector](https://github.com/solace-iot-team/platform-api).
 
-Target: **Node.js**
+Target: **Front-End/Browser**
 
 ## Install
 
 ```bash
-npm install @solace-iot-team/platform-api-openapi-client
+npm install @solace-iot-team/platform-api-openapi-client-fe
 ```
-
-## Usage
-
-See [Example.](https://github.com/solace-iot-team/platform-api/release/platform-api-openapi-client/example)
 
 ---
