@@ -1,5 +1,69 @@
 # Release Notes
 
+
+## Version 0.1.0
+
+* OpenAPI: 0.1.0
+* API Management Connector Server: 0.1.0
+
+### Features
+* **App Permissions - key by async api channel**
+  - Structure of the permissions returned by the GET app resources changed
+  - Original channels from the Async API are used as key, the permissions are listed below the channel name
+* **Tenant Level Authentication using IdP and openid/Oauth2**
+  - Server can be configured to use JWT for authentication and authorization
+  - File based auth is preserved for backwards compatibility/demo mode. However user regsitry format has changed (see details below)
+  - When using JWT access to tenants/`organization` is restricted by a claim in the JWT
+  - For configuration details - https://github.com/solace-iot-team/platform-api/wiki/API-Management-Connector-(APIM-Connector)-Wiki
+
+* **Provisioning 0f AuthorizationGroup for App**
+  - Provision an authorisation group for each registered app that maps to the app's ACL profile. This allows apps authenticating with OAuth to use any authenticated principal as a user identity when connecting to PubSub+ while mapping the connection to an ACL profile based on the Authorization Group.
+
+#### Tenant Level Authentication using IdP and openid/Oauth2 - Changes to user registry
+
+Previous format was a simple list of usernames and password e.g.
+```
+{
+  "tom": "tomspassword",
+  "dick": "dickspassword"
+}
+```
+
+The password is now replaced by a JSON object containing the password and the user's role(s).
+```
+{
+  "tom": {
+    "password": "tomspassword",
+    "roles": [
+      "org-admin"
+    ]
+  },
+  "dick": {
+    "password": "dickspassword",
+    "roles": [
+      "org-admin"
+    ]
+  }
+}
+```
+Allowed roles are `org-admin` and `platform-admin`.
+
+#### Provisioning 0f AuthorizationGroup for App
+
+The Broker's OAuth provider configuration allows to use any claim from the JWT token as a lookup for matching an Authorization Group.
+A possible scenario is a JWT that contains the username/principal in the "sub" claim and the client id of the app  - that was authorised by the principal - in the "azp".
+
+```
+Consider this example JWT snippet:
+{
+  "sub": "admin",
+  "azp": "NEQ9smqYk9a58ONQEMrLIS1yHfsa",
+  "iss": "https://3.127.198.130:9443/oauth2/token",
+  "exp": 1620823479,
+}
+A client presenting this JWT to the broker will appear under the username "admin" and will be mapped into the Apps' ACL profile via an Authorization group "NEQ9smqYk9a58ONQEMrLIS1yHfsa".
+```
+
 ## Version 0.0.12
 
 * OpenAPI: 0.0.12
