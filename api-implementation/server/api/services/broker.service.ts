@@ -27,7 +27,8 @@ import {
   MsgVpnQueueSubscription,
   MsgVpnRestDeliveryPoint,
   MsgVpnRestDeliveryPointRestConsumer,
-  MsgVpnRestDeliveryPointQueueBinding
+  MsgVpnRestDeliveryPointQueueBinding,
+  MsgVpnAuthorizationGroup
 } from '../../../src/clients/sempv2';
 import SolaceCloudFacade from '../../../src/solacecloudfacade';
 import { Sempv2Client } from '../../../src/sempv2-client';
@@ -85,6 +86,8 @@ class BrokerService {
             L.info(`created acl profile ${app.name}`);
             var b = await this.createClientUsernames(app, services);
             L.info(`created client username ${app.name}`);
+            var e = await this.createAuthorizationGroups(app, services);
+            L.info(`created client username ${app.name}`);
             var c = await this.createClientACLExceptions(app, services, products, developer);
             L.info(`created acl exceptions ${app.name}`);
             // no webhook - no RDP
@@ -127,6 +130,7 @@ class BrokerService {
     try {
       const services = await this.getServices(environmentNames);
       await this.deleteClientUsernames(app, services);
+      await this.deleteAuthorizationGroups(app, services);
       await this.deleteACLs(app, services);
       await this.deleteRDPs(app, services);
       await this.deleteQueues(app, services);
@@ -240,6 +244,47 @@ class BrokerService {
       }
     }
   }
+
+  private async createAuthorizationGroups(app: App, services: Service[]): Promise<void> {
+    for (var service of services) {
+      var sempV2Client = this.getSEMPv2Client(service);
+      var authzGroup: MsgVpnAuthorizationGroup = {
+        aclProfileName: app.credentials.secret.consumerKey,
+        authorizationGroupName: app.credentials.secret.consumerKey,
+        clientProfileName: "default",
+        msgVpnName: service.msgVpnName,
+        enabled: true        
+      };
+      try {
+        var getResponse = await AllService.getMsgVpnAuthorizationGroup(service.msgVpnName, app.credentials.secret.consumerKey);
+        L.info("AuthorizationGroup Looked up");
+        var responseUpd = await AllService.updateMsgVpnAuthorizationGroup(service.msgVpnName, app.credentials.secret.consumerKey, authzGroup);
+        L.info("AuthorizationGroup updated");
+      } catch (e) {
+
+        try {
+          let response = await AllService.createMsgVpnAuthorizationGroup(service.msgVpnName, authzGroup);
+          L.info("created  AuthorizationGroup");
+        } catch (e) {
+          throw e;
+        }
+      }
+    }
+  }
+
+  private async deleteAuthorizationGroups(app: App, services: Service[]): Promise<void> {
+    for (var service of services) {
+      const sempV2Client = this.getSEMPv2Client(service);
+      try {
+        const getResponse = await AllService.deleteMsgVpnAuthorizationGroup(service.msgVpnName, app.credentials.secret.consumerKey);
+      } catch (err) {
+        if (!(err.body.meta.error.status == "NOT_FOUND")) {
+          throw err;
+        }
+      }
+    }
+  }
+
   private async createClientUsernames(app: App, services: Service[]): Promise<void> {
     for (var service of services) {
       var sempV2Client = this.getSEMPv2Client(service);
@@ -268,6 +313,7 @@ class BrokerService {
     }
   }
 
+
   private async deleteClientUsernames(app: App, services: Service[]): Promise<void> {
     for (var service of services) {
       const sempV2Client = this.getSEMPv2Client(service);
@@ -280,6 +326,7 @@ class BrokerService {
       }
     }
   }
+
   private async createClientACLExceptions(app: App, services: Service[], apiProducts: APIProduct[], developer: Developer): Promise<void> {
     var publishExceptions: string[] = [];
     var subscribeExceptions: string[] = [];
@@ -318,6 +365,7 @@ class BrokerService {
     }
 
   }
+
 
 
   private getAttributes(app: App, developer: Developer, products: APIProduct[]) {
