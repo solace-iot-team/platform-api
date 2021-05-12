@@ -243,6 +243,9 @@ export class DevelopersService {
     }
     if (body.webHooks) {
       app.webHooks = body.webHooks;
+    }    
+    if (body.credentials) {
+      app.credentials = body.credentials;
     }
 
     L.info(`App patch request ${JSON.stringify(app)}`);
