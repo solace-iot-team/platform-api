@@ -9,8 +9,8 @@ on:
   workflow_dispatch:
   # # production
   schedule:
-  #   # - cron: '0 7 * * MON'
-    - cron: '0 6 * * *'
+    - cron: '0 6 * * THU'
+    # - cron: '0 6 * * *'
 env:
   DEBUG_FLAG: ${{ true }}
   # DEBUG_FLAG: ${{ false }}
@@ -47,8 +47,8 @@ jobs:
       - name: Checkout Latest Release
         uses: actions/checkout@v2
         with:
-          # ref: ${{ steps.platform_api_release.outputs.tag }}
-          ref: ${{ github.ref }}
+          ref: ${{ steps.platform_api_release.outputs.tag }}
+          # ref: ${{ github.ref }}
 
       - name: env before install
         if: env.DEBUG_FLAG == 'true'
