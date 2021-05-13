@@ -24,8 +24,8 @@ scriptName=$(basename $(test -L "$0" && readlink "$0" || echo "$0"));
 
 declare -a testScripts=(
   "$scriptDir/mongodb/start.mongo.sh"
-  "$scriptDir/server/start.server.sh"
-  # "$scriptDir/server/docker/start.server.sh"
+  # "$scriptDir/server/start.server.sh"
+  "$scriptDir/server/docker/start.server.sh"
   "$APIM_SOLACE_PLATFORM_API_PROJECT_HOME/release/platform-api-openapi-client/example/test/run.sh"
   "$scriptDir/integration/run.sh"
 )

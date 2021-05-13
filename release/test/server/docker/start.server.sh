@@ -9,6 +9,13 @@ scriptName=$(basename $(test -L "$0" && readlink "$0" || echo "$0"));
   if [ -z "$APIM_RELEASE_TEST_MONGO_DATABASE" ]; then echo ">>> ERROR: - $scriptName - missing env var: APIM_RELEASE_TEST_MONGO_DATABASE"; exit 1; fi
   if [ -z "$APIM_RELEASE_TEST_MONGO_PORT" ]; then echo ">>> ERROR: - $scriptName - missing env var: APIM_RELEASE_TEST_MONGO_PORT"; exit 1; fi
   if [ -z "$APIM_RELEASE_TEST_PLATFORM_PORT" ]; then echo ">>> ERROR: - $scriptName - missing env var: APIM_RELEASE_TEST_PLATFORM_PORT"; exit 1; fi
+  if [ -z "$APIM_RELEASE_TEST_AUTH_EXTRACTION_USER_PRINCIPAL" ]; then echo ">>> ERROR: - $scriptName - missing env var: APIM_RELEASE_TEST_AUTH_EXTRACTION_USER_PRINCIPAL"; exit 1; fi
+  if [ -z "$APIM_RELEASE_TEST_AUTH_EXTRACTION_ORGS" ]; then echo ">>> ERROR: - $scriptName - missing env var: APIM_RELEASE_TEST_AUTH_EXTRACTION_ORGS"; exit 1; fi
+  if [ -z "$APIM_RELEASE_TEST_AUTH_EXTRACTION_ROLES" ]; then echo ">>> ERROR: - $scriptName - missing env var: APIM_RELEASE_TEST_AUTH_EXTRACTION_ROLES"; exit 1; fi
+  if [ -z "$APIM_RELEASE_TEST_AUTH_VERIFICATION_KEY" ]; then echo ">>> ERROR: - $scriptName - missing env var: APIM_RELEASE_TEST_AUTH_VERIFICATION_KEY"; exit 1; fi
+  if [ -z "$APIM_RELEASE_TEST_AUTH_VERIFICATION_ISSUER" ]; then echo ">>> ERROR: - $scriptName - missing env var: APIM_RELEASE_TEST_AUTH_VERIFICATION_ISSUER"; exit 1; fi
+  if [ -z "$APIM_RELEASE_TEST_AUTH_VERIFICATION_AUD" ]; then echo ">>> ERROR: - $scriptName - missing env var: APIM_RELEASE_TEST_AUTH_VERIFICATION_AUD"; exit 1; fi
+  if [ -z "$APIM_RELEASE_TEST_AUTH_DISCOVERY_OIDC_URL" ]; then echo ">>> ERROR: - $scriptName - missing env var: APIM_RELEASE_TEST_AUTH_DISCOVERY_OIDC_URL  "; exit 1; fi
 
 ############################################################################################################################
 # Run
@@ -22,6 +29,7 @@ localMongoDBUrl="null"
 platformApiServerDataVolumeMountPath="$scriptDir/data"
 platformApiServerDataVolumeInternal="/platform-api-server/data"
 fileUserRegistry="$platformApiServerDataVolumeInternal/organization_users.json"
+jwtKey="$platformApiServerDataVolumeInternal/jwt_integration_test.pem"
 
 echo " >>> Starting server in docker..."
 
@@ -41,7 +49,7 @@ echo " >>> Starting server in docker..."
   esac
 
   export CONTAINER_NAME=$APIM_RELEASE_TEST_DOCKER_CONTAINER_NAME
-  export IMAGE="solaceiotteam/platform-api-server:latest"
+  export IMAGE="solaceiotteam/apim-connector-server:latest"
   export PLATFORM_DATA_MOUNT_PATH=$platformApiServerDataVolumeMountPath
   export PLATFORM_DATA_INTERNAL_PATH=$platformApiServerDataVolumeInternal
   export PLATFORM_PORT=$APIM_RELEASE_TEST_PLATFORM_PORT
@@ -49,6 +57,13 @@ echo " >>> Starting server in docker..."
   export LOG_LEVEL=debug
   export APP_ID=platform-api-server
   export FILE_USER_REGISTRY=$fileUserRegistry
+  export AUTH_EXTRACTION_USER_PRINCIPAL=$APIM_RELEASE_TEST_AUTH_EXTRACTION_USER_PRINCIPAL
+  export AUTH_EXTRACTION_ORGS=$APIM_RELEASE_TEST_AUTH_EXTRACTION_ORGS
+  export AUTH_EXTRACTION_ROLES=$APIM_RELEASE_TEST_AUTH_EXTRACTION_ROLES
+  export AUTH_VERIFICATION_KEY=$jwtKey
+  export AUTH_VERIFICATION_ISSUER=$APIM_RELEASE_TEST_AUTH_VERIFICATION_ISSUER
+  export AUTH_VERIFICATION_AUD=$APIM_RELEASE_TEST_AUTH_VERIFICATION_AUD
+  export AUTH_DISCOVERY_OIDC_URL=$APIM_RELEASE_TEST_AUTH_DISCOVERY_OIDC_URL
   export DOCKER_CLIENT_TIMEOUT=120
   export COMPOSE_HTTP_TIMEOUT=120
 
@@ -71,19 +86,21 @@ echo " >>> Starting server in docker..."
     WORKING_DIR=$scriptDir/tmp; mkdir -p $WORKING_DIR; rm -rf $WORKING_DIR/*;
     dockerLogsFile="$WORKING_DIR/docker.logs"
     isInitialized=0; checks=0
+    isListeningOnPortInitialized=0; isConnected2MongoInitialized=0; isLoadedUserRegistryInitialized=0;
     until [[ $isInitialized -gt 2 || $checks -gt 10 ]]; do
       ((checks++))
       echo "   check: $checks"
       docker logs $CONTAINER_NAME > $dockerLogsFile
       entryListeningOnPort=$(grep -n -e "Listening on port $PLATFORM_PORT" $dockerLogsFile)
       echo "      - entryListeningOnPort='$entryListeningOnPort'"
-      if [ ! -z "$entryListeningOnPort" ]; then ((isInitialized++)); fi
+      if [ ! -z "$entryListeningOnPort" ]; then ((isListeningOnPortInitialized=1)); fi
       entryConnected2Mongo=$(grep -n -e "Connected to Mongo" $dockerLogsFile)
       echo "      - entryConnected2Mongo='$entryConnected2Mongo'"
-      if [ ! -z "$entryConnected2Mongo" ]; then ((isInitialized++)); fi
+      if [ ! -z "$entryConnected2Mongo" ]; then ((isConnected2MongoInitialized=1)); fi
       entryLoadedUserRegistry=$(grep -n -e "Loaded user registry" $dockerLogsFile)
       echo "      - entryLoadedUserRegistry='$entryLoadedUserRegistry'"
-      if [ ! -z "$entryLoadedUserRegistry" ]; then ((isInitialized++)); fi
+      if [ ! -z "$entryLoadedUserRegistry" ]; then ((isLoadedUserRegistryInitialized=1)); fi
+      isInitialized=$((isListeningOnPortInitialized + isConnected2MongoInitialized + isLoadedUserRegistryInitialized))
       if [ $isInitialized -lt 3 ]; then sleep 2s; fi
     done
     if [ $isInitialized -lt 3 ]; then echo " >>> ERROR: server is not initialized, checks=$checks"; exit 1; fi
