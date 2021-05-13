@@ -1,5 +1,15 @@
 # Release Notes
 
+## Version 0.1.1
+
+* OpenAPI: 0.1.0
+* API Management Connector Server: 0.1.1
+
+### Features
+* **Reset app permissions (ACL profile exceptions) on app re-provisionining**
+  - ACL publish and subscribe exceptions that were no longer applicable were not removed on re-provisioning an app
+  - Required exceptions are now cross checked against the exceptions on the ACL profile and obsolete exceptions  are deleted 
+
 
 ## Version 0.1.0
 
