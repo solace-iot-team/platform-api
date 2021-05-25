@@ -7,7 +7,7 @@ import path from 'path';
 
 import { UserRegistry, getMandatoryEnvVarValue, getOptionalEnvVarValue, TestLogger, TestContext } from "../lib/test.helpers";
 import { isInstanceOfApiError, PlatformAPIClient } from '../lib/api.helpers';
-import { PlatformManagementService } from '../lib/generated/openapi/services/PlatformManagementService';
+import { AdministrationService } from '../lib/generated/openapi/services/AdministrationService';
 import type { Organization } from '../lib/generated/openapi/models/Organization';
 
 
@@ -34,7 +34,7 @@ describe(`${scriptName}`, () => {
       TestContext.newItId();
       try {
         PlatformAPIClient.setManagementUser();
-        await PlatformManagementService.deleteOrganization(orgName);
+        await AdministrationService.deleteOrganization(orgName);
       } catch (e) {
         expect(isInstanceOfApiError(e), `${TestLogger.createNotApiErrorMesssage(e.message)}`).to.be.true;
         let message = `deleting org=${orgName}`;
@@ -46,7 +46,7 @@ describe(`${scriptName}`, () => {
       TestContext.newItId();
       try {
         PlatformAPIClient.setManagementUser();
-        await PlatformManagementService.deleteOrganization(orgName);
+        await AdministrationService.deleteOrganization(orgName);
       } catch (e) {
         expect(isInstanceOfApiError(e), `${TestLogger.createNotApiErrorMesssage(e.message)}`).to.be.true;
         let message = `deleting org=${orgName}`;
@@ -65,7 +65,7 @@ describe(`${scriptName}`, () => {
       }
       try {
         PlatformAPIClient.setManagementUser();
-        response = await PlatformManagementService.createOrganization(request);
+        response = await AdministrationService.createOrganization(request);
         expect(response.name).to.equal(orgName);
       } catch (e) {
         expect(isInstanceOfApiError(e), `${TestLogger.createNotApiErrorMesssage(e.message)}`).to.be.true;
@@ -83,7 +83,7 @@ describe(`${scriptName}`, () => {
       }
       try {
         PlatformAPIClient.setManagementUser();
-        response = await PlatformManagementService.createOrganization(request);
+        response = await AdministrationService.createOrganization(request);
         expect(response.name).to.equal(orgName);
       } catch (e) {
         expect(isInstanceOfApiError(e), `${TestLogger.createNotApiErrorMesssage(e.message)}`).to.be.true;

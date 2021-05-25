@@ -1261,8 +1261,8 @@ tags:
     description: "An environment provides a runtime execution context for APIs. Each environment is associated with a specific Service in the associated Solace Cloud account. Typical environments are dev, stage, prod ..."
   - name: management
     description: "Manage organization settings, audit history"
-  - name: platformManagement
-    description: "Manage platform - tenants/orga. Requires admin access level."
+  - name: administration
+    description: "Manage tenants/orgs. Requires admin access level."
   - name: eventPortal
     description: "Provides read-only access to the Solace Event Portal associated with the account. Currently provided as a utility resource so existing Async API stubs can be exported from the portal. Currently these specifications are not necessarily compliant and information such as binding is missing."
 paths:
@@ -1273,7 +1273,7 @@ paths:
       - OpenId:
         - org-admin
       tags: 
-      - platformManagement
+      - administration
       responses:
        '200':
          description: list of organizations
@@ -1334,7 +1334,7 @@ paths:
      - OpenId:
        - org-admin
      tags:
-     - platformManagement
+     - administration
      requestBody: 
        description: "Organization"
        content: 
@@ -1405,7 +1405,7 @@ paths:
     get:
       operationId: getOrganization
       tags: 
-      - platformManagement
+      - administration
       responses:
        '200':
          description: the organization
@@ -1461,7 +1461,7 @@ paths:
     patch:
      operationId: updateOrganization
      tags:
-     - platformManagement
+     - administration
      requestBody: 
        description: "Organization"
        content: 
@@ -1529,7 +1529,7 @@ paths:
     delete:
      operationId: deleteOrganization
      tags:
-     - platformManagement
+     - administration
      responses:
        '204':
          description: No content

@@ -9,7 +9,7 @@ import _ from 'lodash';
 import { getBaseUrl, UserRegistry, getMandatoryEnvVarValue, getOptionalEnvVarValue, PlatformRequestHelper, AsyncAPIHelper, Developer, getObjectDifferences, ExpectDiff, getExpectEqualDiff, TestLogger, TestContext, getExpectContainedDiff } from "../lib/test.helpers";
 import { PlatformManagementHelper } from "../lib/platform-management";
 import { isInstanceOfApiError, PlatformAPIClient, ApiPermissions, createDefaultCredentials } from '../lib/api.helpers';
-import { PlatformManagementService } from '../lib/generated/openapi/services/PlatformManagementService';
+import { AdministrationService } from '../lib/generated/openapi/services/AdministrationService';
 import type { Organization } from '../lib/generated/openapi/models/Organization';
 import type { History } from '../lib/generated/openapi/models/History';
 import { APIProduct, APIProductPatch, ApiProductsService, ApisService, App, AppEnvironment, AppListItem, AppPatch, AppResponse, AppsService, AppStatus, Credentials, DevelopersService, Endpoint, Environment, EnvironmentResponse, EnvironmentsService, ManagementService, Protocol, WebHook } from "../lib/generated/openapi";
@@ -85,7 +85,7 @@ describe(`${scriptName}`, () => {
       TestContext.newItId();
       try {
         PlatformAPIClient.setManagementUser();
-        await PlatformManagementService.deleteOrganization(orgName);
+        await AdministrationService.deleteOrganization(orgName);
       } catch (e) {
         expect(isInstanceOfApiError(e), `${TestLogger.createNotApiErrorMesssage(e.message)}`).to.be.true;
         let message = `deleting org=${orgName}`;
@@ -97,7 +97,7 @@ describe(`${scriptName}`, () => {
       TestContext.newItId();
       try {
         PlatformAPIClient.setManagementUser();
-        await PlatformManagementService.deleteOrganization(orgName);
+        await AdministrationService.deleteOrganization(orgName);
       } catch (e) {
         expect(isInstanceOfApiError(e), `${TestLogger.createNotApiErrorMesssage(e.message)}`).to.be.true;
         let message = `deleting org=${orgName}`;
@@ -116,7 +116,7 @@ describe(`${scriptName}`, () => {
         name: orgName
       }
       try {
-        response = await PlatformManagementService.createOrganization(request);
+        response = await AdministrationService.createOrganization(request);
       } catch (e) {
         expect(isInstanceOfApiError(e), `${TestLogger.createNotApiErrorMesssage(e.message)}`).to.be.true;
         let message = `creating org=${orgName}`;

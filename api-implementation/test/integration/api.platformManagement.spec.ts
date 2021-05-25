@@ -8,7 +8,7 @@ import _ from 'lodash';
 
 import { UserRegistry, getMandatoryEnvVarValue, getOptionalEnvVarValue, AsyncAPIHelper, Developer, ExpectDiff, getExpectEqualDiff, TestLogger, TestContext, getExpectContainedDiff } from "../lib/test.helpers";
 import { isInstanceOfApiError, PlatformAPIClient, ApiPermissions, createDefaultCredentials } from '../lib/api.helpers';
-import { PlatformManagementService } from '../lib/generated/openapi/services/PlatformManagementService';
+import { AdministrationService } from '../lib/generated/openapi/services/AdministrationService';
 import type { Organization } from '../lib/generated/openapi/models/Organization';
 
 const enableLoggingEnvVar: string = getOptionalEnvVarValue('APIM_INTEGRATION_TEST_ENABLE_LOGGING');
@@ -46,7 +46,7 @@ describe(`${scriptName}`, () => {
       TestContext.newItId();
       try {
         PlatformAPIClient.setManagementUser();
-        await PlatformManagementService.deleteOrganization(orgName);
+        await AdministrationService.deleteOrganization(orgName);
       } catch (e) {
         expect(isInstanceOfApiError(e), `${TestLogger.createNotApiErrorMesssage(e.message)}`).to.be.true;
         let message = `deleting org=${orgName}`;
@@ -59,7 +59,7 @@ describe(`${scriptName}`, () => {
       TestContext.newItId();
       try {
         PlatformAPIClient.setManagementUser();
-        await PlatformManagementService.deleteOrganization(orgName);
+        await AdministrationService.deleteOrganization(orgName);
       } catch (e) {
         expect(isInstanceOfApiError(e), `${TestLogger.createNotApiErrorMesssage(e.message)}`).to.be.true;
         let message = `deleting org=${orgName}`;
@@ -90,7 +90,7 @@ describe(`${scriptName}`, () => {
         }
       }
       try {
-        response = await PlatformManagementService.createOrganization(request);
+        response = await AdministrationService.createOrganization(request);
       } catch (e) {
         expect(isInstanceOfApiError(e), `${TestLogger.createNotApiErrorMesssage(e.message)}`).to.be.true;
         let message = `creating org=${orgName}`;
@@ -106,7 +106,7 @@ describe(`${scriptName}`, () => {
         name: orgName
       }
       try {
-        response = await PlatformManagementService.createOrganization(request);
+        response = await AdministrationService.createOrganization(request);
       } catch (e) {
         expect(isInstanceOfApiError(e), `${TestLogger.createNotApiErrorMesssage(e.message)}`).to.be.true;
         let message = `creating org=${orgName}`;
@@ -133,7 +133,7 @@ describe(`${scriptName}`, () => {
         }
       }
       try {
-        response = await PlatformManagementService.updateOrganization(orgName, request);
+        response = await AdministrationService.updateOrganization(orgName, request);
       } catch (e) {
         expect(isInstanceOfApiError(e), `${TestLogger.createNotApiErrorMesssage(e.message)}`).to.be.true;
         let message = `creating org=${orgName}`;
