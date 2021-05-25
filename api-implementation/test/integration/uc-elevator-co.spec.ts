@@ -6,7 +6,7 @@ chai.use(sinonChai);
 import path from 'path';
 import _ from 'lodash';
 
-import { getBaseUrl, UserRegistry, getMandatoryEnvVarValue, getOptionalEnvVarValu, AsyncAPIHelper, Developer, getObjectDifferences, ExpectDiff, getExpectEqualDiff, TestLogger, TestContext, getExpectContainedDiff } from "../lib/test.helpers";
+import { getBaseUrl, UserRegistry, getMandatoryEnvVarValue, getOptionalEnvVarValue, AsyncAPIHelper, Developer, getObjectDifferences, ExpectDiff, getExpectEqualDiff, TestLogger, TestContext, getExpectContainedDiff } from "../lib/test.helpers";
 import { isInstanceOfApiError, PlatformAPIClient, ApiPermissions, createDefaultCredentials } from '../lib/api.helpers';
 import { AdministrationService } from '../lib/generated/openapi/services/AdministrationService';
 import type { Organization } from '../lib/generated/openapi/models/Organization';
