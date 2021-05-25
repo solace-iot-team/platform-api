@@ -220,11 +220,12 @@ export class DevelopersService {
         `Entity ${developer} does not exist`
       );
     }
-    L.info(dev);
+    L.debug(dev);
     const app: DeveloperAppPatch = {
       ownerId: developer,
       appType: 'developer',
     };
+    let areCredentialsUpdated: boolean = false;
 
     if (body.displayName) {
       app.displayName = body.displayName;
@@ -246,6 +247,7 @@ export class DevelopersService {
     }    
     if (body.credentials) {
       app.credentials = body.credentials;
+      areCredentialsUpdated = true;
     }
 
     L.info(`App patch request ${JSON.stringify(app)}`);
@@ -255,6 +257,9 @@ export class DevelopersService {
       app
     );
     if (appPatch.status == 'approved') {
+      if (areCredentialsUpdated){
+        const r = await BrokerService.deprovisionApp(appPatch as App);
+      }
       L.info(`provisioning app ${name}`);
       const r = await BrokerService.provisionApp(appPatch as App, dev);
     }
