@@ -17,7 +17,7 @@ const aud = process.env[`${ENV_PREFIX_VERIFIER}_AUD`];
 
 const userPrincipalPath = process.env[`${ENV_PREFIX_EXTRACTOR}_USER_PRINCIPAL`] || '$.upn';
 const groupsPath = process.env[`${ENV_PREFIX_EXTRACTOR}_ORGS`] || '$.groups'
-const rolesPath = process.env[`${ENV_PREFIX_EXTRACTOR}_ROLES`] || '$.resource_access[\'platform-api-server\'].roles';
+const rolesPath = process.env[`${ENV_PREFIX_EXTRACTOR}_ROLES`] || '$.resource_access[\'apim-connector\'].roles';
 
 export default class PassportFactory {
 
