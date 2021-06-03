@@ -11,10 +11,14 @@ class SolaceCloudFacade {
   }
 
   public async getServiceByEnvironment(e: Environment): Promise<Service> {
+    return this.getServiceById(e.serviceId);
+  }
+
+  public async getServiceById(id: string): Promise<Service> {
     try {
-      var result: ServiceResponse = await ServicesService.getService(e.serviceId);
+      var result: ServiceResponse = await ServicesService.getService(id);
       if (result == null || result.data == null) {
-        throw new ErrorResponseInternal(404, `Service ${e.serviceId} does not exist`);
+        throw new ErrorResponseInternal(404, `Service ${id} does not exist`);
       } else {
         return result.data;
       }
@@ -26,12 +30,16 @@ class SolaceCloudFacade {
   }
 
   public async getServices(): Promise<Service[]> {
+    let services: Service[]  = [];
     try {
       var result: ServicesResponse = await ServicesService.listServices();
       if (result == null) {
         throw new ErrorResponseInternal(404, `No services found`);
       } else {
-        return result.data;
+        for (const s of result.data){
+        services.push(await this.getServiceById(s.serviceId))
+        }
+        return services;
       }
     }
     catch (e) {
@@ -42,7 +50,7 @@ class SolaceCloudFacade {
 
   public async validate(token: string, baseUrl?: string): Promise<boolean> {
     let url: string = `${await resolve(OpenAPI.BASE)}/services`;
-    if (baseUrl !=null){
+    if (baseUrl != null) {
       url = `${baseUrl}/services`;
     }
     return validateToken(token, url);
