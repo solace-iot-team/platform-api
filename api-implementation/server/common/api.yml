@@ -2,7 +2,7 @@ openapi: 3.0.0
 info:
   title: Solace API Management Connector
   description: 'Solace API Management Connector API. Note: basic authentication security mechanism is deprecated.'
-  version: 0.1.0
+  version: 0.1.1
 servers:
   - url: /v1
 
@@ -18,7 +18,7 @@ components:
       description: Deprecated, may be removed in future version of the API
     OpenId:
       type: openIdConnect
-      openIdConnectUrl: http://localhost:8180/auth/realms/microcks/.well-known/openid-configuration
+      openIdConnectUrl: /auth/.well-known/openid-configuration
   parameters:
     organization:
       name: organization
@@ -717,6 +717,11 @@ components:
         serviceId:
           type: string
           example: xm7dc2dfas4
+        exposedProtocols:
+          type: array 
+          items:
+             $ref: '#/components/schemas/Protocol'
+            
 
     EnvironmentResponse:
       description: an environment
@@ -732,9 +737,16 @@ components:
         description:
           type: string
           example: development environment
+        exposedProtocols:
+          type: array 
+          items:
+             $ref: '#/components/schemas/Protocol'
         serviceId:
           type: string
           example: xm7dc2dfas4
+        serviceName:
+          type: string
+          example: DEV-GW
         msgVpnName:
           type: string
         datacenterId:
@@ -785,6 +797,13 @@ components:
         description:
           type: string
           example: development environment
+        serviceId:
+          type: string
+          example: xm7dc2dfas4
+        exposedProtocols:
+          type: array 
+          items:
+             $ref: '#/components/schemas/Protocol'
 
     Service:
       description: provides information about a service in the Solace Cloud account.

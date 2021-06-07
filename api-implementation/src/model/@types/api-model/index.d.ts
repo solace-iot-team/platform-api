@@ -500,6 +500,7 @@ declare namespace Components {
              * xm7dc2dfas4
              */
             serviceId: string;
+            exposedProtocols?: Protocol[];
         }
         /**
          * used for PATCH operation, an environment
@@ -510,6 +511,12 @@ declare namespace Components {
              * development environment
              */
             description?: string;
+            /**
+             * example:
+             * xm7dc2dfas4
+             */
+            serviceId?: string;
+            exposedProtocols?: Protocol[];
         }
         /**
          * an environment
@@ -525,11 +532,17 @@ declare namespace Components {
              * development environment
              */
             description: string;
+            exposedProtocols?: Protocol[];
             /**
              * example:
              * xm7dc2dfas4
              */
             serviceId: string;
+            /**
+             * example:
+             * DEV-GW
+             */
+            serviceName?: string;
             msgVpnName?: string;
             datacenterId?: string;
             datacenterProvider?: string;
