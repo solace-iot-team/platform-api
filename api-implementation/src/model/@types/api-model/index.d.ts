@@ -511,6 +511,11 @@ declare namespace Components {
              * development environment
              */
             description?: string;
+            /**
+             * example:
+             * xm7dc2dfas4
+             */
+            serviceId?: string;
             exposedProtocols?: Protocol[];
         }
         /**

@@ -797,6 +797,9 @@ components:
         description:
           type: string
           example: development environment
+        serviceId:
+          type: string
+          example: xm7dc2dfas4
         exposedProtocols:
           type: array 
           items:

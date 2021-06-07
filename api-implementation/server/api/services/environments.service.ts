@@ -52,8 +52,8 @@ export class EnvironmentsService {
 
   create(body: Environment): Promise<Environment> {
     return new Promise<Environment>(async (resolve, reject) => {
-      const apiReferenceCheck: boolean = await this.validateReferences(body);
-      if (apiReferenceCheck) {
+      const envReferenceCheck: ErrorResponseInternal = await this.validateReferences(body);
+      if (envReferenceCheck == null) {
         this.persistenceService
           .create(body.name, body)
           .then((p) => {
@@ -64,38 +64,71 @@ export class EnvironmentsService {
           });
       } else {
         reject(
-          new ErrorResponseInternal(
-            422,
-            ` reference check failed service ${body.serviceId} does not exist`
-          )
+          envReferenceCheck
         );
       }
     });
   }
 
   update(name: string, body: EnvironmentPatch): Promise<Environment> {
-    return new Promise<Environment>((resolve, reject) => {
-      this.persistenceService
-        .update(name, body)
-        .then((p) => {
-          resolve(p);
-        })
-        .catch((e) => {
-          reject(e);
-        });
+    return new Promise<Environment>(async (resolve, reject) => {
+      const envOriginal: Environment = (await this.byName(name) as Environment);
+      envOriginal.description = body.description;
+      envOriginal.exposedProtocols = body.exposedProtocols;
+      envOriginal.serviceId = body.serviceId;
+       const envRefCheck: ErrorResponseInternal = await this.validateReferences(envOriginal);
+      if (envRefCheck == null) {
+        this.persistenceService
+          .update(name, body)
+          .then((p) => {
+            resolve(p);
+          })
+          .catch((e) => {
+            reject(e);
+          });
+      } else {
+        reject(
+          envRefCheck
+        );
+      }
     });
   }
 
-  private async validateReferences(env: Environment): Promise<boolean> {
+  private async validateReferences(env: Environment): Promise<ErrorResponseInternal> {
     try {
+      L.debug(`Validating env ${env.name}`);
       const svc = await SolaceCloudFacade.getServiceByEnvironment(env);
-      if (svc !== null) {
-        return true;
+      if (svc == null) {
+        return new ErrorResponseInternal(
+          422,
+          ` reference check failed service ${env.serviceId} does not exist`
+        );
       } else {
-        return false;
+        // check the exposed protocols against the actual protocols supported by the service
+        if (env.exposedProtocols == null || env.exposedProtocols.length == 0) {
+          // no exposed protocols - all is well
+          L.info(env);
+          return null;
+        }
+        const serverProtocols: Components.Schemas.Endpoint[] = await ProtocolMapper.mapSolaceMessagingProtocolsToAsyncAPI(svc.messagingProtocols);
+        for (const exposedProtocol of env.exposedProtocols) {
+          const matchingSP = serverProtocols.find(serverProtocol => (exposedProtocol.name == serverProtocol.protocol.name && exposedProtocol.version == serverProtocol.protocol.version));
+          L.info(`SP ${matchingSP}`);
+
+          if (matchingSP === undefined) {
+            return new ErrorResponseInternal(
+              422,
+              ` reference check failed protocol ${exposedProtocol.name} ${exposedProtocol.version} does not exist on service ${env.serviceId}`
+            );
+          }
+        }
+        return null;
       }
     } catch (e) {
-      return false;
+      return new ErrorResponseInternal(
+        422,
+        ` reference check failed service ${env.serviceId} does not exist (error ${e})`
+      );
     }
   }
 
