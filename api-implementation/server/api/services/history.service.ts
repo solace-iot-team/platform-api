@@ -3,7 +3,7 @@ import { PersistenceService } from './persistence.service';
 import History = Components.Schemas.History;
 import { v4 } from 'uuid';
 
-export class ApisService {
+export class HistoryService {
 
   private persistenceService: PersistenceService;
 
@@ -20,4 +20,4 @@ export class ApisService {
   }
 }
 
-export default new ApisService();
+export default new HistoryService();
