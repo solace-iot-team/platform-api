@@ -715,51 +715,10 @@ declare namespace Components {
             adminProgress?: string;
             created?: number;
             creationState?: string;
-            messagingProtocols?: {
-                name: string;
-                username: string;
-                password: string;
-                endPoints: {
-                    name: string;
-                    transport: string;
-                    uris: string[];
-                    secured: string;
-                    compressed: string;
-                }[];
-                limits: unknown;
-            }[];
-            managementProtocols?: {
-                name: string;
-                username: string;
-                password: string;
-                endPoints: {
-                    name: string;
-                    uris: string[];
-                    secured: string;
-                    authenticated: string;
-                }[];
-                limits: unknown;
-            }[];
+            messagingProtocols?: Endpoint[];
             msgVpnAttributes?: {
-                vpnEventLargeMsgThreshold: string;
-                authenticationClientCertValidateDateEnabled: string;
-                vpnMaxConnectionCount: string;
-                vpnAdminUsername: string;
-                vpnMaxTransactedSessionCount: string;
-                subDomainName: string;
-                vmrVersion: string;
-                vpnAdminPassword: string;
-                vpnName: string;
-                vpnMaxTransactionCount: string;
-                vpnMaxMsgSpoolUsage: string;
-                vpnMaxEndpointCount: string;
-                vpnMaxEgressFlowCount: string;
-                vpnMaxSubscriptionCount: string;
                 authenticationClientCertEnabled: string;
-                vpnEnabled: string;
-                truststoreUri: string;
                 authenticationBasicEnabled: string;
-                vpnMaxIngressFlowCount: string;
             };
             locked?: boolean;
             messagingStorage?: number;
@@ -783,17 +742,6 @@ declare namespace Components {
                     value: string;
                 }[];
             }[];
-            certificateAuthorities?: string[];
-            clientProfiles?: string[];
-            cluster?: {
-                name: string;
-                password: string;
-                remoteAddress: string;
-                primaryRouterName: string;
-                supportedAuthenticationMode: string[];
-            };
-            redundancyGroupSslEnabled?: boolean;
-            configSyncSslEnabled?: boolean;
         }
         /**
          * provides information about services in the Solace Cloud account.

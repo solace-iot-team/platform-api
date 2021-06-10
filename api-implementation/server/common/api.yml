@@ -842,145 +842,17 @@ components:
         messagingProtocols:
           type: array
           items:
-            type: object
-            properties:
-              name:
-                type: string
-              username:
-                type: string
-              password:
-                type: string
-              endPoints:
-                type: array
-                items:
-                  type: object
-                  properties:
-                    name:
-                      type: string
-                    transport:
-                      type: string
-                    uris:
-                      type: array
-                      items:
-                        type: string
-                    secured:
-                      type: string
-                    compressed:
-                      type: string
-                  required:
-                  - name
-                  - transport
-                  - uris
-                  - secured
-                  - compressed
-              limits:
-                type: object
-            required:
-            - name
-            - username
-            - password
-            - endPoints
-            - limits
-        managementProtocols:
-          type: array
-          items:
-            type: object
-            properties:
-              name:
-                type: string
-              username:
-                type: string
-              password:
-                type: string
-              endPoints:
-                type: array
-                items:
-                  type: object
-                  properties:
-                    name:
-                      type: string
-                    uris:
-                      type: array
-                      items:
-                        type: string
-                    secured:
-                      type: string
-                    authenticated:
-                      type: string
-                  required:
-                  - name
-                  - uris
-                  - secured
-                  - authenticated
-              limits:
-                type: object
-            required:
-            - name
-            - username
-            - password
-            - endPoints
-            - limits
+            $ref: '#/components/schemas/Endpoint'
         msgVpnAttributes:
           type: object
           properties:
-            vpnEventLargeMsgThreshold:
-              type: string
-            authenticationClientCertValidateDateEnabled:
-              type: string
-            vpnMaxConnectionCount:
-              type: string
-            vpnAdminUsername:
-              type: string
-            vpnMaxTransactedSessionCount:
-              type: string
-            subDomainName:
-              type: string
-            vmrVersion:
-              type: string
-            vpnAdminPassword:
-              type: string
-            vpnName:
-              type: string
-            vpnMaxTransactionCount:
-              type: string
-            vpnMaxMsgSpoolUsage:
-              type: string
-            vpnMaxEndpointCount:
-              type: string
-            vpnMaxEgressFlowCount:
-              type: string
-            vpnMaxSubscriptionCount:
-              type: string
             authenticationClientCertEnabled:
-              type: string
-            vpnEnabled:
-              type: string
-            truststoreUri:
               type: string
             authenticationBasicEnabled:
               type: string
-            vpnMaxIngressFlowCount:
-              type: string
           required:
-          - vpnEventLargeMsgThreshold
-          - authenticationClientCertValidateDateEnabled
-          - vpnMaxConnectionCount
-          - vpnAdminUsername
-          - vpnMaxTransactedSessionCount
-          - subDomainName
-          - vmrVersion
-          - vpnAdminPassword
-          - vpnName
-          - vpnMaxTransactionCount
-          - vpnMaxMsgSpoolUsage
-          - vpnMaxEndpointCount
-          - vpnMaxEgressFlowCount
-          - vpnMaxSubscriptionCount
           - authenticationClientCertEnabled
-          - vpnEnabled
-          - truststoreUri
           - authenticationBasicEnabled
-          - vpnMaxIngressFlowCount
         locked:
           type: boolean
         messagingStorage:
@@ -1042,39 +914,6 @@ components:
             - value
             - unit
             - thresholds
-        certificateAuthorities:
-          type: array
-          items:
-            type: string
-        clientProfiles:
-          type: array
-          items:
-            type: string
-        cluster:
-          type: object
-          properties:
-            name:
-              type: string
-            password:
-              type: string
-            remoteAddress:
-              type: string
-            primaryRouterName:
-              type: string
-            supportedAuthenticationMode:
-              type: array
-              items:
-                type: string
-          required:
-          - name
-          - password
-          - remoteAddress
-          - primaryRouterName
-          - supportedAuthenticationMode
-        redundancyGroupSslEnabled:
-          type: boolean
-        configSyncSslEnabled:
-          type: boolean
     ServicesResponse:
       description: provides information about services in the Solace Cloud account.
       type: object
