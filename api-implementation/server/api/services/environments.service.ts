@@ -28,9 +28,6 @@ export class EnvironmentsService {
       creationState: service.creationState,
       datacenterId: service.datacenterId,
       datacenterProvider: service.datacenterProvider,
-      messagingProtocols: await ProtocolMapper.mapSolaceMessagingProtocolsToAsyncAPI(
-        service.messagingProtocols
-      ),
       msgVpnName: service.msgVpnName,
       serviceClassDisplayedAttributes: service.serviceClassDisplayedAttributes,
       serviceClassId: service.serviceClassId,
@@ -106,9 +103,10 @@ export class EnvironmentsService {
       } else {
         // check the exposed protocols against the actual protocols supported by the service
         if (env.exposedProtocols == null || env.exposedProtocols.length == 0) {
-          // no exposed protocols - all is well
-          L.info(env);
-          return null;
+            return new ErrorResponseInternal(
+              422,
+              ` no protocols exposed for service ${env.serviceId}`
+            );
         }
         const serverProtocols: Components.Schemas.Endpoint[] = await ProtocolMapper.mapSolaceMessagingProtocolsToAsyncAPI(svc.messagingProtocols);
         for (const exposedProtocol of env.exposedProtocols) {

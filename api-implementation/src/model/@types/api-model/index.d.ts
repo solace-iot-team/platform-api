@@ -516,6 +516,9 @@ declare namespace Components {
              * xm7dc2dfas4
              */
             serviceId?: string;
+            /**
+             * The protocols that can be exposed for use with APIs
+             */
             exposedProtocols?: Protocol[];
         }
         /**
@@ -532,6 +535,9 @@ declare namespace Components {
              * development environment
              */
             description: string;
+            /**
+             * The protocols that can be exposed for use with APIs
+             */
             exposedProtocols?: Protocol[];
             /**
              * example:
@@ -549,7 +555,6 @@ declare namespace Components {
             serviceTypeId?: string;
             serviceClassId?: string;
             creationState?: string;
-            messagingProtocols?: Endpoint[];
             serviceClassDisplayedAttributes?: {
                 "High Availability": string;
                 "Network Speed": string;
@@ -715,6 +720,9 @@ declare namespace Components {
             adminProgress?: string;
             created?: number;
             creationState?: string;
+            /**
+             * The protocols supported by this service
+             */
             messagingProtocols?: Endpoint[];
             msgVpnAttributes?: {
                 authenticationClientCertEnabled: string;
