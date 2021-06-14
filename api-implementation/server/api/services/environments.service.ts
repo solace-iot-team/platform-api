@@ -28,13 +28,11 @@ export class EnvironmentsService {
       creationState: service.creationState,
       datacenterId: service.datacenterId,
       datacenterProvider: service.datacenterProvider,
-      messagingProtocols: await ProtocolMapper.mapSolaceMessagingProtocolsToAsyncAPI(
-        service.messagingProtocols
-      ),
       msgVpnName: service.msgVpnName,
       serviceClassDisplayedAttributes: service.serviceClassDisplayedAttributes,
       serviceClassId: service.serviceClassId,
       serviceTypeId: service.serviceTypeId,
+      exposedProtocols: env.exposedProtocols,
     };
     return response;
   }
@@ -73,10 +71,16 @@ export class EnvironmentsService {
   update(name: string, body: EnvironmentPatch): Promise<Environment> {
     return new Promise<Environment>(async (resolve, reject) => {
       const envOriginal: Environment = (await this.byName(name) as Environment);
-      envOriginal.description = body.description;
-      envOriginal.exposedProtocols = body.exposedProtocols;
-      envOriginal.serviceId = body.serviceId;
-       const envRefCheck: ErrorResponseInternal = await this.validateReferences(envOriginal);
+      if (body.description) {
+        envOriginal.description = body.description;
+      }
+      if (body.exposedProtocols) {
+        envOriginal.exposedProtocols = body.exposedProtocols;
+      }
+      if (body.serviceId) {
+        envOriginal.serviceId = body.serviceId;
+      }
+      const envRefCheck: ErrorResponseInternal = await this.validateReferences(envOriginal);
       if (envRefCheck == null) {
         this.persistenceService
           .update(name, body)
@@ -106,9 +110,10 @@ export class EnvironmentsService {
       } else {
         // check the exposed protocols against the actual protocols supported by the service
         if (env.exposedProtocols == null || env.exposedProtocols.length == 0) {
-          // no exposed protocols - all is well
-          L.info(env);
-          return null;
+          return new ErrorResponseInternal(
+            422,
+            ` no protocols exposed for service ${env.serviceId}`
+          );
         }
         const serverProtocols: Components.Schemas.Endpoint[] = await ProtocolMapper.mapSolaceMessagingProtocolsToAsyncAPI(svc.messagingProtocols);
         for (const exposedProtocol of env.exposedProtocols) {

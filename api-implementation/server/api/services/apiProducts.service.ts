@@ -128,7 +128,7 @@ export class ApiProductsService {
             throw new ErrorResponseInternal(422, errMsg);
           } else {
             for (var protocol of product.protocols) {
-              protocolPresent[protocol.name] = (env.messagingProtocols.find(e => e.protocol.name == protocol.name) != null);
+              protocolPresent[protocol.name] = (env.exposedProtocols.find(e => e.name == protocol.name) != null);
             }
           }
         } catch (e) {

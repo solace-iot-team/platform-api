@@ -28,7 +28,7 @@ const testEnv = {
   NO_MQTT_SERVICE_ID: getMandatoryEnvVarValue(scriptName, 'APIM_INTEGRATION_TEST_SOLACE_CLOUD_NO_MQTT_SERVICE_ID'),
   ORG_NAME: getMandatoryEnvVarValue(scriptName, 'APIM_INTEGRATION_TEST_ORG_NAME'),
   API_SPEC_MAINTENANCE_FILE: getMandatoryEnvVarValue(scriptName, 'APIM_INTEGRATION_TEST_UC_ELEVATOR_CO_API_SPEC_MAINTENANCE_FILE'),
-  DEVELOPERS_FILE: getMandatoryEnvVarValue(scriptName, 'APIM_INTEGRATION_TEST_DEVELOPERS_FILE'),  
+  DEVELOPERS_FILE: getMandatoryEnvVarValue(scriptName, 'APIM_INTEGRATION_TEST_DEVELOPERS_FILE'),
   IS_BOOTSTRAP_DEMO: getOptionalEnvVarValue('APIM_INTEGRATION_TEST_IS_BOOTSTRAP_DEMO') != null ? true : false
 }
 TestLogger.logTestEnv(scriptName, testEnv);
@@ -39,14 +39,14 @@ TestLogger.logMessage(scriptName, ">>> success.");
 describe(`${scriptName}`, () => {
 
   context(`${scriptName}`, () => {
-    
+
     const orgName = testEnv.ORG_NAME;
     const apiNameMaintenance: string = "api-maintenance";
     const apiSpecMaintenance: string = AsyncAPIHelper.loadYamlFileAsJsonString(testEnv.API_SPEC_MAINTENANCE_FILE);
     const expectedApiSpecMaintenance: string = AsyncAPIHelper.loadYamlFileAsJsonString(`${testEnv.API_SPEC_MAINTENANCE_FILE}.expected`);
     const apiMaintenacePermissions: ApiPermissions = [
       // {resource_region_id}/{equipment_type}/{event_type}/{resource_type}/{resource_id}
-      { name: 'resource_region_id', value: 'fr, de, us-east, us-west' }, 
+      { name: 'resource_region_id', value: 'fr, de, us-east, us-west' },
       { name: 'resource_type', value: 'elev-make-1, elev-make-2' },
       { name: 'resource_id', value: '*' }
     ]
@@ -55,7 +55,17 @@ describe(`${scriptName}`, () => {
     const devEnv: Environment = {
       name: `${devEnvName}`,
       description: `description of ${devEnvName}`,
-      serviceId: testEnv.DEV_SERVICE_ID
+      serviceId: testEnv.DEV_SERVICE_ID,
+      exposedProtocols: [
+        {
+          name: Protocol.name.MQTT,
+          version: "3.1.1"
+        },
+        {
+          name: Protocol.name.HTTP,
+          version: "1.1"
+        }
+      ],
     };
     const apiProductNameMaintenanceDevelopment: string = "elevator-maintenance-development";
     const apiProductMaintenanceDevelopmentApprovalType: APIProduct.approvalType = APIProduct.approvalType.AUTO;
@@ -64,21 +74,31 @@ describe(`${scriptName}`, () => {
     const prodEnv: Environment = {
       name: `${prodEnvName}`,
       description: `description of ${prodEnvName}`,
-      serviceId: testEnv.PROD_SERVICE_ID
+      serviceId: testEnv.PROD_SERVICE_ID,
+      exposedProtocols: [
+        {
+          name: Protocol.name.MQTT,
+          version: "3.1.1"
+        },
+        {
+          name: Protocol.name.HTTP,
+          version: "1.1"
+        }
+      ],
     };
     const apiProductNameMaintenanceProduction: string = "elevator-maintenance-production";
     const apiProductMaintenanceProductionApprovalType: APIProduct.approvalType = APIProduct.approvalType.MANUAL;
     // developers
     const _developers: Array<Developer> = require(testEnv.DEVELOPERS_FILE);
     let developers: Array<Developer> = [];
-    for(let developer of _developers) {      
+    for (let developer of _developers) {
       developer.userName = developer.userName + '@' + orgName;
       developers.push(developer);
     }
     const developerAppNameMaintenanceDevelopment: string = "elevator-maintenance-development";
     const developerAppNameMaintenanceProduction: string = "elevator-maintenance-production";
 
-    before(async() => {
+    before(async () => {
       TestContext.newItId();
       try {
         PlatformAPIClient.setManagementUser();
@@ -90,8 +110,8 @@ describe(`${scriptName}`, () => {
       }
     });
 
-    after(async() => {
-      if(testEnv.IS_BOOTSTRAP_DEMO) return;
+    after(async () => {
+      if (testEnv.IS_BOOTSTRAP_DEMO) return;
       // make sure the broker is de-provisioned again
       TestContext.newItId();
       try {
@@ -108,7 +128,7 @@ describe(`${scriptName}`, () => {
       TestContext.newItId();
     });
 
-    it(`${scriptName}: should create org`, async() => {
+    it(`${scriptName}: should create org`, async () => {
       PlatformAPIClient.setManagementUser();
       let response: Organization;
       let request: Organization = {
@@ -124,7 +144,7 @@ describe(`${scriptName}`, () => {
       expect(response.name, `${TestLogger.createTestFailMessage("name not equal")}`).to.equal(orgName);
     });
 
-    it(`${scriptName}: should add token to org`, async() => {
+    it(`${scriptName}: should add token to org`, async () => {
       PlatformAPIClient.setApiUser();
       let response: string;
       let request: string = testEnv.SOLACE_CLOUD_TOKEN;
@@ -138,11 +158,11 @@ describe(`${scriptName}`, () => {
       expect(response, `${TestLogger.createTestFailMessage("token not equal")}`).to.equal(testEnv.SOLACE_CLOUD_TOKEN);
     });
 
-    it(`${scriptName}: should register dev service with org`, async() => {
+    it(`${scriptName}: should register dev service with org`, async () => {
       let response: Environment;
       let request: Environment = devEnv;
       try {
-        response= await EnvironmentsService.createEnvironment(orgName, request);
+        response = await EnvironmentsService.createEnvironment(orgName, request);
       } catch (e) {
         expect(isInstanceOfApiError(e), `${TestLogger.createNotApiErrorMesssage(e.message)}`).to.be.true;
         let message = `register dev service=${devEnvName} with org=${orgName}`;
@@ -151,7 +171,7 @@ describe(`${scriptName}`, () => {
       expect(_.isEqual(devEnv, response), `${TestLogger.createTestFailMessage("response not equal")}`).to.be.true;
     });
 
-    it(`${scriptName}: should register prod service with org`, async() => {
+    it(`${scriptName}: should register prod service with org`, async () => {
       let response: Environment;
       let request: Environment = prodEnv;
       try {
@@ -164,7 +184,7 @@ describe(`${scriptName}`, () => {
       expect(_.isEqual(prodEnv, response), `${TestLogger.createTestFailMessage("response not equal")}`).to.be.true;
     });
 
-    it(`${scriptName}: should get environments`, async() => {
+    it(`${scriptName}: should get environments`, async () => {
       let response: Array<Environment>;
       try {
         response = await EnvironmentsService.listEnvironments(orgName);
@@ -176,9 +196,9 @@ describe(`${scriptName}`, () => {
       expect(response.length, `${TestLogger.createTestFailMessage("expected exactly 2 environments")}`).to.equal(2);
       expect(_.isEqual(devEnv, response[0]), `${TestLogger.createTestFailMessage("devEnv not equal")}`).to.be.true;
       expect(_.isEqual(prodEnv, response[1]), `${TestLogger.createTestFailMessage("prodEnv not equal")}`).to.be.true;
-  });
+    });
 
-    it(`${scriptName}: should get audit history`, async() => {
+    it(`${scriptName}: should get audit history`, async () => {
       let response: Array<History>;
       try {
         response = await ManagementService.listHistory(orgName);
@@ -188,11 +208,11 @@ describe(`${scriptName}`, () => {
         expect(false, `${TestLogger.createTestFailMessage(message)}`).to.be.true;
       }
 
-        // TODO: expecting to see more history ...
+      // TODO: expecting to see more history ...
 
-      });
+    });
 
-    it(`${scriptName}: should get dev environment`, async() => {
+    it(`${scriptName}: should get dev environment`, async () => {
       let response: EnvironmentResponse;
       try {
         response = await EnvironmentsService.getEnvironment(orgName, devEnv.name);
@@ -201,10 +221,10 @@ describe(`${scriptName}`, () => {
         let message = `get dev env='${devEnv}`;
         expect(false, `${TestLogger.createTestFailMessage(message)}`).to.be.true;
       }
-        // TODO: could check if all mqtt endpoints have the correct name?
-      });
+      // TODO: could check if all mqtt endpoints have the correct name?
+    });
 
-    it(`${scriptName}: should get prod environment`, async() => {
+    it(`${scriptName}: should get prod environment`, async () => {
       let response: EnvironmentResponse;
       try {
         response = await EnvironmentsService.getEnvironment(orgName, prodEnv.name);
@@ -213,10 +233,10 @@ describe(`${scriptName}`, () => {
         let message = `get prod env='${prodEnv}`;
         expect(false, `${TestLogger.createTestFailMessage(message)}`).to.be.true;
       }
-        // TODO: could check if all mqtt endpoints have the correct name?
-      });
+      // TODO: could check if all mqtt endpoints have the correct name?
+    });
 
-    it(`${scriptName}: should create api`, async() => {
+    it(`${scriptName}: should create api`, async () => {
       let response: string;
       try {
         response = await ApisService.createApi(orgName, apiNameMaintenance, apiSpecMaintenance);
@@ -230,17 +250,17 @@ describe(`${scriptName}`, () => {
       expect(_.isEqual(JSON.parse(expectedApiSpecMaintenance), parsedResponse), `${TestLogger.createTestFailMessage("response not equal to api spec")}`).to.be.true;
     });
 
-    it(`${scriptName}: should create api product maintenance-development`, async() => {
+    it(`${scriptName}: should create api product maintenance-development`, async () => {
       let response: APIProduct;
       let request: APIProduct = {
         name: `${apiProductNameMaintenanceDevelopment}`,
         displayName: `display name for ${apiProductNameMaintenanceDevelopment}`,
         description: `description for ${apiProductNameMaintenanceDevelopment}`,
-        apis: [ apiNameMaintenance ],
+        apis: [apiNameMaintenance],
         approvalType: apiProductMaintenanceDevelopmentApprovalType,
         attributes: apiMaintenacePermissions,
-        environments: [ `${devEnvName}` ],
-        protocols: [ { name: Protocol.name.MQTT, version: '3.1.1' } ],
+        environments: [`${devEnvName}`],
+        protocols: [{ name: Protocol.name.MQTT, version: '3.1.1' }],
         pubResources: [],
         subResources: []
       };
@@ -253,8 +273,8 @@ describe(`${scriptName}`, () => {
       }
       expect(_.isEqual(request, response), `${TestLogger.createTestFailMessage('response not equal to request')}`).to.be.true;
     });
-    
-    it(`${scriptName}: should add http protocol to api product maintenance-development`, async() => {
+
+    it(`${scriptName}: should add http protocol to api product maintenance-development`, async () => {
       // get current APIProduct
       let responseGet: APIProduct;
       try {
@@ -266,7 +286,7 @@ describe(`${scriptName}`, () => {
       }
       let responsePatch: APIProduct;
       let requestPatch: APIProductPatch = {
-        protocols: [ { name: Protocol.name.MQTT, version: '3.1.1' }, { name: Protocol.name.HTTP, version: '1.1'} ],
+        protocols: [{ name: Protocol.name.MQTT, version: '3.1.1' }, { name: Protocol.name.HTTP, version: '1.1' }],
       }
       let expectedResponsePatch: APIProduct = _.merge({}, responseGet, requestPatch);
       try {
@@ -281,17 +301,17 @@ describe(`${scriptName}`, () => {
       expect(expectDiff.diff, `${TestLogger.createTestFailMessage(message)}`).to.be.empty;
     });
 
-    it(`${scriptName}: should create api product maintenance-production`, async() => {
+    it(`${scriptName}: should create api product maintenance-production`, async () => {
       let response: APIProduct;
       let request: APIProduct = {
         name: `${apiProductNameMaintenanceProduction}`,
         displayName: `display name for ${apiProductNameMaintenanceProduction}`,
         description: `description for ${apiProductNameMaintenanceProduction}`,
-        apis: [ apiNameMaintenance ],
+        apis: [apiNameMaintenance],
         approvalType: apiProductMaintenanceProductionApprovalType,
         attributes: apiMaintenacePermissions,
-        environments: [ `${prodEnvName}` ],
-        protocols: [ { name: Protocol.name.MQTT, version: '3.1.1' } ],
+        environments: [`${prodEnvName}`],
+        protocols: [{ name: Protocol.name.MQTT, version: '3.1.1' }],
         pubResources: [],
         subResources: []
       };
@@ -305,9 +325,9 @@ describe(`${scriptName}`, () => {
       expect(_.isEqual(request, response), `${TestLogger.createTestFailMessage('response not equal to request')}`).to.be.true;
     });
 
-    it(`${scriptName}: should create all developers`, async() => {
+    it(`${scriptName}: should create all developers`, async () => {
       let response: Developer;
-      for(let developer of developers) {
+      for (let developer of developers) {
         let request = developer;
         try {
           response = await DevelopersService.createDeveloper(orgName, request);
@@ -315,16 +335,16 @@ describe(`${scriptName}`, () => {
           expect(isInstanceOfApiError(e), `${TestLogger.createNotApiErrorMesssage(e.message)}`).to.be.true;
           let message = `create developer`;
           expect(false, `${TestLogger.createTestFailMessage(message)}`).to.be.true;
-          }
-          expect(_.isEqual(request, response), `${TestLogger.createTestFailMessage('response not equal to request')}`).to.be.true;
+        }
+        expect(_.isEqual(request, response), `${TestLogger.createTestFailMessage('response not equal to request')}`).to.be.true;
       }
     });
 
-    it(`${scriptName}: should create the development app for all developers`, async() => {
+    it(`${scriptName}: should create the development app for all developers`, async () => {
       let response: App;
       let request: App = {
         name: 'x',
-        apiProducts: [ `${apiProductNameMaintenanceDevelopment}` ],
+        apiProducts: [`${apiProductNameMaintenanceDevelopment}`],
         credentials: {
           expiresAt: -1,
           secret: {
@@ -332,12 +352,12 @@ describe(`${scriptName}`, () => {
             consumerSecret: 'x'
           }
         }
-      }; 
-      for(let developer of developers) {
-        request.credentials= createDefaultCredentials();
+      };
+      for (let developer of developers) {
+        request.credentials = createDefaultCredentials();
         request.name = `${developerAppNameMaintenanceDevelopment}-${developer.userName}`
         try {
-          response = await AppsService.createDeveloperApp(orgName, developer.userName, request); 
+          response = await AppsService.createDeveloperApp(orgName, developer.userName, request);
         } catch (e) {
           expect(isInstanceOfApiError(e), `${TestLogger.createNotApiErrorMesssage(e.message)}`).to.be.true;
           let message = `create developer app`;
@@ -349,12 +369,12 @@ describe(`${scriptName}`, () => {
       }
     });
 
-    xit(`${scriptName}: developer app should only have mqtt in protocols`, async() => {
+    xit(`${scriptName}: developer app should only have mqtt in protocols`, async () => {
       // TODO: discuss
       // api spec only specifies http binding type=request
       // so, only webhook supported
       // but no http in-bound
-      for(let developer of developers) {
+      for (let developer of developers) {
         let appName = `${developerAppNameMaintenanceDevelopment}-${developer.userName}`
         let responseGet: AppResponse;
         try {
@@ -362,26 +382,26 @@ describe(`${scriptName}`, () => {
         } catch (e) {
           expect(isInstanceOfApiError(e), `${TestLogger.createNotApiErrorMesssage(e.message)}`).to.be.true;
           let message = `getDeveloperApp=${appName}`;
-          expect(false, `${TestLogger.createTestFailMessage(message)}`).to.be.true;        
+          expect(false, `${TestLogger.createTestFailMessage(message)}`).to.be.true;
         }
         let environments: Array<AppEnvironment> = responseGet.environments;
         expect(environments.length, `${TestLogger.createTestFailMessage("wrong number of environments")}`).to.equal(1);
-        for(let environment of environments) {
+        for (let environment of environments) {
           let endpoints: Array<Endpoint> = environment.messagingProtocols;
           // check only mqtt is listed
-          for(let endpoint of endpoints) {
+          for (let endpoint of endpoints) {
             expect(endpoint.protocol.name, `${TestLogger.createTestFailMessage("wrong protocol")}`).to.equal("mqtt");
           }
         }
       }
     });
 
-    xit(`${scriptName}: should add webhook to development app for all developers`, async() => {
+    xit(`${scriptName}: should add webhook to development app for all developers`, async () => {
       // TODO: CHECK
       // the patch response does not contain the full get response
       // is it supposed to?
 
-      for(let developer of developers) {
+      for (let developer of developers) {
         let appName = `${developerAppNameMaintenanceDevelopment}-${developer.userName}`
         // get current DeveloperApp
         let responseGet: AppResponse;
@@ -390,7 +410,7 @@ describe(`${scriptName}`, () => {
         } catch (e) {
           expect(isInstanceOfApiError(e), `${TestLogger.createNotApiErrorMesssage(e.message)}`).to.be.true;
           let message = `getDeveloperApp=${appName}`;
-          expect(false, `${TestLogger.createTestFailMessage(message)}`).to.be.true;        
+          expect(false, `${TestLogger.createTestFailMessage(message)}`).to.be.true;
         }
         // update app
         let responsePatch: AppResponse;
@@ -401,7 +421,7 @@ describe(`${scriptName}`, () => {
           method: WebHook.method.POST,
           mode: WebHook.mode.SERIAL
         };
-        requestPatch.webHooks = [ webHook ];
+        requestPatch.webHooks = [webHook];
         // warning: overrides arrays
         let expectedResponsePatch: AppResponse = _.merge({}, responseGet, requestPatch);
         try {
@@ -409,7 +429,7 @@ describe(`${scriptName}`, () => {
         } catch (e) {
           expect(isInstanceOfApiError(e), `${TestLogger.createNotApiErrorMesssage(e.message)}`).to.be.true;
           let message = `updateDeveloperApp=${appName}`;
-          expect(false, `${TestLogger.createTestFailMessage(message)}`).to.be.true;        
+          expect(false, `${TestLogger.createTestFailMessage(message)}`).to.be.true;
         }
         let expectDiff: ExpectDiff = getExpectContainedDiff(expectedResponsePatch, responsePatch);
         let message = expectDiff.message;
@@ -417,13 +437,13 @@ describe(`${scriptName}`, () => {
       }
     });
 
-    it(`${scriptName}: should create the production app for all developers`, async() => {
-      if(testEnv.IS_BOOTSTRAP_DEMO) return;
+    it(`${scriptName}: should create the production app for all developers`, async () => {
+      if (testEnv.IS_BOOTSTRAP_DEMO) return;
       let response: App;
       let appName: string;
       let request: App = {
         name: 'x',
-        apiProducts: [ `${apiProductNameMaintenanceProduction}` ],
+        apiProducts: [`${apiProductNameMaintenanceProduction}`],
         credentials: {
           expiresAt: -1,
           secret: {
@@ -431,17 +451,17 @@ describe(`${scriptName}`, () => {
             consumerSecret: 'x'
           }
         }
-      }; 
-      for(let developer of developers) {
+      };
+      for (let developer of developers) {
         appName = `${developerAppNameMaintenanceProduction}-${developer.userName}`;
-        request.credentials= createDefaultCredentials();
+        request.credentials = createDefaultCredentials();
         request.name = appName;
         try {
-          response = await AppsService.createDeveloperApp(orgName, developer.userName, request); 
+          response = await AppsService.createDeveloperApp(orgName, developer.userName, request);
         } catch (e) {
           expect(isInstanceOfApiError(e), `${TestLogger.createNotApiErrorMesssage(e.message)}`).to.be.true;
           let message = `create app=${appName}`;
-          expect(false, `${TestLogger.createTestFailMessage(message)}`).to.be.true;        
+          expect(false, `${TestLogger.createTestFailMessage(message)}`).to.be.true;
         }
         let expectDiff: ExpectDiff = getExpectContainedDiff(request, response);
         let message = expectDiff.message;
@@ -449,11 +469,11 @@ describe(`${scriptName}`, () => {
       }
     });
 
-    xit(`${scriptName}: should handle adding webhook without http protocol enabled`, async() => {
+    xit(`${scriptName}: should handle adding webhook without http protocol enabled`, async () => {
       // TODO implement me
     });
 
-    it(`${scriptName}: should approve all apps that require approval`, async() => {
+    it(`${scriptName}: should approve all apps that require approval`, async () => {
       // get a list of all apps that require approval
       let responseList: Array<AppListItem>;
       try {
@@ -461,10 +481,10 @@ describe(`${scriptName}`, () => {
       } catch (e) {
         expect(isInstanceOfApiError(e), `${TestLogger.createNotApiErrorMesssage(e.message)}`).to.be.true;
         let message = `get all pending apps for org=${orgName}`;
-        expect(false, `${TestLogger.createTestFailMessage(message)}`).to.be.true;        
+        expect(false, `${TestLogger.createTestFailMessage(message)}`).to.be.true;
       }
       let message: string;
-      for(let app of responseList) {
+      for (let app of responseList) {
         // check if status is actually pending
         message = `expecting status == pending for app=${app.name}`;
         expect(app.status, `${TestLogger.createTestFailMessage(message)}`).to.equal(AppStatus.PENDING);
@@ -478,12 +498,12 @@ describe(`${scriptName}`, () => {
         } catch (e) {
           expect(isInstanceOfApiError(e), `${TestLogger.createNotApiErrorMesssage(e.message)}`).to.be.true;
           message = `update (approve) app=${app.name}`;
-          expect(false, `${TestLogger.createTestFailMessage(message)}`).to.be.true;        
+          expect(false, `${TestLogger.createTestFailMessage(message)}`).to.be.true;
         }
       }
     });
 
-    xit(`${scriptName}: should check app details for all developer apps`, async() => {
+    xit(`${scriptName}: should check app details for all developer apps`, async () => {
       // TODO
       // get the developer app 
       // check all is good
@@ -491,7 +511,7 @@ describe(`${scriptName}`, () => {
       return;
     });
 
-    xit(`${scriptName}: should check broker config for all developer apps`, async() => {
+    xit(`${scriptName}: should check broker config for all developer apps`, async () => {
       // TODO
       // get the developer app 
       // check all the expected broker configs ...

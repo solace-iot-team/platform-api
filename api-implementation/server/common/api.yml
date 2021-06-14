@@ -739,6 +739,7 @@ components:
           example: development environment
         exposedProtocols:
           type: array 
+          description: The protocols that can be exposed for use with APIs
           items:
              $ref: '#/components/schemas/Protocol'
         serviceId:
@@ -759,10 +760,6 @@ components:
           type: string
         creationState:
           type: string
-        messagingProtocols:
-          type: array
-          items:
-            $ref: '#/components/schemas/Endpoint'
         serviceClassDisplayedAttributes:
           type: object
           properties:
@@ -801,6 +798,7 @@ components:
           type: string
           example: xm7dc2dfas4
         exposedProtocols:
+          description: The protocols that can be exposed for use with APIs
           type: array 
           items:
              $ref: '#/components/schemas/Protocol'
@@ -841,6 +839,7 @@ components:
           type: string
         messagingProtocols:
           type: array
+          description: The protocols supported by this service
           items:
             $ref: '#/components/schemas/Endpoint'
         msgVpnAttributes:

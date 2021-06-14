@@ -46,7 +46,7 @@ describe(`${scriptName}`, () => {
     let response: PlatformResponseHelper = null;
     let body = null;
 
-    before(async() => {
+    before(async () => {
       let success: boolean = await platformManagement.deleteAllOrgs();
       expect(success, "deleting organizations").to.be.true;
     });
@@ -54,22 +54,22 @@ describe(`${scriptName}`, () => {
     beforeEach(() => {
       TestContext.newItId();
     });
-    
-    it(`${scriptName}: should create two orgs`, async() => {
+
+    it(`${scriptName}: should create two orgs`, async () => {
       let success = await platformManagement.createOrg(org1Name);
-      expect(success).to.be.true;      
+      expect(success).to.be.true;
       success = await platformManagement.createOrg(org2Name);
-      expect(success).to.be.true; 
+      expect(success).to.be.true;
       request = {
-          method: "GET"
-        };
+        method: "GET"
+      };
       response = await platformManagementRequest.fetch("organizations", request);
       TestLogger.logResponse(`get all orgs`, response);
       expect(response.status).to.equal(200);
       expect(response.body.length, 'number of all orgs').to.equal(2);
     });
 
-    it(`${scriptName}: should handle invalid or missing token`, async() => {
+    it(`${scriptName}: should handle invalid or missing token`, async () => {
       // missing token
       request = {
         method: "PUT"
@@ -95,7 +95,7 @@ describe(`${scriptName}`, () => {
       expect(response.status).to.equal(400);
     });
 
-    it(`${scriptName}: should add token to two orgs`, async() => {
+    it(`${scriptName}: should add token to two orgs`, async () => {
       request = {
         method: "PUT",
         body: testEnv.SOLACE_CLOUD_TOKEN
@@ -111,18 +111,28 @@ describe(`${scriptName}`, () => {
 
     });
 
-    it(`${scriptName}: should add environments to orgs`, async() => {
+    it(`${scriptName}: should add environments to orgs`, async () => {
       // let envNames = [ devEnvName, prodEnvName, noMqttEnvName];
-      let envNames = [ devEnvName, prodEnvName];
-      let serviceIds = [ testEnv.DEV_SERVICE_ID, testEnv.PROD_SERVICE_ID, testEnv.NO_MQTT_SERVICE_ID];
+      let envNames = [devEnvName, prodEnvName];
+      let serviceIds = [testEnv.DEV_SERVICE_ID, testEnv.PROD_SERVICE_ID, testEnv.NO_MQTT_SERVICE_ID];
       // org1
-      for (let i=0; i < envNames.length; i++) {
+      for (let i = 0; i < envNames.length; i++) {
         let envName = envNames[i];
         let serviceId = serviceIds[i];
         body = {
           name: envName,
           description: `description of ${envName}`,
-          serviceId: serviceId
+          serviceId: serviceId,
+          exposedProtocols: [
+            {
+              name: "mqtt",
+              version: "3.1.1"
+            },
+            {
+              name: "http",
+              version: "1.1"
+            }
+          ]
         }
         request = {
           method: "POST",
@@ -139,13 +149,23 @@ describe(`${scriptName}`, () => {
 
       }
       // org2
-      for (let i=0; i < envNames.length; i++) {
+      for (let i = 0; i < envNames.length; i++) {
         let envName = envNames[i];
         let serviceId = serviceIds[i];
         body = {
           name: envName,
           description: `description of ${envName}`,
-          serviceId: serviceId
+          serviceId: serviceId,
+          exposedProtocols: [
+            {
+              name: "mqtt",
+              version: "3.1.1"
+            },
+            {
+              name: "http",
+              version: "1.1"
+            }
+          ]
         }
         request = {
           method: "POST",
@@ -153,7 +173,7 @@ describe(`${scriptName}`, () => {
         };
         response = await platformApiRequestOrg2.fetch(`${org2Name}/environments`, request, PlatformRequestHelper.ContentTypeApplicationJson);
         TestLogger.logResponse(`add env ${envName} to ${org2Name}`, response);
-        expect(response.status).to.equal(201);  
+        expect(response.status).to.equal(201);
         // get the full env
         request = { method: "GET" };
         response = await platformApiRequestOrg2.fetch(`${org2Name}/environments/${envName}`, request, PlatformRequestHelper.ContentTypeApplicationJson);
@@ -164,20 +184,20 @@ describe(`${scriptName}`, () => {
 
     });
 
-    it(`${scriptName}: should get the history`, async() => {
-        request = { method: "GET" };
-        response = await platformApiRequestOrg1.fetch(`${org1Name}/history`, request);
-        TestLogger.logResponse(`history for ${org1Name}`, response);
-        expect(response.status).to.equal(200);
-        // expect(response.body.length).to.equal(3);
-        expect(response.body.length).to.equal(2);
+    it(`${scriptName}: should get the history`, async () => {
+      request = { method: "GET" };
+      response = await platformApiRequestOrg1.fetch(`${org1Name}/history`, request);
+      TestLogger.logResponse(`history for ${org1Name}`, response);
+      expect(response.status).to.equal(200);
+      // expect(response.body.length).to.equal(3);
+      expect(response.body.length).to.equal(2);
 
-        response = await platformApiRequestOrg2.fetch(`${org1Name}/history`, request);
-        TestLogger.logResponse(`history for ${org2Name}`, response);
-        expect(response.status).to.equal(200);
-        // expect(response.body.length).to.equal(3);
-        expect(response.body.length).to.equal(2);
-      });
+      response = await platformApiRequestOrg2.fetch(`${org1Name}/history`, request);
+      TestLogger.logResponse(`history for ${org2Name}`, response);
+      expect(response.status).to.equal(200);
+      // expect(response.body.length).to.equal(3);
+      expect(response.body.length).to.equal(2);
+    });
 
   });
 
