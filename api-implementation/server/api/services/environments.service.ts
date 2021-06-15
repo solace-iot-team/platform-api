@@ -21,6 +21,12 @@ export class EnvironmentsService {
   async byName(name: string): Promise<EnvironmentResponse> {
     const env = await this.persistenceService.byName(name);
     const service = await SolaceCloudFacade.getServiceByEnvironment(env);
+    let messagingProtocols: Components.Schemas.Endpoint[] = [];
+    if (service.creationState == 'completed') {
+      messagingProtocols = await ProtocolMapper.mapSolaceMessagingProtocolsToAsyncAPI(
+        service.messagingProtocols
+      );
+    }
     const response: EnvironmentResponse = {
       description: env.description,
       name: env.name,
@@ -33,9 +39,7 @@ export class EnvironmentsService {
       serviceClassId: service.serviceClassId,
       serviceTypeId: service.serviceTypeId,
       exposedProtocols: env.exposedProtocols,
-      messagingProtocols: await ProtocolMapper.mapSolaceMessagingProtocolsToAsyncAPI(
-        service.messagingProtocols
-      ),
+      messagingProtocols: messagingProtocols,
     };
     return response;
   }
