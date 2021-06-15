@@ -62,7 +62,7 @@ export class ApiProductsService {
   async update(name: string, body: APIProduct): Promise<APIProduct> {
     try {
       // we need ot load the environment list so we can validate a new protocol that may be added
-      if (body.environments == null){
+      if (body.environments == null) {
         const oldProduct = await this.persistenceService.byName(name);
         body.environments = oldProduct.environments;
       }
@@ -128,7 +128,11 @@ export class ApiProductsService {
             throw new ErrorResponseInternal(422, errMsg);
           } else {
             for (var protocol of product.protocols) {
-              protocolPresent[protocol.name] = (env.exposedProtocols.find(e => e.name == protocol.name) != null);
+              if (env.exposedProtocols != null && env.exposedProtocols.length > 0) {
+                protocolPresent[protocol.name] = (env.exposedProtocols.find(e => e.name == protocol.name) != null);
+              } else {
+                protocolPresent[protocol.name] = (env.messagingProtocols.find(e => e.protocol.name == protocol.name) != null);
+              }
             }
           }
         } catch (e) {
@@ -139,7 +143,7 @@ export class ApiProductsService {
       Object.keys(protocolPresent).forEach(function (key, index) {
         if (!protocolPresent[key]) {
           throw new ErrorResponseInternal(422, `Referenced protocol ${key} does not exist in any environment`);
-        } else  {
+        } else {
           L.debug(`protocol is present: ${key}`);
         }
       });
