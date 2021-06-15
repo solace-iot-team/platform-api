@@ -33,6 +33,9 @@ export class EnvironmentsService {
       serviceClassId: service.serviceClassId,
       serviceTypeId: service.serviceTypeId,
       exposedProtocols: env.exposedProtocols,
+      messagingProtocols: await ProtocolMapper.mapSolaceMessagingProtocolsToAsyncAPI(
+        service.messagingProtocols
+      ),
     };
     return response;
   }

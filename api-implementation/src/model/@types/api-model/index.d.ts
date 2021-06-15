@@ -540,6 +540,10 @@ declare namespace Components {
              */
             exposedProtocols?: Protocol[];
             /**
+             * All of the protocols that the broker service exposes
+             */
+            messagingProtocols?: Endpoint[];
+            /**
              * example:
              * xm7dc2dfas4
              */
