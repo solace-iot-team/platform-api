@@ -1,5 +1,25 @@
 # Release Notes
 
+## Version 0.1.2
+
+* OpenAPI: 0.1.1
+* API Management Connector Server: 0.1.2
+
+### Features
+* **Added exposed protocols on environments**
+  - Can now set and retrieve exposed protocols on an environment.
+  - The exposedProtocols are validated against the protocols offered by the broker service
+  - Added ability to edit service id on environment, makes it possible to switch environment to different service
+* **Re-provision app if credentials have changed**
+  - A change in credentials of an app triggers a deprovision/provision activity
+* **Exclude inactive broker services**
+  - Solace cloud services are filtered based on their status
+  - Only healthy services are returned in the services resource
+  - GET Environment response only includes information about the cloud service for healthy services
+* **Services resource returns correct Cloud Service information**
+  - The services endpoint now returns the full Solace cloud service details as documented in the API spec.
+  - The messagingProtocols returned contain AsyncAPI compliant protocol/version information.
+
 ## Version 0.1.1
 
 * OpenAPI: 0.1.0

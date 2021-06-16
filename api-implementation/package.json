@@ -1,6 +1,6 @@
 {
   "name": "apim-connector-server",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "Solace API Management Connector",
   "homepage": "https://github.com/solace-iot-team/platform-api",
   "repository": {
