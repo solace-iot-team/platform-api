@@ -2,7 +2,7 @@
 
 ## Version 0.1.2
 
-* OpenAPI: 0.1.1
+* OpenAPI: 0.1.2
 * API Management Connector Server: 0.1.2
 
 ### Features
