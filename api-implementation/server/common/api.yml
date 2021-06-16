@@ -707,6 +707,7 @@ components:
       - name
       - description
       - serviceId
+      - exposedProtocols
       properties:
         name:
           type: string
