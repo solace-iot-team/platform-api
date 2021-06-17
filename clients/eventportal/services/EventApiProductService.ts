@@ -5,7 +5,7 @@ import type { EventAPIProduct } from '../models/EventAPIProduct';
 import type { EventAPIProductList } from '../models/EventAPIProductList';
 import { request as __request } from '../core/request';
 
-export class MiscService {
+export class EventApiProductService {
 
     /**
      * get api products

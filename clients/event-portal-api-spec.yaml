@@ -10,7 +10,7 @@ paths:
   /apiProducts:
     get:
       tags:
-        - Misc
+        - EventAPIProduct
       summary: get api products
       operationId: getapiproducts
       parameters: []
@@ -26,7 +26,7 @@ paths:
   /apiProducts/{productId}:
     get:
       tags:
-        - Misc
+        - EventAPIProduct
       summary: get api product
       operationId: getapiproduct
       parameters: 
@@ -47,7 +47,7 @@ paths:
   /apiProducts/{productId}/asyncApi.json:
     get:
       tags:
-        - Misc
+        - EventAPIProduct
       summary: get async api
       operationId: getasyncapiJSON
       parameters: 
@@ -69,7 +69,7 @@ paths:
   /apiProducts/{productId}/asyncApi.yaml:
     get:
       tags:
-        - Misc
+        - EventAPIProduct
       summary: get async api
       operationId: getasyncapiYAML
       parameters: 
@@ -166,5 +166,5 @@ components:
 security:
   - httpBearer: []
 tags:
-  - name: Misc
+  - name: EventAPIProduct
     description: ''

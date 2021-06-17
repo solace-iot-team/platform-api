@@ -7,4 +7,4 @@ export { OpenAPI } from './core/OpenAPI';
 export type { EventAPIProduct } from './models/EventAPIProduct';
 export type { EventAPIProductList } from './models/EventAPIProductList';
 
-export { MiscService } from './services/MiscService';
+export { EventApiProductService } from './services/EventApiProductService';
