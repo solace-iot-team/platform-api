@@ -21,7 +21,7 @@ paths:
           content:
             application/json:
               schema:
-                "$ref": "#/components/schemas/EventAPIProductList"
+                "$ref": "#/components/schemas/EventAPIProductListResponse"
       deprecated: false
   /apiProducts/{productId}:
     get:
@@ -42,7 +42,7 @@ paths:
           content:
             application/json:
               schema:
-                "$ref": "#/components/schemas/EventAPIProduct"
+                "$ref": "#/components/schemas/EventAPIProductResponse"
       deprecated: false
   /apiProducts/{productId}/asyncApi.json:
     get:
@@ -93,10 +93,20 @@ components:
       type: http
       scheme: bearer
   schemas:
-    EventAPIProductList:
-      type: array
-      items:
-        "$ref": "#/components/schemas/EventAPIProduct"
+    EventAPIProductListResponse:
+      type: object
+      properties:
+        data: 
+          type: array
+          items:
+            $ref: "#/components/schemas/EventAPIProduct"
+
+    EventAPIProductResponse:
+      type: object
+      properties:
+        data: 
+          $ref: "#/components/schemas/EventAPIProduct"
+
     EventAPIProduct:
       type: object
       properties:

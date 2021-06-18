@@ -1,8 +1,5 @@
 declare namespace Components {
     namespace Parameters {
-        namespace ApiDomainName {
-            export type ApiDomainName = string;
-        }
         namespace ApiName {
             export type ApiName = string;
         }
@@ -27,6 +24,9 @@ declare namespace Components {
         namespace EnvName {
             export type EnvName = string;
         }
+        namespace EventApiProductId {
+            export type EventApiProductId = string;
+        }
         namespace Organization {
             export type Organization = string;
         }
@@ -41,159 +41,6 @@ declare namespace Components {
         }
     }
     namespace Schemas {
-        /**
-         * Event Portal API information. Currently only provided as utiity to retrieve metadata from the Event Portal.
-         */
-        export interface API {
-            /**
-             * example:
-             * 1583706406
-             */
-            readonly createdTime?: number; // int64
-            /**
-             * example:
-             * 1583706406
-             */
-            readonly updatedTime?: number; // int64
-            /**
-             * example:
-             * joe.bloggs
-             */
-            readonly createdBy?: string;
-            /**
-             * example:
-             * jack.black
-             */
-            readonly changedBy?: string;
-            /**
-             * example:
-             * 12345678
-             */
-            readonly id?: string;
-            /**
-             * example:
-             * Billing App
-             */
-            name: string;
-            /**
-             * example:
-             * 0.0.1
-             */
-            readonly version?: string;
-            /**
-             * example:
-             * API created by Solace PubSub+ Cloud documentation
-             */
-            description?: string;
-            /**
-             * example:
-             * Acme Rideshare
-             */
-            apiDomainName: string;
-            /**
-             * tags of the API
-             */
-            tags?: string[];
-            /**
-             * example:
-             * Changed api name
-             */
-            revisionComment?: string;
-            /**
-             * example:
-             * [
-             *   1,
-             *   2
-             * ]
-             */
-            readonly revisionNumber?: number; // int32
-            /**
-             * example:
-             * solace
-             */
-            apiClass?: "unspecified" | "kafka_connector" | "solace_connector" | "kafka_application";
-            readonly type?: string;
-        }
-        /**
-         * Event Portal API Domain information. Currently only provided as utiity to retrieve metadata from the Event Portal.
-         */
-        export interface APIDomain {
-            /**
-             * example:
-             * 1583706406
-             */
-            readonly createdTime?: number; // int64
-            /**
-             * example:
-             * 1583706406
-             */
-            readonly updatedTime?: number; // int64
-            /**
-             * example:
-             * joe.bloggs
-             */
-            readonly createdBy?: string;
-            /**
-             * example:
-             * jack.black
-             */
-            readonly changedBy?: string;
-            /**
-             * example:
-             * 12345678
-             */
-            readonly id?: string;
-            /**
-             * example:
-             * Acme Rideshare
-             */
-            name?: string;
-            /**
-             * example:
-             * com/solace
-             */
-            topicDomain?: string;
-            /**
-             * example:
-             * API Domain created by the Solace PubSub+ Cloud API documentation
-             */
-            description?: string;
-            /**
-             * example:
-             * true
-             */
-            enforceUniqueTopicNames: boolean;
-            /**
-             * example:
-             * [
-             *   "Billing App",
-             *   "Driver App"
-             * ]
-             */
-            readonly apis?: string[];
-            type?: string;
-        }
-        /**
-         * API List item (short info). Currently only provided as utiity to retrieve metadata from the Event Portal.
-         */
-        export interface APIListItem {
-            /**
-             * example:
-             * Billing App
-             */
-            name?: string;
-            /**
-             * example:
-             * Acme Rideshare
-             */
-            apiDomain?: string;
-            /**
-             * example:
-             * Manage billing information
-             */
-            description?: string;
-            tags?: string[];
-        }
         /**
          * An API product consists of a list of API resources (URIs) and custom metadata required by the API provider. API products enable you to bundle and distribute your APIs to multiple developer groups simultaneously
          */
@@ -500,7 +347,7 @@ declare namespace Components {
              * xm7dc2dfas4
              */
             serviceId: string;
-            exposedProtocols?: Protocol[];
+            exposedProtocols: Protocol[];
         }
         /**
          * used for PATCH operation, an environment
@@ -588,6 +435,101 @@ declare namespace Components {
                 [name: string]: unknown;
             };
         }
+        export interface EventAPIProduct {
+            /**
+             * example:
+             * 1620311683577
+             */
+            createdTime?: number;
+            /**
+             * example:
+             * 1623615030383
+             */
+            updatedTime?: number;
+            /**
+             * example:
+             * abdcgto456
+             */
+            createdBy?: string;
+            /**
+             * example:
+             * abdsf4567
+             */
+            changedBy?: string;
+            /**
+             * example:
+             * abc123
+             */
+            id: string;
+            /**
+             * example:
+             * fdsfds546
+             */
+            virtualBrokerId?: string;
+            /**
+             * example:
+             * An IoT Sensor API
+             */
+            description?: string;
+            /**
+             * example:
+             * IoT Sensor API
+             */
+            name: string;
+            published?: boolean;
+            /**
+             * example:
+             * publishedTime
+             */
+            publishedTime?: number;
+            /**
+             * example:
+             * tcp://sac346.solace.cloud:1883
+             */
+            serverUrl?: string;
+            /**
+             * example:
+             * mqtt
+             */
+            serverProtocol?: string;
+            /**
+             * example:
+             * An IoT sensor API
+             */
+            summary?: string;
+            /**
+             * example:
+             * 0
+             */
+            unpublishedTime?: number;
+            /**
+             * example:
+             * 1
+             */
+            version?: string;
+            /**
+             * example:
+             * 3
+             */
+            numberOfEvents?: number;
+            /**
+             * example:
+             * https://apiproducts.solace.cloud/website/abc123
+             */
+            websiteUrl?: string;
+            /**
+             * example:
+             * https://solace.cloud/api/v0/eventPortal/apiProducts/abc123/asyncApi.json
+             */
+            restUrlJson?: string;
+            /**
+             * example:
+             * https://solace.cloud/api/v0/eventPortal/apiProducts/abc123/asyncApi.yaml
+             */
+            restUrlYaml?: string;
+            type?: string;
+        }
+        export type EventAPIProductList = EventAPIProduct[];
         export interface History {
             /**
              * example:
@@ -1088,9 +1030,9 @@ declare namespace Paths {
             export type $504 = Components.Schemas.ErrorResponse;
         }
     }
-    namespace GetEventPortalApi {
+    namespace GetEventAPIProduct {
         namespace Responses {
-            export type $200 = /* Event Portal API information. Currently only provided as utiity to retrieve metadata from the Event Portal. */ Components.Schemas.API[];
+            export type $200 = Components.Schemas.EventAPIProduct;
             export type $400 = Components.Schemas.ErrorResponse;
             export type $401 = Components.Schemas.ErrorResponse;
             export type $403 = Components.Schemas.ErrorResponse;
@@ -1100,35 +1042,38 @@ declare namespace Paths {
             export type $504 = Components.Schemas.ErrorResponse;
         }
     }
-    namespace GetEventPortalApiDomain {
-        namespace Responses {
-            export type $200 = /* Event Portal API Domain information. Currently only provided as utiity to retrieve metadata from the Event Portal. */ Components.Schemas.APIDomain;
-            export type $400 = Components.Schemas.ErrorResponse;
-            export type $401 = Components.Schemas.ErrorResponse;
-            export type $403 = Components.Schemas.ErrorResponse;
-            export type $404 = Components.Schemas.ErrorResponse;
-            export type $500 = Components.Schemas.ErrorResponse;
-            export type $503 = Components.Schemas.ErrorResponse;
-            export type $504 = Components.Schemas.ErrorResponse;
-        }
-    }
-    namespace GetEventPortalAsyncApiSpecification {
+    namespace GetEventAPIProductAsyncAPI {
         namespace Parameters {
-            /**
-             * example:
-             * 2.0.0
-             */
-            export type AsyncApiVersion = string;
+            export type Format = "application/json" | "application/x-yaml";
         }
         export interface QueryParameters {
-            async_api_version?: /**
-             * example:
-             * 2.0.0
-             */
-            Parameters.AsyncApiVersion;
+            format?: Parameters.Format;
         }
         namespace Responses {
-            export type $200 = string;
+            /**
+             * example:
+             * {
+             *   "asyncapi": "2.0.0",
+             *   "info": {
+             *     "title": "Hello world application",
+             *     "version": "0.1.0"
+             *   },
+             *   "channels": {
+             *     "hello": {
+             *       "publish": {
+             *         "message": {
+             *           "payload": {
+             *             "type": "string"
+             *           }
+             *         }
+             *       }
+             *     }
+             *   }
+             * }
+             */
+            export interface $200 {
+                [name: string]: any;
+            }
             export type $400 = Components.Schemas.ErrorResponse;
             export type $401 = Components.Schemas.ErrorResponse;
             export type $403 = Components.Schemas.ErrorResponse;
@@ -1252,29 +1197,9 @@ declare namespace Paths {
             export type $504 = Components.Schemas.ErrorResponse;
         }
     }
-    namespace ListEventPortalApiDomains {
+    namespace ListEventAPIProducts {
         namespace Responses {
-            export type $200 = /* Event Portal API Domain information. Currently only provided as utiity to retrieve metadata from the Event Portal. */ Components.Schemas.APIDomain[];
-            export type $400 = Components.Schemas.ErrorResponse;
-            export type $401 = Components.Schemas.ErrorResponse;
-            export type $403 = Components.Schemas.ErrorResponse;
-            export type $404 = Components.Schemas.ErrorResponse;
-            export type $500 = Components.Schemas.ErrorResponse;
-            export type $503 = Components.Schemas.ErrorResponse;
-            export type $504 = Components.Schemas.ErrorResponse;
-        }
-    }
-    namespace ListEventPortalApis {
-        namespace Parameters {
-            export type ApiDomainName = string;
-            export type Tags = string; // ^[a-zA-Z0-9:]+(?:,[a-zA-Z0-9:]+)*$
-        }
-        export interface QueryParameters {
-            tags?: Parameters.Tags /* ^[a-zA-Z0-9:]+(?:,[a-zA-Z0-9:]+)*$ */;
-            apiDomainName?: Parameters.ApiDomainName;
-        }
-        namespace Responses {
-            export type $200 = /* API List item (short info). Currently only provided as utiity to retrieve metadata from the Event Portal. */ Components.Schemas.APIListItem[];
+            export type $200 = Components.Schemas.EventAPIProductList;
             export type $400 = Components.Schemas.ErrorResponse;
             export type $401 = Components.Schemas.ErrorResponse;
             export type $403 = Components.Schemas.ErrorResponse;

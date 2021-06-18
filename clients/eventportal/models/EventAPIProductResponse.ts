@@ -4,4 +4,6 @@
 
 import type { EventAPIProduct } from './EventAPIProduct';
 
-export type EventAPIProductList = Array<EventAPIProduct>;
+export type EventAPIProductResponse = {
+    data?: EventAPIProduct;
+}

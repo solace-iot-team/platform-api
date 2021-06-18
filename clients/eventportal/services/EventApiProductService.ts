@@ -1,18 +1,18 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
-import type { EventAPIProduct } from '../models/EventAPIProduct';
-import type { EventAPIProductList } from '../models/EventAPIProductList';
+import type { EventAPIProductListResponse } from '../models/EventAPIProductListResponse';
+import type { EventAPIProductResponse } from '../models/EventAPIProductResponse';
 import { request as __request } from '../core/request';
 
 export class EventApiProductService {
 
     /**
      * get api products
-     * @returns EventAPIProductList
+     * @returns EventAPIProductListResponse
      * @throws ApiError
      */
-    public static async getapiproducts(): Promise<EventAPIProductList> {
+    public static async getapiproducts(): Promise<EventAPIProductListResponse> {
         const result = await __request({
             method: 'GET',
             path: `/apiProducts`,
@@ -23,12 +23,12 @@ export class EventApiProductService {
     /**
      * get api product
      * @param productId
-     * @returns EventAPIProduct
+     * @returns EventAPIProductResponse
      * @throws ApiError
      */
     public static async getapiproduct(
         productId: string,
-    ): Promise<EventAPIProduct> {
+    ): Promise<EventAPIProductResponse> {
         const result = await __request({
             method: 'GET',
             path: `/apiProducts/${productId}`,
