@@ -58,7 +58,12 @@ describe(`${scriptName}`, () => {
     const devEnv: Environment = {
       name: `${devEnvName}`,
       description: `description of ${devEnvName}`,
-      serviceId: testEnv.DEV_SERVICE_ID
+      serviceId: testEnv.DEV_SERVICE_ID,
+      exposedProtocols: [{
+        name: Protocol.name.MQTT,
+        version: '3.1.1',
+
+      }],
     };
     const apiProductNameMaintenanceDevelopment: string = "elevator-maintenance-development";
     const apiProductMaintenanceDevelopmentApprovalType: APIProduct.approvalType = APIProduct.approvalType.AUTO;
@@ -67,7 +72,12 @@ describe(`${scriptName}`, () => {
     const prodEnv: Environment = {
       name: `${prodEnvName}`,
       description: `description of ${prodEnvName}`,
-      serviceId: testEnv.PROD_SERVICE_ID
+      serviceId: testEnv.PROD_SERVICE_ID,
+      exposedProtocols: [{
+        name: Protocol.name.MQTT,
+        version: '3.1.1',
+
+      }],
     };
     const apiProductNameMaintenanceProduction: string = "elevator-maintenance-production";
     const apiProductMaintenanceProductionApprovalType: APIProduct.approvalType = APIProduct.approvalType.MANUAL;
