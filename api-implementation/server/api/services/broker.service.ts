@@ -138,7 +138,7 @@ class BrokerService {
       const returnServices: Service[] = [];
       for (const envName of environmentNames) {
         L.info(envName);
-        const env: Environment = await EnvironmentsService.byName(envName);
+        const env: Environment = (await EnvironmentsService.byName(envName) as any) as Environment;
         L.info(env.serviceId);
         const service: Service = await SolaceCloudFacade.getServiceByEnvironment(
           env
@@ -156,7 +156,7 @@ class BrokerService {
   private async getServiceByEnv(envName: string): Promise<Service> {
     try {
       L.info(envName);
-      const env = await EnvironmentsService.byName(envName);
+      const env = await EnvironmentsService.byName(envName) as any as Environment;
       L.info(env.serviceId);
       const service = await SolaceCloudFacade.getServiceByEnvironment(env);
       return service;

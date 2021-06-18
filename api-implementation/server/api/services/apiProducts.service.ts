@@ -7,7 +7,7 @@ import AppsService from './apps.service';
 
 import ApisService from './apis.service';
 import { ErrorResponseInternal } from '../middlewares/error.handler';
-import { ApiError } from '../../../src/clients/eventportal';
+
 
 export class ApiProductsService {
 

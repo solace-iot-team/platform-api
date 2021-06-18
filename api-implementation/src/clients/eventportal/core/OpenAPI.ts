@@ -17,8 +17,8 @@ type Config = {
 }
 
 export const OpenAPI: Config = {
-    BASE: 'https://solace.cloud',
-    VERSION: '1',
+    BASE: 'https://console.solace.cloud/api/v0/eventPortal',
+    VERSION: '1.0',
     WITH_CREDENTIALS: false,
     TOKEN: undefined,
     USERNAME: undefined,

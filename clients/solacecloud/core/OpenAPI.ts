@@ -17,7 +17,7 @@ type Config = {
 }
 
 export const OpenAPI: Config = {
-    BASE: 'https://api.solace.cloud/api/v0/',
+    BASE: 'https://api.solace.cloud/api/v0',
     VERSION: '0.0.1',
     WITH_CREDENTIALS: false,
     TOKEN: undefined,

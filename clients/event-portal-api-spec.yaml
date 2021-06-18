@@ -1,0 +1,180 @@
+openapi: 3.0.0
+info:
+  title: Solace Event API Products
+  contact: {}
+  version: '1.0'
+servers:
+  - url: 'https://console.solace.cloud/api/v0/eventPortal'
+    variables: {}
+paths:
+  /apiProducts:
+    get:
+      tags:
+        - EventAPIProduct
+      summary: get api products
+      operationId: getapiproducts
+      parameters: []
+      responses:
+        '200':
+          description: ''
+          headers: {}
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/EventAPIProductListResponse"
+      deprecated: false
+  /apiProducts/{productId}:
+    get:
+      tags:
+        - EventAPIProduct
+      summary: get api product
+      operationId: getapiproduct
+      parameters: 
+      - name : productId
+        required: true
+        schema:
+          type: string
+        in: path
+      responses:
+        '200':
+          description: ''
+          headers: {}
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/EventAPIProductResponse"
+      deprecated: false
+  /apiProducts/{productId}/asyncApi.json:
+    get:
+      tags:
+        - EventAPIProduct
+      summary: get async api
+      operationId: getasyncapiJSON
+      parameters: 
+      - name : productId
+        required: true
+        schema:
+          type: string
+        in: path
+      responses:
+        '200':
+          description: ''
+          headers: {}
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+      deprecated: false
+  /apiProducts/{productId}/asyncApi.yaml:
+    get:
+      tags:
+        - EventAPIProduct
+      summary: get async api
+      operationId: getasyncapiYAML
+      parameters: 
+      - name : productId
+        required: true
+        schema:
+          type: string
+        in: path
+      responses:
+        '200':
+          description: ''
+          headers: {}
+          content:
+            text/plain:
+              schema:
+                type: string
+      deprecated: false
+components:
+  securitySchemes:
+    httpBearer:
+      type: http
+      scheme: bearer
+  schemas:
+    EventAPIProductListResponse:
+      type: object
+      properties:
+        data: 
+          type: array
+          items:
+            $ref: "#/components/schemas/EventAPIProduct"
+
+    EventAPIProductResponse:
+      type: object
+      properties:
+        data: 
+          $ref: "#/components/schemas/EventAPIProduct"
+
+    EventAPIProduct:
+      type: object
+      properties:
+        createdTime:
+          type: integer
+          example: 1620311683577
+        updatedTime:
+          type: integer
+          example: 1623615030383
+        createdBy:
+          type: string
+          example: abdcgto456
+        changedBy:
+          type: string
+          example: abdsf4567
+        id:
+          type: string
+          example: abc123
+        virtualBrokerId:
+          type: string
+          example: fdsfds546
+        description:
+          type: string
+          example: An IoT Sensor API
+        name:
+          type: string
+          example: IoT Sensor API
+        published:
+          type: boolean
+        publishedTime:
+          type: integer
+          example: publishedTime
+        serverUrl:
+          type: string
+          example: tcp://sac346.solace.cloud:1883
+        serverProtocol:
+          type: string
+          example: mqtt
+        summary:
+          type: string
+          example: An IoT sensor API
+        unpublishedTime:
+          type: integer
+          example: 0
+        version:
+          type: string
+          example: 1
+        numberOfEvents:
+          type: integer
+          example: 3
+        websiteUrl:
+          type: string
+          example: "https://apiproducts.solace.cloud/website/abc123"
+        restUrlJson:
+          type: string
+          example: "https://solace.cloud/api/v0/eventPortal/apiProducts/abc123/asyncApi.json"
+        restUrlYaml:
+          type: string
+          example: "https://solace.cloud/api/v0/eventPortal/apiProducts/abc123/asyncApi.yaml"
+        type:
+          type: string
+          default: apiProduct
+      required:
+      - id
+      - name
+
+security:
+  - httpBearer: []
+tags:
+  - name: EventAPIProduct
+    description: ''
