@@ -2,7 +2,7 @@ openapi: 3.0.0
 info:
   title: Solace API Management Connector
   description: 'Solace API Management Connector API. Note: basic authentication security mechanism is deprecated.'
-  version: 0.2.0
+  version: 0.2.1
 servers:
   - url: /v1
 
@@ -201,7 +201,64 @@ components:
       required:
       - id
       - name
-
+    
+    APIInfo:
+      type: object
+      properties:
+        source:
+          type: string
+          description: source of the API spec
+          enum:
+          - EventAPIProduct
+          - Upload
+        sourceId:
+          description: id of the entity in the source system
+          type: string
+          example: 7avdj5n26cq
+        createdTime:
+          type: integer
+          example: 1620311683577
+        updatedTime:
+          type: integer
+          example: 1623615030383
+        createdBy:
+          type: string
+          example: tom
+        description:
+          type: string
+          example: An IoT Sensor API
+        name:
+          type: string
+          example: IoT Sensor API
+        summary:
+          type: string
+          example: An IoT sensor API
+        version:
+          type: string
+          example: 1
+        sourceMetadata:
+          description: any metadata as returned by the external System (if applicable)
+          type: object
+          additionalProperties: true
+          
+    APIImport:
+      type: object
+      properties:
+        source:
+          type: string
+          description: source system for loading the Async API
+          enum:
+          - EventAPIProduct
+        id:
+          description: id of the entity in the source system
+          type: string
+          example: 7avdj5n26cq
+        overwrite:
+          description: indicates if an existing API entity shall be replaced 
+          type: boolean
+          default: true
+        
+    
     APIProduct:
       required:
       - name
@@ -1592,6 +1649,76 @@ paths:
           "application/json": 
            schema: 
             "$ref": "#/components/schemas/ErrorResponse"
+    post:
+     operationId: importApi
+     description: Imports an Async API from an external source
+     tags:
+     - apis
+     requestBody: 
+       description: "Import request."
+       content: 
+         "application/json": 
+           schema: 
+            "$ref": "#/components/schemas/APIImport"    
+     responses:
+       '201':
+          description: New API that was imported
+          content:
+            application/json:
+             schema:
+               type: string
+       '400': 
+         description: "Bad Request."
+         content: 
+          "application/json": 
+           schema: 
+            "$ref": "#/components/schemas/ErrorResponse"
+          "*/*": 
+           schema: 
+            "$ref": "#/components/schemas/ErrorResponse"
+       '401': 
+         description: "Unauthorized."
+         content: 
+          "application/json": 
+           schema: 
+            "$ref": "#/components/schemas/ErrorResponse"
+       '403': 
+         description: "Forbidden."
+         content: 
+          "application/json": 
+           schema: 
+            "$ref": "#/components/schemas/ErrorResponse"
+       '404': 
+         description: "Not Found."
+         content: 
+          "application/json": 
+           schema: 
+            "$ref": "#/components/schemas/ErrorResponse"
+       '422': 
+         description: "AlreadyExists."
+         content: 
+          "application/json": 
+           schema: 
+            "$ref": "#/components/schemas/ErrorResponse"
+       '500': 
+         description: "Internal Server Error."
+         content: 
+          "application/json": 
+           schema: 
+            "$ref": "#/components/schemas/ErrorResponse"
+       '503': 
+         description: "Service Unavailable."
+         content: 
+          "application/json": 
+           schema: 
+            "$ref": "#/components/schemas/ErrorResponse"
+       '504': 
+         description: "Gateway Timeout."
+         content: 
+          "application/json": 
+           schema: 
+            "$ref": "#/components/schemas/ErrorResponse"
+
   /{organization}/apis/{api_name}:
     parameters:
     - $ref: '#/components/parameters/organization'
@@ -1857,6 +1984,68 @@ paths:
           "application/json": 
            schema: 
             "$ref": "#/components/schemas/ErrorResponse"
+
+  /{organization}/apis/{api_name}/info:
+    parameters:
+    - $ref: '#/components/parameters/organization'
+    - $ref: '#/components/parameters/api_name'
+    get:
+     operationId: getApiInfo
+     tags:
+     - apis
+     responses:
+       '200':
+         description: API meta information
+         content: 
+           "application/json":
+            schema:
+              "$ref": "#/components/schemas/APIInfo"
+       '400': 
+         description: "Bad Request."
+         content: 
+          "application/json": 
+           schema: 
+            "$ref": "#/components/schemas/ErrorResponse"
+          "*/*": 
+           schema: 
+            "$ref": "#/components/schemas/ErrorResponse"
+       '401': 
+         description: "Unauthorized."
+         content: 
+          "application/json": 
+           schema: 
+            "$ref": "#/components/schemas/ErrorResponse"
+       '403': 
+         description: "Forbidden."
+         content: 
+          "application/json": 
+           schema: 
+            "$ref": "#/components/schemas/ErrorResponse"
+       '404': 
+         description: "Not Found."
+         content: 
+          "application/json": 
+           schema: 
+            "$ref": "#/components/schemas/ErrorResponse"
+       '500': 
+         description: "Internal Server Error."
+         content: 
+          "application/json": 
+           schema: 
+            "$ref": "#/components/schemas/ErrorResponse"
+       '503': 
+         description: "Service Unavailable."
+         content: 
+          "application/json": 
+           schema: 
+            "$ref": "#/components/schemas/ErrorResponse"
+       '504': 
+         description: "Gateway Timeout."
+         content: 
+          "application/json": 
+           schema: 
+            "$ref": "#/components/schemas/ErrorResponse"
+
   /{organization}/apiProducts:
     parameters:
     - $ref: '#/components/parameters/organization'

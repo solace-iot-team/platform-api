@@ -23,15 +23,30 @@ export class Controller {
       });
   };
 
+  infoByName(req: Request, res: Response, next: NextFunction): void {
+    ApisService.infoByName(req.params['name'])
+      .then((r) => res.json(r))
+      .catch((e) => {
+        L.error(e);
+        next(e);
+      });
+  };
 
   create(req: Request, res: Response, next: NextFunction): void {
-    ApisService.create(req.params['name'], req.body)
+    ApisService.create(req.params['name'],req.body)
       .then((r) => {
         Controller.handleResponse(r, req, res, next, 201);
       })
       .catch((e) => next(e));
   }
 
+  import(req: Request, res: Response, next: NextFunction): void {
+    ApisService.import( req.body)
+      .then((r) => {
+        Controller.handleResponse(r, req, res, next, 201);
+      })
+      .catch((e) => next(e));
+  }
 
   update(req: Request, res: Response, next: NextFunction): void {
     ApisService.update(req.params['name'], req.body)

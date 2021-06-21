@@ -41,6 +41,75 @@ declare namespace Components {
         }
     }
     namespace Schemas {
+        export interface APIImport {
+            /**
+             * source system for loading the Async API
+             */
+            source?: "EventAPIProduct";
+            /**
+             * id of the entity in the source system
+             * example:
+             * 7avdj5n26cq
+             */
+            id?: string;
+            /**
+             * indicates if an existing API entity shall be replaced
+             */
+            overwrite?: boolean;
+        }
+        export interface APIInfo {
+            /**
+             * source of the API spec
+             */
+            source?: "EventAPIProduct" | "Upload";
+            /**
+             * id of the entity in the source system
+             * example:
+             * 7avdj5n26cq
+             */
+            sourceId?: string;
+            /**
+             * example:
+             * 1620311683577
+             */
+            createdTime?: number;
+            /**
+             * example:
+             * 1623615030383
+             */
+            updatedTime?: number;
+            /**
+             * example:
+             * tom
+             */
+            createdBy?: string;
+            /**
+             * example:
+             * An IoT Sensor API
+             */
+            description?: string;
+            /**
+             * example:
+             * IoT Sensor API
+             */
+            name?: string;
+            /**
+             * example:
+             * An IoT sensor API
+             */
+            summary?: string;
+            /**
+             * example:
+             * 1
+             */
+            version?: string;
+            /**
+             * any metadata as returned by the external System (if applicable)
+             */
+            sourceMetadata?: {
+                [name: string]: any;
+            };
+        }
         /**
          * An API product consists of a list of API resources (URIs) and custom metadata required by the API provider. API products enable you to bundle and distribute your APIs to multiple developer groups simultaneously
          */
@@ -951,6 +1020,18 @@ declare namespace Paths {
             export type $504 = Components.Schemas.ErrorResponse;
         }
     }
+    namespace GetApiInfo {
+        namespace Responses {
+            export type $200 = Components.Schemas.APIInfo;
+            export type $400 = Components.Schemas.ErrorResponse;
+            export type $401 = Components.Schemas.ErrorResponse;
+            export type $403 = Components.Schemas.ErrorResponse;
+            export type $404 = Components.Schemas.ErrorResponse;
+            export type $500 = Components.Schemas.ErrorResponse;
+            export type $503 = Components.Schemas.ErrorResponse;
+            export type $504 = Components.Schemas.ErrorResponse;
+        }
+    }
     namespace GetApiProduct {
         namespace Responses {
             export type $200 = /* An API product consists of a list of API resources (URIs) and custom metadata required by the API provider. API products enable you to bundle and distribute your APIs to multiple developer groups simultaneously */ Components.Schemas.APIProduct;
@@ -1102,6 +1183,20 @@ declare namespace Paths {
             export type $401 = Components.Schemas.ErrorResponse;
             export type $403 = Components.Schemas.ErrorResponse;
             export type $404 = Components.Schemas.ErrorResponse;
+            export type $500 = Components.Schemas.ErrorResponse;
+            export type $503 = Components.Schemas.ErrorResponse;
+            export type $504 = Components.Schemas.ErrorResponse;
+        }
+    }
+    namespace ImportApi {
+        export type RequestBody = Components.Schemas.APIImport;
+        namespace Responses {
+            export type $201 = string;
+            export type $400 = Components.Schemas.ErrorResponse;
+            export type $401 = Components.Schemas.ErrorResponse;
+            export type $403 = Components.Schemas.ErrorResponse;
+            export type $404 = Components.Schemas.ErrorResponse;
+            export type $422 = Components.Schemas.ErrorResponse;
             export type $500 = Components.Schemas.ErrorResponse;
             export type $503 = Components.Schemas.ErrorResponse;
             export type $504 = Components.Schemas.ErrorResponse;
