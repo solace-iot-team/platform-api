@@ -6,6 +6,8 @@ import parser from '@asyncapi/parser';
 import AsyncAPIHelper from '../../../src/asyncapihelper';
 import EventPortalFacade from '../../../src/eventportalfacade';
 import APIInfo = Components.Schemas.APIInfo;
+import {ns} from '../middlewares/context.handler';
+import { ContextConstants } from '../../common/constants';
 
 export interface APISpecification {
   name: string;
@@ -64,7 +66,7 @@ export class ApisService {
         .then((info: APIInfo) => {
           if (!info) {
             reject(
-              new ErrorResponseInternal(404, `Async API ${name} not found`)
+              new ErrorResponseInternal(404, `API Information  ${name} not found`)
             );
           } else {
             resolve(info);
@@ -89,7 +91,7 @@ export class ApisService {
 
   async create(name: string, body: string): Promise<string> {
     const info: APIInfo = {
-      createdBy: 'todo',
+      createdBy: ns.getStore().get(ContextConstants.AUTHENTICATED_USER),
       createdTime: Date.now(),
       description: name,
       name: name,
@@ -105,7 +107,7 @@ export class ApisService {
     const apiSpec = await EventPortalFacade.getEventApiProductAsyncApi(body.id);
     const api = await EventPortalFacade.getEventApiProduct(body.id);
     const info: APIInfo = {
-      createdBy: "todo",
+      createdBy: ns.getStore().get(ContextConstants.AUTHENTICATED_USER),
       createdTime: api.createdTime,
       description: api.description,
       name: api.name,

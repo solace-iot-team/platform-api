@@ -9,6 +9,7 @@ export class ContextConstants {
   public static CLOUD_TOKEN = 'cloud-token';
   public static PAGING = 'paging';
   public static REQUEST_ID = 'requestId';
+  public static AUTHENTICATED_USER = 'user';
 }
 
 export class TopicWildcards {
