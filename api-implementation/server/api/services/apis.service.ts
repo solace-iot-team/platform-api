@@ -8,7 +8,8 @@ import EventPortalFacade from '../../../src/eventportalfacade';
 import APIInfo = Components.Schemas.APIInfo;
 import {ns} from '../middlewares/context.handler';
 import { ContextConstants } from '../../common/constants';
-
+import { ApisReadStrategy } from './apis/read.strategy';
+import ApisReadStrategyFactory from './apis/read.strategy.factory';
 export interface APISpecification {
   name: string;
   specification: string;
@@ -17,69 +18,29 @@ export interface APISpecification {
 export class ApisService {
   private persistenceService: PersistenceService;
   private apiInfoPersistenceService: PersistenceService;
+  private readStrategy: ApisReadStrategy;
 
   constructor() {
     this.persistenceService = new PersistenceService('apis');
     this.apiInfoPersistenceService = new PersistenceService('apisInfo');
+    this.readStrategy = ApisReadStrategyFactory.getReadStrategy();
   }
 
   async all(): Promise<string[]> {
-    return new Promise<string[]>((resolve, reject) => {
-      this.persistenceService
-        .all()
-        .then((all: APISpecification[]) => {
-          const names: string[] = [];
-          all.forEach((spec: APISpecification) => {
-            names.push(spec.name);
-          });
-          resolve(names);
-        })
-        .catch((e) => {
-          reject(e);
-        });
-    });
+    return this.readStrategy.all();
   }
 
   byName(name: string): Promise<string> {
-    return new Promise<string>((resolve, reject) => {
-      this.persistenceService
-        .byName(name)
-        .then((spec: APISpecification) => {
-          if (!spec) {
-            reject(
-              new ErrorResponseInternal(404, `Async API ${name} not found`)
-            );
-          } else {
-            resolve(spec.specification);
-          }
-        })
-        .catch((e) => {
-          reject(e);
-        });
-    });
+    return this.readStrategy.byName(name);
   }
 
   infoByName(name: string): Promise<APIInfo> {
-    return new Promise<APIInfo>((resolve, reject) => {
-      this.apiInfoPersistenceService
-        .byName(name)
-        .then((info: APIInfo) => {
-          if (!info) {
-            reject(
-              new ErrorResponseInternal(404, `API Information  ${name} not found`)
-            );
-          } else {
-            resolve(info);
-          }
-        })
-        .catch((e) => {
-          reject(e);
-        });
-    });
-  }
+   return this.readStrategy.infoByName(name);
+}
 
   async delete(name: string): Promise<number> {
     if (await this.canDelete(name)) {
+      await this.apiInfoPersistenceService.delete(name);
       return this.persistenceService.delete(name);
     } else {
       throw new ErrorResponseInternal(
