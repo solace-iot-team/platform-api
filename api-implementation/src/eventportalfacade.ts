@@ -25,7 +25,7 @@ class EventPortalFacade {
   public async getEventApiProducts(): Promise<Components.Schemas.EventAPIProductList> {
     try {
       const list: EventAPIProduct[] = (await EventApiProductService.getapiproducts()).data;
-      for (const l of list){
+      for (const l of list) {
         delete l['hosted'];
       }
       return list;
@@ -36,7 +36,7 @@ class EventPortalFacade {
   }
 
   public async getEventApiProduct(id: string): Promise<Components.Schemas.EventAPIProduct> {
-        try {
+    try {
       const product: EventAPIProduct = (await EventApiProductService.getapiproduct(id)).data;
       delete product['hosted'];
       delete product['externalEvents'];
@@ -47,10 +47,22 @@ class EventPortalFacade {
     }
   }
 
+  public async getEventApiProductByName(name: string): Promise<Components.Schemas.EventAPIProduct> {
+    try {
+      const products = await this.getEventApiProducts();
+      const api = products.find(p => p.name == name);
+      const product: EventAPIProduct = (await this.getEventApiProduct(api.id) as EventAPIProduct);
+      return product;
+    } catch (error) {
+      L.error(error);
+      throw new ErrorResponseInternal(error.status, error.message);
+    }
+  }
+
   public async getEventApiProductAsyncApi(id: string): Promise<any> {
     const apiSpec = await EventApiProductService.getasyncapiJson(id);
-      L.debug(`Parsing API spec `);
-      this.addAsyncAPIExtensionInfo(apiSpec.info);
+    L.debug(`Parsing API spec `);
+    this.addAsyncAPIExtensionInfo(apiSpec.info);
 
     return JSON.stringify(apiSpec);
   }

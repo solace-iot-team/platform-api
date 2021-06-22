@@ -6,7 +6,7 @@ import parser from '@asyncapi/parser';
 import AsyncAPIHelper from '../../../src/asyncapihelper';
 import EventPortalFacade from '../../../src/eventportalfacade';
 import APIInfo = Components.Schemas.APIInfo;
-import {ns} from '../middlewares/context.handler';
+import { ns } from '../middlewares/context.handler';
 import { ContextConstants } from '../../common/constants';
 import { ApisReadStrategy } from './apis/read.strategy';
 import ApisReadStrategyFactory from './apis/read.strategy.factory';
@@ -35,8 +35,8 @@ export class ApisService {
   }
 
   infoByName(name: string): Promise<APIInfo> {
-   return this.readStrategy.infoByName(name);
-}
+    return this.readStrategy.infoByName(name);
+  }
 
   async delete(name: string): Promise<number> {
     if (await this.canDelete(name)) {
@@ -51,6 +51,13 @@ export class ApisService {
   }
 
   async create(name: string, body: string): Promise<string> {
+    const canCreate: boolean = await this.readStrategy.canCreate(name);
+    if (!canCreate){
+      throw new ErrorResponseInternal(
+        422,
+        `API ${name} can not be created`
+      );
+    }
     const info: APIInfo = {
       createdBy: ns.getStore().get(ContextConstants.AUTHENTICATED_USER),
       createdTime: Date.now(),
@@ -67,6 +74,10 @@ export class ApisService {
 
     const apiSpec = await EventPortalFacade.getEventApiProductAsyncApi(body.id);
     const api = await EventPortalFacade.getEventApiProduct(body.id);
+    const canImport = await this.readStrategy.canImport(api.name);
+    if (!canImport) {
+      throw new ErrorResponseInternal(500, `Entity ${api.name} can not be imported`)
+    }
     const info: APIInfo = {
       createdBy: ns.getStore().get(ContextConstants.AUTHENTICATED_USER),
       createdTime: api.createdTime,
@@ -121,9 +132,9 @@ export class ApisService {
 
   async update(name: string, body: string): Promise<string> {
     const r = await this.apiInfoPersistenceService.byName(name);
-    if (r.source == 'Upload'){
-        // for internal APIs increase the version number
-        r.version = (Number(r.version)+1).toString();
+    if (r.source == 'Upload') {
+      // for internal APIs increase the version number
+      r.version = (Number(r.version) + 1).toString();
     }
     return this.updateInternal(r, body);
   }
