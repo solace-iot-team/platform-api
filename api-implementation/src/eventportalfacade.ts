@@ -24,7 +24,8 @@ class EventPortalFacade {
 
   public async getEventApiProducts(): Promise<Components.Schemas.EventAPIProductList> {
     try {
-      const list: EventAPIProduct[] = (await EventApiProductService.getapiproducts()).data;
+      let list: EventAPIProduct[] = (await EventApiProductService.getapiproducts()).data;
+      list = list.filter(l=>l.published==true);
       for (const l of list) {
         delete l['hosted'];
       }
