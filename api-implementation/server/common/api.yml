@@ -2,7 +2,7 @@ openapi: 3.0.0
 info:
   title: Solace API Management Connector
   description: 'Solace API Management Connector API. Note: basic authentication security mechanism is deprecated.'
-  version: 0.2.1
+  version: 0.2.2
 servers:
   - url: /v1
 
@@ -704,8 +704,18 @@ components:
           type: array 
           items:
              $ref: '#/components/schemas/Protocol'
-            
 
+    EnvironmentListItem:
+      description: a list item in the environmentslist
+      type: object
+      allOf: 
+      - "$ref": "#/components/schemas/Environment"
+      properties:
+        messagingProtocols:
+          type: array
+          description: All of the protocols that the broker service exposes
+          items:
+            $ref: '#/components/schemas/Endpoint'      
     EnvironmentResponse:
       description: an environment
       type: object
@@ -3357,6 +3367,14 @@ paths:
      parameters:
      - $ref: '#/components/parameters/page_size'
      - $ref: '#/components/parameters/page_number'
+     - name: format
+       in: query
+       schema:
+        type: string
+        default: summary
+        enum:
+        - summary
+        - full
      responses:
        '200':
          description: list of environments
@@ -3365,7 +3383,7 @@ paths:
              schema:
                type: array
                items:
-                 $ref: '#/components/schemas/Environment'
+                 $ref: '#/components/schemas/EnvironmentListItem'
        '400': 
          description: "Bad Request."
          content: 

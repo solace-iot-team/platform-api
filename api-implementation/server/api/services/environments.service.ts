@@ -1,5 +1,6 @@
 import L from '../../common/logger';
 import Environment = Components.Schemas.Environment;
+import EnvironmentListItem = Components.Schemas.EnvironmentListItem;
 import EnvironmentPatch = Components.Schemas.EnvironmentPatch;
 import EnvironmentResponse = Components.Schemas.EnvironmentResponse;
 import { PersistenceService } from './persistence.service';
@@ -14,8 +15,25 @@ export class EnvironmentsService {
     this.persistenceService = new PersistenceService('environments');
   }
 
-  all(query?: any): Promise<Environment[]> {
-    return this.persistenceService.all(query);
+  async all(query?: any, format?: string): Promise<EnvironmentListItem[]> {
+
+    if (format == 'full') {
+      const envs: EnvironmentListItem[] = await this.persistenceService.all(query);
+      for (const env of envs) {
+        const service = await SolaceCloudFacade.getServiceByEnvironment(env);
+        let messagingProtocols: Components.Schemas.Endpoint[] = [];
+        if (service.creationState == 'completed') {
+          messagingProtocols = await ProtocolMapper.mapSolaceMessagingProtocolsToAsyncAPI(
+            service.messagingProtocols
+          );
+        }
+        env.messagingProtocols = messagingProtocols;
+        
+      }
+      return envs;
+    } else {
+      return this.persistenceService.all(query);
+    }
   }
 
   async byName(name: string): Promise<EnvironmentResponse> {

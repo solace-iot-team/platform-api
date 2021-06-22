@@ -4,7 +4,7 @@ import { ErrorResponseInternal } from '../../middlewares/error.handler';
 
 export class Controller {
   all(req: Request, res: Response, next: NextFunction): void {
-    EnvironmentsService.all().then((r) => res.json(r));
+    EnvironmentsService.all(null, req.query['format'] as string ).then((r) => res.json(r));
   }
 
   create(req: Request, res: Response, next: NextFunction): void {

@@ -419,6 +419,31 @@ declare namespace Components {
             exposedProtocols: Protocol[];
         }
         /**
+         * a list item in the environmentslist
+         */
+        export interface EnvironmentListItem {
+            /**
+             * example:
+             * dev
+             */
+            name: string;
+            /**
+             * example:
+             * development environment
+             */
+            description: string;
+            /**
+             * example:
+             * xm7dc2dfas4
+             */
+            serviceId: string;
+            exposedProtocols: Protocol[];
+            /**
+             * All of the protocols that the broker service exposes
+             */
+            messagingProtocols?: Endpoint[];
+        }
+        /**
          * used for PATCH operation, an environment
          */
         export interface EnvironmentPatch {
@@ -1281,8 +1306,14 @@ declare namespace Paths {
         }
     }
     namespace ListEnvironments {
+        namespace Parameters {
+            export type Format = "summary" | "full";
+        }
+        export interface QueryParameters {
+            format?: Parameters.Format;
+        }
         namespace Responses {
-            export type $200 = /* an environment */ Components.Schemas.Environment[];
+            export type $200 = /* a list item in the environmentslist */ Components.Schemas.EnvironmentListItem[];
             export type $400 = Components.Schemas.ErrorResponse;
             export type $401 = Components.Schemas.ErrorResponse;
             export type $403 = Components.Schemas.ErrorResponse;
