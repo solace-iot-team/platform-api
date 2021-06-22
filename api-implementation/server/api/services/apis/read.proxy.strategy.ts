@@ -46,9 +46,7 @@ class ApisReadProxyStrategy implements ApisReadStrategy {
       const spec: APISpecification = await this.persistenceService.byName(name);
       return spec.specification;
     } catch (e) {
-      // if not found we look it up in event portal
-      const products = await EventPortalFacade.getEventApiProducts();
-      const product = products.find(p => p.name == name);
+      const product = await EventPortalFacade.getEventApiProductByName(name);
       if (product === undefined) {
         throw new ErrorResponseInternal(404, `Async API ${name} not found`);
       } else {
@@ -73,9 +71,7 @@ class ApisReadProxyStrategy implements ApisReadStrategy {
         })
         .catch(async (e) => {
           try {
-            const products = await EventPortalFacade.getEventApiProducts();
-            const product = products.find(p => p.name == name);
-            const api = await EventPortalFacade.getEventApiProduct(product.id);
+            const api = await EventPortalFacade.getEventApiProductByName(name);
             const info: APIInfo = {
               createdBy: ns.getStore().get(ContextConstants.AUTHENTICATED_USER),
               createdTime: api.createdTime,
@@ -94,6 +90,24 @@ class ApisReadProxyStrategy implements ApisReadStrategy {
           }
         });
     });
+  }
+
+  async canCreate(name: string): Promise<boolean> {
+    try {
+      const api = await EventPortalFacade.getEventApiProductByName(name);
+      if (api){
+        return false;
+      } else {
+        return true;
+      }
+    } catch (e) {
+      return true;
+    }
+
+  }
+
+  async canImport(name: string): Promise<boolean> {
+    return false;
   }
 
 }

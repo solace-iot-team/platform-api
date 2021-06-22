@@ -4,7 +4,7 @@ import { ErrorResponseInternal } from '../../middlewares/error.handler';
 import { PersistenceService } from '../persistence.service';
 import APIInfo = Components.Schemas.APIInfo;
 
-class ApisReadLocalStrategy implements ApisReadStrategy{
+class ApisReadLocalStrategy implements ApisReadStrategy {
   private persistenceService: PersistenceService;
   private apiInfoPersistenceService: PersistenceService;
 
@@ -65,6 +65,13 @@ class ApisReadLocalStrategy implements ApisReadStrategy{
           reject(e);
         });
     });
+  }
+
+  async canCreate(name: string): Promise<boolean> {
+    return true;
+  }
+  async canImport(name: string): Promise<boolean> {
+    return true;
   }
 
 }
