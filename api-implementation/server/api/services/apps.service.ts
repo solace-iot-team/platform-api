@@ -1,6 +1,7 @@
 import L from '../../common/logger';
 import { ErrorResponseInternal } from '../middlewares/error.handler';
 import DevelopersService from './developers.service';
+import TeamsService from './teams.service';
 import ApiProductsService from './apiProducts.service';
 import ApisService from './apis.service';
 import BrokerService from './broker.service';
@@ -17,6 +18,7 @@ import WebHook = Components.Schemas.WebHook;
 
 import AsyncAPIHelper from '../../../src/asyncapihelper';
 import { AsyncAPIServer } from '../../../src/model/asyncapiserver';
+import teamsService from './teams.service';
 
 export interface APISpecification {
   name: string;
@@ -70,9 +72,9 @@ export class AppsService {
 
   async byName(name: string, syntax: TopicSyntax): Promise<AppResponse> {
     const app: App = await this.persistenceService.byName(name);
-    const devApp = await DevelopersService.appByName(app['ownerId'], app.name, syntax);
-    devApp['ownerId'] = app['ownerId'];
-    return devApp;
+    const theApp = await this.byNameAndOwnerId(app.name, app['ownerId'], syntax, await this.getAttributes(app['appType'], app['ownerId']));
+    theApp['ownerId'] = app['ownerId'];
+    return theApp;
   }
 
 
@@ -288,6 +290,17 @@ export class AppsService {
     }
 
     return isApproved;
+  }
+
+  private async getAttributes(appType: string, ownerId: string) : Promise<Attributes>{
+    let attrs: Attributes = null;
+    if (appType == 'team'){
+      attrs = (await TeamsService.byName(ownerId)).attributes;
+    } else {
+      attrs = (await DevelopersService.byName(ownerId)).attributes;
+    }
+    L.info(attrs);
+    return attrs;
   }
 
 }

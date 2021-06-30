@@ -36,6 +36,9 @@ declare namespace Components {
         namespace PageSize {
             export type PageSize = number; // int32
         }
+        namespace TeamName {
+            export type TeamName = string;
+        }
         namespace TopicSyntax {
             export type TopicSyntax = "smf" | "mqtt";
         }
@@ -229,11 +232,11 @@ declare namespace Components {
             protocols?: Protocol[];
         }
         /**
-         * An app associated with a developer. Associates the app with an API product, and auto-generates an API credentials for the app to use
+         * An app associated with an owner (developer, team etc). Associates the app with an API product, and auto-generates an API credentials for the app to use
          */
         export interface App {
             /**
-             * the uniuque name of this app, can not be updated
+             * the unique name of this app, can not be updated
              */
             name: string;
             /**
@@ -831,6 +834,24 @@ declare namespace Components {
                 pageSize?: number;
             };
         }
+        /**
+         * A profile of a team. After the team is created, an app can be registered and API credentials are created
+         */
+        export interface Team {
+            displayName: string;
+            /**
+             * a unique name which can not be updated
+             */
+            name: string;
+            attributes?: Attributes;
+        }
+        /**
+         * Used for PATCH operation, A profile of a team. After the team is created, an app can be registered and API credentials are created
+         */
+        export interface TeamPatch {
+            displayName?: string;
+            attributes?: Attributes;
+        }
         export interface WebHook {
             uri: string; // https?:\/\/[A-Za-z\.:0-9\-]*.{0,200}$
             /**
@@ -901,9 +922,9 @@ declare namespace Paths {
         }
     }
     namespace CreateDeveloperApp {
-        export type RequestBody = /* An app associated with a developer. Associates the app with an API product, and auto-generates an API credentials for the app to use */ Components.Schemas.App;
+        export type RequestBody = /* An app associated with an owner (developer, team etc). Associates the app with an API product, and auto-generates an API credentials for the app to use */ Components.Schemas.App;
         namespace Responses {
-            export type $201 = /* An app associated with a developer. Associates the app with an API product, and auto-generates an API credentials for the app to use */ Components.Schemas.App;
+            export type $201 = /* An app associated with an owner (developer, team etc). Associates the app with an API product, and auto-generates an API credentials for the app to use */ Components.Schemas.App;
             export type $400 = Components.Schemas.ErrorResponse;
             export type $401 = Components.Schemas.ErrorResponse;
             export type $403 = Components.Schemas.ErrorResponse;
@@ -932,6 +953,34 @@ declare namespace Paths {
         export type RequestBody = Components.Schemas.Organization;
         namespace Responses {
             export type $200 = Components.Schemas.Organization;
+            export type $400 = Components.Schemas.ErrorResponse;
+            export type $401 = Components.Schemas.ErrorResponse;
+            export type $403 = Components.Schemas.ErrorResponse;
+            export type $404 = Components.Schemas.ErrorResponse;
+            export type $422 = Components.Schemas.ErrorResponse;
+            export type $500 = Components.Schemas.ErrorResponse;
+            export type $503 = Components.Schemas.ErrorResponse;
+            export type $504 = Components.Schemas.ErrorResponse;
+        }
+    }
+    namespace CreateTeam {
+        export type RequestBody = /* A profile of a team. After the team is created, an app can be registered and API credentials are created */ Components.Schemas.Team;
+        namespace Responses {
+            export type $201 = /* A profile of a team. After the team is created, an app can be registered and API credentials are created */ Components.Schemas.Team;
+            export type $400 = Components.Schemas.ErrorResponse;
+            export type $401 = Components.Schemas.ErrorResponse;
+            export type $403 = Components.Schemas.ErrorResponse;
+            export type $404 = Components.Schemas.ErrorResponse;
+            export type $422 = Components.Schemas.ErrorResponse;
+            export type $500 = Components.Schemas.ErrorResponse;
+            export type $503 = Components.Schemas.ErrorResponse;
+            export type $504 = Components.Schemas.ErrorResponse;
+        }
+    }
+    namespace CreateTeamApp {
+        export type RequestBody = /* An app associated with an owner (developer, team etc). Associates the app with an API product, and auto-generates an API credentials for the app to use */ Components.Schemas.App;
+        namespace Responses {
+            export type $201 = /* An app associated with an owner (developer, team etc). Associates the app with an API product, and auto-generates an API credentials for the app to use */ Components.Schemas.App;
             export type $400 = Components.Schemas.ErrorResponse;
             export type $401 = Components.Schemas.ErrorResponse;
             export type $403 = Components.Schemas.ErrorResponse;
@@ -1013,6 +1062,34 @@ declare namespace Paths {
         }
     }
     namespace DeleteOrganization {
+        namespace Responses {
+            export interface $204 {
+            }
+            export type $400 = Components.Schemas.ErrorResponse;
+            export type $401 = Components.Schemas.ErrorResponse;
+            export type $403 = Components.Schemas.ErrorResponse;
+            export type $404 = Components.Schemas.ErrorResponse;
+            export type $422 = Components.Schemas.ErrorResponse;
+            export type $500 = Components.Schemas.ErrorResponse;
+            export type $503 = Components.Schemas.ErrorResponse;
+            export type $504 = Components.Schemas.ErrorResponse;
+        }
+    }
+    namespace DeleteTeam {
+        namespace Responses {
+            export interface $204 {
+            }
+            export type $400 = Components.Schemas.ErrorResponse;
+            export type $401 = Components.Schemas.ErrorResponse;
+            export type $403 = Components.Schemas.ErrorResponse;
+            export type $404 = Components.Schemas.ErrorResponse;
+            export type $422 = Components.Schemas.ErrorResponse;
+            export type $500 = Components.Schemas.ErrorResponse;
+            export type $503 = Components.Schemas.ErrorResponse;
+            export type $504 = Components.Schemas.ErrorResponse;
+        }
+    }
+    namespace DeleteTeamApp {
         namespace Responses {
             export interface $204 {
             }
@@ -1201,6 +1278,30 @@ declare namespace Paths {
             export type $504 = Components.Schemas.ErrorResponse;
         }
     }
+    namespace GetTeam {
+        namespace Responses {
+            export type $200 = /* A profile of a team. After the team is created, an app can be registered and API credentials are created */ Components.Schemas.Team;
+            export type $400 = Components.Schemas.ErrorResponse;
+            export type $401 = Components.Schemas.ErrorResponse;
+            export type $403 = Components.Schemas.ErrorResponse;
+            export type $404 = Components.Schemas.ErrorResponse;
+            export type $500 = Components.Schemas.ErrorResponse;
+            export type $503 = Components.Schemas.ErrorResponse;
+            export type $504 = Components.Schemas.ErrorResponse;
+        }
+    }
+    namespace GetTeamApp {
+        namespace Responses {
+            export type $200 = /* App Response Object - includes protocol binding information and app premissions. An app associated with a developer. Associates the app with an API product, and auto-generates an API credentials for the app to use. */ Components.Schemas.AppResponse;
+            export type $400 = Components.Schemas.ErrorResponse;
+            export type $401 = Components.Schemas.ErrorResponse;
+            export type $403 = Components.Schemas.ErrorResponse;
+            export type $404 = Components.Schemas.ErrorResponse;
+            export type $500 = Components.Schemas.ErrorResponse;
+            export type $503 = Components.Schemas.ErrorResponse;
+            export type $504 = Components.Schemas.ErrorResponse;
+        }
+    }
     namespace GetToken {
         namespace Responses {
             export type $200 = string;
@@ -1283,7 +1384,7 @@ declare namespace Paths {
             status?: Parameters.Status;
         }
         namespace Responses {
-            export type $200 = /* An app associated with a developer. Associates the app with an API product, and auto-generates an API credentials for the app to use */ Components.Schemas.App[];
+            export type $200 = /* An app associated with an owner (developer, team etc). Associates the app with an API product, and auto-generates an API credentials for the app to use */ Components.Schemas.App[];
             export type $400 = Components.Schemas.ErrorResponse;
             export type $401 = Components.Schemas.ErrorResponse;
             export type $403 = Components.Schemas.ErrorResponse;
@@ -1371,6 +1472,36 @@ declare namespace Paths {
             export type $504 = Components.Schemas.ErrorResponse;
         }
     }
+    namespace ListTeamApps {
+        namespace Parameters {
+            export type Status = Components.Schemas.AppStatus;
+        }
+        export interface QueryParameters {
+            status?: Parameters.Status;
+        }
+        namespace Responses {
+            export type $200 = /* An app associated with an owner (developer, team etc). Associates the app with an API product, and auto-generates an API credentials for the app to use */ Components.Schemas.App[];
+            export type $400 = Components.Schemas.ErrorResponse;
+            export type $401 = Components.Schemas.ErrorResponse;
+            export type $403 = Components.Schemas.ErrorResponse;
+            export type $404 = Components.Schemas.ErrorResponse;
+            export type $500 = Components.Schemas.ErrorResponse;
+            export type $503 = Components.Schemas.ErrorResponse;
+            export type $504 = Components.Schemas.ErrorResponse;
+        }
+    }
+    namespace ListTeams {
+        namespace Responses {
+            export type $200 = /* A profile of a team. After the team is created, an app can be registered and API credentials are created */ Components.Schemas.Team[];
+            export type $400 = Components.Schemas.ErrorResponse;
+            export type $401 = Components.Schemas.ErrorResponse;
+            export type $403 = Components.Schemas.ErrorResponse;
+            export type $404 = Components.Schemas.ErrorResponse;
+            export type $500 = Components.Schemas.ErrorResponse;
+            export type $503 = Components.Schemas.ErrorResponse;
+            export type $504 = Components.Schemas.ErrorResponse;
+        }
+    }
     namespace UpdateApi {
         export type RequestBody = string;
         namespace Responses {
@@ -1445,6 +1576,34 @@ declare namespace Paths {
         export type RequestBody = Components.Schemas.Organization;
         namespace Responses {
             export type $200 = Components.Schemas.Organization;
+            export type $400 = Components.Schemas.ErrorResponse;
+            export type $401 = Components.Schemas.ErrorResponse;
+            export type $403 = Components.Schemas.ErrorResponse;
+            export type $404 = Components.Schemas.ErrorResponse;
+            export type $422 = Components.Schemas.ErrorResponse;
+            export type $500 = Components.Schemas.ErrorResponse;
+            export type $503 = Components.Schemas.ErrorResponse;
+            export type $504 = Components.Schemas.ErrorResponse;
+        }
+    }
+    namespace UpdateTeam {
+        export type RequestBody = /* Used for PATCH operation, A profile of a team. After the team is created, an app can be registered and API credentials are created */ Components.Schemas.TeamPatch;
+        namespace Responses {
+            export type $200 = /* A profile of a team. After the team is created, an app can be registered and API credentials are created */ Components.Schemas.Team;
+            export type $400 = Components.Schemas.ErrorResponse;
+            export type $401 = Components.Schemas.ErrorResponse;
+            export type $403 = Components.Schemas.ErrorResponse;
+            export type $404 = Components.Schemas.ErrorResponse;
+            export type $422 = Components.Schemas.ErrorResponse;
+            export type $500 = Components.Schemas.ErrorResponse;
+            export type $503 = Components.Schemas.ErrorResponse;
+            export type $504 = Components.Schemas.ErrorResponse;
+        }
+    }
+    namespace UpdateTeamApp {
+        export type RequestBody = /* Used for PATCH operation. An app associated with a developer. Associates the app with an API product, and auto-generates an API credentials for the app to use */ Components.Schemas.AppPatch;
+        namespace Responses {
+            export type $200 = /* App Response Object - includes protocol binding information and app premissions. An app associated with a developer. Associates the app with an API product, and auto-generates an API credentials for the app to use. */ Components.Schemas.AppResponse;
             export type $400 = Components.Schemas.ErrorResponse;
             export type $401 = Components.Schemas.ErrorResponse;
             export type $403 = Components.Schemas.ErrorResponse;
