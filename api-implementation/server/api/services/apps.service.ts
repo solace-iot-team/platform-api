@@ -9,8 +9,11 @@ import App = Components.Schemas.App;
 import AppListItem = Components.Schemas.AppListItem;
 import AppResponse = Components.Schemas.AppResponse;
 import AppPatch = Components.Schemas.AppPatch;
+import passwordGenerator from 'generate-password';
 import ApiProduct = Components.Schemas.APIProduct;
+import Attributes = Components.Schemas.Attributes;
 import TopicSyntax = Components.Parameters.TopicSyntax.TopicSyntax;
+import WebHook = Components.Schemas.WebHook;
 
 import AsyncAPIHelper from '../../../src/asyncapihelper';
 import { AsyncAPIServer } from '../../../src/model/asyncapiserver';
@@ -20,6 +23,11 @@ export interface APISpecification {
   specification: string;
 }
 
+interface OwnedApp extends App {
+  appType?: string;
+  ownerId?: string;
+  status?: string;
+}
 export class AppsService {
   private persistenceService: PersistenceService;
 
@@ -27,8 +35,8 @@ export class AppsService {
     this.persistenceService = new PersistenceService('apps');
   }
 
-  async all(): Promise<App[]> {
-    return this.persistenceService.all();
+  async all(query?: any): Promise<App[]> {
+    return this.persistenceService.all(query);
   }
 
   async list(query: any): Promise<AppListItem[]> {
@@ -37,7 +45,7 @@ export class AppsService {
     apps.forEach((app: AppResponse) => {
       const listItem: AppListItem = {
         name: app.name,
-        displayName: app.displayName?app.displayName:app.name,
+        displayName: app.displayName ? app.displayName : app.name,
         apiProducts: app.apiProducts,
         appType: app['appType'],
         status: app.status,
@@ -66,6 +74,86 @@ export class AppsService {
     devApp['ownerId'] = app['ownerId'];
     return devApp;
   }
+
+
+  async byNameAndOwnerId(
+    name: string,
+    ownerId: string,
+    syntax: TopicSyntax,
+    ownerAttributes: Attributes
+  ): Promise<AppResponse> {
+    try {
+      const ownerIdQuery = {
+        ownerId: ownerId,
+      };
+      const app: AppResponse = await this.persistenceService.byName(
+        name,
+        ownerIdQuery
+      );
+      if (app) {
+        const endpoints = await BrokerService.getMessagingProtocols(app);
+        app.environments = endpoints;
+        for (const appEnv of app.environments) {
+          const permissions = await BrokerService.getPermissions(
+            app,
+            ownerAttributes,
+            appEnv.name,
+            syntax
+          );
+          appEnv.permissions = permissions;
+        }
+      } else {
+        throw 404;
+      }
+      return app;
+    } catch (e) {
+      throw new ErrorResponseInternal(500, e);
+    }
+  }
+
+  async create(name: string, newApp: App, ownerAttributes: Attributes): Promise<App> {
+    const app = newApp as OwnedApp;
+    L.info(`App create request ${JSON.stringify(app)}`);
+    try {
+      const validated = await this.validate(app);
+      if (validated) {
+        app.status = 'approved';
+      } else {
+        app.status = 'pending';
+      }
+
+      if (!app.credentials.secret) {
+        const consumerCredentials = {
+          consumerKey: passwordGenerator.generate({
+            length: 32,
+            numbers: true,
+            strict: true,
+          }),
+          consumerSecret: passwordGenerator.generate({
+            length: 16,
+            numbers: true,
+            strict: true,
+          }),
+        };
+        app.credentials.secret = consumerCredentials;
+      }
+
+      const newApp: OwnedApp = await this.persistenceService.create(
+        name,
+        app
+      );
+      if (newApp.status == 'approved') {
+        L.info(`provisioning app ${app.name}`);
+        const r = await BrokerService.provisionApp(newApp as App,ownerAttributes);
+      }
+      return newApp;
+    } catch (e) {
+      L.error(e);
+      throw e;
+    }
+  }
+
+
   async apiByName(appName: string, name: string): Promise<string> {
     const app = await this.persistenceService.byName(appName);
     const envs = await BrokerService.getMessagingProtocols(app);
@@ -111,6 +199,97 @@ export class AppsService {
     };
     return JSON.stringify(specModel);
   }
+
+  async update(
+    owner: string,
+    name: string,
+    app: AppPatch,
+    ownerAttributes: Attributes
+  ): Promise<AppPatch> {
+    L.info(`App patch request ${JSON.stringify(app)}`);
+    const validated = await this.validate(app);
+    const appPatch: AppPatch = await this.persistenceService.update(
+      name,
+      app
+    );
+    let areCredentialsUpdated: boolean = false;
+    if (app.credentials){
+      areCredentialsUpdated = true;
+    }
+    if (appPatch.status == 'approved') {
+      if (areCredentialsUpdated){
+        const r = await BrokerService.deprovisionApp(appPatch as App);
+      }
+      L.info(`provisioning app ${name}`);
+      const r = await BrokerService.provisionApp(appPatch as App, ownerAttributes);
+    }
+    return appPatch;
+  }
+
+  async delete(name: string, owner: string): Promise<number> {
+    try {
+      const q = {
+        ownerId: owner,
+      };
+      const app: App = await this.byNameAndOwnerId(name, owner, 'smf', null);
+      const x = await BrokerService.deprovisionApp(app);
+      return this.persistenceService.delete(name, owner);
+    } catch (e) {
+      L.error(e);
+      throw e;
+    }
+  }
+
+  async validate(app: any): Promise<boolean> {
+    let isApproved = true;
+    const environments: Set<string> = new Set();
+    if (!app.apiProducts) {
+      return isApproved;
+    }
+
+    // validate api products exist and find out if any  require approval
+    for (const product of app.apiProducts) {
+      try {
+        const apiProduct = await ApiProductsService.byName(product);
+        apiProduct.environments.forEach((envName) => {
+          environments.add(envName);
+        });
+        if (apiProduct.approvalType == 'manual') {
+          isApproved = false;
+        }
+      } catch (e) {
+        throw new ErrorResponseInternal(
+          422,
+          `Referenced API Product ${product} does not exist`
+        );
+      }
+    }
+
+    if (app.webHooks != null) {
+      const webHooks: WebHook[] = app.webHooks as WebHook[];
+
+      webHooks.forEach((webHook) => {
+        if (
+          webHook.environments !== null &&
+          webHook.environments !== undefined
+        ) {
+          L.info(webHook.environments);
+          webHook.environments.forEach((envName) => {
+            const hasEnv = environments.has(envName);
+            if (!hasEnv) {
+              throw new ErrorResponseInternal(
+                422,
+                `Referenced environment ${envName} is not associated with any API Product`
+              );
+            }
+          });
+        }
+      });
+    }
+
+    return isApproved;
+  }
+
 }
 
 export default new AppsService();

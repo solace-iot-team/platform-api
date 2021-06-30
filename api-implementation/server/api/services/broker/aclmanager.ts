@@ -4,7 +4,7 @@ import parser from '@asyncapi/parser';
 import { ErrorResponseInternal } from '../../middlewares/error.handler';
 
 import App = Components.Schemas.App;
-import Developer = Components.Schemas.Developer;
+import Attributes = Components.Schemas.Attributes;
 import APIProduct = Components.Schemas.APIProduct;
 import ChannelPermission = Components.Schemas.ChannelPermission;
 import Permissions = Components.Schemas.Permissions;
@@ -106,7 +106,7 @@ class ACLManager {
     }
   }
 
-  public async createClientACLExceptions(app: App, services: Service[], apiProducts: APIProduct[], developer: Developer): Promise<void> {
+  public async createClientACLExceptions(app: App, services: Service[], apiProducts: APIProduct[], ownerAttributes: Attributes): Promise<void> {
     var publishExceptions: string[] = [];
     var subscribeExceptions: string[] = [];
     // compile list of event destinations sub / pub separately
@@ -124,7 +124,7 @@ class ACLManager {
     }
 
     // inject attribute values into parameters within subscriptions
-    var attributes: any[] = this.getAttributes(app, developer, apiProducts);
+    var attributes: any[] = this.getAttributes(app, ownerAttributes, apiProducts);
     subscribeExceptions = this.enrichTopics(subscribeExceptions, attributes);
     publishExceptions = this.enrichTopics(publishExceptions, attributes);
     publishExceptions.forEach((s, index, arr) => {
@@ -147,13 +147,13 @@ class ACLManager {
 
 
 
-  private getAttributes(app: App, developer: Developer, products: APIProduct[]) {
+  private getAttributes(app: App, ownerAttributes: Attributes, products: APIProduct[]) {
     var attributes = [];
     if (app.attributes) {
       attributes = attributes.concat(app.attributes);
     }
-    if (developer.attributes) {
-      attributes = attributes.concat(developer.attributes);
+    if (ownerAttributes) {
+      attributes = attributes.concat(ownerAttributes);
     }
     products.forEach(p => {
       if (p.attributes) {
@@ -397,7 +397,7 @@ class ACLManager {
     );
   }
 
-  public async getRDPQueueSubscriptions(app: App, apiProducts: APIProduct[], developer: Developer): Promise<string[]> {
+  public async getRDPQueueSubscriptions(app: App, apiProducts: APIProduct[], ownerAttributes: Attributes): Promise<string[]> {
     var subscribeExceptions: string[] = [];
     for (var product of apiProducts) {
       var strs: string[] = await this.getRDPSubscriptionsFromAsyncAPIs(product.apis);
@@ -411,14 +411,14 @@ class ACLManager {
       return;
     }
     // inject attribute values into parameters within subscriptions
-    var attributes: any[] = this.getAttributes(app, developer, apiProducts);
+    var attributes: any[] = this.getAttributes(app, ownerAttributes, apiProducts);
     subscribeExceptions = this.enrichTopics(subscribeExceptions, attributes);
     subscribeExceptions.forEach((s, index, arr) => {
       arr[index] = this.scrubDestination(s);
     });
   }
 
-    public async getClientACLExceptions(app: App, apiProducts: APIProduct[], developer: Developer, envName: string, syntax?: TopicSyntax): Promise<Permissions> {
+    public async getClientACLExceptions(app: App, apiProducts: APIProduct[], ownerAttributes: Attributes, envName: string, syntax?: TopicSyntax): Promise<Permissions> {
     try {
       let publishExceptions: {
         [name: string]: ChannelPermission;
@@ -441,7 +441,7 @@ class ACLManager {
           }
         }
       }
-      let attributes: any[] = this.getAttributes(app, developer, apiProducts);
+      let attributes: any[] = this.getAttributes(app, ownerAttributes, apiProducts);
       publishExceptions.forEach((channel, index, arr) => {
         const s: string[] = [];
         L.info(channel);
