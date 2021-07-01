@@ -1,5 +1,5 @@
 import L from '../../common/logger';
-import Developer = Components.Schemas.Developer;
+import Team = Components.Schemas.Team;
 import App = Components.Schemas.App;
 import AppPatch = Components.Schemas.AppPatch;
 import AppResponse = Components.Schemas.AppResponse;
@@ -10,33 +10,33 @@ import BrokerService from './broker.service';
 import { PersistenceService } from './persistence.service';
 import { ErrorResponseInternal } from '../middlewares/error.handler';
 
-interface DeveloperApp extends App {
+interface TeamApp extends App {
   appType?: string;
   ownerId?: string;
   status?: string;
 }
 
-interface DeveloperAppPatch extends AppPatch {
+interface TeamAppPatch extends AppPatch {
   appType?: string;
   ownerId?: string;
 }
 
-export class DevelopersService {
+export class TeamsService {
   private persistenceService: PersistenceService;
   constructor() {
-    this.persistenceService = new PersistenceService('developers');
+    this.persistenceService = new PersistenceService('teams');
     
   }
 
-  all(): Promise<Developer[]> {
+  all(): Promise<Team[]> {
     return this.persistenceService.all();
   }
 
-  async allDevelopersApps(name: string, query: any): Promise<App[]> {
+  async allTeamsApps(name: string, query: any): Promise<App[]> {
     query.ownerId = name;
-    query.appType = 'developer';
+    query.appType = 'team';
     try {
-      const dev: Developer = await this.persistenceService.byName(name);
+      const dev: Team = await this.persistenceService.byName(name);
       if (dev === null) {
         return new Promise<App[]>((resolve, reject) => {
           reject(new ErrorResponseInternal(404, `Object ${name} not found`));
@@ -49,22 +49,22 @@ export class DevelopersService {
     return AppsService.all(query);
   }
 
-  byName(name: string): Promise<Developer> {
+  byName(name: string): Promise<Team> {
     return this.persistenceService.byName(name);
   }
 
   async appByName(
-    developer: string,
+    team: string,
     name: string,
     syntax: TopicSyntax
   ): Promise<AppResponse> {
     try {
-      const dev: Developer = await this.persistenceService.byName(developer);
+      const teamObj: Team = await this.persistenceService.byName(team);
       const app: AppResponse = await AppsService.byNameAndOwnerId(
         name,
-        developer,
+        team,
         syntax,
-        dev.attributes,
+        teamObj.attributes,
       );
       if (app) {
         const endpoints = await BrokerService.getMessagingProtocols(app);
@@ -72,7 +72,7 @@ export class DevelopersService {
         for (const appEnv of app.environments) {
           const permissions = await BrokerService.getPermissions(
             app,
-            dev.attributes,
+            teamObj.attributes,
             appEnv.name,
             syntax
           );
@@ -88,41 +88,41 @@ export class DevelopersService {
   }
 
   async delete(name: string): Promise<number> {
-    if (await this.canDeleteDeveloper(name)) {
+    if (await this.canDeleteTeam(name)) {
       return this.persistenceService.delete(name);
     } else {
       throw new ErrorResponseInternal(
         409,
-        `Can't delete, developer is still referenced`
+        `Can't delete, team is still referenced`
       );
     }
   }
 
-  deleteApp(developer: string, name: string): Promise<number> {
-    return AppsService.delete(name, developer);
+  deleteApp(team: string, name: string): Promise<number> {
+    return AppsService.delete(name, team);
   }
 
-  create(body: Developer): Promise<Developer> {
-    return this.persistenceService.create(body.userName, body);
+  create(body: Team): Promise<Team> {
+    return this.persistenceService.create(body.name, body);
   }
 
-  async createApp(developer: string, body: App): Promise<App> {
-    let dev: Developer = null;
+  async createApp(team: string, body: App): Promise<App> {
+    let teamObj: Team = null;
     try {
-      dev = await this.persistenceService.byName(developer);
+      teamObj = await this.persistenceService.byName(team);
     } catch (e) {
       // do nothing
     }
-    if (dev === null) {
+    if (teamObj === null) {
       throw new ErrorResponseInternal(
         404,
-        `Entity ${developer} does not exist`
+        `Entity ${team} does not exist`
       );
     }
-    L.info(dev);
-    const app: DeveloperApp = {
-      ownerId: developer,
-      appType: 'developer',
+    L.info(teamObj);
+    const app: TeamApp = {
+      ownerId: team,
+      appType: 'team',
       name: body.name,
       displayName: body.displayName,
       apiProducts: body.apiProducts,
@@ -140,10 +140,10 @@ export class DevelopersService {
 
     L.info(`App create request ${JSON.stringify(app)}`);
     try {
-      const newApp: DeveloperApp = await AppsService.create(
+      const newApp: TeamApp = await AppsService.create(
         app.name,
         app,
-        dev.attributes
+        teamObj.attributes
       );
       return newApp;
     } catch (e) {
@@ -152,31 +152,31 @@ export class DevelopersService {
     }
   }
 
-  update(name: string, body: Developer): Promise<Developer> {
+  update(name: string, body: Team): Promise<Team> {
     return this.persistenceService.update(name, body);
   }
 
   async updateApp(
-    developer: string,
+    team: string,
     name: string,
     body: AppPatch
   ): Promise<AppPatch> {
     let dev = null;
     try {
-      dev = await this.persistenceService.byName(developer);
+      dev = await this.persistenceService.byName(team);
     } catch (e) {
       // do nothing
     }
     if (dev === null) {
       throw new ErrorResponseInternal(
         404,
-        `Entity ${developer} does not exist`
+        `Entity ${team} does not exist`
       );
     }
     L.debug(dev);
-    const app: DeveloperAppPatch = {
-      ownerId: developer,
-      appType: 'developer',
+    const app: TeamAppPatch = {
+      ownerId: team,
+      appType: 'team',
     };
 
     if (body.displayName) {
@@ -201,7 +201,7 @@ export class DevelopersService {
       app.credentials = body.credentials;
     }
     const appPatch: AppPatch = await AppsService.update(
-      developer,
+      team,
       name,
       app,
       dev.attributes
@@ -210,14 +210,14 @@ export class DevelopersService {
   }
 
   // private methods
-  private async canDeleteDeveloper(name: string): Promise<boolean> {
+  private async canDeleteTeam(name: string): Promise<boolean> {
     const q = {
       ownerId: {
         $eq: name,
       },
     };
-    const devs = await AppsService.all(q);
-    if (devs == null || devs.length == 0) {
+    const teams = await AppsService.all(q);
+    if (teams == null || teams.length == 0) {
       return true;
     } else {
       return false;
@@ -225,4 +225,4 @@ export class DevelopersService {
   }
 }
 
-export default new DevelopersService();
+export default new TeamsService();

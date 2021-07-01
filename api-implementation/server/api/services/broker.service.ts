@@ -4,6 +4,7 @@ import App = Components.Schemas.App;
 import Developer = Components.Schemas.Developer;
 import APIProduct = Components.Schemas.APIProduct;
 import Environment = Components.Schemas.Environment;
+import Attributes = Components.Schemas.Attributes;
 import Permissions = Components.Schemas.Permissions;
 import Endpoint = Components.Schemas.Endpoint;
 import AppEnvironment = Components.Schemas.AppEnvironment;
@@ -37,14 +38,14 @@ import { ErrorResponseInternal } from '../middlewares/error.handler';
 
 
 class BrokerService {
-  async getPermissions(app: App, developer: Developer, envName: string, syntax: TopicSyntax): Promise<Permissions> {
+  async getPermissions(app: App, ownerAttributes: Attributes, envName: string, syntax: TopicSyntax): Promise<Permissions> {
     const products: APIProduct[] = [];
     try {
       for (const productName of app.apiProducts) {
         const product = await ApiProductsService.byName(productName);
         products.push(product);
       }
-      var permissions: Permissions = await ACLManager.getClientACLExceptions(app, products, developer, envName, syntax);
+      var permissions: Permissions = await ACLManager.getClientACLExceptions(app, products, ownerAttributes, envName, syntax);
       return permissions;
     } catch (err) {
       L.error("Get permissions error");
@@ -52,7 +53,7 @@ class BrokerService {
     }
   }
 
-  provisionApp(app: App, developer: Developer): Promise<void> {
+  provisionApp(app: App, ownerAttributes: Attributes): Promise<void> {
     return new Promise<void>((resolve, reject) => {
       var apiProductPromises: Promise<APIProduct>[] = [];
       app.apiProducts.forEach((productName: string) => {
@@ -80,13 +81,13 @@ class BrokerService {
             L.info(`created client username ${app.name}`);
             var e = await ACLManager.createAuthorizationGroups(app, services);
             L.info(`created client username ${app.name}`);
-            var c = await ACLManager.createClientACLExceptions(app, services, products, developer);
+            var c = await ACLManager.createClientACLExceptions(app, services, products, ownerAttributes);
             L.info(`created acl exceptions ${app.name}`);
             // no webhook - no RDP
             //L.info(app.webHooks);
             if (app.webHooks != null && app.webHooks.length > 0) {
               L.info("creating webhook");
-              var d = await this.createQueues(app, services, products, developer);
+              var d = await this.createQueues(app, services, products, ownerAttributes);
               L.info(`created queues ${app.name}`);
               var d = await this.createRDP(app, services, products);
               L.info(`created rdps ${app.name}`);
@@ -404,9 +405,9 @@ class BrokerService {
   }
 
 
-  private async createQueues(app: App, services: Service[], apiProducts: APIProduct[], developer: Developer): Promise<void> {
+  private async createQueues(app: App, services: Service[], apiProducts: APIProduct[], ownerAttributes: Attributes): Promise<void> {
     L.info(`createQueueSubscriptions services: ${services}`);
-    var subscribeExceptions: string[] = await ACLManager.getRDPQueueSubscriptions(app, apiProducts, developer);
+    var subscribeExceptions: string[] = await ACLManager.getRDPQueueSubscriptions(app, apiProducts, ownerAttributes);
 
     // loop over services
     for (var service of services) {
