@@ -25,7 +25,7 @@ export class TeamsService {
   private persistenceService: PersistenceService;
   constructor() {
     this.persistenceService = new PersistenceService('teams');
-    
+
   }
 
   all(): Promise<Team[]> {
@@ -81,6 +81,9 @@ export class TeamsService {
       } else {
         throw 404;
       }
+      delete app['ownerId'];
+      delete app['appType'];
+
       return app;
     } catch (e) {
       throw new ErrorResponseInternal(500, e);
@@ -114,10 +117,11 @@ export class TeamsService {
       // do nothing
     }
     if (teamObj === null) {
-      throw new ErrorResponseInternal(
-        404,
-        `Entity ${team} does not exist`
-      );
+      teamObj = {
+        name: team,
+        displayName: team,
+      };
+      this.create(teamObj);
     }
     L.info(teamObj);
     const app: TeamApp = {
@@ -145,6 +149,9 @@ export class TeamsService {
         app,
         teamObj.attributes
       );
+      delete newApp['ownerId'];
+      delete newApp['appType'];
+
       return newApp;
     } catch (e) {
       L.error(e);
@@ -196,7 +203,7 @@ export class TeamsService {
     }
     if (body.webHooks) {
       app.webHooks = body.webHooks;
-    }    
+    }
     if (body.credentials) {
       app.credentials = body.credentials;
     }
@@ -206,6 +213,8 @@ export class TeamsService {
       app,
       dev.attributes
     );
+    delete appPatch['ownerId'];
+    delete appPatch['appType'];
     return appPatch;
   }
 
