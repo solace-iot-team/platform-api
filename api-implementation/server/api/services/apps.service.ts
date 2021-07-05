@@ -140,15 +140,20 @@ export class AppsService {
         app.credentials.secret = consumerCredentials;
       }
 
-      const newApp: OwnedApp = await this.persistenceService.create(
-        name,
-        app
-      );
-      if (newApp.status == 'approved') {
+      if (app.status == 'approved') {
         L.info(`provisioning app ${app.name}`);
-        const r = await BrokerService.provisionApp(newApp as App,ownerAttributes);
+        const r = await BrokerService.provisionApp(newApp as App, ownerAttributes);
       }
-      return newApp;
+      try {
+        const newApp: OwnedApp = await this.persistenceService.create(
+          name,
+          app
+        );
+        return newApp;
+      } catch (e) {
+        const r = await BrokerService.deprovisionApp(app);
+        throw (e);
+      }
     } catch (e) {
       L.error(e);
       throw e;
@@ -210,20 +215,32 @@ export class AppsService {
   ): Promise<AppPatch> {
     L.info(`App patch request ${JSON.stringify(app)}`);
     const validated = await this.validate(app);
-    const appPatch: AppPatch = await this.persistenceService.update(
+    const appNotModified: AppPatch = await this.persistenceService.byName(
+      name
+    );
+    let appPatch: AppPatch = await this.persistenceService.update(
       name,
       app
     );
     let areCredentialsUpdated: boolean = false;
-    if (app.credentials){
+    if (app.credentials) {
       areCredentialsUpdated = true;
     }
     if (appPatch.status == 'approved') {
-      if (areCredentialsUpdated){
+      if (areCredentialsUpdated) {
         const r = await BrokerService.deprovisionApp(appPatch as App);
       }
       L.info(`provisioning app ${name}`);
-      const r = await BrokerService.provisionApp(appPatch as App, ownerAttributes);
+      try {
+        const r = await BrokerService.provisionApp(appPatch as App, ownerAttributes);
+      }
+      catch (e) {
+        appPatch = await this.persistenceService.update(
+          name,
+          appNotModified
+        );
+        const r = await BrokerService.provisionApp(appPatch as App, ownerAttributes);
+      }
     }
     return appPatch;
   }
@@ -292,9 +309,9 @@ export class AppsService {
     return isApproved;
   }
 
-  private async getAttributes(appType: string, ownerId: string) : Promise<Attributes>{
+  private async getAttributes(appType: string, ownerId: string): Promise<Attributes> {
     let attrs: Attributes = null;
-    if (appType == 'team'){
+    if (appType == 'team') {
       attrs = (await TeamsService.byName(ownerId)).attributes;
     } else {
       attrs = (await DevelopersService.byName(ownerId)).attributes;

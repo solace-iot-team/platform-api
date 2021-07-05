@@ -97,6 +97,10 @@ class BrokerService {
           resolve();
         } catch (e) {
           L.error(`Provisioning error ${e}`);
+          try { this.deprovisionApp(app);
+          } catch (e){
+            // things may go wrong here, that's fine. we are just trying to clean up
+          }
           reject(new ErrorResponseInternal(500, e));
         }
       });
@@ -300,7 +304,7 @@ class BrokerService {
         var q = await AllService.getMsgVpnRestDeliveryPoint(service.msgVpnName, app.credentials.secret.consumerKey);
         var updateResponse = await AllService.updateMsgVpnRestDeliveryPoint(service.msgVpnName, app.credentials.secret.consumerKey, newRDP);
         L.debug(`createRDP updated ${app.credentials.secret.consumerKey}`);
-      } catch (e: any) {
+      } catch (e) {
         L.debug(`createRDP lookup  failed ${JSON.stringify(e)}`);
         try {
           var q = await AllService.createMsgVpnRestDeliveryPoint(service.msgVpnName, newRDP);
@@ -348,7 +352,7 @@ class BrokerService {
         var r = await AllService.getMsgVpnRestDeliveryPointRestConsumer(service.msgVpnName, app.credentials.secret.consumerKey, restConsumerName);
         var updateResponseRDPConsumer = await AllService.updateMsgVpnRestDeliveryPointRestConsumer(service.msgVpnName, app.credentials.secret.consumerKey, restConsumerName, newRDPConsumer);
         L.debug(`createRDP consumer updated ${app.credentials.secret.consumerKey}`);
-      } catch (e: any) {
+      } catch (e) {
         L.debug(`createRDP consumer lookup  failed ${JSON.stringify(e)}`);
         try {
           var r = await AllService.createMsgVpnRestDeliveryPointRestConsumer(service.msgVpnName, app.credentials.secret.consumerKey, newRDPConsumer);
@@ -368,7 +372,7 @@ class BrokerService {
 
         var updateResponseQueueBinding = await AllService.updateMsgVpnRestDeliveryPointQueueBinding(service.msgVpnName, app.credentials.secret.consumerKey, app.credentials.secret.consumerKey, newRDPQueueBinding);
         L.debug(`createRDP queue binding updated ${app.credentials.secret.consumerKey}`);
-      } catch (e: any) {
+      } catch (e) {
         L.debug(`createRDP queue binding lookup  failed ${JSON.stringify(e)}`);
         try {
           var b = await AllService.createMsgVpnRestDeliveryPointQueueBinding(service.msgVpnName, app.credentials.secret.consumerKey, newRDPQueueBinding);
@@ -384,7 +388,7 @@ class BrokerService {
           enabled: true
         }; var enableRDPResponse = await AllService.updateMsgVpnRestDeliveryPoint(service.msgVpnName, app.credentials.secret.consumerKey, enableRDP);
         L.debug(`createRDP enabled ${app.credentials.secret.consumerKey}`);
-      } catch (e: any) {
+      } catch (e) {
         L.error(`createRDP enable failed ${JSON.stringify(e)}`);
         throw new ErrorResponseInternal(500, e);
       }
@@ -397,7 +401,7 @@ class BrokerService {
         };
         var updateResponseRDPConsumer = await AllService.updateMsgVpnRestDeliveryPointRestConsumer(service.msgVpnName, app.credentials.secret.consumerKey, restConsumerName, enableRDPConsumer);
         L.debug(`createRDP consumer enabled ${app.credentials.secret.consumerKey}`);
-      } catch (e: any) {
+      } catch (e) {
         L.debug(`createRDP consumer enablement  failed ${JSON.stringify(e)}`);
         throw new ErrorResponseInternal(500, e);
       }
@@ -425,7 +429,7 @@ class BrokerService {
         var q = await AllService.getMsgVpnQueue(service.msgVpnName, app.credentials.secret.consumerKey);
         var updateResponseMsgVpnQueue = await AllService.updateMsgVpnQueue(service.msgVpnName, app.credentials.secret.consumerKey, newQ);
         L.debug(`createQueues updated ${app.credentials.secret.consumerKey}`);
-      } catch (e: any) {
+      } catch (e) {
         L.debug(`createQueues lookup  failed ${JSON.stringify(e)}`);
         try {
           var q = await AllService.createMsgVpnQueue(service.msgVpnName, newQ);
@@ -443,7 +447,7 @@ class BrokerService {
         }
         try {
           var subResult = await AllService.getMsgVpnQueueSubscription(service.msgVpnName, app.credentials.secret.consumerKey, encodeURIComponent(subscription));
-        } catch (e: any) {
+        } catch (e) {
           L.debug(`createQueues subscription lookup  failed ${JSON.stringify(e)}`);
           try {
             var subResult = await AllService.createMsgVpnQueueSubscription(service.msgVpnName, app.credentials.secret.consumerKey, queueSubscription);
