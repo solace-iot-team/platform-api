@@ -442,6 +442,11 @@ declare namespace Components {
             serviceId: string;
             exposedProtocols: Protocol[];
             /**
+             * example:
+             * default
+             */
+            msgVpnName?: string;
+            /**
              * All of the protocols that the broker service exposes
              */
             messagingProtocols?: Endpoint[];
@@ -793,46 +798,6 @@ declare namespace Components {
                     value: string;
                 }[];
             }[];
-        }
-        /**
-         * provides information about services in the Solace Cloud account.
-         */
-        export interface ServicesResponse {
-            data: /* provides information about a service in the Solace Cloud account. */ Service[];
-            meta: {
-                /**
-                 * example:
-                 * 1605548717294
-                 */
-                currentTime?: number;
-                pages?: {
-                    /**
-                     * example:
-                     * 1
-                     */
-                    "next-page"?: number;
-                    /**
-                     * example:
-                     * 1
-                     */
-                    "total-pages"?: number;
-                };
-                /**
-                 * example:
-                 * 0
-                 */
-                pageNumber?: number;
-                /**
-                 * example:
-                 * 3
-                 */
-                count?: number;
-                /**
-                 * example:
-                 * 100
-                 */
-                pageSize?: number;
-            };
         }
         /**
          * A profile of a team. After the team is created, an app can be registered and API credentials are created
@@ -1462,7 +1427,7 @@ declare namespace Paths {
     }
     namespace ListServices {
         namespace Responses {
-            export type $200 = /* provides information about services in the Solace Cloud account. */ Components.Schemas.ServicesResponse[];
+            export type $200 = /* provides information about a service in the Solace Cloud account. */ Components.Schemas.Service[];
             export type $400 = Components.Schemas.ErrorResponse;
             export type $401 = Components.Schemas.ErrorResponse;
             export type $403 = Components.Schemas.ErrorResponse;
