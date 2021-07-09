@@ -14,8 +14,8 @@ import { TopicWildcards } from '../../../common/constants';
 import { Service } from '../../../../src/clients/solacecloud';
 import { AllService, MsgVpnAclProfile, MsgVpnAclProfilePublishException, MsgVpnAclProfilePublishExceptionsResponse, MsgVpnAclProfileSubscribeException, MsgVpnAclProfileSubscribeExceptionsResponse, MsgVpnAuthorizationGroup } from "../../../../src/clients/sempv2";
 
-import BrokerService from '../broker.service';
 import ApisService from '../apis.service';
+import SempV2ClientFactory from './sempv2clientfactory';
 
 export enum Direction {
   Publish = 'Publish',
@@ -25,7 +25,7 @@ export enum Direction {
 class ACLManager {
   public async createACLs(app: App, services: Service[]): Promise<void> {
     for (const service of services) {
-      const sempv2Client = BrokerService.getSEMPv2Client(service);
+      const sempv2Client = SempV2ClientFactory.getSEMPv2Client(service);
       const aclProfile: MsgVpnAclProfile = {
         aclProfileName: app.credentials.secret.consumerKey,
         clientConnectDefaultAction:
@@ -54,7 +54,7 @@ class ACLManager {
 
   public async deleteACLs(app: App, services: Service[]) {
     for (var service of services) {
-      var sempv2Client = BrokerService.getSEMPv2Client(service);
+      var sempv2Client = SempV2ClientFactory.getSEMPv2Client(service);
       try {
         var getResponse = await AllService.deleteMsgVpnAclProfile(service.msgVpnName, app.credentials.secret.consumerKey);
         L.info("ACL deleted");
@@ -68,7 +68,7 @@ class ACLManager {
 
   public async createAuthorizationGroups(app: App, services: Service[]): Promise<void> {
     for (var service of services) {
-      var sempV2Client = BrokerService.getSEMPv2Client(service);
+      var sempV2Client = SempV2ClientFactory.getSEMPv2Client(service);
       var authzGroup: MsgVpnAuthorizationGroup = {
         aclProfileName: app.credentials.secret.consumerKey,
         authorizationGroupName: app.credentials.secret.consumerKey,
@@ -95,7 +95,7 @@ class ACLManager {
 
   public async deleteAuthorizationGroups(app: App, services: Service[]): Promise<void> {
     for (var service of services) {
-      const sempV2Client = BrokerService.getSEMPv2Client(service);
+      const sempV2Client = SempV2ClientFactory.getSEMPv2Client(service);
       try {
         const getResponse = await AllService.deleteMsgVpnAuthorizationGroup(service.msgVpnName, app.credentials.secret.consumerKey);
       } catch (err) {
@@ -269,7 +269,7 @@ class ACLManager {
 
   private async addPublishTopicExceptions(app: App, services: Service[], exceptions: string[]): Promise<void> {
     for (var service of services) {
-      var sempV2Client = BrokerService.getSEMPv2Client(service);
+      var sempV2Client = SempV2ClientFactory.getSEMPv2Client(service);
 
       // fix - get al exceptions present on the acl profile  and remove those no longer required
       var currentPublishExceptions : MsgVpnAclProfilePublishExceptionsResponse = await AllService.getMsgVpnAclProfilePublishExceptions(service.msgVpnName, app.credentials.secret.consumerKey, 999);
@@ -304,7 +304,7 @@ class ACLManager {
   }
   private async addSubscribeTopicExceptions(app: App, services: Service[], exceptions: string[]): Promise<void> {
     for (var service of services) {
-      var sempV2Client = BrokerService.getSEMPv2Client(service);
+      var sempV2Client = SempV2ClientFactory.getSEMPv2Client(service);
       // fix - get al exceptions present on the acl profile  and remove those no longer required
       var currentExceptions : MsgVpnAclProfileSubscribeExceptionsResponse = await AllService.getMsgVpnAclProfileSubscribeExceptions(service.msgVpnName, app.credentials.secret.consumerKey, 999);
       for(let se of currentExceptions.data){

@@ -12,7 +12,6 @@ import WebHook = Components.Schemas.WebHook;
 import TopicSyntax = Components.Parameters.TopicSyntax.TopicSyntax;
 
 import ApiProductsService from './apiProducts.service';
-import ApisService from './apis.service';
 import ACLManager from './broker/aclmanager';
 
 
@@ -30,12 +29,10 @@ import {
 } from '../../../src/clients/sempv2';
 import SolaceCloudFacade from '../../../src/solacecloudfacade';
 import { Sempv2Client } from '../../../src/sempv2-client';
+import SempV2ClientFactory from './broker/sempv2clientfactory';
 import { ns } from '../middlewares/context.handler';
 
-import parser from '@asyncapi/parser';
-
 import { ErrorResponseInternal } from '../middlewares/error.handler';
-
 
 class BrokerService {
   async getPermissions(app: App, ownerAttributes: Attributes, envName: string, syntax: TopicSyntax): Promise<Permissions> {
@@ -173,7 +170,7 @@ class BrokerService {
 
   private async deleteQueues(app: App, services: Service[]) {
     for (var service of services) {
-      var sempv2Client = this.getSEMPv2Client(service);
+      var sempv2Client = SempV2ClientFactory.getSEMPv2Client(service);
       try {
         var getResponse = await AllService.deleteMsgVpnQueue(service.msgVpnName, app.credentials.secret.consumerKey);
         L.info('Queue deleted');
@@ -188,7 +185,7 @@ class BrokerService {
 
   private async deleteRDPs(app: App, services: Service[]) {
     for (var service of services) {
-      var sempv2Client = this.getSEMPv2Client(service);
+      var sempv2Client = SempV2ClientFactory.getSEMPv2Client(service);
       try {
         var getResponse = await AllService.deleteMsgVpnRestDeliveryPoint(service.msgVpnName, app.credentials.secret.consumerKey);
         L.info("RDP deleted");
@@ -202,7 +199,7 @@ class BrokerService {
 
   private async createClientUsernames(app: App, services: Service[]): Promise<void> {
     for (var service of services) {
-      var sempV2Client = this.getSEMPv2Client(service);
+      var sempV2Client = SempV2ClientFactory.getSEMPv2Client(service);
       var clientUsername: MsgVpnClientUsername = {
         aclProfileName: app.credentials.secret.consumerKey,
         clientUsername: app.credentials.secret.consumerKey,
@@ -231,7 +228,7 @@ class BrokerService {
 
   private async deleteClientUsernames(app: App, services: Service[]): Promise<void> {
     for (var service of services) {
-      const sempV2Client = this.getSEMPv2Client(service);
+      const sempV2Client = SempV2ClientFactory.getSEMPv2Client(service);
       try {
         const getResponse = await AllService.deleteMsgVpnClientUsername(service.msgVpnName, app.credentials.secret.consumerKey);
       } catch (err) {
@@ -293,7 +290,7 @@ class BrokerService {
         }
       }
       //create RDPs
-      var sempV2Client = this.getSEMPv2Client(service);
+      var sempV2Client = SempV2ClientFactory.getSEMPv2Client(service);
       var newRDP: MsgVpnRestDeliveryPoint = {
         clientProfileName: "default",
         msgVpnName: service.msgVpnName,
@@ -416,7 +413,7 @@ class BrokerService {
     // loop over services
     for (var service of services) {
       //create queues
-      var sempV2Client = this.getSEMPv2Client(service);
+      var sempV2Client = SempV2ClientFactory.getSEMPv2Client(service);
       var newQ: MsgVpnQueue = {
         queueName: app.credentials.secret.consumerKey,
         msgVpnName: service.msgVpnName,
@@ -526,61 +523,6 @@ class BrokerService {
           reject(err);
         });
     });
-  }
-
-  private getBindingsFromAsyncAPIs(apis: string[]): Promise<string[]> {
-    return new Promise<string[]>(
-      (resolve, reject) => {
-        var apiPromises: Promise<string>[] = [];
-        apis.forEach((api: string) => {
-          apiPromises.push(ApisService.byName(api));
-        });
-        Promise.all(apiPromises).then(async (specs) => {
-          var parserPromises: Promise<any>[] = [];
-          var resources: string[] = [];
-          specs.forEach((specification: string) => {
-            var p: Promise<any> = parser.parse(specification);
-            parserPromises.push(p);
-
-            p.then(
-              (spec) => {
-                spec.channelNames().forEach((s: string) => {
-
-                  var channel = spec.channel(s);
-                  var bindingProtocols: string[] = [];
-                  if (channel.hasSubscribe()) {
-                    bindingProtocols = bindingProtocols.concat(channel.getSubscribe().bindingProtocols());
-
-                  }
-                  if (channel.hasPublish()) {
-                    bindingProtocols = bindingProtocols.concat(channel.getPublish().bindingProtocols());
-                  }
-                  resources = resources.concat(bindingProtocols);
-                });
-              }
-            ).catch((e) => {
-              L.error(e);
-              reject(e);
-            });
-          });
-          Promise.all(parserPromises).then((vals) => {
-            resolve(resources);
-          });
-
-
-        });
-      }
-    );
-  }
-
-
-  public getSEMPv2Client(service: Service): Sempv2Client {
-    var sempProtocol = service.managementProtocols.find(i => i.name === "SEMP");
-    ns.getStore().set(Sempv2Client.BASE, sempProtocol.endPoints.find(j => j.name === "Secured SEMP Config").uris[0]);
-    ns.getStore().set(Sempv2Client.USER, sempProtocol.username);
-    ns.getStore().set(Sempv2Client.PASSWORD, sempProtocol.password);
-
-    return Sempv2Client;
   }
 }
 export default new BrokerService();
