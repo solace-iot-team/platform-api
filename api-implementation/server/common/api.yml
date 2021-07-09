@@ -943,42 +943,6 @@ components:
             - value
             - unit
             - thresholds
-    ServicesResponse:
-      description: provides information about services in the Solace Cloud account.
-      type: object
-      required:
-      - data
-      - meta
-      properties:
-        data:
-          type: array
-          items:
-            "$ref": "#/components/schemas/Service"
-        meta:
-          type: object
-          properties:
-            currentTime:
-              type: number
-              example: 1605548717294
-            pages:
-              type: object
-              properties:
-                next-page:
-                  type: number
-                  example: 1
-                total-pages:
-                  type: number
-                  example: 1
-            pageNumber:
-              type: number
-              example: 0
-            count:
-              type: number
-              example: 3
-            pageSize:
-              type: number
-              example: 100
-    
     Organization:
       type: object
       required:
@@ -4317,7 +4281,7 @@ paths:
              schema:
                type: array
                items:
-                 $ref: '#/components/schemas/ServicesResponse'
+                 $ref: '#/components/schemas/Service'
        '400': 
          description: "Bad Request."
          content: 
