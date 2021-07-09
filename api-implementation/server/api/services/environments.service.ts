@@ -26,9 +26,10 @@ export class EnvironmentsService {
           messagingProtocols = await ProtocolMapper.mapSolaceMessagingProtocolsToAsyncAPI(
             service.messagingProtocols
           );
+          env.msgVpnName = service.msgVpnName;
         }
         env.messagingProtocols = messagingProtocols;
-        
+
       }
       return envs;
     } else {
