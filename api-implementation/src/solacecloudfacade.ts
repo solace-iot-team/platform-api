@@ -4,7 +4,14 @@ import { OpenAPI, Service, ServicesService, ServiceResponse, ServicesResponse } 
 import { ErrorResponseInternal } from '../server/api/middlewares/error.handler';
 import { getCloudBaseUrl, getCloudToken, validateToken, resolve } from './cloudtokenhelper';
 
+import { Cache, CacheContainer } from 'node-ts-cache'
+import { MemoryStorage } from 'node-ts-cache-storage-memory'
+
+const serviceCache = new CacheContainer(new MemoryStorage());
+const servicesCache = new CacheContainer(new MemoryStorage());
+
 class SolaceCloudFacade {
+
   constructor() {
     OpenAPI.TOKEN = getCloudToken;
     OpenAPI.BASE = getCloudBaseUrl;
@@ -14,6 +21,7 @@ class SolaceCloudFacade {
     return this.getServiceById(e.serviceId);
   }
 
+  @Cache(serviceCache, {ttl: 3600})
   public async getServiceById(id: string): Promise<Service> {
     try {
       var result: ServiceResponse = await ServicesService.getService(id);
@@ -29,6 +37,7 @@ class SolaceCloudFacade {
     }
   }
 
+  @Cache(servicesCache, {ttl: 3600}) 
   public async getServices(): Promise<Service[]> {
     let services: Service[]  = [];
     try {
