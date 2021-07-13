@@ -3,6 +3,7 @@ import { APISpecification } from '../apis.service';
 import { ErrorResponseInternal } from '../../middlewares/error.handler';
 import { PersistenceService } from '../persistence.service';
 import APIInfo = Components.Schemas.APIInfo;
+import L from '../../../common/logger';
 
 class ApisReadLocalStrategy implements ApisReadStrategy {
   private persistenceService: PersistenceService;
@@ -31,6 +32,7 @@ class ApisReadLocalStrategy implements ApisReadStrategy {
 
   byName(name: string): Promise<string> {
     return new Promise<string>((resolve, reject) => {
+      L.info('read local strategy byName');
       this.persistenceService
         .byName(name)
         .then((spec: APISpecification) => {
