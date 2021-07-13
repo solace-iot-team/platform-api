@@ -10,6 +10,9 @@ export default function errorHandler(
   next: NextFunction
 ): void {
   var theError: ErrorResponseInternal = err;
+  if (!(typeof theError.message === 'string') && !(theError.message as any instanceof String)){
+    theError.message = JSON.stringify(theError.message);
+  }
   var statusCode: number = theError.statusCode;
   if (!statusCode){
     statusCode = err['status'];

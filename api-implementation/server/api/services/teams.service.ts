@@ -86,7 +86,7 @@ export class TeamsService {
 
       return app;
     } catch (e) {
-      throw new ErrorResponseInternal(500, e);
+      throw e;
     }
   }
 
