@@ -252,7 +252,7 @@ export class AppsService {
       };
       const app: App = await this.byNameAndOwnerId(name, owner, 'smf', null);
       const x = await BrokerService.deprovisionApp(app);
-      return this.persistenceService.delete(name, owner);
+      return this.persistenceService.delete(name, q);
     } catch (e) {
       L.error(e);
       throw e;
