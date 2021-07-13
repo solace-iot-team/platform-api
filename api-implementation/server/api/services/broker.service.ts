@@ -94,6 +94,7 @@ class BrokerService {
           resolve();
         } catch (e) {
           L.error(`Provisioning error ${e}`);
+          L.error(e.stack);
           try { this.deprovisionApp(app);
           } catch (e){
             // things may go wrong here, that's fine. we are just trying to clean up

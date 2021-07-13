@@ -416,6 +416,7 @@ class ACLManager {
     subscribeExceptions.forEach((s, index, arr) => {
       arr[index] = this.scrubDestination(s);
     });
+    return subscribeExceptions;
   }
 
     public async getClientACLExceptions(app: App, apiProducts: APIProduct[], ownerAttributes: Attributes, envName: string, syntax?: TopicSyntax): Promise<Permissions> {
