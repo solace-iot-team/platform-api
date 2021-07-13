@@ -52,6 +52,23 @@
       },
       "Service": {
         "type": "object",
+        "required": [
+          "adminProgress",
+          "adminState",
+          "creationState",
+          "datacenterId",
+          "datacenterProvider",
+          "messagingProtocols",
+          "msgVpnName",
+          "name",
+          "serviceClassDisplayedAttributes",
+          "msgVpnAttributes",
+          "serviceTypeId",
+          "serviceId",
+          "serviceClassId",
+          "messagingStorage"
+
+        ],
         "properties": {
           "type": {
             "type": "string"
@@ -63,40 +80,51 @@
             "type": "string"
           },
           "serviceId": {
-            "type": "string"
+            "type": "string",
+            "example": "1i5g7tif6z9h"
           },
           "infrastructureId": {
-            "type": "string"
+            "type": "string",
+            "example": "1i5g7tif6z9h"
           },
           "name": {
-            "type": "string"
+            "type": "string",
+            "example": "GW-DEV"
           },
           "msgVpnName": {
-            "type": "string"
+            "type": "string",
+            "example": "default"
           },
           "datacenterId": {
-            "type": "string"
+            "type": "string",
+            "example": "aws-eu-central-1a"
           },
           "datacenterProvider": {
-            "type": "string"
+            "type": "string",
+            "example": "aws"
           },
           "serviceTypeId": {
-            "type": "string"
+            "type": "string",
+            "example": "developer"
           },
           "serviceClassId": {
             "type": "string"
           },
           "adminState": {
-            "type": "string"
+            "type": "string",
+            "example": "start",
           },
           "adminProgress": {
-            "type": "string"
+            "type": "string",
+            "example": "completed"
           },
           "created": {
-            "type": "integer"
+            "type": "integer",
+            "example": 1610703520719,
           },
           "creationState": {
-            "type": "string"
+            "type": "string",
+            "example": "completed",
           },
           "messagingProtocols": {
             "type": "array",
@@ -153,8 +181,7 @@
                 "name",
                 "username",
                 "password",
-                "endPoints",
-                "limits"
+                "endPoints"
               ]
             }
           },
@@ -196,8 +223,7 @@
                     "required": [
                       "name",
                       "uris",
-                      "secured",
-                      "authenticated"
+                      "secured"
                     ]
                   }
                 },
@@ -209,8 +235,7 @@
                 "name",
                 "username",
                 "password",
-                "endPoints",
-                "limits"
+                "endPoints"
               ]
             }
           },
@@ -276,25 +301,8 @@
               }
             },
             "required": [
-              "vpnEventLargeMsgThreshold",
-              "authenticationClientCertValidateDateEnabled",
-              "vpnMaxConnectionCount",
-              "vpnAdminUsername",
-              "vpnMaxTransactedSessionCount",
-              "subDomainName",
-              "vmrVersion",
-              "vpnAdminPassword",
-              "vpnName",
-              "vpnMaxTransactionCount",
-              "vpnMaxMsgSpoolUsage",
-              "vpnMaxEndpointCount",
-              "vpnMaxEgressFlowCount",
-              "vpnMaxSubscriptionCount",
               "authenticationClientCertEnabled",
-              "vpnEnabled",
-              "truststoreUri",
-              "authenticationBasicEnabled",
-              "vpnMaxIngressFlowCount"
+              "authenticationBasicEnabled"
             ]
           },
           "locked": {
@@ -336,12 +344,9 @@
             },
             "required": [
               "High Availability",
-              "Network Speed",
               "Storage",
-              "Message Broker Tenancy",
               "Queues",
-              "Clients",
-              "Network Usage"
+              "Clients"
             ]
           },
           "accountingLimits": {
@@ -380,8 +385,7 @@
               "required": [
                 "id",
                 "value",
-                "unit",
-                "thresholds"
+                "unit"
               ]
             }
           },
@@ -418,14 +422,7 @@
                   "type": "string"
                 }
               }
-            },
-            "required": [
-              "name",
-              "password",
-              "remoteAddress",
-              "primaryRouterName",
-              "supportedAuthenticationMode"
-            ]
+            }
           },
           "redundancyGroupSslEnabled": {
             "type": "boolean"
@@ -438,8 +435,7 @@
       "ServicesResponse": {
         "type": "object",
         "required": [
-          "data",
-          "meta"
+          "data"
         ],
         "properties": {
           "data": {
@@ -487,8 +483,7 @@
       "ServiceResponse": {
         "type": "object",
         "required": [
-          "data",
-          "meta"
+          "data"
         ],
         "properties": {
           "data": {
