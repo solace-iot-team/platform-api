@@ -21,7 +21,7 @@ components:
       openIdConnectUrl: /auth/.well-known/openid-configuration
   parameters:
     organization:
-      name: organization
+      name: organization_name
       description: the name of the organization (tenant) a resource belongs to
       in: path
       required: true
@@ -1255,7 +1255,7 @@ paths:
           "application/json": 
            schema: 
             "$ref": "#/components/schemas/ErrorResponse"
-  /organizations/{organization}:
+  /organizations/{organization_name}:
     parameters:
     - $ref: '#/components/parameters/organization'
     get:
@@ -1440,7 +1440,7 @@ paths:
           "application/json": 
            schema: 
             "$ref": "#/components/schemas/ErrorResponse"
-  /{organization}/history:
+  /{organization_name}/history:
     parameters:
     - $ref: '#/components/parameters/organization'
     get:
@@ -1504,7 +1504,7 @@ paths:
           "application/json": 
            schema: 
             "$ref": "#/components/schemas/ErrorResponse"
-  /{organization}/token:
+  /{organization_name}/token:
     parameters:
     - $ref: '#/components/parameters/organization'
     put:
@@ -1596,7 +1596,7 @@ paths:
            schema: 
             "$ref": "#/components/schemas/ErrorResponse"
 
-  /{organization}/apis:
+  /{organization_name}/apis:
     parameters:
     - $ref: '#/components/parameters/organization'
     get:
@@ -1734,7 +1734,7 @@ paths:
            schema: 
             "$ref": "#/components/schemas/ErrorResponse"
 
-  /{organization}/apis/{api_name}:
+  /{organization_name}/apis/{api_name}:
     parameters:
     - $ref: '#/components/parameters/organization'
     - $ref: '#/components/parameters/api_name'
@@ -2006,7 +2006,7 @@ paths:
            schema: 
             "$ref": "#/components/schemas/ErrorResponse"
 
-  /{organization}/apis/{api_name}/info:
+  /{organization_name}/apis/{api_name}/info:
     parameters:
     - $ref: '#/components/parameters/organization'
     - $ref: '#/components/parameters/api_name'
@@ -2067,7 +2067,7 @@ paths:
            schema: 
             "$ref": "#/components/schemas/ErrorResponse"
 
-  /{organization}/apiProducts:
+  /{organization_name}/apiProducts:
     parameters:
     - $ref: '#/components/parameters/organization'
     post:
@@ -2199,7 +2199,7 @@ paths:
           "application/json": 
            schema: 
             "$ref": "#/components/schemas/ErrorResponse"
-  /{organization}/apiProducts/{api_product_name}:
+  /{organization_name}/apiProducts/{api_product_name}:
     parameters:
     - $ref: '#/components/parameters/organization'
     - $ref: '#/components/parameters/api_product_name'
@@ -2385,7 +2385,7 @@ paths:
           "application/json": 
            schema: 
             "$ref": "#/components/schemas/ErrorResponse"
-  /{organization}/developers:
+  /{organization_name}/developers:
     parameters:
     - $ref: '#/components/parameters/organization'
     post:
@@ -2517,7 +2517,7 @@ paths:
           "application/json": 
            schema: 
             "$ref": "#/components/schemas/ErrorResponse"
-  /{organization}/developers/{developer_username}:
+  /{organization_name}/developers/{developer_username}:
     parameters:
     - $ref: '#/components/parameters/organization'
     - $ref: '#/components/parameters/developer_username'
@@ -2703,7 +2703,7 @@ paths:
           "application/json": 
            schema: 
             "$ref": "#/components/schemas/ErrorResponse"
-  /{organization}/developers/{developer_username}/apps:
+  /{organization_name}/developers/{developer_username}/apps:
     parameters:
     - $ref: '#/components/parameters/organization'
     - $ref: '#/components/parameters/developer_username'
@@ -2842,7 +2842,7 @@ paths:
           "application/json": 
            schema: 
             "$ref": "#/components/schemas/ErrorResponse"
-  /{organization}/developers/{developer_username}/apps/{app_name}:
+  /{organization_name}/developers/{developer_username}/apps/{app_name}:
     parameters:
     - $ref: '#/components/parameters/organization'
     - $ref: '#/components/parameters/developer_username'
@@ -3035,7 +3035,7 @@ paths:
            schema: 
             "$ref": "#/components/schemas/ErrorResponse"
 
-  /{organization}/teams:
+  /{organization_name}/teams:
     parameters:
     - $ref: '#/components/parameters/organization'
     post:
@@ -3167,7 +3167,7 @@ paths:
           "application/json": 
            schema: 
             "$ref": "#/components/schemas/ErrorResponse"
-  /{organization}/teams/{team_name}:
+  /{organization_name}/teams/{team_name}:
     parameters:
     - $ref: '#/components/parameters/organization'
     - $ref: '#/components/parameters/team_name'
@@ -3353,7 +3353,7 @@ paths:
           "application/json": 
            schema: 
             "$ref": "#/components/schemas/ErrorResponse"
-  /{organization}/teams/{team_name}/apps:
+  /{organization_name}/teams/{team_name}/apps:
     parameters:
     - $ref: '#/components/parameters/organization'
     - $ref: '#/components/parameters/team_name'
@@ -3492,7 +3492,7 @@ paths:
           "application/json": 
            schema: 
             "$ref": "#/components/schemas/ErrorResponse"
-  /{organization}/teams/{team_name}/apps/{app_name}:
+  /{organization_name}/teams/{team_name}/apps/{app_name}:
     parameters:
     - $ref: '#/components/parameters/organization'
     - $ref: '#/components/parameters/team_name'
@@ -3685,7 +3685,7 @@ paths:
            schema: 
             "$ref": "#/components/schemas/ErrorResponse"
 
-  /{organization}/apps:
+  /{organization_name}/apps:
     parameters:
     - $ref: '#/components/parameters/organization'
     - in: query
@@ -3753,7 +3753,7 @@ paths:
           "application/json": 
            schema: 
             "$ref": "#/components/schemas/ErrorResponse"
-  /{organization}/apps/{app_name}:
+  /{organization_name}/apps/{app_name}:
     parameters:
     - $ref: '#/components/parameters/organization'
     - $ref: '#/components/parameters/app_name'
@@ -3815,7 +3815,7 @@ paths:
           "application/json": 
            schema: 
             "$ref": "#/components/schemas/ErrorResponse"
-  /{organization}/apps/{app_name}/apis:
+  /{organization_name}/apps/{app_name}/apis:
     parameters:
     - $ref: '#/components/parameters/organization'
     - $ref: '#/components/parameters/app_name'
@@ -3877,7 +3877,7 @@ paths:
           "application/json": 
            schema: 
             "$ref": "#/components/schemas/ErrorResponse"
-  /{organization}/apps/{app_name}/apis/{api_name}:
+  /{organization_name}/apps/{app_name}/apis/{api_name}:
     parameters:
     - $ref: '#/components/parameters/app_name'
     - $ref: '#/components/parameters/organization'
@@ -3950,7 +3950,7 @@ paths:
            schema: 
             "$ref": "#/components/schemas/ErrorResponse"
 
-  /{organization}/environments:
+  /{organization_name}/environments:
     parameters:
     - $ref: '#/components/parameters/organization'
     post:
@@ -4090,7 +4090,7 @@ paths:
           "application/json": 
            schema: 
             "$ref": "#/components/schemas/ErrorResponse"
-  /{organization}/environments/{env_name}:
+  /{organization_name}/environments/{env_name}:
     parameters:
     - $ref: '#/components/parameters/organization'
     - $ref: '#/components/parameters/env_name'
@@ -4276,7 +4276,7 @@ paths:
           "application/json": 
            schema: 
             "$ref": "#/components/schemas/ErrorResponse"
-  /{organization}/services:
+  /{organization_name}/services:
     parameters:
     - $ref: '#/components/parameters/organization'
     get:
@@ -4341,7 +4341,7 @@ paths:
            schema: 
             "$ref": "#/components/schemas/ErrorResponse"
 
-  /{organization}/eventApiProducts:
+  /{organization_name}/eventApiProducts:
     parameters:
     - $ref: '#/components/parameters/organization'
     get:
@@ -4400,7 +4400,7 @@ paths:
           "application/json": 
            schema: 
             "$ref": "#/components/schemas/ErrorResponse"
-  /{organization}/eventApiProducts/{event_api_product_id}:
+  /{organization_name}/eventApiProducts/{event_api_product_id}:
     parameters:
     - $ref: '#/components/parameters/organization'
     - $ref: '#/components/parameters/event_api_product_id'
@@ -4461,7 +4461,7 @@ paths:
            schema: 
             "$ref": "#/components/schemas/ErrorResponse"
 
-  /{organization}/eventApiProducts/{event_api_product_id}/asyncApi:
+  /{organization_name}/eventApiProducts/{event_api_product_id}/asyncApi:
     parameters:
     - $ref: '#/components/parameters/organization'
     - $ref: '#/components/parameters/event_api_product_id'
