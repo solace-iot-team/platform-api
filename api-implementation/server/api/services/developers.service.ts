@@ -83,7 +83,7 @@ export class DevelopersService {
       }
       return app;
     } catch (e) {
-      throw new ErrorResponseInternal(500, e);
+      throw e;
     }
   }
 
