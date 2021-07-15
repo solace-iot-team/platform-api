@@ -410,7 +410,9 @@ class BrokerService {
   private async createQueues(app: App, services: Service[], apiProducts: APIProduct[], ownerAttributes: Attributes): Promise<void> {
     L.info(`createQueueSubscriptions services: ${services}`);
     var subscribeExceptions: string[] = await ACLManager.getRDPQueueSubscriptions(app, apiProducts, ownerAttributes);
-
+    if (subscribeExceptions === undefined){
+      subscribeExceptions = [];
+    }
     // loop over services
     for (var service of services) {
       //create queues

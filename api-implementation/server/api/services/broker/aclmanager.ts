@@ -408,7 +408,7 @@ class ACLManager {
       subscribeExceptions = subscribeExceptions.concat(product.pubResources);
     }
     if (subscribeExceptions.length < 1) {
-      return;
+      return subscribeExceptions;
     }
     // inject attribute values into parameters within subscriptions
     var attributes: any[] = this.getAttributes(app, ownerAttributes, apiProducts);
