@@ -1,5 +1,39 @@
 # Release Notes
 
+
+## Version 0.2.0
+
+* OpenAPI: 0.2.5
+* API Management Connector Server: 0.2.0
+
+### Features
+* **Event API Product Endpoint**
+  - Expose Event Portal "Event API Products" meta information and Async APIs
+  - Replaces previous Event Portal APIs.
+  - Offers endpoints to obtain a list of Event API products, details of an Event API Product and the Async API specification from Event Portal
+* **New POST APIs Endpoint to import Async API**
+  - Allows to import an Async API sepcification from a source system
+  - Currently supports Even API Product import form Event Portal. Requires to submit the source name "EventAPIProduct" and Event API Prodcut Identifier from Event Portal
+* **Added info sub resource to APIs**
+  - Exposes meta information about the API
+  - For imported APIs informaiton suich as follows are available: source system, version, source id, created/updated time
+  - Similar informaiton is captured and available for APIs that were directly uploaded to the Connector.
+* **Provide extended Environments info in the GET environments list resource**
+  - abillity to request full (extended) info about environments in the environment list to include messaging protocols offered by the environment.
+  - "format" query parameter specifies if summary or full information is returned (defaults to summary)
+* **Event Portal Proxy Mode for APIs resource**
+  - APIM Connector can be run in replicated mode (Event portal APIs can be imported into the Connector APIs store, default mode) or proxy mode (set by environment configuration, APIS_PROXY_MODE - can be true or false).
+  - In proxy mode the APIs resource exposes all published Event API Products from the Event Portal as APIs proxying requests for APIs directly to the Event Portal. 
+* **Various Bug Fixes and minor improvements**
+  - fix-exclude-inactive-services: filter inactive Solace Cloud Services form services and environments endpoints.
+  - fix: improve app update and create. Added error handling in case app provisioning or de-provisioning failed to avoid incosistent states (for example: app exists but is not provisioned)
+  - fix-swagger-ui-openid: fixed issue that cause Swagge UI to not render correctly, related to trying to retrieve Open Id Connect information when OICD integration is not configured correctly.
+  - fix-services-response: the payload of the services endpoint did not match the Open API specification. This was rectified
+  - add-msgvpn-to-full-env-response: the fulle response of the GET Environments List endpoint now includes the message VPN name of the associated Cloud Service
+  - fix-apis-endpoint-responses: In the Connector API spec the responses containing Async API specifications were not documented correctly.
+  - fix-webhook-return-subscriptions: subscriptions applicable when provisioning a webhook (RDP) were not applied correctly or missing
+  - fix-err-message-stringify nested objects / app-get-err-handling: some error responses were returned incorrectly, there were situations where the error response contained nested errors instead of an error message.
+
 ## Version 0.1.2
 
 * OpenAPI: 0.1.2
