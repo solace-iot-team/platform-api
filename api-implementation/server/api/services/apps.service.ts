@@ -18,7 +18,6 @@ import WebHook = Components.Schemas.WebHook;
 
 import AsyncAPIHelper from '../../../src/asyncapihelper';
 import { AsyncAPIServer } from '../../../src/model/asyncapiserver';
-import teamsService from './teams.service';
 
 export interface APISpecification {
   name: string;
@@ -262,7 +261,7 @@ export class AppsService {
   async validate(app: any): Promise<boolean> {
     let isApproved = true;
     const environments: Set<string> = new Set();
-    if (!app.apiProducts) {
+    if (!app.apiProducts || app.apiProducts.length ==0) {
       return isApproved;
     }
 
