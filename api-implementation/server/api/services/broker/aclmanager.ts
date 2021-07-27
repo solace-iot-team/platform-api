@@ -376,7 +376,7 @@ class ACLManager {
 
                   var channel = spec.channel(s);
                   // publish means subscribe - async api transposition
-                  if (channel.hasPublish() && (channel.publish().hasBinding('http') || channel.publish().hasBinding('https'))) {
+                  if (channel.hasPublish()) {
                     L.info(`getRDPSubscriptionsFromAsyncAPIs subscribe ${s}`)
                     resources.push(s);
                   }
