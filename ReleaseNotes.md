@@ -1,6 +1,16 @@
 # Release Notes
 
 
+
+* OpenAPI: 0.2.5
+* API Management Connector Server: 0.2.1
+
+### Features
+* **Simplified Provision Webhook Subscriptions**
+  - Applies to provisioning an app with one or more webhook configurations
+  - Webhook is created with all allowed subscriptions regardless of the presence of a HTTP bindings section in the Async API's operations
+  - This replaces previous behaviour which required a HTTP(S) binding section.
+
 ## Version 0.2.0
 
 * OpenAPI: 0.2.5
