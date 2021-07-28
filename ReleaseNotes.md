@@ -1,6 +1,6 @@
 # Release Notes
 
-
+## Version 0.2.1
 
 * OpenAPI: 0.2.5
 * API Management Connector Server: 0.2.1
@@ -33,7 +33,7 @@
   - "format" query parameter specifies if summary or full information is returned (defaults to summary)
 * **Event Portal Proxy Mode for APIs resource**
   - APIM Connector can be run in replicated mode (Event portal APIs can be imported into the Connector APIs store, default mode) or proxy mode (set by environment configuration, APIS_PROXY_MODE - can be true or false).
-  - In proxy mode the APIs resource exposes all published Event API Products from the Event Portal as APIs proxying requests for APIs directly to the Event Portal. 
+  - In proxy mode the APIs resource exposes all published Event API Products from the Event Portal as APIs proxying requests for APIs directly to the Event Portal.
 * **Various Bug Fixes and minor improvements**
   - fix-exclude-inactive-services: filter inactive Solace Cloud Services form services and environments endpoints.
   - fix: improve app update and create. Added error handling in case app provisioning or de-provisioning failed to avoid incosistent states (for example: app exists but is not provisioned)
@@ -72,7 +72,7 @@
 ### Features
 * **Reset app permissions (ACL profile exceptions) on app re-provisionining**
   - ACL publish and subscribe exceptions that were no longer applicable were not removed on re-provisioning an app
-  - Required exceptions are now cross checked against the exceptions on the ACL profile and obsolete exceptions  are deleted 
+  - Required exceptions are now cross checked against the exceptions on the ACL profile and obsolete exceptions  are deleted
 
 
 ## Version 0.1.0
@@ -150,7 +150,7 @@ A client presenting this JWT to the broker will appear under the username "admin
     `ADMIN_PASSWORD`
   - If not set it falls back to the default admin password and user
 * **x-origin attribute added to AsyncAPI Specifications**
-  - So it can be tracked where Asnc API speciciations originated from 
+  - So it can be tracked where Asnc API speciciations originated from
   - The `x-origin` element has two children: `vendor` - value is "solace", `name` - value is either "event-portal" or "apim-connector"
   - Exporting an API from event portal via the Platform API adds the x-origin element with `name`=`event-portal`.
   - Importing (or updating) an Async API specification via the Platform API - if no x-origin element is present it's added with `name`=`apim-connector`
