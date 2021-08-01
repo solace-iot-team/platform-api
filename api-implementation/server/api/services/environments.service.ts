@@ -48,6 +48,7 @@ export class EnvironmentsService {
     }
     const response: EnvironmentResponse = {
       description: env.description,
+      displayName: env.displayName,
       name: env.name,
       serviceId: env.serviceId,
       serviceName: service.name,

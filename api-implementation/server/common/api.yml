@@ -2,16 +2,16 @@ openapi: 3.0.0
 info:
   title: Solace API Management Connector
   description: 'Solace API Management Connector API. Note: basic authentication security mechanism is deprecated.'
-  version: 0.2.5
+  version: 0.2.6
 servers:
   - url: /v1
 
 components:
   securitySchemes:
-    BearerAuth:            
+    BearerAuth:
       type: http
       scheme: bearer
-      bearerFormat: JWT 
+      bearerFormat: JWT
     BasicAuth:
       type: http
       scheme: basic
@@ -94,14 +94,14 @@ components:
       name: env_name
       in: path
       required: true
-      schema: 
+      schema:
         type: string
     page_size:
      name: pageSize
      in: query
      description: "The number of items to get per page. Min: 1 Max: 100"
      required: false
-     schema: 
+     schema:
       type: integer
       format: int32
       default: 20
@@ -110,7 +110,7 @@ components:
      in: query
      description: "The page number to get. Min: 1"
      required: false
-     schema: 
+     schema:
        type: integer
        format: int32
        default: 1
@@ -124,18 +124,18 @@ components:
         - smf
         - mqtt
   schemas:
-    ErrorResponse: 
+    ErrorResponse:
      type: object
-     properties: 
-      message: 
+     properties:
+      message:
        type: string
        example: "An error occurred"
-      errorId: 
+      errorId:
        type: string
        example: "123e4567-e89b-12d3-a456-426655440000"
-      meta: 
+      meta:
        type: object
-       additionalProperties: 
+       additionalProperties:
         type: object
         example: "'object': { 'field': 'description' }"
        example: "'object': { 'field': 'description' }"
@@ -208,7 +208,7 @@ components:
       required:
       - id
       - name
-    
+
     APIInfo:
       type: object
       properties:
@@ -247,7 +247,7 @@ components:
           description: any metadata as returned by the external System (if applicable)
           type: object
           additionalProperties: true
-          
+
     APIImport:
       type: object
       properties:
@@ -261,11 +261,11 @@ components:
           type: string
           example: 7avdj5n26cq
         overwrite:
-          description: indicates if an existing API entity shall be replaced 
+          description: indicates if an existing API entity shall be replaced
           type: boolean
           default: true
-        
-    
+
+
     APIProduct:
       required:
       - name
@@ -347,12 +347,12 @@ components:
                 example:
                   '{/resource2}'
                 type: string
-              type: array  
+              type: array
           protocols:
             type: array
             items:
               $ref: '#/components/schemas/Protocol'
-            
+
     APIProductPatch:
       type: object
       description: "Used for PATCH operation, An API product consists of a list of API resources (URIs) and custom metadata required by the API provider. API products enable you to bundle and distribute your APIs to multiple developer groups simultaneously"
@@ -419,7 +419,7 @@ components:
                 example:
                   '{/resource1}'
                 type: string
-              type: array      
+              type: array
           protocols:
             type: array
             items:
@@ -472,7 +472,7 @@ components:
       required:
         - displayName
         - name
-        
+
     TeamPatch:
       type: object
       description: "Used for PATCH operation, A profile of a team. After the team is created, an app can be registered and API credentials are created"
@@ -494,18 +494,18 @@ components:
         required:
         - name
         - value
-          
+
     App:
       type: object
       description: "An app associated with an owner (developer, team etc). Associates the app with an API product, and auto-generates an API credentials for the app to use"
       properties:
-        name: 
+        name:
           type: string
           description: the unique name of this app, can not be updated
-        displayName: 
+        displayName:
           type: string
           description: friendly name of the app that can be changed subsequently
-        expiresIn: 
+        expiresIn:
           type: number
           description: A setting, in milliseconds, for the lifetime of the consumer key that will be  generated for the developer app. The default value, -1, indicates an infinite validity period. Once set, the expiration can't be updated.
         apiProducts:
@@ -532,7 +532,7 @@ components:
       description: "Used for PATCH operation. An app associated with a developer. Associates the app with an API product, and auto-generates an API credentials for the app to use"
       type: object
       properties:
-        displayName: 
+        displayName:
           type: string
           description: friendly name of the app that can be changed subsequently
         apiProducts:
@@ -561,13 +561,13 @@ components:
       type: object
       description: "App Response Object - includes protocol binding information and app premissions. An app associated with a developer. Associates the app with an API product, and auto-generates an API credentials for the app to use."
       properties:
-        name: 
+        name:
           type: string
           description: the unique name of this app, can not be updated
-        displayName: 
+        displayName:
           type: string
           description: friendly name of the app that can be changed subsequently
-        expiresIn: 
+        expiresIn:
           type: number
           description: A setting, in milliseconds, for the lifetime of the consumer key that will be  generated for the developer app. The default value, -1, indicates an infinite validity period. Once set, the expiration can't be updated.
         apiProducts:
@@ -577,7 +577,7 @@ components:
         attributes:
           $ref: '#/components/schemas/attributes'
         callbackUrl:
-            description: callback url 
+            description: callback url
             type: string
         webHooks:
           type: array
@@ -595,13 +595,13 @@ components:
       - name
       - apiProducts
       - credentials
-          
+
     AppListItem:
       type: object
       properties:
           name:
             type: string
-          displayName: 
+          displayName:
             type: string
           appType:
             type: string
@@ -611,16 +611,16 @@ components:
             type: string
             example: "Developer-1"
           apiProducts:
-            type: array 
+            type: array
             items:
               type: string
           status:
              $ref: '#/components/schemas/AppStatus'
-            
+
     AppEnvironment:
           type: object
           properties:
-            name: 
+            name:
               type: string
               example: dev
             messagingProtocols:
@@ -641,16 +641,16 @@ components:
               $ref: '#/components/schemas/ChannelPermission'
           example:
           - order/notifications/{country_id}/{order_id}:
-              permissions: 
+              permissions:
               - order/notifications/FR/>
               - order/notifications/DE/>
               channelId: c1
               isChannel: true
           - another/random/exception/{resource_id}:
-              permissions: 
+              permissions:
               - another/random/exception/1
               - another/random/exception/2
-              isChannel: false              
+              isChannel: false
         publish:
           type: array
           items:
@@ -659,19 +659,19 @@ components:
               $ref: '#/components/schemas/ChannelPermission'
           example:
           - order/create/{country_id}/{order_id}:
-              permissions: 
+              permissions:
               - order/create/FR/>
               - order/create/DE/>
               channelId: c2
-              isChannel: true              
+              isChannel: true
           - order/update/{country_id}/{order_id}:
-              permissions: 
+              permissions:
               - order/update/FR/>
               - order/update/DE/>
               channelId: orderUpdateChannel
-              isChannel: true              
+              isChannel: true
           - another/random/exception/{resource_id}:
-              permissions: 
+              permissions:
               - another/random/exception/3
               - another/random/exception/4
               isChannel: false
@@ -685,7 +685,7 @@ components:
           type: array
           items:
             type: string
-          example: 
+          example:
           - order/notifications/FR/>
           - order/notifications/DE/>
         channelId:
@@ -693,7 +693,7 @@ components:
         isChannel:
           type: boolean
           default: true
-    
+
     Credentials:
       description: Credentials object associated with an app
       type: object
@@ -726,6 +726,9 @@ components:
         name:
           type: string
           example: dev
+        displayName:
+          type: string
+          example: the development env
         description:
           type: string
           example: development environment
@@ -733,14 +736,14 @@ components:
           type: string
           example: xm7dc2dfas4
         exposedProtocols:
-          type: array 
+          type: array
           items:
              $ref: '#/components/schemas/Protocol'
 
     EnvironmentListItem:
       description: a list item in the environmentslist
       type: object
-      allOf: 
+      allOf:
       - "$ref": "#/components/schemas/Environment"
       properties:
         msgVpnName:
@@ -750,7 +753,7 @@ components:
           type: array
           description: All of the protocols that the broker service exposes
           items:
-            $ref: '#/components/schemas/Endpoint'      
+            $ref: '#/components/schemas/Endpoint'
     EnvironmentResponse:
       description: an environment
       type: object
@@ -762,11 +765,14 @@ components:
         name:
           type: string
           example: dev
+        displayName:
+          type: string
+          example: development environment
         description:
           type: string
           example: development environment
         exposedProtocols:
-          type: array 
+          type: array
           description: The protocols that can be exposed for use with APIs
           items:
              $ref: '#/components/schemas/Protocol'
@@ -818,12 +824,15 @@ components:
           - Queues
           - Clients
           - Network Usage
-        
+
 
     EnvironmentPatch:
       description: used for PATCH operation, an environment
       type: object
       properties:
+        displayName:
+          type: string
+          example: development environment
         description:
           type: string
           example: development environment
@@ -832,7 +841,7 @@ components:
           example: xm7dc2dfas4
         exposedProtocols:
           description: The protocols that can be exposed for use with APIs
-          type: array 
+          type: array
           items:
              $ref: '#/components/schemas/Protocol'
 
@@ -986,7 +995,7 @@ components:
       properties:
         title:
           type: string
-          example: Update product "Product 1" 
+          example: Update product "Product 1"
         operation:
           type: string
           example: PATCH
@@ -1007,7 +1016,7 @@ components:
           example: 200
     Protocol:
       type: object
-      required: 
+      required:
       - name
       properties:
         name:
@@ -1039,8 +1048,8 @@ components:
           pattern: "https?:\\/\\/[A-Za-z\\.:0-9\\-]*.{0,200}$"
         environments:
           type: array
-          description: environments that this webhook serves, if absent webhook will be used for all environments 
-          items: 
+          description: environments that this webhook serves, if absent webhook will be used for all environments
+          items:
             type: string
         method:
           type: string
@@ -1059,23 +1068,23 @@ components:
         authentication:
           anyOf:
           - type: object
-            properties: 
-              username: 
+            properties:
+              username:
                 type: string
-              password: 
+              password:
                 type: string
           - type: object
             description: A HTTP header used for authentication
-            properties: 
-              headerName: 
+            properties:
+              headerName:
                 type: string
-              headerValue: 
+              headerValue:
                 type: string
 
     Endpoint:
       type: object
       properties:
-        protocol: 
+        protocol:
           "$ref": "#/components/schemas/Protocol"
 
         transport:
@@ -1097,7 +1106,7 @@ components:
           format: uri
           example: "smf://1234abc.messaging.solace.cloud:55555"
 
-          
+
 security:
   - OpenId: []
   - BasicAuth: []
@@ -1128,61 +1137,61 @@ paths:
       security:
       - OpenId:
         - org-admin
-      tags: 
+      tags:
       - administration
       responses:
        '200':
          description: list of organizations
-         content: 
+         content:
            application/json:
              schema:
                type: array
                items:
                  "$ref": "#/components/schemas/Organization"
-       '400': 
+       '400':
          description: "Bad Request."
-         content: 
-          "application/json": 
-           schema: 
+         content:
+          "application/json":
+           schema:
             "$ref": "#/components/schemas/ErrorResponse"
-          "*/*": 
-           schema: 
+          "*/*":
+           schema:
             "$ref": "#/components/schemas/ErrorResponse"
-       '401': 
+       '401':
          description: "Unauthorized."
-         content: 
-          "application/json": 
-           schema: 
+         content:
+          "application/json":
+           schema:
             "$ref": "#/components/schemas/ErrorResponse"
-       '403': 
+       '403':
          description: "Forbidden."
-         content: 
-          "application/json": 
-           schema: 
+         content:
+          "application/json":
+           schema:
             "$ref": "#/components/schemas/ErrorResponse"
-       '404': 
+       '404':
          description: "Not Found."
-         content: 
-          "application/json": 
-           schema: 
+         content:
+          "application/json":
+           schema:
             "$ref": "#/components/schemas/ErrorResponse"
-       '500': 
+       '500':
          description: "Internal Server Error."
-         content: 
-          "application/json": 
-           schema: 
+         content:
+          "application/json":
+           schema:
             "$ref": "#/components/schemas/ErrorResponse"
-       '503': 
+       '503':
          description: "Service Unavailable."
-         content: 
-          "application/json": 
-           schema: 
+         content:
+          "application/json":
+           schema:
             "$ref": "#/components/schemas/ErrorResponse"
-       '504': 
+       '504':
          description: "Gateway Timeout."
-         content: 
-          "application/json": 
-           schema: 
+         content:
+          "application/json":
+           schema:
             "$ref": "#/components/schemas/ErrorResponse"
     post:
      operationId: createOrganization
@@ -1191,196 +1200,196 @@ paths:
        - org-admin
      tags:
      - administration
-     requestBody: 
+     requestBody:
        description: "Organization"
-       content: 
-         "application/json": 
-           schema: 
-            "$ref": "#/components/schemas/Organization"    
+       content:
+         "application/json":
+           schema:
+            "$ref": "#/components/schemas/Organization"
      responses:
        '200':
          description: Updated Organization
-         content: 
+         content:
            application/json:
              schema:
                $ref: '#/components/schemas/Organization'
-       '400': 
+       '400':
          description: "Bad Request."
-         content: 
-          "application/json": 
-           schema: 
+         content:
+          "application/json":
+           schema:
             "$ref": "#/components/schemas/ErrorResponse"
-          "*/*": 
-           schema: 
+          "*/*":
+           schema:
             "$ref": "#/components/schemas/ErrorResponse"
-       '401': 
+       '401':
          description: "Unauthorized."
-         content: 
-          "application/json": 
-           schema: 
+         content:
+          "application/json":
+           schema:
             "$ref": "#/components/schemas/ErrorResponse"
-       '403': 
+       '403':
          description: "Forbidden."
-         content: 
-          "application/json": 
-           schema: 
+         content:
+          "application/json":
+           schema:
             "$ref": "#/components/schemas/ErrorResponse"
-       '404': 
+       '404':
          description: "Not Found."
-         content: 
-          "application/json": 
-           schema: 
+         content:
+          "application/json":
+           schema:
             "$ref": "#/components/schemas/ErrorResponse"
-       '422': 
+       '422':
          description: "AlreadyExists."
-         content: 
-          "application/json": 
-           schema: 
+         content:
+          "application/json":
+           schema:
             "$ref": "#/components/schemas/ErrorResponse"
-       '500': 
+       '500':
          description: "Internal Server Error."
-         content: 
-          "application/json": 
-           schema: 
+         content:
+          "application/json":
+           schema:
             "$ref": "#/components/schemas/ErrorResponse"
-       '503': 
+       '503':
          description: "Service Unavailable."
-         content: 
-          "application/json": 
-           schema: 
+         content:
+          "application/json":
+           schema:
             "$ref": "#/components/schemas/ErrorResponse"
-       '504': 
+       '504':
          description: "Gateway Timeout."
-         content: 
-          "application/json": 
-           schema: 
+         content:
+          "application/json":
+           schema:
             "$ref": "#/components/schemas/ErrorResponse"
   /organizations/{organization_name}:
     parameters:
     - $ref: '#/components/parameters/organization'
     get:
       operationId: getOrganization
-      tags: 
+      tags:
       - administration
       responses:
        '200':
          description: the organization
-         content: 
+         content:
            application/json:
              schema:
               "$ref": "#/components/schemas/Organization"
-       '400': 
+       '400':
          description: "Bad Request."
-         content: 
-          "application/json": 
-           schema: 
+         content:
+          "application/json":
+           schema:
             "$ref": "#/components/schemas/ErrorResponse"
-          "*/*": 
-           schema: 
+          "*/*":
+           schema:
             "$ref": "#/components/schemas/ErrorResponse"
-       '401': 
+       '401':
          description: "Unauthorized."
-         content: 
-          "application/json": 
-           schema: 
+         content:
+          "application/json":
+           schema:
             "$ref": "#/components/schemas/ErrorResponse"
-       '403': 
+       '403':
          description: "Forbidden."
-         content: 
-          "application/json": 
-           schema: 
+         content:
+          "application/json":
+           schema:
             "$ref": "#/components/schemas/ErrorResponse"
-       '404': 
+       '404':
          description: "Not Found."
-         content: 
-          "application/json": 
-           schema: 
+         content:
+          "application/json":
+           schema:
             "$ref": "#/components/schemas/ErrorResponse"
-       '500': 
+       '500':
          description: "Internal Server Error."
-         content: 
-          "application/json": 
-           schema: 
+         content:
+          "application/json":
+           schema:
             "$ref": "#/components/schemas/ErrorResponse"
-       '503': 
+       '503':
          description: "Service Unavailable."
-         content: 
-          "application/json": 
-           schema: 
+         content:
+          "application/json":
+           schema:
             "$ref": "#/components/schemas/ErrorResponse"
-       '504': 
+       '504':
          description: "Gateway Timeout."
-         content: 
-          "application/json": 
-           schema: 
+         content:
+          "application/json":
+           schema:
             "$ref": "#/components/schemas/ErrorResponse"
     patch:
      operationId: updateOrganization
      tags:
      - administration
-     requestBody: 
+     requestBody:
        description: "Organization"
-       content: 
-         "application/json": 
-           schema: 
-            "$ref": "#/components/schemas/Organization"    
+       content:
+         "application/json":
+           schema:
+            "$ref": "#/components/schemas/Organization"
      responses:
        '200':
          description: Updated Organization
-         content: 
+         content:
            application/json:
              schema:
                $ref: '#/components/schemas/Organization'
-       '400': 
+       '400':
          description: "Bad Request."
-         content: 
-          "application/json": 
-           schema: 
+         content:
+          "application/json":
+           schema:
             "$ref": "#/components/schemas/ErrorResponse"
-          "*/*": 
-           schema: 
+          "*/*":
+           schema:
             "$ref": "#/components/schemas/ErrorResponse"
-       '401': 
+       '401':
          description: "Unauthorized."
-         content: 
-          "application/json": 
-           schema: 
+         content:
+          "application/json":
+           schema:
             "$ref": "#/components/schemas/ErrorResponse"
-       '403': 
+       '403':
          description: "Forbidden."
-         content: 
-          "application/json": 
-           schema: 
+         content:
+          "application/json":
+           schema:
             "$ref": "#/components/schemas/ErrorResponse"
-       '404': 
+       '404':
          description: "Not Found."
-         content: 
-          "application/json": 
-           schema: 
+         content:
+          "application/json":
+           schema:
             "$ref": "#/components/schemas/ErrorResponse"
-       '422': 
+       '422':
          description: "AlreadyExists."
-         content: 
-          "application/json": 
-           schema: 
+         content:
+          "application/json":
+           schema:
             "$ref": "#/components/schemas/ErrorResponse"
-       '500': 
+       '500':
          description: "Internal Server Error."
-         content: 
-          "application/json": 
-           schema: 
+         content:
+          "application/json":
+           schema:
             "$ref": "#/components/schemas/ErrorResponse"
-       '503': 
+       '503':
          description: "Service Unavailable."
-         content: 
-          "application/json": 
-           schema: 
+         content:
+          "application/json":
+           schema:
             "$ref": "#/components/schemas/ErrorResponse"
-       '504': 
+       '504':
          description: "Gateway Timeout."
-         content: 
-          "application/json": 
-           schema: 
+         content:
+          "application/json":
+           schema:
             "$ref": "#/components/schemas/ErrorResponse"
     delete:
      operationId: deleteOrganization
@@ -1389,56 +1398,56 @@ paths:
      responses:
        '204':
          description: No content
-       '400': 
+       '400':
          description: "Bad Request."
-         content: 
-          "application/json": 
-           schema: 
+         content:
+          "application/json":
+           schema:
             "$ref": "#/components/schemas/ErrorResponse"
-          "*/*": 
-           schema: 
+          "*/*":
+           schema:
             "$ref": "#/components/schemas/ErrorResponse"
-       '401': 
+       '401':
          description: "Unauthorized."
-         content: 
-          "application/json": 
-           schema: 
+         content:
+          "application/json":
+           schema:
             "$ref": "#/components/schemas/ErrorResponse"
-       '403': 
+       '403':
          description: "Forbidden."
-         content: 
-          "application/json": 
-           schema: 
+         content:
+          "application/json":
+           schema:
             "$ref": "#/components/schemas/ErrorResponse"
-       '404': 
+       '404':
          description: "Not Found."
-         content: 
-          "application/json": 
-           schema: 
+         content:
+          "application/json":
+           schema:
             "$ref": "#/components/schemas/ErrorResponse"
-       '422': 
+       '422':
          description: "AlreadyExists."
-         content: 
-          "application/json": 
-           schema: 
+         content:
+          "application/json":
+           schema:
             "$ref": "#/components/schemas/ErrorResponse"
-       '500': 
+       '500':
          description: "Internal Server Error."
-         content: 
-          "application/json": 
-           schema: 
+         content:
+          "application/json":
+           schema:
             "$ref": "#/components/schemas/ErrorResponse"
-       '503': 
+       '503':
          description: "Service Unavailable."
-         content: 
-          "application/json": 
-           schema: 
+         content:
+          "application/json":
+           schema:
             "$ref": "#/components/schemas/ErrorResponse"
-       '504': 
+       '504':
          description: "Gateway Timeout."
-         content: 
-          "application/json": 
-           schema: 
+         content:
+          "application/json":
+           schema:
             "$ref": "#/components/schemas/ErrorResponse"
   /{organization_name}/history:
     parameters:
@@ -1453,91 +1462,91 @@ paths:
      responses:
        '200':
          description: audit history
-         content: 
+         content:
            application/json:
-             schema: 
+             schema:
               type: array
               items:
                "$ref": "#/components/schemas/History"
-       '400': 
+       '400':
          description: "Bad Request."
-         content: 
-          "application/json": 
-           schema: 
+         content:
+          "application/json":
+           schema:
             "$ref": "#/components/schemas/ErrorResponse"
-          "*/*": 
-           schema: 
+          "*/*":
+           schema:
             "$ref": "#/components/schemas/ErrorResponse"
-       '401': 
+       '401':
          description: "Unauthorized."
-         content: 
-          "application/json": 
-           schema: 
+         content:
+          "application/json":
+           schema:
             "$ref": "#/components/schemas/ErrorResponse"
-       '403': 
+       '403':
          description: "Forbidden."
-         content: 
-          "application/json": 
-           schema: 
+         content:
+          "application/json":
+           schema:
             "$ref": "#/components/schemas/ErrorResponse"
-       '404': 
+       '404':
          description: "Not Found."
-         content: 
-          "application/json": 
-           schema: 
+         content:
+          "application/json":
+           schema:
             "$ref": "#/components/schemas/ErrorResponse"
-       '500': 
+       '500':
          description: "Internal Server Error."
-         content: 
-          "application/json": 
-           schema: 
+         content:
+          "application/json":
+           schema:
             "$ref": "#/components/schemas/ErrorResponse"
-       '503': 
+       '503':
          description: "Service Unavailable."
-         content: 
-          "application/json": 
-           schema: 
+         content:
+          "application/json":
+           schema:
             "$ref": "#/components/schemas/ErrorResponse"
-       '504': 
+       '504':
          description: "Gateway Timeout."
-         content: 
-          "application/json": 
-           schema: 
+         content:
+          "application/json":
+           schema:
             "$ref": "#/components/schemas/ErrorResponse"
   /{organization_name}/token:
     parameters:
     - $ref: '#/components/parameters/organization'
     put:
       operationId: updateToken
-      tags: 
+      tags:
       - management
-      requestBody: 
+      requestBody:
        description: "Solace Cloud Token"
-       content: 
-         "text/plain": 
-           schema: 
-            type: string    
+       content:
+         "text/plain":
+           schema:
+            type: string
       responses:
        '201':
          description: The cloud token
-         content: 
+         content:
            application/json:
              schema:
                type: string
-       '400': 
+       '400':
          description: "Bad Request."
-         content: 
-          "application/json": 
-           schema: 
+         content:
+          "application/json":
+           schema:
             "$ref": "#/components/schemas/ErrorResponse"
-          "*/*": 
-           schema: 
+          "*/*":
+           schema:
             "$ref": "#/components/schemas/ErrorResponse"
-       '401': 
+       '401':
          description: "Unauthorized."
-         content: 
-          "application/json": 
-           schema: 
+         content:
+          "application/json":
+           schema:
             "$ref": "#/components/schemas/ErrorResponse"
     get:
      operationId: getToken
@@ -1546,54 +1555,54 @@ paths:
      responses:
        '200':
          description:  cloud token
-         content: 
-           "text/plain": 
-             schema: 
-              type: string    
-       '400': 
+         content:
+           "text/plain":
+             schema:
+              type: string
+       '400':
          description: "Bad Request."
-         content: 
-          "application/json": 
-           schema: 
+         content:
+          "application/json":
+           schema:
             "$ref": "#/components/schemas/ErrorResponse"
-          "*/*": 
-           schema: 
+          "*/*":
+           schema:
             "$ref": "#/components/schemas/ErrorResponse"
-       '401': 
+       '401':
          description: "Unauthorized."
-         content: 
-          "application/json": 
-           schema: 
+         content:
+          "application/json":
+           schema:
             "$ref": "#/components/schemas/ErrorResponse"
-       '403': 
+       '403':
          description: "Forbidden."
-         content: 
-          "application/json": 
-           schema: 
+         content:
+          "application/json":
+           schema:
             "$ref": "#/components/schemas/ErrorResponse"
-       '404': 
+       '404':
          description: "Not Found."
-         content: 
-          "application/json": 
-           schema: 
+         content:
+          "application/json":
+           schema:
             "$ref": "#/components/schemas/ErrorResponse"
-       '500': 
+       '500':
          description: "Internal Server Error."
-         content: 
-          "application/json": 
-           schema: 
+         content:
+          "application/json":
+           schema:
             "$ref": "#/components/schemas/ErrorResponse"
-       '503': 
+       '503':
          description: "Service Unavailable."
-         content: 
-          "application/json": 
-           schema: 
+         content:
+          "application/json":
+           schema:
             "$ref": "#/components/schemas/ErrorResponse"
-       '504': 
+       '504':
          description: "Gateway Timeout."
-         content: 
-          "application/json": 
-           schema: 
+         content:
+          "application/json":
+           schema:
             "$ref": "#/components/schemas/ErrorResponse"
 
   /{organization_name}/apis:
@@ -1609,68 +1618,68 @@ paths:
      responses:
        '200':
          description: list of APIs
-         content: 
+         content:
            application/json:
              schema:
                type: array
                items:
                  type: string
-       '400': 
+       '400':
          description: "Bad Request."
-         content: 
-          "application/json": 
-           schema: 
+         content:
+          "application/json":
+           schema:
             "$ref": "#/components/schemas/ErrorResponse"
-          "*/*": 
-           schema: 
+          "*/*":
+           schema:
             "$ref": "#/components/schemas/ErrorResponse"
-       '401': 
+       '401':
          description: "Unauthorized."
-         content: 
-          "application/json": 
-           schema: 
+         content:
+          "application/json":
+           schema:
             "$ref": "#/components/schemas/ErrorResponse"
-       '403': 
+       '403':
          description: "Forbidden."
-         content: 
-          "application/json": 
-           schema: 
+         content:
+          "application/json":
+           schema:
             "$ref": "#/components/schemas/ErrorResponse"
-       '404': 
+       '404':
          description: "Not Found."
-         content: 
-          "application/json": 
-           schema: 
+         content:
+          "application/json":
+           schema:
             "$ref": "#/components/schemas/ErrorResponse"
-       '500': 
+       '500':
          description: "Internal Server Error."
-         content: 
-          "application/json": 
-           schema: 
+         content:
+          "application/json":
+           schema:
             "$ref": "#/components/schemas/ErrorResponse"
-       '503': 
+       '503':
          description: "Service Unavailable."
-         content: 
-          "application/json": 
-           schema: 
+         content:
+          "application/json":
+           schema:
             "$ref": "#/components/schemas/ErrorResponse"
-       '504': 
+       '504':
          description: "Gateway Timeout."
-         content: 
-          "application/json": 
-           schema: 
+         content:
+          "application/json":
+           schema:
             "$ref": "#/components/schemas/ErrorResponse"
     post:
      operationId: importApi
      description: Imports an Async API from an external source
      tags:
      - apis
-     requestBody: 
+     requestBody:
        description: "Import request."
-       content: 
-         "application/json": 
-           schema: 
-            "$ref": "#/components/schemas/APIImport"    
+       content:
+         "application/json":
+           schema:
+            "$ref": "#/components/schemas/APIImport"
      responses:
        '201':
           description: New API that was imported
@@ -1682,56 +1691,56 @@ paths:
              schema:
                type: string
 
-       '400': 
+       '400':
          description: "Bad Request."
-         content: 
-          "application/json": 
-           schema: 
+         content:
+          "application/json":
+           schema:
             "$ref": "#/components/schemas/ErrorResponse"
-          "*/*": 
-           schema: 
+          "*/*":
+           schema:
             "$ref": "#/components/schemas/ErrorResponse"
-       '401': 
+       '401':
          description: "Unauthorized."
-         content: 
-          "application/json": 
-           schema: 
+         content:
+          "application/json":
+           schema:
             "$ref": "#/components/schemas/ErrorResponse"
-       '403': 
+       '403':
          description: "Forbidden."
-         content: 
-          "application/json": 
-           schema: 
+         content:
+          "application/json":
+           schema:
             "$ref": "#/components/schemas/ErrorResponse"
-       '404': 
+       '404':
          description: "Not Found."
-         content: 
-          "application/json": 
-           schema: 
+         content:
+          "application/json":
+           schema:
             "$ref": "#/components/schemas/ErrorResponse"
-       '422': 
+       '422':
          description: "AlreadyExists."
-         content: 
-          "application/json": 
-           schema: 
+         content:
+          "application/json":
+           schema:
             "$ref": "#/components/schemas/ErrorResponse"
-       '500': 
+       '500':
          description: "Internal Server Error."
-         content: 
-          "application/json": 
-           schema: 
+         content:
+          "application/json":
+           schema:
             "$ref": "#/components/schemas/ErrorResponse"
-       '503': 
+       '503':
          description: "Service Unavailable."
-         content: 
-          "application/json": 
-           schema: 
+         content:
+          "application/json":
+           schema:
             "$ref": "#/components/schemas/ErrorResponse"
-       '504': 
+       '504':
          description: "Gateway Timeout."
-         content: 
-          "application/json": 
-           schema: 
+         content:
+          "application/json":
+           schema:
             "$ref": "#/components/schemas/ErrorResponse"
 
   /{organization_name}/apis/{api_name}:
@@ -1740,74 +1749,74 @@ paths:
     - $ref: '#/components/parameters/api_name'
     put:
       operationId: createApi
-      tags: 
+      tags:
       - apis
-      requestBody: 
+      requestBody:
        description: "Async API specification"
-       content: 
-         "text/plain": 
-           schema: 
-            type: string    
+       content:
+         "text/plain":
+           schema:
+            type: string
       responses:
        '201':
          description: The async API specification
-         content: 
+         content:
            application/json:
              schema:
                type: object
            application/x-yaml:
              schema:
                type: string
-       '400': 
+       '400':
          description: "Bad Request."
-         content: 
-          "application/json": 
-           schema: 
+         content:
+          "application/json":
+           schema:
             "$ref": "#/components/schemas/ErrorResponse"
-          "*/*": 
-           schema: 
+          "*/*":
+           schema:
             "$ref": "#/components/schemas/ErrorResponse"
-       '401': 
+       '401':
          description: "Unauthorized."
-         content: 
-          "application/json": 
-           schema: 
+         content:
+          "application/json":
+           schema:
             "$ref": "#/components/schemas/ErrorResponse"
-       '403': 
+       '403':
          description: "Forbidden."
-         content: 
-          "application/json": 
-           schema: 
+         content:
+          "application/json":
+           schema:
             "$ref": "#/components/schemas/ErrorResponse"
-       '404': 
+       '404':
          description: "Not Found."
-         content: 
-          "application/json": 
-           schema: 
+         content:
+          "application/json":
+           schema:
             "$ref": "#/components/schemas/ErrorResponse"
-       '422': 
+       '422':
          description: "AlreadyExists."
-         content: 
-          "application/json": 
-           schema: 
+         content:
+          "application/json":
+           schema:
             "$ref": "#/components/schemas/ErrorResponse"
-       '500': 
+       '500':
          description: "Internal Server Error."
-         content: 
-          "application/json": 
-           schema: 
+         content:
+          "application/json":
+           schema:
             "$ref": "#/components/schemas/ErrorResponse"
-       '503': 
+       '503':
          description: "Service Unavailable."
-         content: 
-          "application/json": 
-           schema: 
+         content:
+          "application/json":
+           schema:
             "$ref": "#/components/schemas/ErrorResponse"
-       '504': 
+       '504':
          description: "Gateway Timeout."
-         content: 
-          "application/json": 
-           schema: 
+         content:
+          "application/json":
+           schema:
             "$ref": "#/components/schemas/ErrorResponse"
     get:
      operationId: getApi
@@ -1824,128 +1833,128 @@ paths:
      responses:
        '200':
          description:  async api sepc
-         content: 
+         content:
            application/json:
              schema:
                type: object
            application/x-yaml:
              schema:
                type: string
-       '400': 
+       '400':
          description: "Bad Request."
-         content: 
-          "application/json": 
-           schema: 
+         content:
+          "application/json":
+           schema:
             "$ref": "#/components/schemas/ErrorResponse"
-          "*/*": 
-           schema: 
+          "*/*":
+           schema:
             "$ref": "#/components/schemas/ErrorResponse"
-       '401': 
+       '401':
          description: "Unauthorized."
-         content: 
-          "application/json": 
-           schema: 
+         content:
+          "application/json":
+           schema:
             "$ref": "#/components/schemas/ErrorResponse"
-       '403': 
+       '403':
          description: "Forbidden."
-         content: 
-          "application/json": 
-           schema: 
+         content:
+          "application/json":
+           schema:
             "$ref": "#/components/schemas/ErrorResponse"
-       '404': 
+       '404':
          description: "Not Found."
-         content: 
-          "application/json": 
-           schema: 
+         content:
+          "application/json":
+           schema:
             "$ref": "#/components/schemas/ErrorResponse"
-       '500': 
+       '500':
          description: "Internal Server Error."
-         content: 
-          "application/json": 
-           schema: 
+         content:
+          "application/json":
+           schema:
             "$ref": "#/components/schemas/ErrorResponse"
-       '503': 
+       '503':
          description: "Service Unavailable."
-         content: 
-          "application/json": 
-           schema: 
+         content:
+          "application/json":
+           schema:
             "$ref": "#/components/schemas/ErrorResponse"
-       '504': 
+       '504':
          description: "Gateway Timeout."
-         content: 
-          "application/json": 
-           schema: 
+         content:
+          "application/json":
+           schema:
             "$ref": "#/components/schemas/ErrorResponse"
     patch:
      operationId: updateApi
      tags:
      - apis
-     requestBody: 
+     requestBody:
        description: "async api specification"
-       content: 
-         "text/plain": 
-           schema: 
-            type: string    
+       content:
+         "text/plain":
+           schema:
+            type: string
      responses:
        '200':
          description: updated async api specification
-         content: 
+         content:
            application/json:
              schema:
                type: object
            application/x-yaml:
              schema:
                type: string
-       '400': 
+       '400':
          description: "Bad Request."
-         content: 
-          "application/json": 
-           schema: 
+         content:
+          "application/json":
+           schema:
             "$ref": "#/components/schemas/ErrorResponse"
-          "*/*": 
-           schema: 
+          "*/*":
+           schema:
             "$ref": "#/components/schemas/ErrorResponse"
-       '401': 
+       '401':
          description: "Unauthorized."
-         content: 
-          "application/json": 
-           schema: 
+         content:
+          "application/json":
+           schema:
             "$ref": "#/components/schemas/ErrorResponse"
-       '403': 
+       '403':
          description: "Forbidden."
-         content: 
-          "application/json": 
-           schema: 
+         content:
+          "application/json":
+           schema:
             "$ref": "#/components/schemas/ErrorResponse"
-       '404': 
+       '404':
          description: "Not Found."
-         content: 
-          "application/json": 
-           schema: 
+         content:
+          "application/json":
+           schema:
             "$ref": "#/components/schemas/ErrorResponse"
-       '422': 
+       '422':
          description: "AlreadyExists."
-         content: 
-          "application/json": 
-           schema: 
+         content:
+          "application/json":
+           schema:
             "$ref": "#/components/schemas/ErrorResponse"
-       '500': 
+       '500':
          description: "Internal Server Error."
-         content: 
-          "application/json": 
-           schema: 
+         content:
+          "application/json":
+           schema:
             "$ref": "#/components/schemas/ErrorResponse"
-       '503': 
+       '503':
          description: "Service Unavailable."
-         content: 
-          "application/json": 
-           schema: 
+         content:
+          "application/json":
+           schema:
             "$ref": "#/components/schemas/ErrorResponse"
-       '504': 
+       '504':
          description: "Gateway Timeout."
-         content: 
-          "application/json": 
-           schema: 
+         content:
+          "application/json":
+           schema:
             "$ref": "#/components/schemas/ErrorResponse"
     delete:
      operationId: deleteApi
@@ -1954,56 +1963,56 @@ paths:
      responses:
        '204':
          description: No content
-       '400': 
+       '400':
          description: "Bad Request."
-         content: 
-          "application/json": 
-           schema: 
+         content:
+          "application/json":
+           schema:
             "$ref": "#/components/schemas/ErrorResponse"
-          "*/*": 
-           schema: 
+          "*/*":
+           schema:
             "$ref": "#/components/schemas/ErrorResponse"
-       '401': 
+       '401':
          description: "Unauthorized."
-         content: 
-          "application/json": 
-           schema: 
+         content:
+          "application/json":
+           schema:
             "$ref": "#/components/schemas/ErrorResponse"
-       '403': 
+       '403':
          description: "Forbidden."
-         content: 
-          "application/json": 
-           schema: 
+         content:
+          "application/json":
+           schema:
             "$ref": "#/components/schemas/ErrorResponse"
-       '404': 
+       '404':
          description: "Not Found."
-         content: 
-          "application/json": 
-           schema: 
+         content:
+          "application/json":
+           schema:
             "$ref": "#/components/schemas/ErrorResponse"
-       '422': 
+       '422':
          description: "AlreadyExists."
-         content: 
-          "application/json": 
-           schema: 
+         content:
+          "application/json":
+           schema:
             "$ref": "#/components/schemas/ErrorResponse"
-       '500': 
+       '500':
          description: "Internal Server Error."
-         content: 
-          "application/json": 
-           schema: 
+         content:
+          "application/json":
+           schema:
             "$ref": "#/components/schemas/ErrorResponse"
-       '503': 
+       '503':
          description: "Service Unavailable."
-         content: 
-          "application/json": 
-           schema: 
+         content:
+          "application/json":
+           schema:
             "$ref": "#/components/schemas/ErrorResponse"
-       '504': 
+       '504':
          description: "Gateway Timeout."
-         content: 
-          "application/json": 
-           schema: 
+         content:
+          "application/json":
+           schema:
             "$ref": "#/components/schemas/ErrorResponse"
 
   /{organization_name}/apis/{api_name}/info:
@@ -2017,54 +2026,54 @@ paths:
      responses:
        '200':
          description: API meta information
-         content: 
+         content:
            "application/json":
             schema:
               "$ref": "#/components/schemas/APIInfo"
-       '400': 
+       '400':
          description: "Bad Request."
-         content: 
-          "application/json": 
-           schema: 
+         content:
+          "application/json":
+           schema:
             "$ref": "#/components/schemas/ErrorResponse"
-          "*/*": 
-           schema: 
+          "*/*":
+           schema:
             "$ref": "#/components/schemas/ErrorResponse"
-       '401': 
+       '401':
          description: "Unauthorized."
-         content: 
-          "application/json": 
-           schema: 
+         content:
+          "application/json":
+           schema:
             "$ref": "#/components/schemas/ErrorResponse"
-       '403': 
+       '403':
          description: "Forbidden."
-         content: 
-          "application/json": 
-           schema: 
+         content:
+          "application/json":
+           schema:
             "$ref": "#/components/schemas/ErrorResponse"
-       '404': 
+       '404':
          description: "Not Found."
-         content: 
-          "application/json": 
-           schema: 
+         content:
+          "application/json":
+           schema:
             "$ref": "#/components/schemas/ErrorResponse"
-       '500': 
+       '500':
          description: "Internal Server Error."
-         content: 
-          "application/json": 
-           schema: 
+         content:
+          "application/json":
+           schema:
             "$ref": "#/components/schemas/ErrorResponse"
-       '503': 
+       '503':
          description: "Service Unavailable."
-         content: 
-          "application/json": 
-           schema: 
+         content:
+          "application/json":
+           schema:
             "$ref": "#/components/schemas/ErrorResponse"
-       '504': 
+       '504':
          description: "Gateway Timeout."
-         content: 
-          "application/json": 
-           schema: 
+         content:
+          "application/json":
+           schema:
             "$ref": "#/components/schemas/ErrorResponse"
 
   /{organization_name}/apiProducts:
@@ -2074,69 +2083,69 @@ paths:
      operationId: createApiProduct
      tags:
      - apiProducts
-     requestBody: 
+     requestBody:
        description: "Application domains have a name and topic domain."
-       content: 
-         "application/json": 
-           schema: 
-            "$ref": "#/components/schemas/APIProduct"    
+       content:
+         "application/json":
+           schema:
+            "$ref": "#/components/schemas/APIProduct"
      responses:
        '201':
          description: New API Product
-         content: 
+         content:
            application/json:
              schema:
                $ref: '#/components/schemas/APIProduct'
-       '400': 
+       '400':
          description: "Bad Request."
-         content: 
-          "application/json": 
-           schema: 
+         content:
+          "application/json":
+           schema:
             "$ref": "#/components/schemas/ErrorResponse"
-          "*/*": 
-           schema: 
+          "*/*":
+           schema:
             "$ref": "#/components/schemas/ErrorResponse"
-       '401': 
+       '401':
          description: "Unauthorized."
-         content: 
-          "application/json": 
-           schema: 
+         content:
+          "application/json":
+           schema:
             "$ref": "#/components/schemas/ErrorResponse"
-       '403': 
+       '403':
          description: "Forbidden."
-         content: 
-          "application/json": 
-           schema: 
+         content:
+          "application/json":
+           schema:
             "$ref": "#/components/schemas/ErrorResponse"
-       '404': 
+       '404':
          description: "Not Found."
-         content: 
-          "application/json": 
-           schema: 
+         content:
+          "application/json":
+           schema:
             "$ref": "#/components/schemas/ErrorResponse"
-       '422': 
+       '422':
          description: "AlreadyExists."
-         content: 
-          "application/json": 
-           schema: 
+         content:
+          "application/json":
+           schema:
             "$ref": "#/components/schemas/ErrorResponse"
-       '500': 
+       '500':
          description: "Internal Server Error."
-         content: 
-          "application/json": 
-           schema: 
+         content:
+          "application/json":
+           schema:
             "$ref": "#/components/schemas/ErrorResponse"
-       '503': 
+       '503':
          description: "Service Unavailable."
-         content: 
-          "application/json": 
-           schema: 
+         content:
+          "application/json":
+           schema:
             "$ref": "#/components/schemas/ErrorResponse"
-       '504': 
+       '504':
          description: "Gateway Timeout."
-         content: 
-          "application/json": 
-           schema: 
+         content:
+          "application/json":
+           schema:
             "$ref": "#/components/schemas/ErrorResponse"
     get:
      operationId: listApiProducts
@@ -2148,56 +2157,56 @@ paths:
      responses:
        '200':
          description: list of API Products
-         content: 
+         content:
            application/json:
              schema:
                type: array
                items:
                  $ref: '#/components/schemas/APIProduct'
-       '400': 
+       '400':
          description: "Bad Request."
-         content: 
-          "application/json": 
-           schema: 
+         content:
+          "application/json":
+           schema:
             "$ref": "#/components/schemas/ErrorResponse"
-          "*/*": 
-           schema: 
+          "*/*":
+           schema:
             "$ref": "#/components/schemas/ErrorResponse"
-       '401': 
+       '401':
          description: "Unauthorized."
-         content: 
-          "application/json": 
-           schema: 
+         content:
+          "application/json":
+           schema:
             "$ref": "#/components/schemas/ErrorResponse"
-       '403': 
+       '403':
          description: "Forbidden."
-         content: 
-          "application/json": 
-           schema: 
+         content:
+          "application/json":
+           schema:
             "$ref": "#/components/schemas/ErrorResponse"
-       '404': 
+       '404':
          description: "Not Found."
-         content: 
-          "application/json": 
-           schema: 
+         content:
+          "application/json":
+           schema:
             "$ref": "#/components/schemas/ErrorResponse"
-       '500': 
+       '500':
          description: "Internal Server Error."
-         content: 
-          "application/json": 
-           schema: 
+         content:
+          "application/json":
+           schema:
             "$ref": "#/components/schemas/ErrorResponse"
-       '503': 
+       '503':
          description: "Service Unavailable."
-         content: 
-          "application/json": 
-           schema: 
+         content:
+          "application/json":
+           schema:
             "$ref": "#/components/schemas/ErrorResponse"
-       '504': 
+       '504':
          description: "Gateway Timeout."
-         content: 
-          "application/json": 
-           schema: 
+         content:
+          "application/json":
+           schema:
             "$ref": "#/components/schemas/ErrorResponse"
   /{organization_name}/apiProducts/{api_product_name}:
     parameters:
@@ -2210,122 +2219,122 @@ paths:
      responses:
        '200':
          description:  an API Product
-         content: 
+         content:
            application/json:
              schema:
                $ref: '#/components/schemas/APIProduct'
-       '400': 
+       '400':
          description: "Bad Request."
-         content: 
-          "application/json": 
-           schema: 
+         content:
+          "application/json":
+           schema:
             "$ref": "#/components/schemas/ErrorResponse"
-          "*/*": 
-           schema: 
+          "*/*":
+           schema:
             "$ref": "#/components/schemas/ErrorResponse"
-       '401': 
+       '401':
          description: "Unauthorized."
-         content: 
-          "application/json": 
-           schema: 
+         content:
+          "application/json":
+           schema:
             "$ref": "#/components/schemas/ErrorResponse"
-       '403': 
+       '403':
          description: "Forbidden."
-         content: 
-          "application/json": 
-           schema: 
+         content:
+          "application/json":
+           schema:
             "$ref": "#/components/schemas/ErrorResponse"
-       '404': 
+       '404':
          description: "Not Found."
-         content: 
-          "application/json": 
-           schema: 
+         content:
+          "application/json":
+           schema:
             "$ref": "#/components/schemas/ErrorResponse"
-       '500': 
+       '500':
          description: "Internal Server Error."
-         content: 
-          "application/json": 
-           schema: 
+         content:
+          "application/json":
+           schema:
             "$ref": "#/components/schemas/ErrorResponse"
-       '503': 
+       '503':
          description: "Service Unavailable."
-         content: 
-          "application/json": 
-           schema: 
+         content:
+          "application/json":
+           schema:
             "$ref": "#/components/schemas/ErrorResponse"
-       '504': 
+       '504':
          description: "Gateway Timeout."
-         content: 
-          "application/json": 
-           schema: 
+         content:
+          "application/json":
+           schema:
             "$ref": "#/components/schemas/ErrorResponse"
     patch:
      operationId: updateApiProduct
      tags:
      - apiProducts
-     requestBody: 
+     requestBody:
        description: "Application domains have a name and topic domain."
-       content: 
-         "application/json": 
-           schema: 
-            "$ref": "#/components/schemas/APIProductPatch"    
+       content:
+         "application/json":
+           schema:
+            "$ref": "#/components/schemas/APIProductPatch"
      responses:
        '200':
          description: Updated API Product
-         content: 
+         content:
            application/json:
              schema:
                $ref: '#/components/schemas/APIProduct'
-       '400': 
+       '400':
          description: "Bad Request."
-         content: 
-          "application/json": 
-           schema: 
+         content:
+          "application/json":
+           schema:
             "$ref": "#/components/schemas/ErrorResponse"
-          "*/*": 
-           schema: 
+          "*/*":
+           schema:
             "$ref": "#/components/schemas/ErrorResponse"
-       '401': 
+       '401':
          description: "Unauthorized."
-         content: 
-          "application/json": 
-           schema: 
+         content:
+          "application/json":
+           schema:
             "$ref": "#/components/schemas/ErrorResponse"
-       '403': 
+       '403':
          description: "Forbidden."
-         content: 
-          "application/json": 
-           schema: 
+         content:
+          "application/json":
+           schema:
             "$ref": "#/components/schemas/ErrorResponse"
-       '404': 
+       '404':
          description: "Not Found."
-         content: 
-          "application/json": 
-           schema: 
+         content:
+          "application/json":
+           schema:
             "$ref": "#/components/schemas/ErrorResponse"
-       '422': 
+       '422':
          description: "AlreadyExists."
-         content: 
-          "application/json": 
-           schema: 
+         content:
+          "application/json":
+           schema:
             "$ref": "#/components/schemas/ErrorResponse"
-       '500': 
+       '500':
          description: "Internal Server Error."
-         content: 
-          "application/json": 
-           schema: 
+         content:
+          "application/json":
+           schema:
             "$ref": "#/components/schemas/ErrorResponse"
-       '503': 
+       '503':
          description: "Service Unavailable."
-         content: 
-          "application/json": 
-           schema: 
+         content:
+          "application/json":
+           schema:
             "$ref": "#/components/schemas/ErrorResponse"
-       '504': 
+       '504':
          description: "Gateway Timeout."
-         content: 
-          "application/json": 
-           schema: 
+         content:
+          "application/json":
+           schema:
             "$ref": "#/components/schemas/ErrorResponse"
     delete:
      operationId: deleteApiProduct
@@ -2334,127 +2343,127 @@ paths:
      responses:
        '204':
          description: No contentt
-       '400': 
+       '400':
          description: "Bad Request."
-         content: 
-          "application/json": 
-           schema: 
+         content:
+          "application/json":
+           schema:
             "$ref": "#/components/schemas/ErrorResponse"
-          "*/*": 
-           schema: 
+          "*/*":
+           schema:
             "$ref": "#/components/schemas/ErrorResponse"
-       '401': 
+       '401':
          description: "Unauthorized."
-         content: 
-          "application/json": 
-           schema: 
+         content:
+          "application/json":
+           schema:
             "$ref": "#/components/schemas/ErrorResponse"
-       '403': 
+       '403':
          description: "Forbidden."
-         content: 
-          "application/json": 
-           schema: 
+         content:
+          "application/json":
+           schema:
             "$ref": "#/components/schemas/ErrorResponse"
-       '404': 
+       '404':
          description: "Not Found."
-         content: 
-          "application/json": 
-           schema: 
+         content:
+          "application/json":
+           schema:
             "$ref": "#/components/schemas/ErrorResponse"
-       '422': 
+       '422':
          description: "AlreadyExists."
-         content: 
-          "application/json": 
-           schema: 
+         content:
+          "application/json":
+           schema:
             "$ref": "#/components/schemas/ErrorResponse"
-       '500': 
+       '500':
          description: "Internal Server Error."
-         content: 
-          "application/json": 
-           schema: 
+         content:
+          "application/json":
+           schema:
             "$ref": "#/components/schemas/ErrorResponse"
-       '503': 
+       '503':
          description: "Service Unavailable."
-         content: 
-          "application/json": 
-           schema: 
+         content:
+          "application/json":
+           schema:
             "$ref": "#/components/schemas/ErrorResponse"
-       '504': 
+       '504':
          description: "Gateway Timeout."
-         content: 
-          "application/json": 
-           schema: 
+         content:
+          "application/json":
+           schema:
             "$ref": "#/components/schemas/ErrorResponse"
   /{organization_name}/developers:
     parameters:
     - $ref: '#/components/parameters/organization'
     post:
-     operationId: createDeveloper    
+     operationId: createDeveloper
      tags:
      - developers
-     requestBody: 
+     requestBody:
        description: "Developer account information"
-       content: 
-         "application/json": 
-           schema: 
-            "$ref": "#/components/schemas/Developer"    
+       content:
+         "application/json":
+           schema:
+            "$ref": "#/components/schemas/Developer"
      responses:
        '201':
          description: New developer
-         content: 
+         content:
            application/json:
              schema:
                $ref: '#/components/schemas/Developer'
-       '400': 
+       '400':
          description: "Bad Request."
-         content: 
-          "application/json": 
-           schema: 
+         content:
+          "application/json":
+           schema:
             "$ref": "#/components/schemas/ErrorResponse"
-          "*/*": 
-           schema: 
+          "*/*":
+           schema:
             "$ref": "#/components/schemas/ErrorResponse"
-       '401': 
+       '401':
          description: "Unauthorized."
-         content: 
-          "application/json": 
-           schema: 
+         content:
+          "application/json":
+           schema:
             "$ref": "#/components/schemas/ErrorResponse"
-       '403': 
+       '403':
          description: "Forbidden."
-         content: 
-          "application/json": 
-           schema: 
+         content:
+          "application/json":
+           schema:
             "$ref": "#/components/schemas/ErrorResponse"
-       '404': 
+       '404':
          description: "Not Found."
-         content: 
-          "application/json": 
-           schema: 
+         content:
+          "application/json":
+           schema:
             "$ref": "#/components/schemas/ErrorResponse"
-       '422': 
+       '422':
          description: "AlreadyExists."
-         content: 
-          "application/json": 
-           schema: 
+         content:
+          "application/json":
+           schema:
             "$ref": "#/components/schemas/ErrorResponse"
-       '500': 
+       '500':
          description: "Internal Server Error."
-         content: 
-          "application/json": 
-           schema: 
+         content:
+          "application/json":
+           schema:
             "$ref": "#/components/schemas/ErrorResponse"
-       '503': 
+       '503':
          description: "Service Unavailable."
-         content: 
-          "application/json": 
-           schema: 
+         content:
+          "application/json":
+           schema:
             "$ref": "#/components/schemas/ErrorResponse"
-       '504': 
+       '504':
          description: "Gateway Timeout."
-         content: 
-          "application/json": 
-           schema: 
+         content:
+          "application/json":
+           schema:
             "$ref": "#/components/schemas/ErrorResponse"
     get:
      operationId: listDevelopers
@@ -2466,56 +2475,56 @@ paths:
      responses:
        '200':
          description: list of Developers
-         content: 
+         content:
            application/json:
              schema:
                type: array
                items:
                  $ref: '#/components/schemas/Developer'
-       '400': 
+       '400':
          description: "Bad Request."
-         content: 
-          "application/json": 
-           schema: 
+         content:
+          "application/json":
+           schema:
             "$ref": "#/components/schemas/ErrorResponse"
-          "*/*": 
-           schema: 
+          "*/*":
+           schema:
             "$ref": "#/components/schemas/ErrorResponse"
-       '401': 
+       '401':
          description: "Unauthorized."
-         content: 
-          "application/json": 
-           schema: 
+         content:
+          "application/json":
+           schema:
             "$ref": "#/components/schemas/ErrorResponse"
-       '403': 
+       '403':
          description: "Forbidden."
-         content: 
-          "application/json": 
-           schema: 
+         content:
+          "application/json":
+           schema:
             "$ref": "#/components/schemas/ErrorResponse"
-       '404': 
+       '404':
          description: "Not Found."
-         content: 
-          "application/json": 
-           schema: 
+         content:
+          "application/json":
+           schema:
             "$ref": "#/components/schemas/ErrorResponse"
-       '500': 
+       '500':
          description: "Internal Server Error."
-         content: 
-          "application/json": 
-           schema: 
+         content:
+          "application/json":
+           schema:
             "$ref": "#/components/schemas/ErrorResponse"
-       '503': 
+       '503':
          description: "Service Unavailable."
-         content: 
-          "application/json": 
-           schema: 
+         content:
+          "application/json":
+           schema:
             "$ref": "#/components/schemas/ErrorResponse"
-       '504': 
+       '504':
          description: "Gateway Timeout."
-         content: 
-          "application/json": 
-           schema: 
+         content:
+          "application/json":
+           schema:
             "$ref": "#/components/schemas/ErrorResponse"
   /{organization_name}/developers/{developer_username}:
     parameters:
@@ -2528,122 +2537,122 @@ paths:
      responses:
        '200':
          description:  a developer
-         content: 
+         content:
            application/json:
              schema:
                $ref: '#/components/schemas/Developer'
-       '400': 
+       '400':
          description: "Bad Request."
-         content: 
-          "application/json": 
-           schema: 
+         content:
+          "application/json":
+           schema:
             "$ref": "#/components/schemas/ErrorResponse"
-          "*/*": 
-           schema: 
+          "*/*":
+           schema:
             "$ref": "#/components/schemas/ErrorResponse"
-       '401': 
+       '401':
          description: "Unauthorized."
-         content: 
-          "application/json": 
-           schema: 
+         content:
+          "application/json":
+           schema:
             "$ref": "#/components/schemas/ErrorResponse"
-       '403': 
+       '403':
          description: "Forbidden."
-         content: 
-          "application/json": 
-           schema: 
+         content:
+          "application/json":
+           schema:
             "$ref": "#/components/schemas/ErrorResponse"
-       '404': 
+       '404':
          description: "Not Found."
-         content: 
-          "application/json": 
-           schema: 
+         content:
+          "application/json":
+           schema:
             "$ref": "#/components/schemas/ErrorResponse"
-       '500': 
+       '500':
          description: "Internal Server Error."
-         content: 
-          "application/json": 
-           schema: 
+         content:
+          "application/json":
+           schema:
             "$ref": "#/components/schemas/ErrorResponse"
-       '503': 
+       '503':
          description: "Service Unavailable."
-         content: 
-          "application/json": 
-           schema: 
+         content:
+          "application/json":
+           schema:
             "$ref": "#/components/schemas/ErrorResponse"
-       '504': 
+       '504':
          description: "Gateway Timeout."
-         content: 
-          "application/json": 
-           schema: 
+         content:
+          "application/json":
+           schema:
             "$ref": "#/components/schemas/ErrorResponse"
     patch:
      operationId: updateDeveloper
      tags:
      - developers
-     requestBody: 
+     requestBody:
        description: "Application domains have a name and topic domain."
-       content: 
-         "application/json": 
-           schema: 
-            "$ref": "#/components/schemas/DeveloperPatch"    
+       content:
+         "application/json":
+           schema:
+            "$ref": "#/components/schemas/DeveloperPatch"
      responses:
        '200':
          description: Updated developer
-         content: 
+         content:
            application/json:
              schema:
                $ref: '#/components/schemas/Developer'
-       '400': 
+       '400':
          description: "Bad Request."
-         content: 
-          "application/json": 
-           schema: 
+         content:
+          "application/json":
+           schema:
             "$ref": "#/components/schemas/ErrorResponse"
-          "*/*": 
-           schema: 
+          "*/*":
+           schema:
             "$ref": "#/components/schemas/ErrorResponse"
-       '401': 
+       '401':
          description: "Unauthorized."
-         content: 
-          "application/json": 
-           schema: 
+         content:
+          "application/json":
+           schema:
             "$ref": "#/components/schemas/ErrorResponse"
-       '403': 
+       '403':
          description: "Forbidden."
-         content: 
-          "application/json": 
-           schema: 
+         content:
+          "application/json":
+           schema:
             "$ref": "#/components/schemas/ErrorResponse"
-       '404': 
+       '404':
          description: "Not Found."
-         content: 
-          "application/json": 
-           schema: 
+         content:
+          "application/json":
+           schema:
             "$ref": "#/components/schemas/ErrorResponse"
-       '422': 
+       '422':
          description: "AlreadyExists."
-         content: 
-          "application/json": 
-           schema: 
+         content:
+          "application/json":
+           schema:
             "$ref": "#/components/schemas/ErrorResponse"
-       '500': 
+       '500':
          description: "Internal Server Error."
-         content: 
-          "application/json": 
-           schema: 
+         content:
+          "application/json":
+           schema:
             "$ref": "#/components/schemas/ErrorResponse"
-       '503': 
+       '503':
          description: "Service Unavailable."
-         content: 
-          "application/json": 
-           schema: 
+         content:
+          "application/json":
+           schema:
             "$ref": "#/components/schemas/ErrorResponse"
-       '504': 
+       '504':
          description: "Gateway Timeout."
-         content: 
-          "application/json": 
-           schema: 
+         content:
+          "application/json":
+           schema:
             "$ref": "#/components/schemas/ErrorResponse"
     delete:
      operationId: deleteDeveloper
@@ -2652,56 +2661,56 @@ paths:
      responses:
        '204':
          description: No content
-       '400': 
+       '400':
          description: "Bad Request."
-         content: 
-          "application/json": 
-           schema: 
+         content:
+          "application/json":
+           schema:
             "$ref": "#/components/schemas/ErrorResponse"
-          "*/*": 
-           schema: 
+          "*/*":
+           schema:
             "$ref": "#/components/schemas/ErrorResponse"
-       '401': 
+       '401':
          description: "Unauthorized."
-         content: 
-          "application/json": 
-           schema: 
+         content:
+          "application/json":
+           schema:
             "$ref": "#/components/schemas/ErrorResponse"
-       '403': 
+       '403':
          description: "Forbidden."
-         content: 
-          "application/json": 
-           schema: 
+         content:
+          "application/json":
+           schema:
             "$ref": "#/components/schemas/ErrorResponse"
-       '404': 
+       '404':
          description: "Not Found."
-         content: 
-          "application/json": 
-           schema: 
+         content:
+          "application/json":
+           schema:
             "$ref": "#/components/schemas/ErrorResponse"
-       '422': 
+       '422':
          description: "AlreadyExists."
-         content: 
-          "application/json": 
-           schema: 
+         content:
+          "application/json":
+           schema:
             "$ref": "#/components/schemas/ErrorResponse"
-       '500': 
+       '500':
          description: "Internal Server Error."
-         content: 
-          "application/json": 
-           schema: 
+         content:
+          "application/json":
+           schema:
             "$ref": "#/components/schemas/ErrorResponse"
-       '503': 
+       '503':
          description: "Service Unavailable."
-         content: 
-          "application/json": 
-           schema: 
+         content:
+          "application/json":
+           schema:
             "$ref": "#/components/schemas/ErrorResponse"
-       '504': 
+       '504':
          description: "Gateway Timeout."
-         content: 
-          "application/json": 
-           schema: 
+         content:
+          "application/json":
+           schema:
             "$ref": "#/components/schemas/ErrorResponse"
   /{organization_name}/developers/{developer_username}/apps:
     parameters:
@@ -2712,69 +2721,69 @@ paths:
      tags:
      - apps
      - developers
-     requestBody: 
+     requestBody:
        description: "App information"
-       content: 
-         "application/json": 
-           schema: 
-            "$ref": "#/components/schemas/App"    
+       content:
+         "application/json":
+           schema:
+            "$ref": "#/components/schemas/App"
      responses:
        '201':
          description: New API Product
-         content: 
+         content:
            application/json:
              schema:
                $ref: '#/components/schemas/App'
-       '400': 
+       '400':
          description: "Bad Request."
-         content: 
-          "application/json": 
-           schema: 
+         content:
+          "application/json":
+           schema:
             "$ref": "#/components/schemas/ErrorResponse"
-          "*/*": 
-           schema: 
+          "*/*":
+           schema:
             "$ref": "#/components/schemas/ErrorResponse"
-       '401': 
+       '401':
          description: "Unauthorized."
-         content: 
-          "application/json": 
-           schema: 
+         content:
+          "application/json":
+           schema:
             "$ref": "#/components/schemas/ErrorResponse"
-       '403': 
+       '403':
          description: "Forbidden."
-         content: 
-          "application/json": 
-           schema: 
+         content:
+          "application/json":
+           schema:
             "$ref": "#/components/schemas/ErrorResponse"
-       '404': 
+       '404':
          description: "Not Found."
-         content: 
-          "application/json": 
-           schema: 
+         content:
+          "application/json":
+           schema:
             "$ref": "#/components/schemas/ErrorResponse"
-       '422': 
+       '422':
          description: "AlreadyExists."
-         content: 
-          "application/json": 
-           schema: 
+         content:
+          "application/json":
+           schema:
             "$ref": "#/components/schemas/ErrorResponse"
-       '500': 
+       '500':
          description: "Internal Server Error."
-         content: 
-          "application/json": 
-           schema: 
+         content:
+          "application/json":
+           schema:
             "$ref": "#/components/schemas/ErrorResponse"
-       '503': 
+       '503':
          description: "Service Unavailable."
-         content: 
-          "application/json": 
-           schema: 
+         content:
+          "application/json":
+           schema:
             "$ref": "#/components/schemas/ErrorResponse"
-       '504': 
+       '504':
          description: "Gateway Timeout."
-         content: 
-          "application/json": 
-           schema: 
+         content:
+          "application/json":
+           schema:
             "$ref": "#/components/schemas/ErrorResponse"
     get:
      operationId: listDeveloperApps
@@ -2785,62 +2794,62 @@ paths:
      - in: query
        name: status
        schema:
-        "$ref": "#/components/schemas/AppStatus"    
+        "$ref": "#/components/schemas/AppStatus"
      - $ref: '#/components/parameters/page_size'
      - $ref: '#/components/parameters/page_number'
      responses:
        '200':
          description: list of apps
-         content: 
+         content:
            application/json:
              schema:
                type: array
                items:
                  $ref: '#/components/schemas/App'
-       '400': 
+       '400':
          description: "Bad Request."
-         content: 
-          "application/json": 
-           schema: 
+         content:
+          "application/json":
+           schema:
             "$ref": "#/components/schemas/ErrorResponse"
-          "*/*": 
-           schema: 
+          "*/*":
+           schema:
             "$ref": "#/components/schemas/ErrorResponse"
-       '401': 
+       '401':
          description: "Unauthorized."
-         content: 
-          "application/json": 
-           schema: 
+         content:
+          "application/json":
+           schema:
             "$ref": "#/components/schemas/ErrorResponse"
-       '403': 
+       '403':
          description: "Forbidden."
-         content: 
-          "application/json": 
-           schema: 
+         content:
+          "application/json":
+           schema:
             "$ref": "#/components/schemas/ErrorResponse"
-       '404': 
+       '404':
          description: "Not Found."
-         content: 
-          "application/json": 
-           schema: 
+         content:
+          "application/json":
+           schema:
             "$ref": "#/components/schemas/ErrorResponse"
-       '500': 
+       '500':
          description: "Internal Server Error."
-         content: 
-          "application/json": 
-           schema: 
+         content:
+          "application/json":
+           schema:
             "$ref": "#/components/schemas/ErrorResponse"
-       '503': 
+       '503':
          description: "Service Unavailable."
-         content: 
-          "application/json": 
-           schema: 
+         content:
+          "application/json":
+           schema:
             "$ref": "#/components/schemas/ErrorResponse"
-       '504': 
+       '504':
          description: "Gateway Timeout."
-         content: 
-          "application/json": 
-           schema: 
+         content:
+          "application/json":
+           schema:
             "$ref": "#/components/schemas/ErrorResponse"
   /{organization_name}/developers/{developer_username}/apps/{app_name}:
     parameters:
@@ -2849,7 +2858,7 @@ paths:
     - $ref: '#/components/parameters/app_name'
     get:
      operationId: getDeveloperApp
-     parameters: 
+     parameters:
      - $ref: '#/components/parameters/topicSyntax'
      tags:
      - apps
@@ -2857,123 +2866,123 @@ paths:
      responses:
        '200':
          description:  an app
-         content: 
+         content:
            application/json:
              schema:
                $ref: '#/components/schemas/AppResponse'
-       '400': 
+       '400':
          description: "Bad Request."
-         content: 
-          "application/json": 
-           schema: 
+         content:
+          "application/json":
+           schema:
             "$ref": "#/components/schemas/ErrorResponse"
-          "*/*": 
-           schema: 
+          "*/*":
+           schema:
             "$ref": "#/components/schemas/ErrorResponse"
-       '401': 
+       '401':
          description: "Unauthorized."
-         content: 
-          "application/json": 
-           schema: 
+         content:
+          "application/json":
+           schema:
             "$ref": "#/components/schemas/ErrorResponse"
-       '403': 
+       '403':
          description: "Forbidden."
-         content: 
-          "application/json": 
-           schema: 
+         content:
+          "application/json":
+           schema:
             "$ref": "#/components/schemas/ErrorResponse"
-       '404': 
+       '404':
          description: "Not Found."
-         content: 
-          "application/json": 
-           schema: 
+         content:
+          "application/json":
+           schema:
             "$ref": "#/components/schemas/ErrorResponse"
-       '500': 
+       '500':
          description: "Internal Server Error."
-         content: 
-          "application/json": 
-           schema: 
+         content:
+          "application/json":
+           schema:
             "$ref": "#/components/schemas/ErrorResponse"
-       '503': 
+       '503':
          description: "Service Unavailable."
-         content: 
-          "application/json": 
-           schema: 
+         content:
+          "application/json":
+           schema:
             "$ref": "#/components/schemas/ErrorResponse"
-       '504': 
+       '504':
          description: "Gateway Timeout."
-         content: 
-          "application/json": 
-           schema: 
+         content:
+          "application/json":
+           schema:
             "$ref": "#/components/schemas/ErrorResponse"
     patch:
      operationId: updateDeveloperApp
      tags:
      - apps
      - developers
-     requestBody: 
+     requestBody:
        description: ""
-       content: 
-         "application/json": 
-           schema: 
-            "$ref": "#/components/schemas/AppPatch"    
+       content:
+         "application/json":
+           schema:
+            "$ref": "#/components/schemas/AppPatch"
      responses:
        '200':
          description: App
-         content: 
+         content:
            application/json:
              schema:
                $ref: '#/components/schemas/AppResponse'
-       '400': 
+       '400':
          description: "Bad Request."
-         content: 
-          "application/json": 
-           schema: 
+         content:
+          "application/json":
+           schema:
             "$ref": "#/components/schemas/ErrorResponse"
-          "*/*": 
-           schema: 
+          "*/*":
+           schema:
             "$ref": "#/components/schemas/ErrorResponse"
-       '401': 
+       '401':
          description: "Unauthorized."
-         content: 
-          "application/json": 
-           schema: 
+         content:
+          "application/json":
+           schema:
             "$ref": "#/components/schemas/ErrorResponse"
-       '403': 
+       '403':
          description: "Forbidden."
-         content: 
-          "application/json": 
-           schema: 
+         content:
+          "application/json":
+           schema:
             "$ref": "#/components/schemas/ErrorResponse"
-       '404': 
+       '404':
          description: "Not Found."
-         content: 
-          "application/json": 
-           schema: 
+         content:
+          "application/json":
+           schema:
             "$ref": "#/components/schemas/ErrorResponse"
-       '422': 
+       '422':
          description: "AlreadyExists."
-         content: 
-          "application/json": 
-           schema: 
+         content:
+          "application/json":
+           schema:
             "$ref": "#/components/schemas/ErrorResponse"
-       '500': 
+       '500':
          description: "Internal Server Error."
-         content: 
-          "application/json": 
-           schema: 
+         content:
+          "application/json":
+           schema:
             "$ref": "#/components/schemas/ErrorResponse"
-       '503': 
+       '503':
          description: "Service Unavailable."
-         content: 
-          "application/json": 
-           schema: 
+         content:
+          "application/json":
+           schema:
             "$ref": "#/components/schemas/ErrorResponse"
-       '504': 
+       '504':
          description: "Gateway Timeout."
-         content: 
-          "application/json": 
-           schema: 
+         content:
+          "application/json":
+           schema:
             "$ref": "#/components/schemas/ErrorResponse"
     delete:
      operationId: deleteDeveloperApp
@@ -2983,128 +2992,128 @@ paths:
      responses:
        '204':
          description: No contentt
-       '400': 
+       '400':
          description: "Bad Request."
-         content: 
-          "application/json": 
-           schema: 
+         content:
+          "application/json":
+           schema:
             "$ref": "#/components/schemas/ErrorResponse"
-          "*/*": 
-           schema: 
+          "*/*":
+           schema:
             "$ref": "#/components/schemas/ErrorResponse"
-       '401': 
+       '401':
          description: "Unauthorized."
-         content: 
-          "application/json": 
-           schema: 
+         content:
+          "application/json":
+           schema:
             "$ref": "#/components/schemas/ErrorResponse"
-       '403': 
+       '403':
          description: "Forbidden."
-         content: 
-          "application/json": 
-           schema: 
+         content:
+          "application/json":
+           schema:
             "$ref": "#/components/schemas/ErrorResponse"
-       '404': 
+       '404':
          description: "Not Found."
-         content: 
-          "application/json": 
-           schema: 
+         content:
+          "application/json":
+           schema:
             "$ref": "#/components/schemas/ErrorResponse"
-       '422': 
+       '422':
          description: "AlreadyExists."
-         content: 
-          "application/json": 
-           schema: 
+         content:
+          "application/json":
+           schema:
             "$ref": "#/components/schemas/ErrorResponse"
-       '500': 
+       '500':
          description: "Internal Server Error."
-         content: 
-          "application/json": 
-           schema: 
+         content:
+          "application/json":
+           schema:
             "$ref": "#/components/schemas/ErrorResponse"
-       '503': 
+       '503':
          description: "Service Unavailable."
-         content: 
-          "application/json": 
-           schema: 
+         content:
+          "application/json":
+           schema:
             "$ref": "#/components/schemas/ErrorResponse"
-       '504': 
+       '504':
          description: "Gateway Timeout."
-         content: 
-          "application/json": 
-           schema: 
+         content:
+          "application/json":
+           schema:
             "$ref": "#/components/schemas/ErrorResponse"
 
   /{organization_name}/teams:
     parameters:
     - $ref: '#/components/parameters/organization'
     post:
-     operationId: createTeam    
+     operationId: createTeam
      tags:
      - teams
-     requestBody: 
+     requestBody:
        description: "Team information"
-       content: 
-         "application/json": 
-           schema: 
-            "$ref": "#/components/schemas/Team"    
+       content:
+         "application/json":
+           schema:
+            "$ref": "#/components/schemas/Team"
      responses:
        '201':
          description: New team
-         content: 
+         content:
            application/json:
              schema:
                $ref: '#/components/schemas/Team'
-       '400': 
+       '400':
          description: "Bad Request."
-         content: 
-          "application/json": 
-           schema: 
+         content:
+          "application/json":
+           schema:
             "$ref": "#/components/schemas/ErrorResponse"
-          "*/*": 
-           schema: 
+          "*/*":
+           schema:
             "$ref": "#/components/schemas/ErrorResponse"
-       '401': 
+       '401':
          description: "Unauthorized."
-         content: 
-          "application/json": 
-           schema: 
+         content:
+          "application/json":
+           schema:
             "$ref": "#/components/schemas/ErrorResponse"
-       '403': 
+       '403':
          description: "Forbidden."
-         content: 
-          "application/json": 
-           schema: 
+         content:
+          "application/json":
+           schema:
             "$ref": "#/components/schemas/ErrorResponse"
-       '404': 
+       '404':
          description: "Not Found."
-         content: 
-          "application/json": 
-           schema: 
+         content:
+          "application/json":
+           schema:
             "$ref": "#/components/schemas/ErrorResponse"
-       '422': 
+       '422':
          description: "AlreadyExists."
-         content: 
-          "application/json": 
-           schema: 
+         content:
+          "application/json":
+           schema:
             "$ref": "#/components/schemas/ErrorResponse"
-       '500': 
+       '500':
          description: "Internal Server Error."
-         content: 
-          "application/json": 
-           schema: 
+         content:
+          "application/json":
+           schema:
             "$ref": "#/components/schemas/ErrorResponse"
-       '503': 
+       '503':
          description: "Service Unavailable."
-         content: 
-          "application/json": 
-           schema: 
+         content:
+          "application/json":
+           schema:
             "$ref": "#/components/schemas/ErrorResponse"
-       '504': 
+       '504':
          description: "Gateway Timeout."
-         content: 
-          "application/json": 
-           schema: 
+         content:
+          "application/json":
+           schema:
             "$ref": "#/components/schemas/ErrorResponse"
     get:
      operationId: listTeams
@@ -3116,56 +3125,56 @@ paths:
      responses:
        '200':
          description: list of Teams
-         content: 
+         content:
            application/json:
              schema:
                type: array
                items:
                  $ref: '#/components/schemas/Team'
-       '400': 
+       '400':
          description: "Bad Request."
-         content: 
-          "application/json": 
-           schema: 
+         content:
+          "application/json":
+           schema:
             "$ref": "#/components/schemas/ErrorResponse"
-          "*/*": 
-           schema: 
+          "*/*":
+           schema:
             "$ref": "#/components/schemas/ErrorResponse"
-       '401': 
+       '401':
          description: "Unauthorized."
-         content: 
-          "application/json": 
-           schema: 
+         content:
+          "application/json":
+           schema:
             "$ref": "#/components/schemas/ErrorResponse"
-       '403': 
+       '403':
          description: "Forbidden."
-         content: 
-          "application/json": 
-           schema: 
+         content:
+          "application/json":
+           schema:
             "$ref": "#/components/schemas/ErrorResponse"
-       '404': 
+       '404':
          description: "Not Found."
-         content: 
-          "application/json": 
-           schema: 
+         content:
+          "application/json":
+           schema:
             "$ref": "#/components/schemas/ErrorResponse"
-       '500': 
+       '500':
          description: "Internal Server Error."
-         content: 
-          "application/json": 
-           schema: 
+         content:
+          "application/json":
+           schema:
             "$ref": "#/components/schemas/ErrorResponse"
-       '503': 
+       '503':
          description: "Service Unavailable."
-         content: 
-          "application/json": 
-           schema: 
+         content:
+          "application/json":
+           schema:
             "$ref": "#/components/schemas/ErrorResponse"
-       '504': 
+       '504':
          description: "Gateway Timeout."
-         content: 
-          "application/json": 
-           schema: 
+         content:
+          "application/json":
+           schema:
             "$ref": "#/components/schemas/ErrorResponse"
   /{organization_name}/teams/{team_name}:
     parameters:
@@ -3178,122 +3187,122 @@ paths:
      responses:
        '200':
          description:  a team
-         content: 
+         content:
            application/json:
              schema:
                $ref: '#/components/schemas/Team'
-       '400': 
+       '400':
          description: "Bad Request."
-         content: 
-          "application/json": 
-           schema: 
+         content:
+          "application/json":
+           schema:
             "$ref": "#/components/schemas/ErrorResponse"
-          "*/*": 
-           schema: 
+          "*/*":
+           schema:
             "$ref": "#/components/schemas/ErrorResponse"
-       '401': 
+       '401':
          description: "Unauthorized."
-         content: 
-          "application/json": 
-           schema: 
+         content:
+          "application/json":
+           schema:
             "$ref": "#/components/schemas/ErrorResponse"
-       '403': 
+       '403':
          description: "Forbidden."
-         content: 
-          "application/json": 
-           schema: 
+         content:
+          "application/json":
+           schema:
             "$ref": "#/components/schemas/ErrorResponse"
-       '404': 
+       '404':
          description: "Not Found."
-         content: 
-          "application/json": 
-           schema: 
+         content:
+          "application/json":
+           schema:
             "$ref": "#/components/schemas/ErrorResponse"
-       '500': 
+       '500':
          description: "Internal Server Error."
-         content: 
-          "application/json": 
-           schema: 
+         content:
+          "application/json":
+           schema:
             "$ref": "#/components/schemas/ErrorResponse"
-       '503': 
+       '503':
          description: "Service Unavailable."
-         content: 
-          "application/json": 
-           schema: 
+         content:
+          "application/json":
+           schema:
             "$ref": "#/components/schemas/ErrorResponse"
-       '504': 
+       '504':
          description: "Gateway Timeout."
-         content: 
-          "application/json": 
-           schema: 
+         content:
+          "application/json":
+           schema:
             "$ref": "#/components/schemas/ErrorResponse"
     patch:
      operationId: updateTeam
      tags:
      - teams
-     requestBody: 
+     requestBody:
        description: "An updated team object."
-       content: 
-         "application/json": 
-           schema: 
-            "$ref": "#/components/schemas/TeamPatch"    
+       content:
+         "application/json":
+           schema:
+            "$ref": "#/components/schemas/TeamPatch"
      responses:
        '200':
          description: Updated developer
-         content: 
+         content:
            application/json:
              schema:
                $ref: '#/components/schemas/Team'
-       '400': 
+       '400':
          description: "Bad Request."
-         content: 
-          "application/json": 
-           schema: 
+         content:
+          "application/json":
+           schema:
             "$ref": "#/components/schemas/ErrorResponse"
-          "*/*": 
-           schema: 
+          "*/*":
+           schema:
             "$ref": "#/components/schemas/ErrorResponse"
-       '401': 
+       '401':
          description: "Unauthorized."
-         content: 
-          "application/json": 
-           schema: 
+         content:
+          "application/json":
+           schema:
             "$ref": "#/components/schemas/ErrorResponse"
-       '403': 
+       '403':
          description: "Forbidden."
-         content: 
-          "application/json": 
-           schema: 
+         content:
+          "application/json":
+           schema:
             "$ref": "#/components/schemas/ErrorResponse"
-       '404': 
+       '404':
          description: "Not Found."
-         content: 
-          "application/json": 
-           schema: 
+         content:
+          "application/json":
+           schema:
             "$ref": "#/components/schemas/ErrorResponse"
-       '422': 
+       '422':
          description: "AlreadyExists."
-         content: 
-          "application/json": 
-           schema: 
+         content:
+          "application/json":
+           schema:
             "$ref": "#/components/schemas/ErrorResponse"
-       '500': 
+       '500':
          description: "Internal Server Error."
-         content: 
-          "application/json": 
-           schema: 
+         content:
+          "application/json":
+           schema:
             "$ref": "#/components/schemas/ErrorResponse"
-       '503': 
+       '503':
          description: "Service Unavailable."
-         content: 
-          "application/json": 
-           schema: 
+         content:
+          "application/json":
+           schema:
             "$ref": "#/components/schemas/ErrorResponse"
-       '504': 
+       '504':
          description: "Gateway Timeout."
-         content: 
-          "application/json": 
-           schema: 
+         content:
+          "application/json":
+           schema:
             "$ref": "#/components/schemas/ErrorResponse"
     delete:
      operationId: deleteTeam
@@ -3302,56 +3311,56 @@ paths:
      responses:
        '204':
          description: No content
-       '400': 
+       '400':
          description: "Bad Request."
-         content: 
-          "application/json": 
-           schema: 
+         content:
+          "application/json":
+           schema:
             "$ref": "#/components/schemas/ErrorResponse"
-          "*/*": 
-           schema: 
+          "*/*":
+           schema:
             "$ref": "#/components/schemas/ErrorResponse"
-       '401': 
+       '401':
          description: "Unauthorized."
-         content: 
-          "application/json": 
-           schema: 
+         content:
+          "application/json":
+           schema:
             "$ref": "#/components/schemas/ErrorResponse"
-       '403': 
+       '403':
          description: "Forbidden."
-         content: 
-          "application/json": 
-           schema: 
+         content:
+          "application/json":
+           schema:
             "$ref": "#/components/schemas/ErrorResponse"
-       '404': 
+       '404':
          description: "Not Found."
-         content: 
-          "application/json": 
-           schema: 
+         content:
+          "application/json":
+           schema:
             "$ref": "#/components/schemas/ErrorResponse"
-       '422': 
+       '422':
          description: "AlreadyExists."
-         content: 
-          "application/json": 
-           schema: 
+         content:
+          "application/json":
+           schema:
             "$ref": "#/components/schemas/ErrorResponse"
-       '500': 
+       '500':
          description: "Internal Server Error."
-         content: 
-          "application/json": 
-           schema: 
+         content:
+          "application/json":
+           schema:
             "$ref": "#/components/schemas/ErrorResponse"
-       '503': 
+       '503':
          description: "Service Unavailable."
-         content: 
-          "application/json": 
-           schema: 
+         content:
+          "application/json":
+           schema:
             "$ref": "#/components/schemas/ErrorResponse"
-       '504': 
+       '504':
          description: "Gateway Timeout."
-         content: 
-          "application/json": 
-           schema: 
+         content:
+          "application/json":
+           schema:
             "$ref": "#/components/schemas/ErrorResponse"
   /{organization_name}/teams/{team_name}/apps:
     parameters:
@@ -3362,69 +3371,69 @@ paths:
      tags:
      - apps
      - teams
-     requestBody: 
+     requestBody:
        description: "App information"
-       content: 
-         "application/json": 
-           schema: 
-            "$ref": "#/components/schemas/App"    
+       content:
+         "application/json":
+           schema:
+            "$ref": "#/components/schemas/App"
      responses:
        '201':
          description: New API Product
-         content: 
+         content:
            application/json:
              schema:
                $ref: '#/components/schemas/App'
-       '400': 
+       '400':
          description: "Bad Request."
-         content: 
-          "application/json": 
-           schema: 
+         content:
+          "application/json":
+           schema:
             "$ref": "#/components/schemas/ErrorResponse"
-          "*/*": 
-           schema: 
+          "*/*":
+           schema:
             "$ref": "#/components/schemas/ErrorResponse"
-       '401': 
+       '401':
          description: "Unauthorized."
-         content: 
-          "application/json": 
-           schema: 
+         content:
+          "application/json":
+           schema:
             "$ref": "#/components/schemas/ErrorResponse"
-       '403': 
+       '403':
          description: "Forbidden."
-         content: 
-          "application/json": 
-           schema: 
+         content:
+          "application/json":
+           schema:
             "$ref": "#/components/schemas/ErrorResponse"
-       '404': 
+       '404':
          description: "Not Found."
-         content: 
-          "application/json": 
-           schema: 
+         content:
+          "application/json":
+           schema:
             "$ref": "#/components/schemas/ErrorResponse"
-       '422': 
+       '422':
          description: "AlreadyExists."
-         content: 
-          "application/json": 
-           schema: 
+         content:
+          "application/json":
+           schema:
             "$ref": "#/components/schemas/ErrorResponse"
-       '500': 
+       '500':
          description: "Internal Server Error."
-         content: 
-          "application/json": 
-           schema: 
+         content:
+          "application/json":
+           schema:
             "$ref": "#/components/schemas/ErrorResponse"
-       '503': 
+       '503':
          description: "Service Unavailable."
-         content: 
-          "application/json": 
-           schema: 
+         content:
+          "application/json":
+           schema:
             "$ref": "#/components/schemas/ErrorResponse"
-       '504': 
+       '504':
          description: "Gateway Timeout."
-         content: 
-          "application/json": 
-           schema: 
+         content:
+          "application/json":
+           schema:
             "$ref": "#/components/schemas/ErrorResponse"
     get:
      operationId: listTeamApps
@@ -3435,62 +3444,62 @@ paths:
      - in: query
        name: status
        schema:
-        "$ref": "#/components/schemas/AppStatus"    
+        "$ref": "#/components/schemas/AppStatus"
      - $ref: '#/components/parameters/page_size'
      - $ref: '#/components/parameters/page_number'
      responses:
        '200':
          description: list of apps
-         content: 
+         content:
            application/json:
              schema:
                type: array
                items:
                  $ref: '#/components/schemas/App'
-       '400': 
+       '400':
          description: "Bad Request."
-         content: 
-          "application/json": 
-           schema: 
+         content:
+          "application/json":
+           schema:
             "$ref": "#/components/schemas/ErrorResponse"
-          "*/*": 
-           schema: 
+          "*/*":
+           schema:
             "$ref": "#/components/schemas/ErrorResponse"
-       '401': 
+       '401':
          description: "Unauthorized."
-         content: 
-          "application/json": 
-           schema: 
+         content:
+          "application/json":
+           schema:
             "$ref": "#/components/schemas/ErrorResponse"
-       '403': 
+       '403':
          description: "Forbidden."
-         content: 
-          "application/json": 
-           schema: 
+         content:
+          "application/json":
+           schema:
             "$ref": "#/components/schemas/ErrorResponse"
-       '404': 
+       '404':
          description: "Not Found."
-         content: 
-          "application/json": 
-           schema: 
+         content:
+          "application/json":
+           schema:
             "$ref": "#/components/schemas/ErrorResponse"
-       '500': 
+       '500':
          description: "Internal Server Error."
-         content: 
-          "application/json": 
-           schema: 
+         content:
+          "application/json":
+           schema:
             "$ref": "#/components/schemas/ErrorResponse"
-       '503': 
+       '503':
          description: "Service Unavailable."
-         content: 
-          "application/json": 
-           schema: 
+         content:
+          "application/json":
+           schema:
             "$ref": "#/components/schemas/ErrorResponse"
-       '504': 
+       '504':
          description: "Gateway Timeout."
-         content: 
-          "application/json": 
-           schema: 
+         content:
+          "application/json":
+           schema:
             "$ref": "#/components/schemas/ErrorResponse"
   /{organization_name}/teams/{team_name}/apps/{app_name}:
     parameters:
@@ -3499,7 +3508,7 @@ paths:
     - $ref: '#/components/parameters/app_name'
     get:
      operationId: getTeamApp
-     parameters: 
+     parameters:
      - $ref: '#/components/parameters/topicSyntax'
      tags:
      - apps
@@ -3507,123 +3516,123 @@ paths:
      responses:
        '200':
          description:  an app
-         content: 
+         content:
            application/json:
              schema:
                $ref: '#/components/schemas/AppResponse'
-       '400': 
+       '400':
          description: "Bad Request."
-         content: 
-          "application/json": 
-           schema: 
+         content:
+          "application/json":
+           schema:
             "$ref": "#/components/schemas/ErrorResponse"
-          "*/*": 
-           schema: 
+          "*/*":
+           schema:
             "$ref": "#/components/schemas/ErrorResponse"
-       '401': 
+       '401':
          description: "Unauthorized."
-         content: 
-          "application/json": 
-           schema: 
+         content:
+          "application/json":
+           schema:
             "$ref": "#/components/schemas/ErrorResponse"
-       '403': 
+       '403':
          description: "Forbidden."
-         content: 
-          "application/json": 
-           schema: 
+         content:
+          "application/json":
+           schema:
             "$ref": "#/components/schemas/ErrorResponse"
-       '404': 
+       '404':
          description: "Not Found."
-         content: 
-          "application/json": 
-           schema: 
+         content:
+          "application/json":
+           schema:
             "$ref": "#/components/schemas/ErrorResponse"
-       '500': 
+       '500':
          description: "Internal Server Error."
-         content: 
-          "application/json": 
-           schema: 
+         content:
+          "application/json":
+           schema:
             "$ref": "#/components/schemas/ErrorResponse"
-       '503': 
+       '503':
          description: "Service Unavailable."
-         content: 
-          "application/json": 
-           schema: 
+         content:
+          "application/json":
+           schema:
             "$ref": "#/components/schemas/ErrorResponse"
-       '504': 
+       '504':
          description: "Gateway Timeout."
-         content: 
-          "application/json": 
-           schema: 
+         content:
+          "application/json":
+           schema:
             "$ref": "#/components/schemas/ErrorResponse"
     patch:
      operationId: updateTeamApp
      tags:
      - apps
      - teams
-     requestBody: 
+     requestBody:
        description: ""
-       content: 
-         "application/json": 
-           schema: 
-            "$ref": "#/components/schemas/AppPatch"    
+       content:
+         "application/json":
+           schema:
+            "$ref": "#/components/schemas/AppPatch"
      responses:
        '200':
          description: App
-         content: 
+         content:
            application/json:
              schema:
                $ref: '#/components/schemas/AppResponse'
-       '400': 
+       '400':
          description: "Bad Request."
-         content: 
-          "application/json": 
-           schema: 
+         content:
+          "application/json":
+           schema:
             "$ref": "#/components/schemas/ErrorResponse"
-          "*/*": 
-           schema: 
+          "*/*":
+           schema:
             "$ref": "#/components/schemas/ErrorResponse"
-       '401': 
+       '401':
          description: "Unauthorized."
-         content: 
-          "application/json": 
-           schema: 
+         content:
+          "application/json":
+           schema:
             "$ref": "#/components/schemas/ErrorResponse"
-       '403': 
+       '403':
          description: "Forbidden."
-         content: 
-          "application/json": 
-           schema: 
+         content:
+          "application/json":
+           schema:
             "$ref": "#/components/schemas/ErrorResponse"
-       '404': 
+       '404':
          description: "Not Found."
-         content: 
-          "application/json": 
-           schema: 
+         content:
+          "application/json":
+           schema:
             "$ref": "#/components/schemas/ErrorResponse"
-       '422': 
+       '422':
          description: "AlreadyExists."
-         content: 
-          "application/json": 
-           schema: 
+         content:
+          "application/json":
+           schema:
             "$ref": "#/components/schemas/ErrorResponse"
-       '500': 
+       '500':
          description: "Internal Server Error."
-         content: 
-          "application/json": 
-           schema: 
+         content:
+          "application/json":
+           schema:
             "$ref": "#/components/schemas/ErrorResponse"
-       '503': 
+       '503':
          description: "Service Unavailable."
-         content: 
-          "application/json": 
-           schema: 
+         content:
+          "application/json":
+           schema:
             "$ref": "#/components/schemas/ErrorResponse"
-       '504': 
+       '504':
          description: "Gateway Timeout."
-         content: 
-          "application/json": 
-           schema: 
+         content:
+          "application/json":
+           schema:
             "$ref": "#/components/schemas/ErrorResponse"
     delete:
      operationId: deleteTeamApp
@@ -3633,56 +3642,56 @@ paths:
      responses:
        '204':
          description: No content
-       '400': 
+       '400':
          description: "Bad Request."
-         content: 
-          "application/json": 
-           schema: 
+         content:
+          "application/json":
+           schema:
             "$ref": "#/components/schemas/ErrorResponse"
-          "*/*": 
-           schema: 
+          "*/*":
+           schema:
             "$ref": "#/components/schemas/ErrorResponse"
-       '401': 
+       '401':
          description: "Unauthorized."
-         content: 
-          "application/json": 
-           schema: 
+         content:
+          "application/json":
+           schema:
             "$ref": "#/components/schemas/ErrorResponse"
-       '403': 
+       '403':
          description: "Forbidden."
-         content: 
-          "application/json": 
-           schema: 
+         content:
+          "application/json":
+           schema:
             "$ref": "#/components/schemas/ErrorResponse"
-       '404': 
+       '404':
          description: "Not Found."
-         content: 
-          "application/json": 
-           schema: 
+         content:
+          "application/json":
+           schema:
             "$ref": "#/components/schemas/ErrorResponse"
-       '422': 
+       '422':
          description: "AlreadyExists."
-         content: 
-          "application/json": 
-           schema: 
+         content:
+          "application/json":
+           schema:
             "$ref": "#/components/schemas/ErrorResponse"
-       '500': 
+       '500':
          description: "Internal Server Error."
-         content: 
-          "application/json": 
-           schema: 
+         content:
+          "application/json":
+           schema:
             "$ref": "#/components/schemas/ErrorResponse"
-       '503': 
+       '503':
          description: "Service Unavailable."
-         content: 
-          "application/json": 
-           schema: 
+         content:
+          "application/json":
+           schema:
             "$ref": "#/components/schemas/ErrorResponse"
-       '504': 
+       '504':
          description: "Gateway Timeout."
-         content: 
-          "application/json": 
-           schema: 
+         content:
+          "application/json":
+           schema:
             "$ref": "#/components/schemas/ErrorResponse"
 
   /{organization_name}/apps:
@@ -3691,7 +3700,7 @@ paths:
     - in: query
       name: status
       schema:
-        "$ref": "#/components/schemas/AppStatus"    
+        "$ref": "#/components/schemas/AppStatus"
     get:
      operationId: listApps
      tags:
@@ -3702,56 +3711,56 @@ paths:
      responses:
        '200':
          description: list of apps
-         content: 
+         content:
            application/json:
              schema:
                type: array
                items:
                  $ref: '#/components/schemas/AppListItem'
-       '400': 
+       '400':
          description: "Bad Request."
-         content: 
-          "application/json": 
-           schema: 
+         content:
+          "application/json":
+           schema:
             "$ref": "#/components/schemas/ErrorResponse"
-          "*/*": 
-           schema: 
+          "*/*":
+           schema:
             "$ref": "#/components/schemas/ErrorResponse"
-       '401': 
+       '401':
          description: "Unauthorized."
-         content: 
-          "application/json": 
-           schema: 
+         content:
+          "application/json":
+           schema:
             "$ref": "#/components/schemas/ErrorResponse"
-       '403': 
+       '403':
          description: "Forbidden."
-         content: 
-          "application/json": 
-           schema: 
+         content:
+          "application/json":
+           schema:
             "$ref": "#/components/schemas/ErrorResponse"
-       '404': 
+       '404':
          description: "Not Found."
-         content: 
-          "application/json": 
-           schema: 
+         content:
+          "application/json":
+           schema:
             "$ref": "#/components/schemas/ErrorResponse"
-       '500': 
+       '500':
          description: "Internal Server Error."
-         content: 
-          "application/json": 
-           schema: 
+         content:
+          "application/json":
+           schema:
             "$ref": "#/components/schemas/ErrorResponse"
-       '503': 
+       '503':
          description: "Service Unavailable."
-         content: 
-          "application/json": 
-           schema: 
+         content:
+          "application/json":
+           schema:
             "$ref": "#/components/schemas/ErrorResponse"
-       '504': 
+       '504':
          description: "Gateway Timeout."
-         content: 
-          "application/json": 
-           schema: 
+         content:
+          "application/json":
+           schema:
             "$ref": "#/components/schemas/ErrorResponse"
   /{organization_name}/apps/{app_name}:
     parameters:
@@ -3765,55 +3774,55 @@ paths:
      - apps
      responses:
        '200':
-         description:  an app 
-         content: 
+         description:  an app
+         content:
            application/json:
              schema:
                $ref: '#/components/schemas/AppResponse'
-       '400': 
+       '400':
          description: "Bad Request."
-         content: 
-          "application/json": 
-           schema: 
+         content:
+          "application/json":
+           schema:
             "$ref": "#/components/schemas/ErrorResponse"
-          "*/*": 
-           schema: 
+          "*/*":
+           schema:
             "$ref": "#/components/schemas/ErrorResponse"
-       '401': 
+       '401':
          description: "Unauthorized."
-         content: 
-          "application/json": 
-           schema: 
+         content:
+          "application/json":
+           schema:
             "$ref": "#/components/schemas/ErrorResponse"
-       '403': 
+       '403':
          description: "Forbidden."
-         content: 
-          "application/json": 
-           schema: 
+         content:
+          "application/json":
+           schema:
             "$ref": "#/components/schemas/ErrorResponse"
-       '404': 
+       '404':
          description: "Not Found."
-         content: 
-          "application/json": 
-           schema: 
+         content:
+          "application/json":
+           schema:
             "$ref": "#/components/schemas/ErrorResponse"
-       '500': 
+       '500':
          description: "Internal Server Error."
-         content: 
-          "application/json": 
-           schema: 
+         content:
+          "application/json":
+           schema:
             "$ref": "#/components/schemas/ErrorResponse"
-       '503': 
+       '503':
          description: "Service Unavailable."
-         content: 
-          "application/json": 
-           schema: 
+         content:
+          "application/json":
+           schema:
             "$ref": "#/components/schemas/ErrorResponse"
-       '504': 
+       '504':
          description: "Gateway Timeout."
-         content: 
-          "application/json": 
-           schema: 
+         content:
+          "application/json":
+           schema:
             "$ref": "#/components/schemas/ErrorResponse"
   /{organization_name}/apps/{app_name}/apis:
     parameters:
@@ -3825,57 +3834,57 @@ paths:
      - apps
      responses:
        '200':
-         description:  an app 
-         content: 
+         description:  an app
+         content:
            application/json:
              schema:
                type: array
-               items: 
+               items:
                 type: string
-       '400': 
+       '400':
          description: "Bad Request."
-         content: 
-          "application/json": 
-           schema: 
+         content:
+          "application/json":
+           schema:
             "$ref": "#/components/schemas/ErrorResponse"
-          "*/*": 
-           schema: 
+          "*/*":
+           schema:
             "$ref": "#/components/schemas/ErrorResponse"
-       '401': 
+       '401':
          description: "Unauthorized."
-         content: 
-          "application/json": 
-           schema: 
+         content:
+          "application/json":
+           schema:
             "$ref": "#/components/schemas/ErrorResponse"
-       '403': 
+       '403':
          description: "Forbidden."
-         content: 
-          "application/json": 
-           schema: 
+         content:
+          "application/json":
+           schema:
             "$ref": "#/components/schemas/ErrorResponse"
-       '404': 
+       '404':
          description: "Not Found."
-         content: 
-          "application/json": 
-           schema: 
+         content:
+          "application/json":
+           schema:
             "$ref": "#/components/schemas/ErrorResponse"
-       '500': 
+       '500':
          description: "Internal Server Error."
-         content: 
-          "application/json": 
-           schema: 
+         content:
+          "application/json":
+           schema:
             "$ref": "#/components/schemas/ErrorResponse"
-       '503': 
+       '503':
          description: "Service Unavailable."
-         content: 
-          "application/json": 
-           schema: 
+         content:
+          "application/json":
+           schema:
             "$ref": "#/components/schemas/ErrorResponse"
-       '504': 
+       '504':
          description: "Gateway Timeout."
-         content: 
-          "application/json": 
-           schema: 
+         content:
+          "application/json":
+           schema:
             "$ref": "#/components/schemas/ErrorResponse"
   /{organization_name}/apps/{app_name}/apis/{api_name}:
     parameters:
@@ -3897,57 +3906,57 @@ paths:
      responses:
        '200':
          description:  async api sepc
-         content: 
+         content:
            application/json:
              schema:
                type: object
            application/x-yaml:
              schema:
                type: string
-       '400': 
+       '400':
          description: "Bad Request."
-         content: 
-          "application/json": 
-           schema: 
+         content:
+          "application/json":
+           schema:
             "$ref": "#/components/schemas/ErrorResponse"
-          "*/*": 
-           schema: 
+          "*/*":
+           schema:
             "$ref": "#/components/schemas/ErrorResponse"
-       '401': 
+       '401':
          description: "Unauthorized."
-         content: 
-          "application/json": 
-           schema: 
+         content:
+          "application/json":
+           schema:
             "$ref": "#/components/schemas/ErrorResponse"
-       '403': 
+       '403':
          description: "Forbidden."
-         content: 
-          "application/json": 
-           schema: 
+         content:
+          "application/json":
+           schema:
             "$ref": "#/components/schemas/ErrorResponse"
-       '404': 
+       '404':
          description: "Not Found."
-         content: 
-          "application/json": 
-           schema: 
+         content:
+          "application/json":
+           schema:
             "$ref": "#/components/schemas/ErrorResponse"
-       '500': 
+       '500':
          description: "Internal Server Error."
-         content: 
-          "application/json": 
-           schema: 
+         content:
+          "application/json":
+           schema:
             "$ref": "#/components/schemas/ErrorResponse"
-       '503': 
+       '503':
          description: "Service Unavailable."
-         content: 
-          "application/json": 
-           schema: 
+         content:
+          "application/json":
+           schema:
             "$ref": "#/components/schemas/ErrorResponse"
-       '504': 
+       '504':
          description: "Gateway Timeout."
-         content: 
-          "application/json": 
-           schema: 
+         content:
+          "application/json":
+           schema:
             "$ref": "#/components/schemas/ErrorResponse"
 
   /{organization_name}/environments:
@@ -3957,69 +3966,69 @@ paths:
      operationId: createEnvironment
      tags:
      - environments
-     requestBody: 
+     requestBody:
        description: "Environment information"
-       content: 
-         "application/json": 
-           schema: 
-            "$ref": "#/components/schemas/Environment"    
+       content:
+         "application/json":
+           schema:
+            "$ref": "#/components/schemas/Environment"
      responses:
        '201':
          description: New environment
-         content: 
+         content:
            application/json:
              schema:
                $ref: '#/components/schemas/Environment'
-       '400': 
+       '400':
          description: "Bad Request."
-         content: 
-          "application/json": 
-           schema: 
+         content:
+          "application/json":
+           schema:
             "$ref": "#/components/schemas/ErrorResponse"
-          "*/*": 
-           schema: 
+          "*/*":
+           schema:
             "$ref": "#/components/schemas/ErrorResponse"
-       '401': 
+       '401':
          description: "Unauthorized."
-         content: 
-          "application/json": 
-           schema: 
+         content:
+          "application/json":
+           schema:
             "$ref": "#/components/schemas/ErrorResponse"
-       '403': 
+       '403':
          description: "Forbidden."
-         content: 
-          "application/json": 
-           schema: 
+         content:
+          "application/json":
+           schema:
             "$ref": "#/components/schemas/ErrorResponse"
-       '404': 
+       '404':
          description: "Not Found."
-         content: 
-          "application/json": 
-           schema: 
+         content:
+          "application/json":
+           schema:
             "$ref": "#/components/schemas/ErrorResponse"
-       '422': 
+       '422':
          description: "AlreadyExists."
-         content: 
-          "application/json": 
-           schema: 
+         content:
+          "application/json":
+           schema:
             "$ref": "#/components/schemas/ErrorResponse"
-       '500': 
+       '500':
          description: "Internal Server Error."
-         content: 
-          "application/json": 
-           schema: 
+         content:
+          "application/json":
+           schema:
             "$ref": "#/components/schemas/ErrorResponse"
-       '503': 
+       '503':
          description: "Service Unavailable."
-         content: 
-          "application/json": 
-           schema: 
+         content:
+          "application/json":
+           schema:
             "$ref": "#/components/schemas/ErrorResponse"
-       '504': 
+       '504':
          description: "Gateway Timeout."
-         content: 
-          "application/json": 
-           schema: 
+         content:
+          "application/json":
+           schema:
             "$ref": "#/components/schemas/ErrorResponse"
     get:
      operationId: listEnvironments
@@ -4039,56 +4048,56 @@ paths:
      responses:
        '200':
          description: list of environments
-         content: 
+         content:
            application/json:
              schema:
                type: array
                items:
                  $ref: '#/components/schemas/EnvironmentListItem'
-       '400': 
+       '400':
          description: "Bad Request."
-         content: 
-          "application/json": 
-           schema: 
+         content:
+          "application/json":
+           schema:
             "$ref": "#/components/schemas/ErrorResponse"
-          "*/*": 
-           schema: 
+          "*/*":
+           schema:
             "$ref": "#/components/schemas/ErrorResponse"
-       '401': 
+       '401':
          description: "Unauthorized."
-         content: 
-          "application/json": 
-           schema: 
+         content:
+          "application/json":
+           schema:
             "$ref": "#/components/schemas/ErrorResponse"
-       '403': 
+       '403':
          description: "Forbidden."
-         content: 
-          "application/json": 
-           schema: 
+         content:
+          "application/json":
+           schema:
             "$ref": "#/components/schemas/ErrorResponse"
-       '404': 
+       '404':
          description: "Not Found."
-         content: 
-          "application/json": 
-           schema: 
+         content:
+          "application/json":
+           schema:
             "$ref": "#/components/schemas/ErrorResponse"
-       '500': 
+       '500':
          description: "Internal Server Error."
-         content: 
-          "application/json": 
-           schema: 
+         content:
+          "application/json":
+           schema:
             "$ref": "#/components/schemas/ErrorResponse"
-       '503': 
+       '503':
          description: "Service Unavailable."
-         content: 
-          "application/json": 
-           schema: 
+         content:
+          "application/json":
+           schema:
             "$ref": "#/components/schemas/ErrorResponse"
-       '504': 
+       '504':
          description: "Gateway Timeout."
-         content: 
-          "application/json": 
-           schema: 
+         content:
+          "application/json":
+           schema:
             "$ref": "#/components/schemas/ErrorResponse"
   /{organization_name}/environments/{env_name}:
     parameters:
@@ -4101,122 +4110,122 @@ paths:
      responses:
        '200':
          description:  environment
-         content: 
+         content:
            application/json:
              schema:
                $ref: '#/components/schemas/EnvironmentResponse'
-       '400': 
+       '400':
          description: "Bad Request."
-         content: 
-          "application/json": 
-           schema: 
+         content:
+          "application/json":
+           schema:
             "$ref": "#/components/schemas/ErrorResponse"
-          "*/*": 
-           schema: 
+          "*/*":
+           schema:
             "$ref": "#/components/schemas/ErrorResponse"
-       '401': 
+       '401':
          description: "Unauthorized."
-         content: 
-          "application/json": 
-           schema: 
+         content:
+          "application/json":
+           schema:
             "$ref": "#/components/schemas/ErrorResponse"
-       '403': 
+       '403':
          description: "Forbidden."
-         content: 
-          "application/json": 
-           schema: 
+         content:
+          "application/json":
+           schema:
             "$ref": "#/components/schemas/ErrorResponse"
-       '404': 
+       '404':
          description: "Not Found."
-         content: 
-          "application/json": 
-           schema: 
+         content:
+          "application/json":
+           schema:
             "$ref": "#/components/schemas/ErrorResponse"
-       '500': 
+       '500':
          description: "Internal Server Error."
-         content: 
-          "application/json": 
-           schema: 
+         content:
+          "application/json":
+           schema:
             "$ref": "#/components/schemas/ErrorResponse"
-       '503': 
+       '503':
          description: "Service Unavailable."
-         content: 
-          "application/json": 
-           schema: 
+         content:
+          "application/json":
+           schema:
             "$ref": "#/components/schemas/ErrorResponse"
-       '504': 
+       '504':
          description: "Gateway Timeout."
-         content: 
-          "application/json": 
-           schema: 
+         content:
+          "application/json":
+           schema:
             "$ref": "#/components/schemas/ErrorResponse"
     patch:
      operationId: updateEnvironment
      tags:
      - environments
-     requestBody: 
+     requestBody:
        description: "Application domains have a name and topic domain."
-       content: 
-         "application/json": 
-           schema: 
-            "$ref": "#/components/schemas/EnvironmentPatch"    
+       content:
+         "application/json":
+           schema:
+            "$ref": "#/components/schemas/EnvironmentPatch"
      responses:
        '200':
          description: Updated Environment
-         content: 
+         content:
            application/json:
              schema:
                $ref: '#/components/schemas/Environment'
-       '400': 
+       '400':
          description: "Bad Request."
-         content: 
-          "application/json": 
-           schema: 
+         content:
+          "application/json":
+           schema:
             "$ref": "#/components/schemas/ErrorResponse"
-          "*/*": 
-           schema: 
+          "*/*":
+           schema:
             "$ref": "#/components/schemas/ErrorResponse"
-       '401': 
+       '401':
          description: "Unauthorized."
-         content: 
-          "application/json": 
-           schema: 
+         content:
+          "application/json":
+           schema:
             "$ref": "#/components/schemas/ErrorResponse"
-       '403': 
+       '403':
          description: "Forbidden."
-         content: 
-          "application/json": 
-           schema: 
+         content:
+          "application/json":
+           schema:
             "$ref": "#/components/schemas/ErrorResponse"
-       '404': 
+       '404':
          description: "Not Found."
-         content: 
-          "application/json": 
-           schema: 
+         content:
+          "application/json":
+           schema:
             "$ref": "#/components/schemas/ErrorResponse"
-       '422': 
+       '422':
          description: "AlreadyExists."
-         content: 
-          "application/json": 
-           schema: 
+         content:
+          "application/json":
+           schema:
             "$ref": "#/components/schemas/ErrorResponse"
-       '500': 
+       '500':
          description: "Internal Server Error."
-         content: 
-          "application/json": 
-           schema: 
+         content:
+          "application/json":
+           schema:
             "$ref": "#/components/schemas/ErrorResponse"
-       '503': 
+       '503':
          description: "Service Unavailable."
-         content: 
-          "application/json": 
-           schema: 
+         content:
+          "application/json":
+           schema:
             "$ref": "#/components/schemas/ErrorResponse"
-       '504': 
+       '504':
          description: "Gateway Timeout."
-         content: 
-          "application/json": 
-           schema: 
+         content:
+          "application/json":
+           schema:
             "$ref": "#/components/schemas/ErrorResponse"
     delete:
      operationId: deleteEnvironment
@@ -4225,56 +4234,56 @@ paths:
      responses:
        '204':
          description: No contentt
-       '400': 
+       '400':
          description: "Bad Request."
-         content: 
-          "application/json": 
-           schema: 
+         content:
+          "application/json":
+           schema:
             "$ref": "#/components/schemas/ErrorResponse"
-          "*/*": 
-           schema: 
+          "*/*":
+           schema:
             "$ref": "#/components/schemas/ErrorResponse"
-       '401': 
+       '401':
          description: "Unauthorized."
-         content: 
-          "application/json": 
-           schema: 
+         content:
+          "application/json":
+           schema:
             "$ref": "#/components/schemas/ErrorResponse"
-       '403': 
+       '403':
          description: "Forbidden."
-         content: 
-          "application/json": 
-           schema: 
+         content:
+          "application/json":
+           schema:
             "$ref": "#/components/schemas/ErrorResponse"
-       '404': 
+       '404':
          description: "Not Found."
-         content: 
-          "application/json": 
-           schema: 
+         content:
+          "application/json":
+           schema:
             "$ref": "#/components/schemas/ErrorResponse"
-       '422': 
+       '422':
          description: "AlreadyExists."
-         content: 
-          "application/json": 
-           schema: 
+         content:
+          "application/json":
+           schema:
             "$ref": "#/components/schemas/ErrorResponse"
-       '500': 
+       '500':
          description: "Internal Server Error."
-         content: 
-          "application/json": 
-           schema: 
+         content:
+          "application/json":
+           schema:
             "$ref": "#/components/schemas/ErrorResponse"
-       '503': 
+       '503':
          description: "Service Unavailable."
-         content: 
-          "application/json": 
-           schema: 
+         content:
+          "application/json":
+           schema:
             "$ref": "#/components/schemas/ErrorResponse"
-       '504': 
+       '504':
          description: "Gateway Timeout."
-         content: 
-          "application/json": 
-           schema: 
+         content:
+          "application/json":
+           schema:
             "$ref": "#/components/schemas/ErrorResponse"
   /{organization_name}/services:
     parameters:
@@ -4289,56 +4298,56 @@ paths:
      responses:
        '200':
          description: list of services on the associated Solace Cloud account
-         content: 
+         content:
            application/json:
              schema:
                type: array
                items:
                  $ref: '#/components/schemas/Service'
-       '400': 
+       '400':
          description: "Bad Request."
-         content: 
-          "application/json": 
-           schema: 
+         content:
+          "application/json":
+           schema:
             "$ref": "#/components/schemas/ErrorResponse"
-          "*/*": 
-           schema: 
+          "*/*":
+           schema:
             "$ref": "#/components/schemas/ErrorResponse"
-       '401': 
+       '401':
          description: "Unauthorized."
-         content: 
-          "application/json": 
-           schema: 
+         content:
+          "application/json":
+           schema:
             "$ref": "#/components/schemas/ErrorResponse"
-       '403': 
+       '403':
          description: "Forbidden."
-         content: 
-          "application/json": 
-           schema: 
+         content:
+          "application/json":
+           schema:
             "$ref": "#/components/schemas/ErrorResponse"
-       '404': 
+       '404':
          description: "Not Found."
-         content: 
-          "application/json": 
-           schema: 
+         content:
+          "application/json":
+           schema:
             "$ref": "#/components/schemas/ErrorResponse"
-       '500': 
+       '500':
          description: "Internal Server Error."
-         content: 
-          "application/json": 
-           schema: 
+         content:
+          "application/json":
+           schema:
             "$ref": "#/components/schemas/ErrorResponse"
-       '503': 
+       '503':
          description: "Service Unavailable."
-         content: 
-          "application/json": 
-           schema: 
+         content:
+          "application/json":
+           schema:
             "$ref": "#/components/schemas/ErrorResponse"
-       '504': 
+       '504':
          description: "Gateway Timeout."
-         content: 
-          "application/json": 
-           schema: 
+         content:
+          "application/json":
+           schema:
             "$ref": "#/components/schemas/ErrorResponse"
 
   /{organization_name}/eventApiProducts:
@@ -4351,54 +4360,54 @@ paths:
      responses:
        '200':
          description: list of event api products defined in the associated Event Portal
-         content: 
+         content:
            application/json:
              schema:
               $ref: '#/components/schemas/EventAPIProductList'
-       '400': 
+       '400':
          description: "Bad Request."
-         content: 
-          "application/json": 
-           schema: 
+         content:
+          "application/json":
+           schema:
             "$ref": "#/components/schemas/ErrorResponse"
-          "*/*": 
-           schema: 
+          "*/*":
+           schema:
             "$ref": "#/components/schemas/ErrorResponse"
-       '401': 
+       '401':
          description: "Unauthorized."
-         content: 
-          "application/json": 
-           schema: 
+         content:
+          "application/json":
+           schema:
             "$ref": "#/components/schemas/ErrorResponse"
-       '403': 
+       '403':
          description: "Forbidden."
-         content: 
-          "application/json": 
-           schema: 
+         content:
+          "application/json":
+           schema:
             "$ref": "#/components/schemas/ErrorResponse"
-       '404': 
+       '404':
          description: "Not Found."
-         content: 
-          "application/json": 
-           schema: 
+         content:
+          "application/json":
+           schema:
             "$ref": "#/components/schemas/ErrorResponse"
-       '500': 
+       '500':
          description: "Internal Server Error."
-         content: 
-          "application/json": 
-           schema: 
+         content:
+          "application/json":
+           schema:
             "$ref": "#/components/schemas/ErrorResponse"
-       '503': 
+       '503':
          description: "Service Unavailable."
-         content: 
-          "application/json": 
-           schema: 
+         content:
+          "application/json":
+           schema:
             "$ref": "#/components/schemas/ErrorResponse"
-       '504': 
+       '504':
          description: "Gateway Timeout."
-         content: 
-          "application/json": 
-           schema: 
+         content:
+          "application/json":
+           schema:
             "$ref": "#/components/schemas/ErrorResponse"
   /{organization_name}/eventApiProducts/{event_api_product_id}:
     parameters:
@@ -4411,54 +4420,54 @@ paths:
      responses:
        '200':
          description: an event api products defined in the associated Event Portal
-         content: 
+         content:
            application/json:
              schema:
               $ref: '#/components/schemas/EventAPIProduct'
-       '400': 
+       '400':
          description: "Bad Request."
-         content: 
-          "application/json": 
-           schema: 
+         content:
+          "application/json":
+           schema:
             "$ref": "#/components/schemas/ErrorResponse"
-          "*/*": 
-           schema: 
+          "*/*":
+           schema:
             "$ref": "#/components/schemas/ErrorResponse"
-       '401': 
+       '401':
          description: "Unauthorized."
-         content: 
-          "application/json": 
-           schema: 
+         content:
+          "application/json":
+           schema:
             "$ref": "#/components/schemas/ErrorResponse"
-       '403': 
+       '403':
          description: "Forbidden."
-         content: 
-          "application/json": 
-           schema: 
+         content:
+          "application/json":
+           schema:
             "$ref": "#/components/schemas/ErrorResponse"
-       '404': 
+       '404':
          description: "Not Found."
-         content: 
-          "application/json": 
-           schema: 
+         content:
+          "application/json":
+           schema:
             "$ref": "#/components/schemas/ErrorResponse"
-       '500': 
+       '500':
          description: "Internal Server Error."
-         content: 
-          "application/json": 
-           schema: 
+         content:
+          "application/json":
+           schema:
             "$ref": "#/components/schemas/ErrorResponse"
-       '503': 
+       '503':
          description: "Service Unavailable."
-         content: 
-          "application/json": 
-           schema: 
+         content:
+          "application/json":
+           schema:
             "$ref": "#/components/schemas/ErrorResponse"
-       '504': 
+       '504':
          description: "Gateway Timeout."
-         content: 
-          "application/json": 
-           schema: 
+         content:
+          "application/json":
+           schema:
             "$ref": "#/components/schemas/ErrorResponse"
 
   /{organization_name}/eventApiProducts/{event_api_product_id}/asyncApi:
@@ -4485,7 +4494,7 @@ paths:
               schema:
                 type: object
                 additionalProperties: true
-                example: 
+                example:
                   asyncapi: 2.0.0
                   info:
                     title: Hello world application
@@ -4499,7 +4508,7 @@ paths:
             application/x-yaml:
              schema:
                 type: string
-                example: 
+                example:
                   asyncapi: 2.0.0
                   info:
                     title: Hello world application
@@ -4510,48 +4519,48 @@ paths:
                         message:
                           payload:
                             type: string
-       '400': 
+       '400':
          description: "Bad Request."
-         content: 
-          "application/json": 
-           schema: 
+         content:
+          "application/json":
+           schema:
             "$ref": "#/components/schemas/ErrorResponse"
-          "*/*": 
-           schema: 
+          "*/*":
+           schema:
             "$ref": "#/components/schemas/ErrorResponse"
-       '401': 
+       '401':
          description: "Unauthorized."
-         content: 
-          "application/json": 
-           schema: 
+         content:
+          "application/json":
+           schema:
             "$ref": "#/components/schemas/ErrorResponse"
-       '403': 
+       '403':
          description: "Forbidden."
-         content: 
-          "application/json": 
-           schema: 
+         content:
+          "application/json":
+           schema:
             "$ref": "#/components/schemas/ErrorResponse"
-       '404': 
+       '404':
          description: "Not Found."
-         content: 
-          "application/json": 
-           schema: 
+         content:
+          "application/json":
+           schema:
             "$ref": "#/components/schemas/ErrorResponse"
-       '500': 
+       '500':
          description: "Internal Server Error."
-         content: 
-          "application/json": 
-           schema: 
+         content:
+          "application/json":
+           schema:
             "$ref": "#/components/schemas/ErrorResponse"
-       '503': 
+       '503':
          description: "Service Unavailable."
-         content: 
-          "application/json": 
-           schema: 
+         content:
+          "application/json":
+           schema:
             "$ref": "#/components/schemas/ErrorResponse"
-       '504': 
+       '504':
          description: "Gateway Timeout."
-         content: 
-          "application/json": 
-           schema: 
+         content:
+          "application/json":
+           schema:
             "$ref": "#/components/schemas/ErrorResponse"

@@ -28,7 +28,7 @@ declare namespace Components {
             export type EventApiProductId = string;
         }
         namespace Organization {
-            export type Organization = string;
+            export type OrganizationName = string;
         }
         namespace PageNumber {
             export type PageNumber = number; // int32
@@ -254,7 +254,7 @@ declare namespace Components {
              */
             callbackUrl?: string; // uri
             webHooks?: WebHook[];
-            credentials: /* Credentials object associated with an app */ Credentials;
+            credentials: Credentials;
         }
         export interface AppEnvironment {
             /**
@@ -263,7 +263,7 @@ declare namespace Components {
              */
             name?: string;
             messagingProtocols?: Endpoint[];
-            permissions?: /* lists all the publish and subscribe topics an app has access to. Restrictions on   topic elements are taken into account. */ Permissions;
+            permissions?: Permissions;
         }
         export interface AppListItem {
             name?: string;
@@ -292,7 +292,7 @@ declare namespace Components {
              */
             callbackUrl?: string;
             webHooks?: WebHook[];
-            credentials?: /* Credentials object associated with an app */ Credentials;
+            credentials?: Credentials;
             status?: AppStatus;
         }
         /**
@@ -318,7 +318,7 @@ declare namespace Components {
              */
             callbackUrl?: string;
             webHooks?: WebHook[];
-            credentials: /* Credentials object associated with an app */ Credentials;
+            credentials: Credentials;
             environments?: AppEnvironment[];
             status?: AppStatus;
         }
@@ -411,6 +411,11 @@ declare namespace Components {
             name: string;
             /**
              * example:
+             * the development env
+             */
+            displayName?: string;
+            /**
+             * example:
              * development environment
              */
             description: string;
@@ -422,25 +427,9 @@ declare namespace Components {
             exposedProtocols: Protocol[];
         }
         /**
-         * a list item in the environmentslist
+         * an environment
          */
         export interface EnvironmentListItem {
-            /**
-             * example:
-             * dev
-             */
-            name: string;
-            /**
-             * example:
-             * development environment
-             */
-            description: string;
-            /**
-             * example:
-             * xm7dc2dfas4
-             */
-            serviceId: string;
-            exposedProtocols: Protocol[];
             /**
              * example:
              * default
@@ -450,11 +439,37 @@ declare namespace Components {
              * All of the protocols that the broker service exposes
              */
             messagingProtocols?: Endpoint[];
+            /**
+             * example:
+             * dev
+             */
+            name: string;
+            /**
+             * example:
+             * the development env
+             */
+            displayName?: string;
+            /**
+             * example:
+             * development environment
+             */
+            description: string;
+            /**
+             * example:
+             * xm7dc2dfas4
+             */
+            serviceId: string;
+            exposedProtocols: Protocol[];
         }
         /**
          * used for PATCH operation, an environment
          */
         export interface EnvironmentPatch {
+            /**
+             * example:
+             * development environment
+             */
+            displayName?: string;
             /**
              * example:
              * development environment
@@ -479,6 +494,11 @@ declare namespace Components {
              * dev
              */
             name: string;
+            /**
+             * example:
+             * development environment
+             */
+            displayName?: string;
             /**
              * example:
              * development environment
@@ -534,7 +554,8 @@ declare namespace Components {
              * 'object': { 'field': 'description' }
              */
             meta?: {
-                [name: string]: unknown;
+                [name: string]: {
+                };
             };
         }
         export interface EventAPIProduct {
@@ -705,7 +726,7 @@ declare namespace Components {
              * ]
              */
             subscribe?: {
-                [name: string]: /* a permission and its associated channel */ ChannelPermission;
+                [name: string]: ChannelPermission;
             }[];
             /**
              * example:
@@ -742,7 +763,7 @@ declare namespace Components {
              * ]
              */
             publish?: {
-                [name: string]: /* a permission and its associated channel */ ChannelPermission;
+                [name: string]: ChannelPermission;
             }[];
         }
         export interface Protocol {
@@ -836,7 +857,7 @@ declare namespace Components {
     }
 }
 declare namespace Paths {
-    namespace $OrganizationApps {
+    namespace $OrganizationNameApps {
         namespace Parameters {
             export type Status = Components.Schemas.AppStatus;
         }
@@ -847,7 +868,8 @@ declare namespace Paths {
     namespace CreateApi {
         export type RequestBody = string;
         namespace Responses {
-            export type $201 = string;
+            export interface $201 {
+            }
             export type $400 = Components.Schemas.ErrorResponse;
             export type $401 = Components.Schemas.ErrorResponse;
             export type $403 = Components.Schemas.ErrorResponse;
@@ -859,9 +881,9 @@ declare namespace Paths {
         }
     }
     namespace CreateApiProduct {
-        export type RequestBody = /* An API product consists of a list of API resources (URIs) and custom metadata required by the API provider. API products enable you to bundle and distribute your APIs to multiple developer groups simultaneously */ Components.Schemas.APIProduct;
+        export type RequestBody = Components.Schemas.APIProduct;
         namespace Responses {
-            export type $201 = /* An API product consists of a list of API resources (URIs) and custom metadata required by the API provider. API products enable you to bundle and distribute your APIs to multiple developer groups simultaneously */ Components.Schemas.APIProduct;
+            export type $201 = Components.Schemas.APIProduct;
             export type $400 = Components.Schemas.ErrorResponse;
             export type $401 = Components.Schemas.ErrorResponse;
             export type $403 = Components.Schemas.ErrorResponse;
@@ -873,9 +895,9 @@ declare namespace Paths {
         }
     }
     namespace CreateDeveloper {
-        export type RequestBody = /* A profile for a developer. After the developer is created, they can register an app and receive API credentials */ Components.Schemas.Developer;
+        export type RequestBody = Components.Schemas.Developer;
         namespace Responses {
-            export type $201 = /* A profile for a developer. After the developer is created, they can register an app and receive API credentials */ Components.Schemas.Developer;
+            export type $201 = Components.Schemas.Developer;
             export type $400 = Components.Schemas.ErrorResponse;
             export type $401 = Components.Schemas.ErrorResponse;
             export type $403 = Components.Schemas.ErrorResponse;
@@ -887,9 +909,9 @@ declare namespace Paths {
         }
     }
     namespace CreateDeveloperApp {
-        export type RequestBody = /* An app associated with an owner (developer, team etc). Associates the app with an API product, and auto-generates an API credentials for the app to use */ Components.Schemas.App;
+        export type RequestBody = Components.Schemas.App;
         namespace Responses {
-            export type $201 = /* An app associated with an owner (developer, team etc). Associates the app with an API product, and auto-generates an API credentials for the app to use */ Components.Schemas.App;
+            export type $201 = Components.Schemas.App;
             export type $400 = Components.Schemas.ErrorResponse;
             export type $401 = Components.Schemas.ErrorResponse;
             export type $403 = Components.Schemas.ErrorResponse;
@@ -901,9 +923,9 @@ declare namespace Paths {
         }
     }
     namespace CreateEnvironment {
-        export type RequestBody = /* an environment */ Components.Schemas.Environment;
+        export type RequestBody = Components.Schemas.Environment;
         namespace Responses {
-            export type $201 = /* an environment */ Components.Schemas.Environment;
+            export type $201 = Components.Schemas.Environment;
             export type $400 = Components.Schemas.ErrorResponse;
             export type $401 = Components.Schemas.ErrorResponse;
             export type $403 = Components.Schemas.ErrorResponse;
@@ -929,9 +951,9 @@ declare namespace Paths {
         }
     }
     namespace CreateTeam {
-        export type RequestBody = /* A profile of a team. After the team is created, an app can be registered and API credentials are created */ Components.Schemas.Team;
+        export type RequestBody = Components.Schemas.Team;
         namespace Responses {
-            export type $201 = /* A profile of a team. After the team is created, an app can be registered and API credentials are created */ Components.Schemas.Team;
+            export type $201 = Components.Schemas.Team;
             export type $400 = Components.Schemas.ErrorResponse;
             export type $401 = Components.Schemas.ErrorResponse;
             export type $403 = Components.Schemas.ErrorResponse;
@@ -943,9 +965,9 @@ declare namespace Paths {
         }
     }
     namespace CreateTeamApp {
-        export type RequestBody = /* An app associated with an owner (developer, team etc). Associates the app with an API product, and auto-generates an API credentials for the app to use */ Components.Schemas.App;
+        export type RequestBody = Components.Schemas.App;
         namespace Responses {
-            export type $201 = /* An app associated with an owner (developer, team etc). Associates the app with an API product, and auto-generates an API credentials for the app to use */ Components.Schemas.App;
+            export type $201 = Components.Schemas.App;
             export type $400 = Components.Schemas.ErrorResponse;
             export type $401 = Components.Schemas.ErrorResponse;
             export type $403 = Components.Schemas.ErrorResponse;
@@ -1101,7 +1123,7 @@ declare namespace Paths {
     }
     namespace GetApiProduct {
         namespace Responses {
-            export type $200 = /* An API product consists of a list of API resources (URIs) and custom metadata required by the API provider. API products enable you to bundle and distribute your APIs to multiple developer groups simultaneously */ Components.Schemas.APIProduct;
+            export type $200 = Components.Schemas.APIProduct;
             export type $400 = Components.Schemas.ErrorResponse;
             export type $401 = Components.Schemas.ErrorResponse;
             export type $403 = Components.Schemas.ErrorResponse;
@@ -1113,7 +1135,7 @@ declare namespace Paths {
     }
     namespace GetApp {
         namespace Responses {
-            export type $200 = /* App Response Object - includes protocol binding information and app premissions. An app associated with a developer. Associates the app with an API product, and auto-generates an API credentials for the app to use. */ Components.Schemas.AppResponse;
+            export type $200 = Components.Schemas.AppResponse;
             export type $400 = Components.Schemas.ErrorResponse;
             export type $401 = Components.Schemas.ErrorResponse;
             export type $403 = Components.Schemas.ErrorResponse;
@@ -1144,7 +1166,7 @@ declare namespace Paths {
     }
     namespace GetDeveloper {
         namespace Responses {
-            export type $200 = /* A profile for a developer. After the developer is created, they can register an app and receive API credentials */ Components.Schemas.Developer;
+            export type $200 = Components.Schemas.Developer;
             export type $400 = Components.Schemas.ErrorResponse;
             export type $401 = Components.Schemas.ErrorResponse;
             export type $403 = Components.Schemas.ErrorResponse;
@@ -1156,7 +1178,7 @@ declare namespace Paths {
     }
     namespace GetDeveloperApp {
         namespace Responses {
-            export type $200 = /* App Response Object - includes protocol binding information and app premissions. An app associated with a developer. Associates the app with an API product, and auto-generates an API credentials for the app to use. */ Components.Schemas.AppResponse;
+            export type $200 = Components.Schemas.AppResponse;
             export type $400 = Components.Schemas.ErrorResponse;
             export type $401 = Components.Schemas.ErrorResponse;
             export type $403 = Components.Schemas.ErrorResponse;
@@ -1168,7 +1190,7 @@ declare namespace Paths {
     }
     namespace GetEnvironment {
         namespace Responses {
-            export type $200 = /* an environment */ Components.Schemas.EnvironmentResponse;
+            export type $200 = Components.Schemas.EnvironmentResponse;
             export type $400 = Components.Schemas.ErrorResponse;
             export type $401 = Components.Schemas.ErrorResponse;
             export type $403 = Components.Schemas.ErrorResponse;
@@ -1245,7 +1267,7 @@ declare namespace Paths {
     }
     namespace GetTeam {
         namespace Responses {
-            export type $200 = /* A profile of a team. After the team is created, an app can be registered and API credentials are created */ Components.Schemas.Team;
+            export type $200 = Components.Schemas.Team;
             export type $400 = Components.Schemas.ErrorResponse;
             export type $401 = Components.Schemas.ErrorResponse;
             export type $403 = Components.Schemas.ErrorResponse;
@@ -1257,7 +1279,7 @@ declare namespace Paths {
     }
     namespace GetTeamApp {
         namespace Responses {
-            export type $200 = /* App Response Object - includes protocol binding information and app premissions. An app associated with a developer. Associates the app with an API product, and auto-generates an API credentials for the app to use. */ Components.Schemas.AppResponse;
+            export type $200 = Components.Schemas.AppResponse;
             export type $400 = Components.Schemas.ErrorResponse;
             export type $401 = Components.Schemas.ErrorResponse;
             export type $403 = Components.Schemas.ErrorResponse;
@@ -1282,7 +1304,8 @@ declare namespace Paths {
     namespace ImportApi {
         export type RequestBody = Components.Schemas.APIImport;
         namespace Responses {
-            export type $201 = string;
+            export interface $201 {
+            }
             export type $400 = Components.Schemas.ErrorResponse;
             export type $401 = Components.Schemas.ErrorResponse;
             export type $403 = Components.Schemas.ErrorResponse;
@@ -1295,7 +1318,7 @@ declare namespace Paths {
     }
     namespace ListApiProducts {
         namespace Responses {
-            export type $200 = /* An API product consists of a list of API resources (URIs) and custom metadata required by the API provider. API products enable you to bundle and distribute your APIs to multiple developer groups simultaneously */ Components.Schemas.APIProduct[];
+            export type $200 = Components.Schemas.APIProduct[];
             export type $400 = Components.Schemas.ErrorResponse;
             export type $401 = Components.Schemas.ErrorResponse;
             export type $403 = Components.Schemas.ErrorResponse;
@@ -1349,7 +1372,7 @@ declare namespace Paths {
             status?: Parameters.Status;
         }
         namespace Responses {
-            export type $200 = /* An app associated with an owner (developer, team etc). Associates the app with an API product, and auto-generates an API credentials for the app to use */ Components.Schemas.App[];
+            export type $200 = Components.Schemas.App[];
             export type $400 = Components.Schemas.ErrorResponse;
             export type $401 = Components.Schemas.ErrorResponse;
             export type $403 = Components.Schemas.ErrorResponse;
@@ -1361,7 +1384,7 @@ declare namespace Paths {
     }
     namespace ListDevelopers {
         namespace Responses {
-            export type $200 = /* A profile for a developer. After the developer is created, they can register an app and receive API credentials */ Components.Schemas.Developer[];
+            export type $200 = Components.Schemas.Developer[];
             export type $400 = Components.Schemas.ErrorResponse;
             export type $401 = Components.Schemas.ErrorResponse;
             export type $403 = Components.Schemas.ErrorResponse;
@@ -1379,7 +1402,7 @@ declare namespace Paths {
             format?: Parameters.Format;
         }
         namespace Responses {
-            export type $200 = /* a list item in the environmentslist */ Components.Schemas.EnvironmentListItem[];
+            export type $200 = Components.Schemas.EnvironmentListItem[];
             export type $400 = Components.Schemas.ErrorResponse;
             export type $401 = Components.Schemas.ErrorResponse;
             export type $403 = Components.Schemas.ErrorResponse;
@@ -1427,7 +1450,7 @@ declare namespace Paths {
     }
     namespace ListServices {
         namespace Responses {
-            export type $200 = /* provides information about a service in the Solace Cloud account. */ Components.Schemas.Service[];
+            export type $200 = Components.Schemas.Service[];
             export type $400 = Components.Schemas.ErrorResponse;
             export type $401 = Components.Schemas.ErrorResponse;
             export type $403 = Components.Schemas.ErrorResponse;
@@ -1445,7 +1468,7 @@ declare namespace Paths {
             status?: Parameters.Status;
         }
         namespace Responses {
-            export type $200 = /* An app associated with an owner (developer, team etc). Associates the app with an API product, and auto-generates an API credentials for the app to use */ Components.Schemas.App[];
+            export type $200 = Components.Schemas.App[];
             export type $400 = Components.Schemas.ErrorResponse;
             export type $401 = Components.Schemas.ErrorResponse;
             export type $403 = Components.Schemas.ErrorResponse;
@@ -1457,7 +1480,7 @@ declare namespace Paths {
     }
     namespace ListTeams {
         namespace Responses {
-            export type $200 = /* A profile of a team. After the team is created, an app can be registered and API credentials are created */ Components.Schemas.Team[];
+            export type $200 = Components.Schemas.Team[];
             export type $400 = Components.Schemas.ErrorResponse;
             export type $401 = Components.Schemas.ErrorResponse;
             export type $403 = Components.Schemas.ErrorResponse;
@@ -1470,7 +1493,8 @@ declare namespace Paths {
     namespace UpdateApi {
         export type RequestBody = string;
         namespace Responses {
-            export type $200 = string;
+            export interface $200 {
+            }
             export type $400 = Components.Schemas.ErrorResponse;
             export type $401 = Components.Schemas.ErrorResponse;
             export type $403 = Components.Schemas.ErrorResponse;
@@ -1482,9 +1506,9 @@ declare namespace Paths {
         }
     }
     namespace UpdateApiProduct {
-        export type RequestBody = /* Used for PATCH operation, An API product consists of a list of API resources (URIs) and custom metadata required by the API provider. API products enable you to bundle and distribute your APIs to multiple developer groups simultaneously */ Components.Schemas.APIProductPatch;
+        export type RequestBody = Components.Schemas.APIProductPatch;
         namespace Responses {
-            export type $200 = /* An API product consists of a list of API resources (URIs) and custom metadata required by the API provider. API products enable you to bundle and distribute your APIs to multiple developer groups simultaneously */ Components.Schemas.APIProduct;
+            export type $200 = Components.Schemas.APIProduct;
             export type $400 = Components.Schemas.ErrorResponse;
             export type $401 = Components.Schemas.ErrorResponse;
             export type $403 = Components.Schemas.ErrorResponse;
@@ -1496,9 +1520,9 @@ declare namespace Paths {
         }
     }
     namespace UpdateDeveloper {
-        export type RequestBody = /* Used for PATCH operation, A profile for a developer. After the developer is created, they can register an app and receive API credentials */ Components.Schemas.DeveloperPatch;
+        export type RequestBody = Components.Schemas.DeveloperPatch;
         namespace Responses {
-            export type $200 = /* A profile for a developer. After the developer is created, they can register an app and receive API credentials */ Components.Schemas.Developer;
+            export type $200 = Components.Schemas.Developer;
             export type $400 = Components.Schemas.ErrorResponse;
             export type $401 = Components.Schemas.ErrorResponse;
             export type $403 = Components.Schemas.ErrorResponse;
@@ -1510,9 +1534,9 @@ declare namespace Paths {
         }
     }
     namespace UpdateDeveloperApp {
-        export type RequestBody = /* Used for PATCH operation. An app associated with a developer. Associates the app with an API product, and auto-generates an API credentials for the app to use */ Components.Schemas.AppPatch;
+        export type RequestBody = Components.Schemas.AppPatch;
         namespace Responses {
-            export type $200 = /* App Response Object - includes protocol binding information and app premissions. An app associated with a developer. Associates the app with an API product, and auto-generates an API credentials for the app to use. */ Components.Schemas.AppResponse;
+            export type $200 = Components.Schemas.AppResponse;
             export type $400 = Components.Schemas.ErrorResponse;
             export type $401 = Components.Schemas.ErrorResponse;
             export type $403 = Components.Schemas.ErrorResponse;
@@ -1524,9 +1548,9 @@ declare namespace Paths {
         }
     }
     namespace UpdateEnvironment {
-        export type RequestBody = /* used for PATCH operation, an environment */ Components.Schemas.EnvironmentPatch;
+        export type RequestBody = Components.Schemas.EnvironmentPatch;
         namespace Responses {
-            export type $200 = /* an environment */ Components.Schemas.Environment;
+            export type $200 = Components.Schemas.Environment;
             export type $400 = Components.Schemas.ErrorResponse;
             export type $401 = Components.Schemas.ErrorResponse;
             export type $403 = Components.Schemas.ErrorResponse;
@@ -1552,9 +1576,9 @@ declare namespace Paths {
         }
     }
     namespace UpdateTeam {
-        export type RequestBody = /* Used for PATCH operation, A profile of a team. After the team is created, an app can be registered and API credentials are created */ Components.Schemas.TeamPatch;
+        export type RequestBody = Components.Schemas.TeamPatch;
         namespace Responses {
-            export type $200 = /* A profile of a team. After the team is created, an app can be registered and API credentials are created */ Components.Schemas.Team;
+            export type $200 = Components.Schemas.Team;
             export type $400 = Components.Schemas.ErrorResponse;
             export type $401 = Components.Schemas.ErrorResponse;
             export type $403 = Components.Schemas.ErrorResponse;
@@ -1566,9 +1590,9 @@ declare namespace Paths {
         }
     }
     namespace UpdateTeamApp {
-        export type RequestBody = /* Used for PATCH operation. An app associated with a developer. Associates the app with an API product, and auto-generates an API credentials for the app to use */ Components.Schemas.AppPatch;
+        export type RequestBody = Components.Schemas.AppPatch;
         namespace Responses {
-            export type $200 = /* App Response Object - includes protocol binding information and app premissions. An app associated with a developer. Associates the app with an API product, and auto-generates an API credentials for the app to use. */ Components.Schemas.AppResponse;
+            export type $200 = Components.Schemas.AppResponse;
             export type $400 = Components.Schemas.ErrorResponse;
             export type $401 = Components.Schemas.ErrorResponse;
             export type $403 = Components.Schemas.ErrorResponse;
