@@ -50,6 +50,7 @@ export class EnvironmentsService {
       description: env.description,
       name: env.name,
       serviceId: env.serviceId,
+      serviceName: service.name,
       creationState: service.creationState,
       datacenterId: service.datacenterId,
       datacenterProvider: service.datacenterProvider,
