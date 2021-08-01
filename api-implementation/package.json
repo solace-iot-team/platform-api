@@ -1,6 +1,6 @@
 {
   "name": "apim-connector-server",
-  "version": "0.2.1",
+  "version": "0.2.2",
   "description": "Solace API Management Connector",
   "homepage": "https://github.com/solace-iot-team/platform-api",
   "repository": {
@@ -17,6 +17,7 @@
     "start": "node dist/server/index.js",
     "dev": "nodemon server/index.ts | pino-pretty",
     "server:dev": "nodemon server/index.ts | pino-pretty",
+    "gen:server:apitypes": "dtsgen --out ./src/model/@types/api-model/index.d.ts ./server/common/api.yml",
     "dev:debug": "nodemon --exec \"node -r ts-node/register --inspect-brk\" server/index.ts | pino-pretty",
     "test:integration": "mocha --config test/integration/.mocharc.yml test/integration/**/**.spec.ts",
     "test:concurrency": "mocha --config test/integration/.mocharc.yml test/integration/**/*.concurrency.spec.ts --exit",
@@ -85,6 +86,7 @@
     "@typescript-eslint/eslint-plugin": "^4.4.0",
     "@typescript-eslint/parser": "^4.4.0",
     "chai": "^4.2.0",
+    "dtsgenerator": "^3.12.1",
     "eslint": "^7.11.0",
     "eslint-config-prettier": "^6.12.0",
     "eslint-plugin-prettier": "^3.1.4",
