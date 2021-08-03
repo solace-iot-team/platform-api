@@ -2,7 +2,7 @@ import fs from 'fs';
 import yaml from "js-yaml";
 import { PlatformAPIClient } from './platformapiclient';
 import type { Organization } from '@solace-iot-team/platform-api-openapi-client';
-import { PlatformManagementService, Environment, EnvironmentsService, ApisService, APIProduct, Protocol, ApiProductsService, Developer, DevelopersService, App, AppsService } from '@solace-iot-team/platform-api-openapi-client';
+import { AdministrationService, Environment, EnvironmentsService, ApisService, APIProduct, Protocol, ApiProductsService, Developer, DevelopersService, App, AppsService } from '@solace-iot-team/platform-api-openapi-client';
 
 const getMandatoryEnvVarValue = (envVar: string): string => {
     const value: any = (process.env[envVar] === undefined) ? null : process.env[envVar];
@@ -48,7 +48,7 @@ const deleteOrg = async() => {
     console.log('deleting org ...');
     PlatformAPIClient.setManagementUser();
     try {
-        await PlatformManagementService.deleteOrganization(sampleEnv.ORG_NAME);
+        await AdministrationService.deleteOrganization(sampleEnv.ORG_NAME);
     } catch(e) {
         console.log(`deleteOrg error = ${JSON.stringify(e, null, 2)}`);
         if(e.status !== 404 && e.status !== 201) {
@@ -66,7 +66,7 @@ const createOrg = async() => {
         'cloud-token': sampleEnv.SOLACE_CLOUD_TOKEN
     }
     try {
-        let response: Organization = await PlatformManagementService.createOrganization(request);
+        let response: Organization = await AdministrationService.createOrganization(request);
         console.log(`response=${JSON.stringify(response, null, 2)}`);
     } catch(e) {
         console.log(`>>> ERROR: ${JSON.stringify(e, null, 2)}`);
@@ -80,7 +80,12 @@ const registerSolaceCloudServiceWithOrg = async() => {
     let request: Environment = {
         name: sampleEnv.ENV_NAME,
         description: 'development solace cloud service',
-        serviceId: sampleEnv.SOLACE_CLOUD_SERVICE_ID
+        serviceId: sampleEnv.SOLACE_CLOUD_SERVICE_ID,
+        exposedProtocols: [ {
+          name: Protocol.name.AMQP,
+          version: '1.0.0'
+        }
+        ] 
     };
     try {
         let response: Environment = await EnvironmentsService.createEnvironment(sampleEnv.ORG_NAME, request);
