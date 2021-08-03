@@ -82,8 +82,8 @@ const registerSolaceCloudServiceWithOrg = async() => {
         description: 'development solace cloud service',
         serviceId: sampleEnv.SOLACE_CLOUD_SERVICE_ID,
         exposedProtocols: [ {
-          name: Protocol.name.AMQP,
-          version: '1.0.0'
+          name: Protocol.name.MQTT,
+          version: '3.1.1'
         }
         ] 
     };
