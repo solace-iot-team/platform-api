@@ -1,5 +1,17 @@
 # Release Notes
 
+## Version 0.2.2
+* OpenAPI: 0.2.6
+* API Management Connector Server: 0.2.2
+
+### Features
+* **Environment**
+  - POST, PATCH, GET: added displayName
+
+### Fixes
+* **Environment**
+  - GET: response includes serviceName
+
 ## Version 0.2.1
 
 * OpenAPI: 0.2.5

@@ -5,3 +5,5 @@
 .eslintrc.js
 .prettierrc.js
 .project
+.devel
+about.json
