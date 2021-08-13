@@ -28,9 +28,7 @@ import {
   MsgVpnRestDeliveryPointQueueBinding,
 } from '../../../src/clients/sempv2';
 import SolaceCloudFacade from '../../../src/solacecloudfacade';
-import { Sempv2Client } from '../../../src/sempv2-client';
 import SempV2ClientFactory from './broker/sempv2clientfactory';
-import { ns } from '../middlewares/context.handler';
 
 import { ErrorResponseInternal } from '../middlewares/error.handler';
 
@@ -249,11 +247,6 @@ class BrokerService {
       var strs: string[] = await ACLManager.getRDPSubscriptionsFromAsyncAPIs(product.apis);
       for (var s of strs) {
         subscribeExceptions.push(s);
-      }
-      for (var p of product.protocols) {
-        if (p.name == "https") {
-          useTls = true;
-        }
       }
     }
     if (subscribeExceptions.length < 1) {
