@@ -141,7 +141,7 @@ export class AppsService {
 
       if (app.status == 'approved') {
         L.info(`provisioning app ${app.name}`);
-        const r = await BrokerService.provisionApp(newApp as App, ownerAttributes);
+        const r = await BrokerService.provisionApp(newApp as App, ownerAttributes, false);
       }
       try {
         const newApp: OwnedApp = await this.persistenceService.create(
@@ -231,14 +231,14 @@ export class AppsService {
       }
       L.info(`provisioning app ${name}`);
       try {
-        const r = await BrokerService.provisionApp(appPatch as App, ownerAttributes);
+        const r = await BrokerService.provisionApp(appPatch as App, ownerAttributes, true);
       }
       catch (e) {
         appPatch = await this.persistenceService.update(
           name,
           appNotModified
         );
-        const r = await BrokerService.provisionApp(appPatch as App, ownerAttributes);
+        const r = await BrokerService.provisionApp(appPatch as App, ownerAttributes, true);
       }
     }
     return appPatch;
