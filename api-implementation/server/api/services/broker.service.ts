@@ -93,8 +93,9 @@ class BrokerService {
         } catch (e) {
           L.error(`Provisioning error ${e}`);
           L.error(e.stack);
-          try { this.deprovisionApp(app);
-          } catch (e){
+          try {
+            this.deprovisionApp(app);
+          } catch (e) {
             // things may go wrong here, that's fine. we are just trying to clean up
           }
           reject(new ErrorResponseInternal(500, e));
@@ -106,19 +107,7 @@ class BrokerService {
   async deprovisionApp(app: App) {
     var environmentNames: string[] = [];
 
-    const products: APIProduct[] = [];
-    for (const productName of app.apiProducts) {
-      L.info(productName);
-      const product = await ApiProductsService.byName(productName);
-      products.push(product);
-    }
-    products.forEach((product: APIProduct) => {
-      product.environments.forEach((e: string) => {
-        environmentNames.push(e);
-      })
-      L.info(`env: ${product.environments}`);
-    });
-    environmentNames = Array.from(new Set(environmentNames));
+    environmentNames = await this.getEnvironments(app);
 
     try {
       const services = await this.getServices(environmentNames);
@@ -238,6 +227,29 @@ class BrokerService {
     }
   }
 
+  private async getEnvironments(app: App): Promise<string[]> {
+    var environmentNames: string[] = [];
+    for (const productName of app.apiProducts) {
+      let product = await ApiProductsService.byName(productName);
+      environmentNames = environmentNames.concat(product.environments);
+      
+    }
+    // if there are no API Products we need to find other references to environments in webhooks and finally fall back on all environments in the org
+    if (environmentNames.length ==0){
+      for (const webHook of app.webHooks){
+        environmentNames = environmentNames.concat(webHook.environments);
+      }
+    }
+    if (environmentNames.length ==0){
+      let envs = await EnvironmentsService.all()
+      for (const env of envs){
+        environmentNames = environmentNames.concat(env.name);
+      }
+    }
+    L.debug(`envs:`);
+    L.debug(Array.from(new Set(environmentNames)));
+    return Array.from(new Set(environmentNames));
+  }
 
   private async createRDP(app: App, services: Service[], apiProducts: APIProduct[]): Promise<void> {
     L.info(`createRDP services: ${services}`);
@@ -403,7 +415,7 @@ class BrokerService {
   private async createQueues(app: App, services: Service[], apiProducts: APIProduct[], ownerAttributes: Attributes): Promise<void> {
     L.info(`createQueueSubscriptions services: ${services}`);
     var subscribeExceptions: string[] = await ACLManager.getRDPQueueSubscriptions(app, apiProducts, ownerAttributes);
-    if (subscribeExceptions === undefined){
+    if (subscribeExceptions === undefined) {
       subscribeExceptions = [];
     }
     // loop over services
