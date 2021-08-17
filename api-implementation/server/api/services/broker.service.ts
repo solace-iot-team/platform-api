@@ -48,7 +48,7 @@ class BrokerService {
     }
   }
 
-  async provisionApp(app: App, ownerAttributes: Attributes): Promise<void> {
+  async provisionApp(app: App, ownerAttributes: Attributes, isUpdate?: boolean): Promise<void> {
     return new Promise<void>((resolve, reject) => {
       var apiProductPromises: Promise<APIProduct>[] = [];
       app.apiProducts.forEach((productName: string) => {
@@ -74,11 +74,13 @@ class BrokerService {
             await this.doProvision(app, environmentNames, products, ownerAttributes);
 
           }
-          if (!productResults || productResults.length == 0) {
-            L.info(`No API Products present`);
+          if ((!productResults || productResults.length == 0) && isUpdate) {
+            L.info(`No API Products present, updating Broker`);
             const environmentNames = await this.getEnvironments(app);
             const products: APIProduct[] = [];
             await this.doProvision(app, environmentNames, products, ownerAttributes);
+          } else {
+            L.info(`No API Products present, do nothing`);
           }
 
           resolve();
