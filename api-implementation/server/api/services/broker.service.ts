@@ -48,7 +48,7 @@ class BrokerService {
     }
   }
 
-  provisionApp(app: App, ownerAttributes: Attributes): Promise<void> {
+  async provisionApp(app: App, ownerAttributes: Attributes): Promise<void> {
     return new Promise<void>((resolve, reject) => {
       var apiProductPromises: Promise<APIProduct>[] = [];
       app.apiProducts.forEach((productName: string) => {
@@ -57,6 +57,8 @@ class BrokerService {
       });
 
       Promise.all(apiProductPromises).then(async (productResults: APIProduct[]) => {
+        L.info(`API Products looked up, processing provisioning`);
+        L.debug(productResults);
         try {
 
           for (var product of productResults) {
@@ -65,36 +67,26 @@ class BrokerService {
               environmentNames.push(e);
             })
             L.info(`env: ${product.environments}`);
-            var products: APIProduct[] = [];
+            const products: APIProduct[] = [];
             products.push(product);
             environmentNames = Array.from(new Set(environmentNames));
             L.info(`provisioning product ${product.name} to ${JSON.stringify(environmentNames)}`);
-            const services = await this.getServices(environmentNames);
-            var a = await ACLManager.createACLs(app, services);
-            L.info(`created acl profile ${app.name}`);
-            var b = await this.createClientUsernames(app, services);
-            L.info(`created client username ${app.name}`);
-            var e = await ACLManager.createAuthorizationGroups(app, services);
-            L.info(`created client username ${app.name}`);
-            var c = await ACLManager.createClientACLExceptions(app, services, products, ownerAttributes);
-            L.info(`created acl exceptions ${app.name}`);
-            // no webhook - no RDP
-            //L.info(app.webHooks);
-            if (app.webHooks != null && app.webHooks.length > 0) {
-              L.info("creating webhook");
-              var d = await this.createQueues(app, services, products, ownerAttributes);
-              L.info(`created queues ${app.name}`);
-              var d = await this.createRDP(app, services, products);
-              L.info(`created rdps ${app.name}`);
-            }
+            await this.doProvision(app, environmentNames, products, ownerAttributes);
 
           }
+          if (!productResults || productResults.length == 0) {
+            L.info(`No API Products present`);
+            const environmentNames = await this.getEnvironments(app);
+            const products: APIProduct[] = [];
+            await this.doProvision(app, environmentNames, products, ownerAttributes);
+          }
+
           resolve();
         } catch (e) {
           L.error(`Provisioning error ${e}`);
           L.error(e.stack);
           try {
-            this.deprovisionApp(app);
+            await this.deprovisionApp(app);
           } catch (e) {
             // things may go wrong here, that's fine. we are just trying to clean up
           }
@@ -102,6 +94,26 @@ class BrokerService {
         }
       });
     });
+  }
+  private async doProvision(app: App, environmentNames: string[], products: APIProduct[], ownerAttributes: Attributes): Promise<void> {
+    const services = await this.getServices(environmentNames);
+    var a = await ACLManager.createACLs(app, services);
+    L.info(`created acl profile ${app.name}`);
+    var b = await this.createClientUsernames(app, services);
+    L.info(`created client username ${app.name}`);
+    var e = await ACLManager.createAuthorizationGroups(app, services);
+    L.info(`created client username ${app.name}`);
+    var c = await ACLManager.createClientACLExceptions(app, services, products, ownerAttributes);
+    L.info(`created acl exceptions ${app.name}`);
+    // no webhook - no RDP
+    //L.info(app.webHooks);
+    if (app.webHooks != null && app.webHooks.length > 0) {
+      L.info("creating webhook");
+      var d = await this.createQueues(app, services, products, ownerAttributes);
+      L.info(`created queues ${app.name}`);
+      var d = await this.createRDP(app, services, products);
+      L.info(`created rdps ${app.name}`);
+    }
   }
 
   async deprovisionApp(app: App) {
@@ -232,17 +244,17 @@ class BrokerService {
     for (const productName of app.apiProducts) {
       let product = await ApiProductsService.byName(productName);
       environmentNames = environmentNames.concat(product.environments);
-      
+
     }
     // if there are no API Products we need to find other references to environments in webhooks and finally fall back on all environments in the org
-    if (environmentNames.length ==0){
-      for (const webHook of app.webHooks){
+    if (environmentNames.length == 0) {
+      for (const webHook of app.webHooks) {
         environmentNames = environmentNames.concat(webHook.environments);
       }
     }
-    if (environmentNames.length ==0){
+    if (environmentNames.length == 0) {
       let envs = await EnvironmentsService.all()
-      for (const env of envs){
+      for (const env of envs) {
         environmentNames = environmentNames.concat(env.name);
       }
     }
