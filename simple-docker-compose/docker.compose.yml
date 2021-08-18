@@ -55,8 +55,8 @@ services:
       #admin-password of platform api
       - solace_spa_adminpassword=${DEMO_PORTAL_ADMIN_USER_PWD}
       #login name of portal
-      - solace_portal_login_user=${DEMO_PORTAL_API_USER}
+      - solace_portal_login_user=${DEMO_PORTAL_USER}
       #password of portal
-      - solace_portal_login_password=${DEMO_PORTAL_API_USER_PWD}
+      - solace_portal_login_password=${DEMO_PORTAL_PWD}
 volumes:
   portaldata:

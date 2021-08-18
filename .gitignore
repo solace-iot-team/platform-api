@@ -7,3 +7,4 @@ save*
 clients/node_modules
 api-implementation/test.log
 *.local
+simple-docker-compose/data
