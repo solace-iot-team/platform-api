@@ -8,3 +8,5 @@ clients/node_modules
 api-implementation/test.log
 *.local
 simple-docker-compose/data
+simple-docker-compose/env.traxens.ppd
+simple-docker-compose/traxens_ppd_users.json
