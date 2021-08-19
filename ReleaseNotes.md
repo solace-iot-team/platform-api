@@ -1,5 +1,16 @@
 # Release Notes
 
+## Version 0.2.3
+* OpenAPI: 0.2.6
+* API Management Connector Server: 0.2.3
+
+### Fixes
+* **App WebHooks**
+  - Allow HTTP web hooks in any case. Previous behaviour was to force HTTPS if associated API Products required HTTPS for inbound connections to broker
+* **App Provisioning**
+  - Fixed issue when apps without associated API Product(s) were deleted but broker objects were not deprovisioned.
+  - Fixed issue when last API product was deleted form an app but the permissions (subscribe and publish topics) and RDP Queue subscriptions were not removed accordingly.
+
 ## Version 0.2.2
 * OpenAPI: 0.2.6
 * API Management Connector Server: 0.2.2
