@@ -84,7 +84,10 @@ jobs:
           cd "$APIM_SOLACE_PLATFORM_API_PROJECT_HOME/${TEST_PLATFORM_DIR}"
           source test/integration/source.env.sh
           test/integration/start.server.background.sh
-
+      - name: Sleep for 15 seconds
+        run: sleep 15s
+        shell: bash
+        
       - name: Run POSTMAN collection
         run: |
           newman run https://api.getpostman.com/collections/27d6a9b3-d711-47cf-9137-e2a2a44b724d?apikey=${{ secrets.POSTMAN_APIKEY }} -e https://api.getpostman.com/environments/527b7560-d632-482a-a56e-b09c79299db1?apikey=${{ secrets.POSTMAN_APIKEY }} \
