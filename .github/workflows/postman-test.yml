@@ -107,7 +107,7 @@ jobs:
           test/integration/stop.server.sh
 
 
-      - name: Archive postman logs
+      - name: Archive logs
         if: ${{ (failure() && !cancelled()) || (always() && (github.event_name=='workflow_dispatch' || env.DEBUG_FLAG=='true') ) }}
         uses: actions/upload-artifact@v2
         with:
@@ -115,13 +115,5 @@ jobs:
           path: ${{ github.workspace }}/${{ env.TEST_TEST_RUNNER_OUTPUT_DIR }}
           if-no-files-found: error
      
-      - name: Archive logs
-        if: ${{ (failure() && !cancelled()) || (always() && (github.event_name=='workflow_dispatch' || env.DEBUG_FLAG=='true') ) }}
-        uses: actions/upload-artifact@v2
-        with:
-          name: ${{ env.TEST_OUTPUT_NAME }}-server
-          path: ${{ github.workspace }}/${{ env.TEST_TEST_RUNNER_OUTPUT_DIR }}/logs/node-v12.22.5/server/start.server.sh.log
-          if-no-files-found: error
-
 ###
 # The End.
