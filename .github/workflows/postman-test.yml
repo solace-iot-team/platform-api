@@ -78,15 +78,19 @@ jobs:
       - name: Create Directory for test results
         run: mkdir -p ${{ github.workspace }}/${{ env.TEST_TEST_RUNNER_OUTPUT_DIR }}
 
+      - name: Start Mongo
+        run: |
+          export APIM_SOLACE_PLATFORM_API_PROJECT_HOME="$GITHUB_WORKSPACE"
+          cd "$APIM_SOLACE_PLATFORM_API_PROJECT_HOME/${TEST_PLATFORM_DIR}"
+          source test/integration/source.env.sh
+          test/integration/mongodb/start.mongo.sh
+          
       - name: Start Server
         run: |
           export APIM_SOLACE_PLATFORM_API_PROJECT_HOME="$GITHUB_WORKSPACE"
           cd "$APIM_SOLACE_PLATFORM_API_PROJECT_HOME/${TEST_PLATFORM_DIR}"
           source test/integration/source.env.sh
           test/integration/start.server.background.sh
-      - name: Sleep for 15 seconds
-        run: sleep 15s
-        shell: bash
         
       - name: Run POSTMAN collection
         run: |
