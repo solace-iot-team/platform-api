@@ -2,6 +2,4 @@
 
 Development of the server.
 
-
-
 ---
