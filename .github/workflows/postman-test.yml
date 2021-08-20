@@ -18,7 +18,7 @@ env:
   DEBUG_FLAG: ${{ true }}
   # DEBUG_FLAG: ${{ false }}
   TEST_PLATFORM_DIR: "api-implementation"
-  TEST_TEST_RUNNER_OUTPUT_DIR: "api-implementation/test/postman-regression/tmp"
+  TEST_TEST_RUNNER_OUTPUT_DIR: "api-implementation/test/integration/tmp"
   TEST_OUTPUT_NAME: "api-implementation-test-regression"
 jobs:
   integration_test:
