@@ -3,7 +3,7 @@
 # Copyright (c) 2021, Solace Corporation, Ricardo Gomez-Ulmke (ricardo.gomez-ulmke@solace.com)
 # ---------------------------------------------------------------------------------------------
 
-name: integration-test
+name: regression-test
 on:
   # for testing
   workflow_dispatch:
