@@ -125,6 +125,17 @@ export class ProtocolMapper {
 			}
 		};
 		map.push(jms);
+
+		var secureJms: ProtocolMapping = {
+			name: 'secure-jms',
+			version: '1.1',
+			protocolKeys: {
+				name: 'JMS',
+				protocol: "TLS"
+			}
+		};
+		map.push(secureJms);
+
 		return map;
 	}
 
