@@ -10,7 +10,8 @@ This folder contains
 * a docker-compose file, 
 * a sample .env that you can adjust to your environment
 * a dummy key for JWT verification
-* a sample ufile user registry
+* a sample file user registry
+* nginx configuration file
 
 ## Files on Host Systems
 
@@ -18,6 +19,7 @@ Some configuration files and data directories are mounted from the host system:
 
 * MongoDB Data Folder - please identify a suitable location in your local file system, configured via the variable `MONGODB_DATA_MOUNT_PATH`
 * APIM Connector - please identify a suitable location for configuration files, configured via the variable `PLATFORM_DATA_MOUNT_PATH`
+* nginx front end server - please identify a suitable location for nginx.conf file, configured via the variable `NGINX_CONF_LOCATION`
 
 For information on how to set these environment variables please see below.
 
