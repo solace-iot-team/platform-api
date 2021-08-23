@@ -58,5 +58,18 @@ services:
       - solace_portal_login_user=${DEMO_PORTAL_USER}
       #password of portal
       - solace_portal_login_password=${DEMO_PORTAL_PWD}
+  www-apim-connector:
+    container_name: www-apim-connector
+    image: ${NGINX_DOCKER_IMAGE}
+    restart: unless-stopped
+    ports:
+      - ${EXTERNAL_PORT}:80
+    links:
+      - apim-connector
+      - demo-portal-server
+    volumes:
+      - ${NGINX_CONF_LOCATION}:/etc/nginx/nginx.conf
+      - www-logs:/etc/nginx/logs
 volumes:
   portaldata:
+  www-logs:
