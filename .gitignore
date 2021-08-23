@@ -10,3 +10,5 @@ api-implementation/test.log
 simple-docker-compose/data
 simple-docker-compose/env.traxens.ppd
 simple-docker-compose/traxens_ppd_users.json
+*.prod
+simple-docker-compose/traxens_prod_users.json
