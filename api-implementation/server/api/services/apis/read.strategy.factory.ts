@@ -4,7 +4,8 @@ import { ApisReadStrategy } from './read.strategy';
 
 export class ApisReadStrategyFactory {
     getReadStrategy(): ApisReadStrategy {
-      const useProxyMode = process.env.APIS_PROXY_MODE || false;
+      const useProxyModeStr: string = process.env.APIS_PROXY_MODE || 'false';
+      const useProxyMode : boolean = (useProxyModeStr.toLowerCase() == 'true') || (useProxyModeStr.toLowerCase() == '1');
       if (!useProxyMode){
         return ApisReadLocalStrategy;
       } else {
