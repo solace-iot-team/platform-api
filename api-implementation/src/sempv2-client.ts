@@ -51,7 +51,7 @@ export async function getHeaders(options: ApiRequestOptions): Promise<Headers> {
 async function  getBasicAuthValue(key: string): Promise<string>{
   const org: Organization = ns.getStore().get(ContextConstants.ORG_OBJECT);
   if (org.sempV2Authentication == null || org.sempV2Authentication.authType == 'BasicAuth'){
-    return this.getValue(key);
+    return getValue(key);
   } else {
     return null;
   }
