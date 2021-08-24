@@ -132,6 +132,7 @@ class BrokerService {
       await this.deleteQueues(app, services);
     } catch (err) {
       L.error('De-Provisioninig error');
+      L.error(err);
       throw new ErrorResponseInternal(500, err.message);
     }
   }
