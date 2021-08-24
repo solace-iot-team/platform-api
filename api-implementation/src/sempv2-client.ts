@@ -26,10 +26,10 @@ export async function getBase(): Promise<string> {
   return getValue(Sempv2Client.BASE);
 }
 export async function getUser(): Promise<string> {
-  return getBasicAuthValue(Sempv2Client.USER);
+  return await getBasicAuthValue(Sempv2Client.USER);
 }
 export async function getPassword(): Promise<string> {
-  return getBasicAuthValue(Sempv2Client.PASSWORD);
+  return await getBasicAuthValue(Sempv2Client.PASSWORD);
 }
 
 export async function getHeaders(options: ApiRequestOptions): Promise<Headers> {
@@ -51,7 +51,7 @@ export async function getHeaders(options: ApiRequestOptions): Promise<Headers> {
 async function  getBasicAuthValue(key: string): Promise<string>{
   const org: Organization = ns.getStore().get(ContextConstants.ORG_OBJECT);
   if (org.sempV2Authentication == null || org.sempV2Authentication.authType == 'BasicAuth'){
-    return getValue(key);
+    return await getValue(key);
   } else {
     return null;
   }

@@ -236,7 +236,7 @@ class BrokerService {
         const getResponse = await AllService.deleteMsgVpnClientUsername(service.msgVpnName, app.credentials.secret.consumerKey);
       } catch (err) {
         L.error(err);
-        if (!(err.body.meta.error.status == "NOT_FOUND")) {
+        if (err.body && err.body.meta && !(err.body.meta.error.status == "NOT_FOUND")) {
           throw err;
         }
       }
