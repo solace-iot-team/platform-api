@@ -2,7 +2,7 @@ openapi: 3.0.0
 info:
   title: Solace API Management Connector
   description: 'Solace API Management Connector API. Note: basic authentication security mechanism is deprecated.'
-  version: 0.2.7
+  version: 0.2.8
 servers:
   - url: /v1
 
@@ -964,6 +964,33 @@ components:
           type: string
           example: myorg
           pattern: ^[^\/\\\.\s"\$]{4,64}$
+        sempV2Authentication:
+          description: Specifies how requests to the SEMPv2 Management API are authenticated, defaults to BasicAuth. If APIKey is specified the username returned in the Services/Environments response is used as API Key. 
+          type: object
+          required: 
+          - authType
+          properties:
+            authType:
+              type: string
+              enum:
+              - BasicAuth
+              - APIKey
+              default: BasicAuth
+              example: APIKey
+            apiKeyLocation:
+              type: string
+              enum:
+              - header
+              - query
+              default: query
+              example: header
+            apiKeyName:
+              type: string
+              description: the name of the query parameter or HTTP header for submitting the API Key
+              example: X-API-KEY
+            
+            
+
         cloud-token:
           oneOf:
           - type: string

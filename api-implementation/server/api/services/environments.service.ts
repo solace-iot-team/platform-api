@@ -145,6 +145,7 @@ export class EnvironmentsService {
         }
         const serverProtocols: Components.Schemas.Endpoint[] = await ProtocolMapper.mapSolaceMessagingProtocolsToAsyncAPI(svc.messagingProtocols);
         for (const exposedProtocol of env.exposedProtocols) {
+          L.debug(`${exposedProtocol.name} - ${exposedProtocol.version}`);
           const matchingSP = serverProtocols.find(serverProtocol => (exposedProtocol.name == serverProtocol.protocol.name && exposedProtocol.version == serverProtocol.protocol.version));
           L.info(`SP ${matchingSP}`);
 
