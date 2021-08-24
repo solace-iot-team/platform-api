@@ -132,6 +132,7 @@ class BrokerService {
       await this.deleteQueues(app, services);
     } catch (err) {
       L.error('De-Provisioninig error');
+      L.error(err);
       throw new ErrorResponseInternal(500, err.message);
     }
   }
@@ -234,7 +235,8 @@ class BrokerService {
       try {
         const getResponse = await AllService.deleteMsgVpnClientUsername(service.msgVpnName, app.credentials.secret.consumerKey);
       } catch (err) {
-        if (!(err.body.meta.error.status == "NOT_FOUND")) {
+        L.error(err);
+        if (err.body && err.body.meta && !(err.body.meta.error.status == "NOT_FOUND")) {
           throw err;
         }
       }

@@ -49,7 +49,7 @@ echo " >>> Starting server ..."
   export AUTH_DISCOVERY_OIDC_URL=$APIM_INTEGRATION_TEST_AUTH_DISCOVERY_OIDC_URL
 
   # startServerScript="npm run server:dev"
-  startServerScript="npm start"
+  startServerScript="npm run dev"
 
   if [ -z "$IS_BACKGROUND" ]; then
     $startServerScript

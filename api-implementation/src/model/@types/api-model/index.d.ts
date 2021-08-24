@@ -691,6 +691,27 @@ declare namespace Components {
              * myorg
              */
             name: string; // ^[^\/\\\.\s"\$]{4,64}$
+            /**
+             * Specifies how requests to the SEMPv2 Management API are authenticated, defaults to BasicAuth. If APIKey is specified the username returned in the Services/Environments response is used as API Key.
+             */
+            sempV2Authentication?: {
+                /**
+                 * example:
+                 * APIKey
+                 */
+                authType: "BasicAuth" | "APIKey";
+                /**
+                 * example:
+                 * header
+                 */
+                apiKeyLocation?: "header" | "query";
+                /**
+                 * the name of the query parameter or HTTP header for submitting the API Key
+                 * example:
+                 * X-API-KEY
+                 */
+                apiKeyName?: string;
+            };
             "cloud-token"?: string | {
                 eventPortal: CustomCloudEndpoint;
                 cloud: CustomCloudEndpoint;

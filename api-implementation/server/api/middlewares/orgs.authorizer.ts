@@ -23,6 +23,7 @@ export default function orgAuthorizer(req, res, next, org) {
   OrganizationsService.byName(org).then((r: Organization) => {
     L.trace(`router.param org is  ${JSON.stringify(r)}`);
     ns.getStore().set(ContextConstants.ORG_NAME, org);
+    ns.getStore().set(ContextConstants.ORG_OBJECT, r);
     ns.getStore().set(ContextConstants.CLOUD_TOKEN, r[ContextConstants.CLOUD_TOKEN]);
     ns.getStore().set(ContextConstants.AUTHENTICATED_USER, req.user.sub);
 
