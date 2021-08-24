@@ -39,6 +39,7 @@ export class OrganizationsService {
     }
 
     const p = new Promise<number>((resolve, reject) => {
+      ns.getStore().set(ContextConstants.ORG_OBJECT, org);
       ns.getStore().set(ContextConstants.ORG_NAME, name);
       ns.getStore().set(ContextConstants.CLOUD_TOKEN, org[ContextConstants.CLOUD_TOKEN]);
       AppsService.all()
