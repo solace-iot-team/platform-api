@@ -1063,6 +1063,7 @@ components:
           - wss
           - smf
           - smfs
+          - compressed-smf
         version:
           type: string
     WebHook:

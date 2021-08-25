@@ -29,7 +29,7 @@ export class ProtocolMapper {
 			name: 'secure-mqtt',
 			version: '3.1.1',
 			protocolKeys: {
-				name: 'MQTT',
+				name: 'Secured MQTT',
 				protocol: "SSL"
 			}
 		};
@@ -39,7 +39,7 @@ export class ProtocolMapper {
 			name: 'ws-mqtt',
 			version: '3.1.1',
 			protocolKeys: {
-				name: 'MQTT',
+				name: 'WebSocket MQTT',
 				protocol: "WS"
 			}
 		};
@@ -49,7 +49,7 @@ export class ProtocolMapper {
 			name: 'wss-mqtt',
 			version: '3.1.1',
 			protocolKeys: {
-				name: 'MQTT',
+				name: 'WebSocket Secured MQTT',
 				protocol: "WSS"
 			}
 		};
@@ -70,7 +70,7 @@ export class ProtocolMapper {
 			name: 'amqps',
 			version: '1.0.0',
 			protocolKeys: {
-				name: 'AMQP',
+				name: 'Secured AMQP',
 				protocol: "AMQPS"
 			}
 		};
@@ -90,7 +90,7 @@ export class ProtocolMapper {
 			name: 'https',
 			version: '1.1',
 			protocolKeys: {
-				name: 'REST',
+				name: 'Secured REST',
 				protocol: "HTTPS"
 			}
 		};
@@ -110,11 +110,21 @@ export class ProtocolMapper {
 			name: 'smfs',
 			version: 'smfs',
 			protocolKeys: {
-				name: 'SMF',
+				name: 'Secured SMF',
 				protocol: "TLS"
 			}
 		};
 		map.push(smfs);
+
+		var compressedsmf: ProtocolMapping = {
+			name: 'compressed-smf',
+			version: 'smf',
+			protocolKeys: {
+				name: 'Compressed SMF',
+				protocol: 'TCP'
+			}
+		};
+		map.push(compressedsmf);
 
 		var jms: ProtocolMapping = {
 			name: 'jms',
@@ -130,7 +140,7 @@ export class ProtocolMapper {
 			name: 'secure-jms',
 			version: '1.1',
 			protocolKeys: {
-				name: 'JMS',
+				name: 'Secured JMS',
 				protocol: "TLS"
 			}
 		};
@@ -149,12 +159,13 @@ export class ProtocolMapper {
 		for (var protocol of serverProtocols) {
 			L.debug(`mapMessagingProtocols ${protocol.name}`);
 			for (var serverEndpoint of protocol.endPoints) {
-				var mapping = mappings.find(element => element.protocolKeys.name == protocol.name && element.protocolKeys.protocol == serverEndpoint.transport);
+				var mapping = mappings.find(element => element.protocolKeys.name == serverEndpoint.name && element.protocolKeys.protocol == serverEndpoint.transport);
 				if (mapping != null) {
 					var keys = mapping.protocolKeys;
 					L.debug(`mapMessagingProtocols ${keys.name} ${keys.protocol}`);
-					var endpoint = protocol.endPoints.find(ep => ep.transport == serverEndpoint.transport);
-					var newEndpoint: Endpoint = endpoints.find(ep => ep.uri == endpoint.uris[0]);
+					var endpoint = protocol.endPoints.find(ep => ep.name == serverEndpoint.name && ep.transport == serverEndpoint.transport);
+          var newEndpoint: Endpoint = endpoints.find(ep => ep.uri == endpoint.uris[0]);
+          L.debug(endpoint);
 					if (newEndpoint === undefined) {
 						newEndpoint = {
 							compressed: endpoint.compressed == 'yes' ? 'yes' : 'no',
@@ -165,7 +176,8 @@ export class ProtocolMapper {
 							},
 							transport: endpoint.transport,
 							uri: endpoint.uris[0]
-						};
+            };
+            
 						endpoints.push(newEndpoint);
 					}
 
