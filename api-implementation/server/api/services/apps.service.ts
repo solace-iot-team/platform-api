@@ -9,6 +9,7 @@ import { PersistenceService } from './persistence.service';
 import App = Components.Schemas.App;
 import AppListItem = Components.Schemas.AppListItem;
 import AppResponse = Components.Schemas.AppResponse;
+import ClientInformation = Components.Schemas.ClientInformation;
 import AppPatch = Components.Schemas.AppPatch;
 import passwordGenerator from 'generate-password';
 import ApiProduct = Components.Schemas.APIProduct;
@@ -103,6 +104,15 @@ export class AppsService {
           );
           appEnv.permissions = permissions;
         }
+        let queueName: string = '';
+        if (BrokerService.clientOptionsRequireQueue(app.clientOptions) && app.credentials != null && app.credentials.secret != null) {
+          queueName = app.credentials.secret.consumerKey;
+
+        }
+        if (queueName != '') {
+          app.clientInformation = { guaranteedMessaging: { name: queueName } };
+        }
+
       } else {
         throw 404;
       }
@@ -261,7 +271,7 @@ export class AppsService {
   async validate(app: any): Promise<boolean> {
     let isApproved = true;
     const environments: Set<string> = new Set();
-    if (!app.apiProducts || app.apiProducts.length ==0) {
+    if (!app.apiProducts || app.apiProducts.length == 0) {
       return isApproved;
     }
 
