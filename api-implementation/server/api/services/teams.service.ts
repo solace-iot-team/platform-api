@@ -210,6 +210,10 @@ export class TeamsService {
     if (body.credentials) {
       app.credentials = body.credentials;
     }
+    if (body.clientOptions) {
+      app.clientOptions = body.clientOptions;
+    }
+
     const appPatch: AppPatch = await AppsService.update(
       team,
       name,

@@ -25,7 +25,7 @@ export class DevelopersService {
   private persistenceService: PersistenceService;
   constructor() {
     this.persistenceService = new PersistenceService('developers');
-    
+
   }
 
   all(): Promise<Developer[]> {
@@ -198,9 +198,12 @@ export class DevelopersService {
     }
     if (body.webHooks) {
       app.webHooks = body.webHooks;
-    }    
+    }
     if (body.credentials) {
       app.credentials = body.credentials;
+    }
+    if (body.clientOptions) {
+      app.clientOptions = body.clientOptions;
     }
     const appPatch: AppPatch = await AppsService.update(
       developer,
