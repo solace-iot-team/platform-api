@@ -238,7 +238,7 @@ declare namespace Components {
             /**
              * the unique name of this app, can not be updated
              */
-            name: string;
+            name: string; // [a-zA-Z0-9_-]{4,188}
             /**
              * friendly name of the app that can be changed subsequently
              */
