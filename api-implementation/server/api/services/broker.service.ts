@@ -80,7 +80,7 @@ class BrokerService {
             const products: APIProduct[] = [];
             await this.doProvision(app, environmentNames, products, ownerAttributes);
           } else {
-            L.info(`No API Products present, do nothing`);
+            L.debug(`No update requested or no API Products present.`);
           }
 
           resolve();
@@ -522,8 +522,8 @@ class BrokerService {
                     .protocolKeys;
                   L.info(`getMessagingProtocols ${keys.name} ${keys.protocol}`);
                   const endpoint = service.messagingProtocols
-                    .find((mp) => mp.name == keys.name)
-                    .endPoints.find((ep) => ep.transport == keys.protocol);
+                    .find((mp) => mp.endPoints.find((ep) => ep.transport == keys.protocol && ep.name == keys.name))
+                    .endPoints.find((ep)=> ep.transport == keys.protocol);
                   //L.info(endpoint);
                   let newEndpoint: Endpoint = endpoints.find(
                     (ep) => ep.uri == endpoint.uris[0]
@@ -554,8 +554,13 @@ class BrokerService {
     });
   }
 
-  private clientOptionsRequireQueue (clientOptions) : boolean{
-    return clientOptions !=null && clientOptions.guaranteedMessaging != null && clientOptions.guaranteedMessaging.requireQueue == true
+  private clientOptionsRequireQueue(clientOptions): boolean {
+    L.debug(clientOptions);
+    const requireQueue: boolean = (clientOptions != null
+      && clientOptions.guaranteedMessaging != null
+      && clientOptions.guaranteedMessaging.requireQueue == true);
+    L.debug(`Provisioning Requires a queue - ${requireQueue}`)
+    return requireQueue;
   }
 }
 export default new BrokerService();
