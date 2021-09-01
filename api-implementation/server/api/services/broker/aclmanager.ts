@@ -356,7 +356,7 @@ class ACLManager {
     return returnResources;
 
   }
-  public getRDPSubscriptionsFromAsyncAPIs(apis: string[]): Promise<string[]> {
+  public getSubscriptionsFromAsyncAPIs(apis: string[]): Promise<string[]> {
     return new Promise<string[]>(
       (resolve, reject) => {
         var apiPromises: Promise<string>[] = [];
@@ -377,7 +377,7 @@ class ACLManager {
                   var channel = spec.channel(s);
                   // publish means subscribe - async api transposition
                   if (channel.hasPublish()) {
-                    L.info(`getRDPSubscriptionsFromAsyncAPIs subscribe ${s}`)
+                    L.info(`getSubscriptionsFromAsyncAPIs subscribe ${s}`)
                     resources.push(s);
                   }
                 });
@@ -397,10 +397,10 @@ class ACLManager {
     );
   }
 
-  public async getRDPQueueSubscriptions(app: App, apiProducts: APIProduct[], ownerAttributes: Attributes): Promise<string[]> {
+  public async getQueueSubscriptions(app: App, apiProducts: APIProduct[], ownerAttributes: Attributes): Promise<string[]> {
     var subscribeExceptions: string[] = [];
     for (var product of apiProducts) {
-      var strs: string[] = await this.getRDPSubscriptionsFromAsyncAPIs(product.apis);
+      var strs: string[] = await this.getSubscriptionsFromAsyncAPIs(product.apis);
       for (var s of strs) {
         subscribeExceptions.push(s);
       }

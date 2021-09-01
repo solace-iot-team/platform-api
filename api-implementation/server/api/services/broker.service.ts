@@ -272,7 +272,7 @@ class BrokerService {
     var subscribeExceptions: string[] = [];
     var useTls: boolean = false;
     for (var product of apiProducts) {
-      var strs: string[] = await ACLManager.getRDPSubscriptionsFromAsyncAPIs(product.apis);
+      var strs: string[] = await ACLManager.getSubscriptionsFromAsyncAPIs(product.apis);
       for (var s of strs) {
         subscribeExceptions.push(s);
       }
@@ -430,7 +430,7 @@ class BrokerService {
 
   private async createQueues(app: App, services: Service[], apiProducts: APIProduct[], ownerAttributes: Attributes): Promise<void> {
     L.info(`createQueueSubscriptions services: ${services}`);
-    var subscribeExceptions: string[] = await ACLManager.getRDPQueueSubscriptions(app, apiProducts, ownerAttributes);
+    var subscribeExceptions: string[] = await ACLManager.getQueueSubscriptions(app, apiProducts, ownerAttributes);
     if (subscribeExceptions === undefined) {
       subscribeExceptions = [];
     }
