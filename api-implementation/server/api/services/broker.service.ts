@@ -113,6 +113,9 @@ class BrokerService {
       L.info("creating queues");
       var d = await this.createQueues(app, services, products, ownerAttributes);
       L.info(`created queues ${app.name}`);
+    } else {
+      // clean up queues
+      await this.deleteQueues(app, services);
     }
     // no webhook - no RDP
     //L.info(app.webHooks);    
@@ -120,6 +123,9 @@ class BrokerService {
       L.info("creating webhook");
       var d = await this.createRDP(app, services, products);
       L.info(`created rdps ${app.name}`);
+    } else {
+      // clean up RDPs
+      await this.deleteRDPs(app, services);
     }
   }
 
@@ -554,7 +560,7 @@ class BrokerService {
     });
   }
 
-  private clientOptionsRequireQueue(clientOptions): boolean {
+  clientOptionsRequireQueue(clientOptions): boolean {
     L.debug(clientOptions);
     const requireQueue: boolean = (clientOptions != null
       && clientOptions.guaranteedMessaging != null
