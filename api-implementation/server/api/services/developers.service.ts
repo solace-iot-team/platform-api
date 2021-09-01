@@ -137,7 +137,9 @@ export class DevelopersService {
     if (body.webHooks) {
       app.webHooks = body.webHooks;
     }
-
+    if (body.clientOptions) {
+      app.clientOptions = body.clientOptions;
+    }
     L.info(`App create request ${JSON.stringify(app)}`);
     try {
       const newApp: DeveloperApp = await AppsService.create(
