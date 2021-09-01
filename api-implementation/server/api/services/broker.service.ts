@@ -107,12 +107,17 @@ class BrokerService {
     L.info(`created client username ${app.name}`);
     var c = await ACLManager.createClientACLExceptions(app, services, products, ownerAttributes);
     L.info(`created acl exceptions ${app.name}`);
-    // no webhook - no RDP
-    //L.info(app.webHooks);
-    if (app.webHooks != null && app.webHooks.length > 0) {
-      L.info("creating webhook");
+
+    // provision queue if webhooks or clientoptions are configured
+    if ((app.webHooks != null && app.webHooks.length > 0) || this.clientOptionsRequireQueue(app.clientOptions)) {
+      L.info("creating queues");
       var d = await this.createQueues(app, services, products, ownerAttributes);
       L.info(`created queues ${app.name}`);
+    }
+    // no webhook - no RDP
+    //L.info(app.webHooks);    
+    if (app.webHooks != null && app.webHooks.length > 0) {
+      L.info("creating webhook");
       var d = await this.createRDP(app, services, products);
       L.info(`created rdps ${app.name}`);
     }
@@ -547,6 +552,10 @@ class BrokerService {
           reject(err);
         });
     });
+  }
+
+  private clientOptionsRequireQueue (clientOptions) : boolean{
+    return clientOptions !=null && clientOptions.guaranteedMessaging != null && clientOptions.guaranteedMessaging.requireQueue == true
   }
 }
 export default new BrokerService();
