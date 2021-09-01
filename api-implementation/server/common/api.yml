@@ -2,7 +2,7 @@ openapi: 3.0.0
 info:
   title: Solace API Management Connector
   description: 'Solace API Management Connector API. Note: basic authentication security mechanism is deprecated.'
-  version: 0.2.8
+  version: 0.2.9
 servers:
   - url: /v1
 
@@ -495,6 +495,36 @@ components:
         - name
         - value
 
+    ClientOptions:
+      type: object
+      properties:
+        guaranteedMessaging:
+          type: object
+          properties:
+            requireQueue:
+              type: boolean
+              description: "Automatically provision a queue with all subscriptions permitted for this app attached"
+              example: true
+            accessType:
+              type: string
+              description: access mode for the queue
+              example: exclusive
+              default: exclusive
+              enum:
+              - exclusive
+              - non-exclusive
+
+    ClientInformation:
+      type: object
+      properties:
+        guaranteedMessaging:
+          type: object
+          properties:
+            name:
+              type: string
+              description: "The name of the queue that is available for this app"
+              example: "AlAOLG3xxuYCVDpoXl4wKGwWAIURFGuK"
+
     App:
       type: object
       description: "An app associated with an owner (developer, team etc). Associates the app with an API product, and auto-generates an API credentials for the app to use"
@@ -514,6 +544,8 @@ components:
             type: string
         attributes:
           $ref: '#/components/schemas/attributes'
+        clientOptions:
+          $ref: '#/components/schemas/ClientOptions'  
         callbackUrl:
             description: callback url
             type: string
@@ -541,6 +573,8 @@ components:
             type: string
         attributes:
           $ref: '#/components/schemas/attributes'
+        clientOptions:
+          $ref: '#/components/schemas/ClientOptions'  
         callbackUrl:
             description: callback url
             type: string
@@ -576,6 +610,10 @@ components:
             type: string
         attributes:
           $ref: '#/components/schemas/attributes'
+        clientOptions:
+          $ref: '#/components/schemas/ClientOptions'  
+        clientInformation:
+          $ref: '#/components/schemas/ClientInformation'  
         callbackUrl:
             description: callback url
             type: string
@@ -2758,7 +2796,7 @@ paths:
             "$ref": "#/components/schemas/App"
      responses:
        '201':
-         description: New API Product
+         description: New app
          content:
            application/json:
              schema:
@@ -3408,7 +3446,7 @@ paths:
             "$ref": "#/components/schemas/App"
      responses:
        '201':
-         description: New API Product
+         description: New app
          content:
            application/json:
              schema:
