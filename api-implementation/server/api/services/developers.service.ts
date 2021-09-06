@@ -5,18 +5,19 @@ import AppPatch = Components.Schemas.AppPatch;
 import AppResponse = Components.Schemas.AppResponse;
 import TopicSyntax = Components.Parameters.TopicSyntax.TopicSyntax;
 import AppsService from './apps.service';
+import AppFactory from './apps/appfactory';
 import BrokerService from './broker.service';
 
 import { PersistenceService } from './persistence.service';
 import { ErrorResponseInternal } from '../middlewares/error.handler';
 
-interface DeveloperApp extends App {
+export interface DeveloperApp extends App {
   appType?: string;
   ownerId?: string;
   status?: string;
 }
 
-interface DeveloperAppPatch extends AppPatch {
+export interface DeveloperAppPatch extends AppPatch {
   appType?: string;
   ownerId?: string;
 }
@@ -81,6 +82,7 @@ export class DevelopersService {
       } else {
         throw 404;
       }
+      AppFactory.transformToExternalAppRepresentation(app);
       return app;
     } catch (e) {
       throw e;
@@ -119,27 +121,8 @@ export class DevelopersService {
         `Entity ${developer} does not exist`
       );
     }
-    L.info(dev);
-    const app: DeveloperApp = {
-      ownerId: developer,
-      appType: 'developer',
-      name: body.name,
-      displayName: body.displayName,
-      apiProducts: body.apiProducts,
-      credentials: body.credentials,
-    };
-    if (body.attributes) {
-      app.attributes = body.attributes;
-    }
-    if (body.callbackUrl) {
-      app.callbackUrl = body.callbackUrl;
-    }
-    if (body.webHooks) {
-      app.webHooks = body.webHooks;
-    }
-    if (body.clientOptions) {
-      app.clientOptions = body.clientOptions;
-    }
+    L.debug(dev);
+    const app: DeveloperApp = AppFactory.createDeveloperApp(body, developer);
     L.info(`App create request ${JSON.stringify(app)}`);
     try {
       const newApp: DeveloperApp = await AppsService.create(
@@ -147,6 +130,7 @@ export class DevelopersService {
         app,
         dev.attributes
       );
+      AppFactory.transformToExternalAppRepresentation(newApp);
       return newApp;
     } catch (e) {
       L.error(e);
@@ -176,41 +160,14 @@ export class DevelopersService {
       );
     }
     L.debug(dev);
-    const app: DeveloperAppPatch = {
-      ownerId: developer,
-      appType: 'developer',
-    };
-
-    if (body.displayName) {
-      app.displayName = body.displayName;
-    }
-    if (body.apiProducts) {
-      app.apiProducts = body.apiProducts;
-    }
-    if (body.attributes) {
-      app.attributes = body.attributes;
-    }
-    if (body.callbackUrl) {
-      app.callbackUrl = body.callbackUrl;
-    }
-    if (body.status) {
-      app.status = body.status;
-    }
-    if (body.webHooks) {
-      app.webHooks = body.webHooks;
-    }
-    if (body.credentials) {
-      app.credentials = body.credentials;
-    }
-    if (body.clientOptions) {
-      app.clientOptions = body.clientOptions;
-    }
+    const app: DeveloperAppPatch = AppFactory.createDeveloperAppBatch(body, developer);
     const appPatch: AppPatch = await AppsService.update(
       developer,
       name,
       app,
       dev.attributes
     );
+    AppFactory.transformToExternalAppRepresentation(appPatch);
     return appPatch;
   }
 

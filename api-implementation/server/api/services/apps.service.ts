@@ -9,7 +9,6 @@ import { PersistenceService } from './persistence.service';
 import App = Components.Schemas.App;
 import AppListItem = Components.Schemas.AppListItem;
 import AppResponse = Components.Schemas.AppResponse;
-import ClientInformation = Components.Schemas.ClientInformation;
 import AppPatch = Components.Schemas.AppPatch;
 import passwordGenerator from 'generate-password';
 import ApiProduct = Components.Schemas.APIProduct;
