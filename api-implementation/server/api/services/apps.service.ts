@@ -105,7 +105,7 @@ export class AppsService {
         }
         let queueName: string = '';
         if (BrokerService.clientOptionsRequireQueue(app.clientOptions) && app.credentials != null && app.credentials.secret != null) {
-          queueName = app.credentials.secret.consumerKey;
+          queueName = app.name;
 
         }
         if (queueName != '') {
