@@ -50,6 +50,9 @@ class BrokerService {
 
   async provisionApp(app: App, ownerAttributes: Attributes, isUpdate?: boolean): Promise<void> {
     return new Promise<void>((resolve, reject) => {
+      if (this.provisionedByConsumerKey(app)){
+        this.doDeprovisionApp(app, app.credentials.secret.consumerKey);
+      }
       var apiProductPromises: Promise<APIProduct>[] = [];
       app.apiProducts.forEach((productName: string) => {
         L.info(productName);
@@ -115,7 +118,7 @@ class BrokerService {
       L.info(`created queues ${app.name}`);
     } else {
       // clean up queues
-      await this.deleteQueues(app, services);
+      await this.deleteQueues(app, services, app.name);
     }
     // no webhook - no RDP
     //L.info(app.webHooks);    
@@ -125,11 +128,15 @@ class BrokerService {
       L.info(`created rdps ${app.name}`);
     } else {
       // clean up RDPs
-      await this.deleteRDPs(app, services);
+      await this.deleteRDPs(app, services, app.name);
     }
   }
 
   async deprovisionApp(app: App) {
+    await this.doDeprovisionApp(app, app.name);
+  }
+
+  private async doDeprovisionApp(app: App, objectName: string) {
     var environmentNames: string[] = [];
 
     environmentNames = await this.getEnvironments(app);
@@ -137,10 +144,10 @@ class BrokerService {
     try {
       const services = await this.getServices(environmentNames);
       await this.deleteClientUsernames(app, services);
-      await ACLManager.deleteAuthorizationGroups(app, services);
-      await ACLManager.deleteACLs(app, services);
-      await this.deleteRDPs(app, services);
-      await this.deleteQueues(app, services);
+      await ACLManager.deleteAuthorizationGroups(app, services, objectName);
+      await ACLManager.deleteACLs(app, services, objectName);
+      await this.deleteRDPs(app, services, objectName);
+      await this.deleteQueues(app, services, objectName);
     } catch (err) {
       L.error('De-Provisioninig error');
       L.error(err);
@@ -182,11 +189,11 @@ class BrokerService {
     }
   }
 
-  private async deleteQueues(app: App, services: Service[]) {
+  private async deleteQueues(app: App, services: Service[], name: string) {
     for (var service of services) {
       var sempv2Client = SempV2ClientFactory.getSEMPv2Client(service);
       try {
-        var getResponse = await AllService.deleteMsgVpnQueue(service.msgVpnName, app.credentials.secret.consumerKey);
+        var getResponse = await AllService.deleteMsgVpnQueue(service.msgVpnName, name);
         L.info('Queue deleted');
       } catch (e) {
         if (!(e.body.meta.error.status == "NOT_FOUND")) {
@@ -197,11 +204,11 @@ class BrokerService {
     };
   }
 
-  private async deleteRDPs(app: App, services: Service[]) {
+  private async deleteRDPs(app: App, services: Service[], name: string) {
     for (var service of services) {
       var sempv2Client = SempV2ClientFactory.getSEMPv2Client(service);
       try {
-        var getResponse = await AllService.deleteMsgVpnRestDeliveryPoint(service.msgVpnName, app.credentials.secret.consumerKey);
+        var getResponse = await AllService.deleteMsgVpnRestDeliveryPoint(service.msgVpnName, name);
         L.info("RDP deleted");
       } catch (e) {
         if (!(e.body.meta.error.status == "NOT_FOUND"))
@@ -215,7 +222,7 @@ class BrokerService {
     for (var service of services) {
       var sempV2Client = SempV2ClientFactory.getSEMPv2Client(service);
       var clientUsername: MsgVpnClientUsername = {
-        aclProfileName: app.credentials.secret.consumerKey,
+        aclProfileName: app.name,
         clientUsername: app.credentials.secret.consumerKey,
         password: app.credentials.secret.consumerSecret,
         clientProfileName: "default",
@@ -291,6 +298,7 @@ class BrokerService {
     if (subscribeExceptions.length < 1) {
       return;
     }
+    const objectName: string = app.name;
     // loop over services
     for (var service of services) {
       var restConsumerName = `Consumer`;
@@ -327,13 +335,14 @@ class BrokerService {
       var newRDP: MsgVpnRestDeliveryPoint = {
         clientProfileName: "default",
         msgVpnName: service.msgVpnName,
-        restDeliveryPointName: app.credentials.secret.consumerKey,
+        restDeliveryPointName: objectName,
         enabled: false
       };
       try {
-        var q = await AllService.getMsgVpnRestDeliveryPoint(service.msgVpnName, app.credentials.secret.consumerKey);
-        var updateResponse = await AllService.updateMsgVpnRestDeliveryPoint(service.msgVpnName, app.credentials.secret.consumerKey, newRDP);
-        L.debug(`createRDP updated ${app.credentials.secret.consumerKey}`);
+        var q = await AllService.getMsgVpnRestDeliveryPoint(service.msgVpnName, objectName);
+        var updateResponse = await AllService.updateMsgVpnRestDeliveryPoint(service.msgVpnName, 
+          objectName, newRDP);
+        L.debug(`createRDP updated ${objectName}`);
       } catch (e) {
         L.debug(`createRDP lookup  failed ${JSON.stringify(e)}`);
         try {
@@ -355,7 +364,7 @@ class BrokerService {
       }
       var newRDPConsumer: MsgVpnRestDeliveryPointRestConsumer = {
         msgVpnName: service.msgVpnName,
-        restDeliveryPointName: app.credentials.secret.consumerKey,
+        restDeliveryPointName: objectName,
         restConsumerName: restConsumerName,
         remotePort: parseInt(port),
         remoteHost: rdpUrl.hostname,
@@ -379,13 +388,13 @@ class BrokerService {
       }
 
       try {
-        var r = await AllService.getMsgVpnRestDeliveryPointRestConsumer(service.msgVpnName, app.credentials.secret.consumerKey, restConsumerName);
-        var updateResponseRDPConsumer = await AllService.updateMsgVpnRestDeliveryPointRestConsumer(service.msgVpnName, app.credentials.secret.consumerKey, restConsumerName, newRDPConsumer);
+        var r = await AllService.getMsgVpnRestDeliveryPointRestConsumer(service.msgVpnName, objectName, restConsumerName);
+        var updateResponseRDPConsumer = await AllService.updateMsgVpnRestDeliveryPointRestConsumer(service.msgVpnName, objectName, restConsumerName, newRDPConsumer);
         L.debug(`createRDP consumer updated ${app.credentials.secret.consumerKey}`);
       } catch (e) {
         L.debug(`createRDP consumer lookup  failed ${JSON.stringify(e)}`);
         try {
-          var r = await AllService.createMsgVpnRestDeliveryPointRestConsumer(service.msgVpnName, app.credentials.secret.consumerKey, newRDPConsumer);
+          var r = await AllService.createMsgVpnRestDeliveryPointRestConsumer(service.msgVpnName, objectName, newRDPConsumer);
         } catch (e) {
           L.warn(`createRDP consumer creation  failed ${JSON.stringify(e)}`);
           throw new ErrorResponseInternal(500, e);
@@ -393,19 +402,19 @@ class BrokerService {
       }
       var newRDPQueueBinding: MsgVpnRestDeliveryPointQueueBinding = {
         msgVpnName: service.msgVpnName,
-        restDeliveryPointName: app.credentials.secret.consumerKey,
+        restDeliveryPointName: objectName,
         postRequestTarget: `${rdpUrl.pathname}${rdpUrl.search}`,
-        queueBindingName: app.credentials.secret.consumerKey
+        queueBindingName: objectName
       };
       try {
-        var b = await AllService.getMsgVpnRestDeliveryPointQueueBinding(service.msgVpnName, app.credentials.secret.consumerKey, app.credentials.secret.consumerKey);
+        var b = await AllService.getMsgVpnRestDeliveryPointQueueBinding(service.msgVpnName, objectName, objectName);
 
-        var updateResponseQueueBinding = await AllService.updateMsgVpnRestDeliveryPointQueueBinding(service.msgVpnName, app.credentials.secret.consumerKey, app.credentials.secret.consumerKey, newRDPQueueBinding);
+        var updateResponseQueueBinding = await AllService.updateMsgVpnRestDeliveryPointQueueBinding(service.msgVpnName, objectName, objectName, newRDPQueueBinding);
         L.debug(`createRDP queue binding updated ${app.credentials.secret.consumerKey}`);
       } catch (e) {
         L.debug(`createRDP queue binding lookup  failed ${JSON.stringify(e)}`);
         try {
-          var b = await AllService.createMsgVpnRestDeliveryPointQueueBinding(service.msgVpnName, app.credentials.secret.consumerKey, newRDPQueueBinding);
+          var b = await AllService.createMsgVpnRestDeliveryPointQueueBinding(service.msgVpnName, objectName, newRDPQueueBinding);
         } catch (e) {
           L.warn(`createRDP queue binding creation  failed ${JSON.stringify(e)}`);
           throw new ErrorResponseInternal(500, e);
@@ -416,8 +425,8 @@ class BrokerService {
       try {
         var enableRDP: MsgVpnRestDeliveryPoint = {
           enabled: true
-        }; var enableRDPResponse = await AllService.updateMsgVpnRestDeliveryPoint(service.msgVpnName, app.credentials.secret.consumerKey, enableRDP);
-        L.debug(`createRDP enabled ${app.credentials.secret.consumerKey}`);
+        }; var enableRDPResponse = await AllService.updateMsgVpnRestDeliveryPoint(service.msgVpnName, objectName, enableRDP);
+        L.debug(`createRDP enabled ${objectName}`);
       } catch (e) {
         L.error(`createRDP enable failed ${JSON.stringify(e)}`);
         throw new ErrorResponseInternal(500, e);
@@ -429,8 +438,8 @@ class BrokerService {
         var enableRDPConsumer: MsgVpnRestDeliveryPointRestConsumer = {
           enabled: true
         };
-        var updateResponseRDPConsumer = await AllService.updateMsgVpnRestDeliveryPointRestConsumer(service.msgVpnName, app.credentials.secret.consumerKey, restConsumerName, enableRDPConsumer);
-        L.debug(`createRDP consumer enabled ${app.credentials.secret.consumerKey}`);
+        var updateResponseRDPConsumer = await AllService.updateMsgVpnRestDeliveryPointRestConsumer(service.msgVpnName, objectName, restConsumerName, enableRDPConsumer);
+        L.debug(`createRDP consumer enabled ${objectName}`);
       } catch (e) {
         L.debug(`createRDP consumer enablement  failed ${JSON.stringify(e)}`);
         throw new ErrorResponseInternal(500, e);
@@ -445,12 +454,13 @@ class BrokerService {
     if (subscribeExceptions === undefined) {
       subscribeExceptions = [];
     }
+    const objectName: string = app.name;
     // loop over services
     for (var service of services) {
       //create queues
       var sempV2Client = SempV2ClientFactory.getSEMPv2Client(service);
       var newQ: MsgVpnQueue = {
-        queueName: app.credentials.secret.consumerKey,
+        queueName: objectName,
         msgVpnName: service.msgVpnName,
         ingressEnabled: true,
         egressEnabled: true,
@@ -458,8 +468,8 @@ class BrokerService {
         permission: MsgVpnQueue.permission.CONSUME
       };
       try {
-        var q = await AllService.getMsgVpnQueue(service.msgVpnName, app.credentials.secret.consumerKey);
-        var updateResponseMsgVpnQueue = await AllService.updateMsgVpnQueue(service.msgVpnName, app.credentials.secret.consumerKey, newQ);
+        var q = await AllService.getMsgVpnQueue(service.msgVpnName, objectName);
+        var updateResponseMsgVpnQueue = await AllService.updateMsgVpnQueue(service.msgVpnName, objectName, newQ);
         L.debug(`createQueues updated ${app.credentials.secret.consumerKey}`);
       } catch (e) {
         L.debug(`createQueues lookup  failed ${JSON.stringify(e)}`);
@@ -474,15 +484,15 @@ class BrokerService {
       for (var subscription of subscribeExceptions) {
         var queueSubscription: MsgVpnQueueSubscription = {
           msgVpnName: service.msgVpnName,
-          queueName: app.credentials.secret.consumerKey,
+          queueName: objectName,
           subscriptionTopic: subscription
         }
         try {
-          var subResult = await AllService.getMsgVpnQueueSubscription(service.msgVpnName, app.credentials.secret.consumerKey, encodeURIComponent(subscription));
+          var subResult = await AllService.getMsgVpnQueueSubscription(service.msgVpnName, objectName, encodeURIComponent(subscription));
         } catch (e) {
           L.debug(`createQueues subscription lookup  failed ${JSON.stringify(e)}`);
           try {
-            var subResult = await AllService.createMsgVpnQueueSubscription(service.msgVpnName, app.credentials.secret.consumerKey, queueSubscription);
+            var subResult = await AllService.createMsgVpnQueueSubscription(service.msgVpnName, objectName, queueSubscription);
           } catch (e) {
             L.warn(`createQueues subscription creation  failed ${JSON.stringify(e)}`);
             throw new ErrorResponseInternal(500, e.message);
@@ -567,6 +577,12 @@ class BrokerService {
       && clientOptions.guaranteedMessaging.requireQueue == true);
     L.debug(`Provisioning Requires a queue - ${requireQueue}`)
     return requireQueue;
+  }
+
+  async provisionedByConsumerKey(app: App): Promise<boolean> {
+    const envs: string[] = await this.getEnvironments(app);
+    const services: Service[] = await this.getServices(envs); 
+    return await ACLManager.hasConsumerKeyACLs(app, services);
   }
 }
 export default new BrokerService();
