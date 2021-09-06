@@ -262,7 +262,7 @@ class BrokerService {
 
     }
     // if there are no API Products we need to find other references to environments in webhooks and finally fall back on all environments in the org
-    if (environmentNames.length == 0) {
+    if (environmentNames.length == 0 && app.webHooks) {
       for (const webHook of app.webHooks) {
         environmentNames = environmentNames.concat(webHook.environments);
       }
