@@ -6,17 +6,18 @@ import AppResponse = Components.Schemas.AppResponse;
 import TopicSyntax = Components.Parameters.TopicSyntax.TopicSyntax;
 import AppsService from './apps.service';
 import BrokerService from './broker.service';
+import AppFactory from './apps/appfactory';
 
 import { PersistenceService } from './persistence.service';
 import { ErrorResponseInternal } from '../middlewares/error.handler';
 
-interface TeamApp extends App {
+export interface TeamApp extends App {
   appType?: string;
   ownerId?: string;
   status?: string;
 }
 
-interface TeamAppPatch extends AppPatch {
+export interface TeamAppPatch extends AppPatch {
   appType?: string;
   ownerId?: string;
 }
@@ -81,8 +82,7 @@ export class TeamsService {
       } else {
         throw 404;
       }
-      delete app['ownerId'];
-      delete app['appType'];
+      AppFactory.transformToExternalAppRepresentation(app);
 
       return app;
     } catch (e) {
@@ -123,34 +123,17 @@ export class TeamsService {
       };
       this.create(teamObj);
     }
-    L.info(teamObj);
-    const app: TeamApp = {
-      ownerId: team,
-      appType: 'team',
-      name: body.name,
-      displayName: body.displayName,
-      apiProducts: body.apiProducts,
-      credentials: body.credentials,
-    };
-    if (body.attributes) {
-      app.attributes = body.attributes;
-    }
-    if (body.callbackUrl) {
-      app.callbackUrl = body.callbackUrl;
-    }
-    if (body.webHooks) {
-      app.webHooks = body.webHooks;
-    }
+    L.debug(teamObj);
+    const app: TeamApp = AppFactory.createTeamApp(team, body);
 
-    L.info(`App create request ${JSON.stringify(app)}`);
+    L.debug(`App create request ${JSON.stringify(app)}`);
     try {
       const newApp: TeamApp = await AppsService.create(
         app.name,
         app,
         teamObj.attributes
       );
-      delete newApp['ownerId'];
-      delete newApp['appType'];
+      AppFactory.transformToExternalAppRepresentation(newApp);
 
       return newApp;
     } catch (e) {
@@ -168,53 +151,28 @@ export class TeamsService {
     name: string,
     body: AppPatch
   ): Promise<AppPatch> {
-    let dev = null;
+    let teamObj = null;
     try {
-      dev = await this.persistenceService.byName(team);
+      teamObj = await this.persistenceService.byName(team);
     } catch (e) {
       // do nothing
     }
-    if (dev === null) {
+    if (teamObj === null) {
       throw new ErrorResponseInternal(
         404,
-        `Entity ${team} does not exist`
+        `Entity ${teamObj} does not exist`
       );
     }
-    L.debug(dev);
-    const app: TeamAppPatch = {
-      ownerId: team,
-      appType: 'team',
-    };
+    L.debug(teamObj);
+    const app: TeamAppPatch = AppFactory.createTeamAppPatch(team, body);
 
-    if (body.displayName) {
-      app.displayName = body.displayName;
-    }
-    if (body.apiProducts) {
-      app.apiProducts = body.apiProducts;
-    }
-    if (body.attributes) {
-      app.attributes = body.attributes;
-    }
-    if (body.callbackUrl) {
-      app.callbackUrl = body.callbackUrl;
-    }
-    if (body.status) {
-      app.status = body.status;
-    }
-    if (body.webHooks) {
-      app.webHooks = body.webHooks;
-    }
-    if (body.credentials) {
-      app.credentials = body.credentials;
-    }
     const appPatch: AppPatch = await AppsService.update(
       team,
       name,
       app,
-      dev.attributes
+      teamObj.attributes
     );
-    delete appPatch['ownerId'];
-    delete appPatch['appType'];
+    AppFactory.transformToExternalAppRepresentation(appPatch);
     return appPatch;
   }
 

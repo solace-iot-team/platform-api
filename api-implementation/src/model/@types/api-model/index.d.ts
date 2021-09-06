@@ -238,7 +238,7 @@ declare namespace Components {
             /**
              * the unique name of this app, can not be updated
              */
-            name: string;
+            name: string; // [a-zA-Z0-9_-]{4,188}
             /**
              * friendly name of the app that can be changed subsequently
              */
@@ -249,6 +249,7 @@ declare namespace Components {
             expiresIn?: number;
             apiProducts: string[];
             attributes?: Attributes;
+            clientOptions?: ClientOptions;
             /**
              * callback url
              */
@@ -287,6 +288,7 @@ declare namespace Components {
             displayName?: string;
             apiProducts?: string[];
             attributes?: Attributes;
+            clientOptions?: ClientOptions;
             /**
              * callback url
              */
@@ -313,6 +315,8 @@ declare namespace Components {
             expiresIn?: number;
             apiProducts: string[];
             attributes?: Attributes;
+            clientOptions?: ClientOptions;
+            clientInformation?: ClientInformation;
             /**
              * callback url
              */
@@ -341,6 +345,32 @@ declare namespace Components {
             permissions: string[];
             channelId?: string;
             isChannel?: boolean;
+        }
+        export interface ClientInformation {
+            guaranteedMessaging?: {
+                /**
+                 * The name of the queue that is available for this app
+                 * example:
+                 * AlAOLG3xxuYCVDpoXl4wKGwWAIURFGuK
+                 */
+                name?: string;
+            };
+        }
+        export interface ClientOptions {
+            guaranteedMessaging?: {
+                /**
+                 * Automatically provision a queue with all subscriptions permitted for this app attached
+                 * example:
+                 * true
+                 */
+                requireQueue?: boolean;
+                /**
+                 * access mode for the queue
+                 * example:
+                 * exclusive
+                 */
+                accessType?: "exclusive" | "non-exclusive";
+            };
         }
         /**
          * Credentials object associated with an app

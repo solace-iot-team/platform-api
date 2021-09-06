@@ -80,7 +80,7 @@ class BrokerService {
             const products: APIProduct[] = [];
             await this.doProvision(app, environmentNames, products, ownerAttributes);
           } else {
-            L.info(`No API Products present, do nothing`);
+            L.debug(`No update requested or no API Products present.`);
           }
 
           resolve();
@@ -107,14 +107,25 @@ class BrokerService {
     L.info(`created client username ${app.name}`);
     var c = await ACLManager.createClientACLExceptions(app, services, products, ownerAttributes);
     L.info(`created acl exceptions ${app.name}`);
-    // no webhook - no RDP
-    //L.info(app.webHooks);
-    if (app.webHooks != null && app.webHooks.length > 0) {
-      L.info("creating webhook");
+
+    // provision queue if webhooks or clientoptions are configured
+    if ((app.webHooks != null && app.webHooks.length > 0) || this.clientOptionsRequireQueue(app.clientOptions)) {
+      L.info("creating queues");
       var d = await this.createQueues(app, services, products, ownerAttributes);
       L.info(`created queues ${app.name}`);
+    } else {
+      // clean up queues
+      await this.deleteQueues(app, services);
+    }
+    // no webhook - no RDP
+    //L.info(app.webHooks);    
+    if (app.webHooks != null && app.webHooks.length > 0) {
+      L.info("creating webhook");
       var d = await this.createRDP(app, services, products);
       L.info(`created rdps ${app.name}`);
+    } else {
+      // clean up RDPs
+      await this.deleteRDPs(app, services);
     }
   }
 
@@ -251,7 +262,7 @@ class BrokerService {
 
     }
     // if there are no API Products we need to find other references to environments in webhooks and finally fall back on all environments in the org
-    if (environmentNames.length == 0) {
+    if (environmentNames.length == 0 && app.webHooks) {
       for (const webHook of app.webHooks) {
         environmentNames = environmentNames.concat(webHook.environments);
       }
@@ -272,7 +283,7 @@ class BrokerService {
     var subscribeExceptions: string[] = [];
     var useTls: boolean = false;
     for (var product of apiProducts) {
-      var strs: string[] = await ACLManager.getRDPSubscriptionsFromAsyncAPIs(product.apis);
+      var strs: string[] = await ACLManager.getSubscriptionsFromAsyncAPIs(product.apis);
       for (var s of strs) {
         subscribeExceptions.push(s);
       }
@@ -430,7 +441,7 @@ class BrokerService {
 
   private async createQueues(app: App, services: Service[], apiProducts: APIProduct[], ownerAttributes: Attributes): Promise<void> {
     L.info(`createQueueSubscriptions services: ${services}`);
-    var subscribeExceptions: string[] = await ACLManager.getRDPQueueSubscriptions(app, apiProducts, ownerAttributes);
+    var subscribeExceptions: string[] = await ACLManager.getQueueSubscriptions(app, apiProducts, ownerAttributes);
     if (subscribeExceptions === undefined) {
       subscribeExceptions = [];
     }
@@ -517,8 +528,8 @@ class BrokerService {
                     .protocolKeys;
                   L.info(`getMessagingProtocols ${keys.name} ${keys.protocol}`);
                   const endpoint = service.messagingProtocols
-                    .find((mp) => mp.name == keys.name)
-                    .endPoints.find((ep) => ep.transport == keys.protocol);
+                    .find((mp) => mp.endPoints.find((ep) => ep.transport == keys.protocol && ep.name == keys.name))
+                    .endPoints.find((ep)=> ep.transport == keys.protocol);
                   //L.info(endpoint);
                   let newEndpoint: Endpoint = endpoints.find(
                     (ep) => ep.uri == endpoint.uris[0]
@@ -547,6 +558,15 @@ class BrokerService {
           reject(err);
         });
     });
+  }
+
+  clientOptionsRequireQueue(clientOptions): boolean {
+    L.debug(clientOptions);
+    const requireQueue: boolean = (clientOptions != null
+      && clientOptions.guaranteedMessaging != null
+      && clientOptions.guaranteedMessaging.requireQueue == true);
+    L.debug(`Provisioning Requires a queue - ${requireQueue}`)
+    return requireQueue;
   }
 }
 export default new BrokerService();
