@@ -23,11 +23,30 @@ export enum Direction {
 }
 
 class ACLManager {
-  public async createACLs(app: App, services: Service[]): Promise<void> {
+  /**
+   * Backwards compatibility - check if ACLs with consumer key as name exist, 
+   * this was the naming convention used up until v 0.2.3 
+   */
+  public async hasConsumerKeyACLs(app: App, services: Service[]): Promise<boolean> {
+    let hasACLs: boolean = false;
     for (const service of services) {
       const sempv2Client = SempV2ClientFactory.getSEMPv2Client(service);
+
+      try {
+        const getResponse = await AllService.getMsgVpnAclProfile(service.msgVpnName, app.credentials.secret.consumerKey);
+        hasACLs = true;
+      } catch (e) {
+        // got a 400 error - not found
+      } 
+    }
+    return hasACLs;
+  }
+  public async createACLs(app: App, services: Service[]): Promise<void> {
+    for (const service of services) {
+      const objectName = app.internalName;
+      const sempv2Client = SempV2ClientFactory.getSEMPv2Client(service);
       const aclProfile: MsgVpnAclProfile = {
-        aclProfileName: app.credentials.secret.consumerKey,
+        aclProfileName: objectName,
         clientConnectDefaultAction:
           MsgVpnAclProfile.clientConnectDefaultAction.ALLOW,
         publishTopicDefaultAction:
@@ -37,9 +56,9 @@ class ACLManager {
         msgVpnName: service.msgVpnName,
       };
       try {
-        const getResponse = await AllService.getMsgVpnAclProfile(service.msgVpnName, app.credentials.secret.consumerKey);
+        const getResponse = await AllService.getMsgVpnAclProfile(service.msgVpnName, objectName);
         L.debug(`ACL Looked up ${JSON.stringify(getResponse)}`);
-        const responseUpd = await AllService.updateMsgVpnAclProfile(service.msgVpnName, app.credentials.secret.consumerKey, aclProfile);
+        const responseUpd = await AllService.updateMsgVpnAclProfile(service.msgVpnName, objectName, aclProfile);
         L.debug(`ACL updated ${JSON.stringify(responseUpd)}`);
       } catch (e) {
         try {
@@ -52,11 +71,11 @@ class ACLManager {
     };
   }
 
-  public async deleteACLs(app: App, services: Service[]) {
+  public async deleteACLs(app: App, services: Service[], name: string) {
     for (var service of services) {
       var sempv2Client = SempV2ClientFactory.getSEMPv2Client(service);
       try {
-        var getResponse = await AllService.deleteMsgVpnAclProfile(service.msgVpnName, app.credentials.secret.consumerKey);
+        var getResponse = await AllService.deleteMsgVpnAclProfile(service.msgVpnName, name);
         L.info("ACL deleted");
       } catch (err) {
         if (!(err.body.meta.error.status == "NOT_FOUND")) {
@@ -68,18 +87,19 @@ class ACLManager {
 
   public async createAuthorizationGroups(app: App, services: Service[]): Promise<void> {
     for (var service of services) {
+      const objectName: string = app.internalName;
       var sempV2Client = SempV2ClientFactory.getSEMPv2Client(service);
       var authzGroup: MsgVpnAuthorizationGroup = {
-        aclProfileName: app.credentials.secret.consumerKey,
-        authorizationGroupName: app.credentials.secret.consumerKey,
+        aclProfileName: objectName,
+        authorizationGroupName: objectName,
         clientProfileName: "default",
         msgVpnName: service.msgVpnName,
         enabled: true
       };
       try {
-        var getResponse = await AllService.getMsgVpnAuthorizationGroup(service.msgVpnName, app.credentials.secret.consumerKey);
+        var getResponse = await AllService.getMsgVpnAuthorizationGroup(service.msgVpnName, objectName);
         L.info("AuthorizationGroup Looked up");
-        var responseUpd = await AllService.updateMsgVpnAuthorizationGroup(service.msgVpnName, app.credentials.secret.consumerKey, authzGroup);
+        var responseUpd = await AllService.updateMsgVpnAuthorizationGroup(service.msgVpnName, objectName, authzGroup);
         L.info("AuthorizationGroup updated");
       } catch (e) {
 
@@ -93,11 +113,11 @@ class ACLManager {
     }
   }
 
-  public async deleteAuthorizationGroups(app: App, services: Service[]): Promise<void> {
+  public async deleteAuthorizationGroups(app: App, services: Service[], name: string): Promise<void> {
     for (var service of services) {
       const sempV2Client = SempV2ClientFactory.getSEMPv2Client(service);
       try {
-        const getResponse = await AllService.deleteMsgVpnAuthorizationGroup(service.msgVpnName, app.credentials.secret.consumerKey);
+        const getResponse = await AllService.deleteMsgVpnAuthorizationGroup(service.msgVpnName, name);
       } catch (err) {
         if (!(err.body.meta.error.status == "NOT_FOUND")) {
           throw err;
@@ -269,30 +289,31 @@ class ACLManager {
 
   private async addPublishTopicExceptions(app: App, services: Service[], exceptions: string[]): Promise<void> {
     for (var service of services) {
+      const objectName: string = app.internalName;
       var sempV2Client = SempV2ClientFactory.getSEMPv2Client(service);
 
-      // fix - get al exceptions present on the acl profile  and remove those no longer required
-      var currentPublishExceptions : MsgVpnAclProfilePublishExceptionsResponse = await AllService.getMsgVpnAclProfilePublishExceptions(service.msgVpnName, app.credentials.secret.consumerKey, 999);
+      // fix - get all exceptions present on the acl profile  and remove those no longer required
+      var currentPublishExceptions : MsgVpnAclProfilePublishExceptionsResponse = await AllService.getMsgVpnAclProfilePublishExceptions(service.msgVpnName, objectName, 999);
       for(let pe of currentPublishExceptions.data){
         if (!exceptions.includes(pe.publishExceptionTopic)){
-          await AllService.deleteMsgVpnAclProfilePublishException(service.msgVpnName, app.credentials.secret.consumerKey, pe.topicSyntax, encodeURIComponent(pe.publishExceptionTopic));
+          await AllService.deleteMsgVpnAclProfilePublishException(service.msgVpnName, objectName, pe.topicSyntax, encodeURIComponent(pe.publishExceptionTopic));
         }
       }
 
       for (var exception of exceptions) {
         var aclException: MsgVpnAclProfilePublishException = {
-          aclProfileName: app.credentials.secret.consumerKey,
+          aclProfileName: objectName,
           msgVpnName: service.msgVpnName,
           publishExceptionTopic: exception,
           topicSyntax: MsgVpnAclProfilePublishException.topicSyntax.SMF
         };
         try {
-          var getResponse = await AllService.getMsgVpnAclProfilePublishException(service.msgVpnName, app.credentials.secret.consumerKey, MsgVpnAclProfilePublishException.topicSyntax.SMF, encodeURIComponent(exception));
+          var getResponse = await AllService.getMsgVpnAclProfilePublishException(service.msgVpnName, objectName, MsgVpnAclProfilePublishException.topicSyntax.SMF, encodeURIComponent(exception));
           L.info("ACL Looked up");
         } catch (e) {
           L.info(`addPublishTopicExceptions lookup  failed ${e}`);
           try {
-            let response = await AllService.createMsgVpnAclProfilePublishException(service.msgVpnName, app.credentials.secret.consumerKey, aclException);
+            let response = await AllService.createMsgVpnAclProfilePublishException(service.msgVpnName, objectName, aclException);
             L.info("created PublishException");
           } catch (err) {
             L.info(`addPublishTopicExceptions add failed ${err}`);
@@ -304,28 +325,29 @@ class ACLManager {
   }
   private async addSubscribeTopicExceptions(app: App, services: Service[], exceptions: string[]): Promise<void> {
     for (var service of services) {
+      const objectName: string = app.internalName;      
       var sempV2Client = SempV2ClientFactory.getSEMPv2Client(service);
       // fix - get al exceptions present on the acl profile  and remove those no longer required
-      var currentExceptions : MsgVpnAclProfileSubscribeExceptionsResponse = await AllService.getMsgVpnAclProfileSubscribeExceptions(service.msgVpnName, app.credentials.secret.consumerKey, 999);
+      var currentExceptions : MsgVpnAclProfileSubscribeExceptionsResponse = await AllService.getMsgVpnAclProfileSubscribeExceptions(service.msgVpnName, objectName, 999);
       for(let se of currentExceptions.data){
         if (!exceptions.includes(se.subscribeExceptionTopic)){
-          await AllService.deleteMsgVpnAclProfileSubscribeException(service.msgVpnName, app.credentials.secret.consumerKey, se.topicSyntax, encodeURIComponent(se.subscribeExceptionTopic));
+          await AllService.deleteMsgVpnAclProfileSubscribeException(service.msgVpnName, objectName, se.topicSyntax, encodeURIComponent(se.subscribeExceptionTopic));
         }
       }
       for (var exception of exceptions) {
         var aclException: MsgVpnAclProfileSubscribeException = {
-          aclProfileName: app.credentials.secret.consumerKey,
+          aclProfileName: objectName,
           msgVpnName: service.msgVpnName,
           subscribeExceptionTopic: exception,
           topicSyntax: MsgVpnAclProfileSubscribeException.topicSyntax.SMF
         };
         try {
-          var getResponse = await AllService.getMsgVpnAclProfileSubscribeException(service.msgVpnName, app.credentials.secret.consumerKey, MsgVpnAclProfileSubscribeException.topicSyntax.SMF, encodeURIComponent(exception));
+          var getResponse = await AllService.getMsgVpnAclProfileSubscribeException(service.msgVpnName, objectName, MsgVpnAclProfileSubscribeException.topicSyntax.SMF, encodeURIComponent(exception));
           L.debug("addSubscribeTopicExceptions: exception exists");
         } catch (e) {
           L.warn(`addSubscribeTopicExceptions lookup  failed ${JSON.stringify(e)}`);
           try {
-            let response = await AllService.createMsgVpnAclProfileSubscribeException(service.msgVpnName, app.credentials.secret.consumerKey, aclException);
+            let response = await AllService.createMsgVpnAclProfileSubscribeException(service.msgVpnName, objectName, aclException);
             L.debug("created SubscribeException");
           } catch (err) {
             L.error(`addSubscribeTopicExceptions add failed ${err}`);

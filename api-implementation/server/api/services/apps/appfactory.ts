@@ -2,6 +2,7 @@ import AppPatch = Components.Schemas.AppPatch;
 import App = Components.Schemas.App;
 import { DeveloperAppPatch, DeveloperApp } from '../developers.service';
 import { TeamAppPatch, TeamApp } from '../teams.service';
+import passwordGenerator from 'generate-password';
 
 const APP_TYPE_DEVELOPER: string = 'developer';
 const APP_TYPE_TEAM: string = 'team';
@@ -33,7 +34,7 @@ class AppFactory {
       apiProducts: body.apiProducts,
       credentials: body.credentials,
     };
-    this.map(body, app);
+    this.mapNewApp(body, app);
     return app;
   }
 
@@ -55,7 +56,7 @@ class AppFactory {
       apiProducts: body.apiProducts,
       credentials: body.credentials,
     };
-    this.map(body, app);
+    this.mapNewApp(body, app);
 
     return app;
   }
@@ -89,6 +90,22 @@ class AppFactory {
       target.credentials = source.credentials;
     }
     this.map(source, target);
+  }
+
+  private mapNewApp(source: App, target: App) {
+    this.mapInternalName(source, target);
+    this.map(source, target);
+  }
+  private mapInternalName(source: App, target: App){
+    if (source.internalName){
+      target.internalName = source.internalName;
+    } else  {
+      target.internalName = passwordGenerator.generate({
+            length: 32,
+            numbers: true,
+            strict: true,
+          })
+    }
   }
 }
 
