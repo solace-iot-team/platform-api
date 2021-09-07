@@ -43,7 +43,7 @@ class ACLManager {
   }
   public async createACLs(app: App, services: Service[]): Promise<void> {
     for (const service of services) {
-      const objectName = app.name;
+      const objectName = app.internalName;
       const sempv2Client = SempV2ClientFactory.getSEMPv2Client(service);
       const aclProfile: MsgVpnAclProfile = {
         aclProfileName: objectName,
@@ -87,7 +87,7 @@ class ACLManager {
 
   public async createAuthorizationGroups(app: App, services: Service[]): Promise<void> {
     for (var service of services) {
-      const objectName: string = app.name;
+      const objectName: string = app.internalName;
       var sempV2Client = SempV2ClientFactory.getSEMPv2Client(service);
       var authzGroup: MsgVpnAuthorizationGroup = {
         aclProfileName: objectName,
@@ -289,7 +289,7 @@ class ACLManager {
 
   private async addPublishTopicExceptions(app: App, services: Service[], exceptions: string[]): Promise<void> {
     for (var service of services) {
-      const objectName: string = app.name;
+      const objectName: string = app.internalName;
       var sempV2Client = SempV2ClientFactory.getSEMPv2Client(service);
 
       // fix - get all exceptions present on the acl profile  and remove those no longer required
@@ -325,7 +325,7 @@ class ACLManager {
   }
   private async addSubscribeTopicExceptions(app: App, services: Service[], exceptions: string[]): Promise<void> {
     for (var service of services) {
-      const objectName: string = app.name;      
+      const objectName: string = app.internalName;      
       var sempV2Client = SempV2ClientFactory.getSEMPv2Client(service);
       // fix - get al exceptions present on the acl profile  and remove those no longer required
       var currentExceptions : MsgVpnAclProfileSubscribeExceptionsResponse = await AllService.getMsgVpnAclProfileSubscribeExceptions(service.msgVpnName, objectName, 999);

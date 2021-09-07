@@ -118,7 +118,7 @@ class BrokerService {
       L.info(`created queues ${app.name}`);
     } else {
       // clean up queues
-      await this.deleteQueues(app, services, app.name);
+      await this.deleteQueues(app, services, app.internalName);
     }
     // no webhook - no RDP
     //L.info(app.webHooks);    
@@ -128,12 +128,12 @@ class BrokerService {
       L.info(`created rdps ${app.name}`);
     } else {
       // clean up RDPs
-      await this.deleteRDPs(app, services, app.name);
+      await this.deleteRDPs(app, services, app.internalName);
     }
   }
 
   async deprovisionApp(app: App) {
-    await this.doDeprovisionApp(app, app.name);
+    await this.doDeprovisionApp(app, app.internalName);
   }
 
   private async doDeprovisionApp(app: App, objectName: string) {
@@ -222,7 +222,7 @@ class BrokerService {
     for (var service of services) {
       var sempV2Client = SempV2ClientFactory.getSEMPv2Client(service);
       var clientUsername: MsgVpnClientUsername = {
-        aclProfileName: app.name,
+        aclProfileName: app.internalName,
         clientUsername: app.credentials.secret.consumerKey,
         password: app.credentials.secret.consumerSecret,
         clientProfileName: "default",
@@ -298,7 +298,7 @@ class BrokerService {
     if (subscribeExceptions.length < 1) {
       return;
     }
-    const objectName: string = app.name;
+    const objectName: string = app.internalName;
     // loop over services
     for (var service of services) {
       var restConsumerName = `Consumer`;
@@ -454,7 +454,7 @@ class BrokerService {
     if (subscribeExceptions === undefined) {
       subscribeExceptions = [];
     }
-    const objectName: string = app.name;
+    const objectName: string = app.internalName;
     // loop over services
     for (var service of services) {
       //create queues
