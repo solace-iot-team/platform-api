@@ -390,7 +390,7 @@ class BrokerService {
       try {
         var r = await AllService.getMsgVpnRestDeliveryPointRestConsumer(service.msgVpnName, objectName, restConsumerName);
         var updateResponseRDPConsumer = await AllService.updateMsgVpnRestDeliveryPointRestConsumer(service.msgVpnName, objectName, restConsumerName, newRDPConsumer);
-        L.debug(`createRDP consumer updated ${app.credentials.secret.consumerKey}`);
+        L.debug(`createRDP consumer updated ${app.internalName}`);
       } catch (e) {
         L.debug(`createRDP consumer lookup  failed ${JSON.stringify(e)}`);
         try {
@@ -410,7 +410,7 @@ class BrokerService {
         var b = await AllService.getMsgVpnRestDeliveryPointQueueBinding(service.msgVpnName, objectName, objectName);
 
         var updateResponseQueueBinding = await AllService.updateMsgVpnRestDeliveryPointQueueBinding(service.msgVpnName, objectName, objectName, newRDPQueueBinding);
-        L.debug(`createRDP queue binding updated ${app.credentials.secret.consumerKey}`);
+        L.debug(`createRDP queue binding updated ${app.internalName}`);
       } catch (e) {
         L.debug(`createRDP queue binding lookup  failed ${JSON.stringify(e)}`);
         try {
@@ -470,7 +470,7 @@ class BrokerService {
       try {
         var q = await AllService.getMsgVpnQueue(service.msgVpnName, objectName);
         var updateResponseMsgVpnQueue = await AllService.updateMsgVpnQueue(service.msgVpnName, objectName, newQ);
-        L.debug(`createQueues updated ${app.credentials.secret.consumerKey}`);
+        L.debug(`createQueues updated ${app.internalName}`);
       } catch (e) {
         L.debug(`createQueues lookup  failed ${JSON.stringify(e)}`);
         try {

@@ -302,7 +302,7 @@ class ACLManager {
 
       for (var exception of exceptions) {
         var aclException: MsgVpnAclProfilePublishException = {
-          aclProfileName: app.credentials.secret.consumerKey,
+          aclProfileName: objectName,
           msgVpnName: service.msgVpnName,
           publishExceptionTopic: exception,
           topicSyntax: MsgVpnAclProfilePublishException.topicSyntax.SMF
