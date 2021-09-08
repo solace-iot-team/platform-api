@@ -1,5 +1,32 @@
 # Release Notes
 
+## Version 0.2.4
+* OpenAPI: 0.2.9
+* API Management Connector Server: 0.2.4
+
+### Features
+* **Protocols**
+  - Added support for secure-jms protocol
+  - Added support for compressed-smf protocol
+* **Provisioning Broker Authentication - SEMPv2**
+  - On org creation it can be decided if SEMPv2 authentication should be via API Key or Basic Auth.
+  - Basic Auth is the default if no configuration is provided.
+  - It is configurable, how the API key should be included (header or query parameter, name of the parameter/header)
+  - If API key authentication is used the API key is expected in the "username" element in the "SEMP management protocol" of the response that is returned by the broker discovery service.
+* **App - Ability to request message persistence on app creation**
+  - When app is created a guaranteed messaging configuration can be supplied. When guaranteed messaging is required an app queue is created and all the app's allowed subscriptions are attached to the queue.
+  - The name of the queue is returned in the AppResponse's clientInformation element
+* **App - Use internal name for all objects created on broker**
+  - All broker objects are created using an internal name property on the app object.
+  - The internal name meets the requirements of the most restrictive broker object - ACL profile with a maximum 32 characters - alphanumeric plus hyphen and underscore.
+  - The internal name is auto generated. It must only be supplied for connector internal testing or in cases were a naming convention for broker objects must be adhered to.
+  - The internal name is returned in the app response so broker objects can be related to the app easily.
+  - The internal name replaces use of the consumer key - as consumer key (client username) and password can be rotated for security purposes.
+  - Provisioning includes checks for broker objects previously created using the consumer key and will deprovision these objects and re-create the required objects using the internal name.
+### Fixes
+* **Env Variables - Event Portal Proxy Mode**
+  - APIs Proxy Mode - fixed env variable parsing. Env variable was not parsed correctly, any value provided evaluated to true. Now value is parsed and only TRUE/true enable proxy mode
+
 ## Version 0.2.3
 * OpenAPI: 0.2.6
 * API Management Connector Server: 0.2.3
