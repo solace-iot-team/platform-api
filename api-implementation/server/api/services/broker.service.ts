@@ -1,7 +1,6 @@
 import L from '../../common/logger';
 
 import App = Components.Schemas.App;
-import Developer = Components.Schemas.Developer;
 import APIProduct = Components.Schemas.APIProduct;
 import Environment = Components.Schemas.Environment;
 import Attributes = Components.Schemas.Attributes;
@@ -13,6 +12,7 @@ import TopicSyntax = Components.Parameters.TopicSyntax.TopicSyntax;
 
 import ApiProductsService from './apiProducts.service';
 import ACLManager from './broker/aclmanager';
+import QueueManager from './broker/queuemanager';
 
 
 import { ProtocolMapper } from '../../../src/protocolmapper';
@@ -111,17 +111,16 @@ class BrokerService {
     var c = await ACLManager.createClientACLExceptions(app, services, products, ownerAttributes);
     L.info(`created acl exceptions ${app.name}`);
 
-    // provision queue if webhooks or clientoptions are configured
-    // TODO - look at API Products
-    //if ((app.webHooks != null && app.webHooks.length > 0) || this.clientOptionsRequireQueue(app.clientOptions)) {
+    // provision queue if webhooks are configured
     if (app.webHooks != null && app.webHooks.length > 0 ) {
-      L.info("creating queues");
-      var d = await this.createQueues(app, services, products, ownerAttributes);
-      L.info(`created queues ${app.name}`);
+      L.info("creating webhook queues");
+      var d = await QueueManager.createWebHookQueues(app, services, products, ownerAttributes);
+      L.info(`created webhook queues ${app.name}`);
     } else {
       // clean up queues
-      await this.deleteQueues(app, services, app.internalName);
+      await QueueManager.deleteWebHookQueues(app, services, app.internalName);
     }
+    QueueManager.createAPIProductQueues(app, services, products, ownerAttributes);
     // no webhook - no RDP
     //L.info(app.webHooks);    
     if (app.webHooks != null && app.webHooks.length > 0) {
@@ -149,7 +148,9 @@ class BrokerService {
       await ACLManager.deleteAuthorizationGroups(app, services, objectName);
       await ACLManager.deleteACLs(app, services, objectName);
       await this.deleteRDPs(app, services, objectName);
-      await this.deleteQueues(app, services, objectName);
+      await QueueManager.deleteWebHookQueues(app, services, objectName);
+      await QueueManager.deleteAPIProductQueues(app, services,objectName);
+      
     } catch (err) {
       L.error('De-Provisioninig error');
       L.error(err);
@@ -189,21 +190,6 @@ class BrokerService {
       L.error(`getServiceByEnv - ${JSON.stringify(err)}`);
       throw err;
     }
-  }
-
-  private async deleteQueues(app: App, services: Service[], name: string) {
-    for (var service of services) {
-      var sempv2Client = SempV2ClientFactory.getSEMPv2Client(service);
-      try {
-        var getResponse = await AllService.deleteMsgVpnQueue(service.msgVpnName, name);
-        L.info('Queue deleted');
-      } catch (e) {
-        if (!(e.body.meta.error.status == "NOT_FOUND")) {
-          throw e;
-        }
-
-      }
-    };
   }
 
   private async deleteRDPs(app: App, services: Service[], name: string) {

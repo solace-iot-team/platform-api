@@ -12,6 +12,7 @@ import AppPatch = Components.Schemas.AppPatch;
 import passwordGenerator from 'generate-password';
 import ApiProduct = Components.Schemas.APIProduct;
 import Attributes = Components.Schemas.Attributes;
+import ClientInformation = Components.Schemas.ClientInformation;
 import TopicSyntax = Components.Parameters.TopicSyntax.TopicSyntax;
 import WebHook = Components.Schemas.WebHook;
 import AsyncApiGenerator from './apis/asyncapigenerator';
@@ -100,10 +101,18 @@ export class AppsService {
           );
           appEnv.permissions = permissions;
         }
-        let queueName: string = '';
 
-        if (queueName != '') {
-          app.clientInformation = { guaranteedMessaging: { name: queueName } };
+        const clientInformation: ClientInformation = []
+        for (const productName of app.apiProducts){
+          const apiProduct = await ApiProductsService.byName(productName);
+          if (apiProduct.clientOptions 
+            && apiProduct.clientOptions.guaranteedMessaging 
+            && apiProduct.clientOptions.guaranteedMessaging.requireQueue){
+           clientInformation.push ({ guaranteedMessaging: { name: `${app.internalName}-${apiProduct.name}`, accessType: apiProduct.clientOptions.guaranteedMessaging.accessType, apiProduct: productName } });
+          }
+        }
+        if (clientInformation.length>0){
+          app.clientInformation = clientInformation;
         }
 
       } else {

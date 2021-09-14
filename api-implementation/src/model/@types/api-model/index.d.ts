@@ -353,14 +353,20 @@ declare namespace Components {
             channelId?: string;
             isChannel?: boolean;
         }
-        export interface ClientInformation {
+        export type ClientInformation = {
             guaranteedMessaging?: {
                 /**
-                 * The name of the queue that is available for this app
+                 * The name of the queue that is available for this app's API Product subcription
                  * example:
                  * AlAOLG3xxuYCVDpoXl4wKGwWAIURFGuK
                  */
                 name?: string;
+                /**
+                 * The name of the APi Product this queue is associated with
+                 * example:
+                 * Product 1
+                 */
+                apiProduct?: string;
                 /**
                  * access mode for the queue
                  * example:
@@ -368,7 +374,7 @@ declare namespace Components {
                  */
                 accessType?: "exclusive" | "non-exclusive";
             };
-        }
+        }[];
         export interface ClientOptions {
             guaranteedMessaging?: {
                 /**

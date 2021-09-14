@@ -528,23 +528,29 @@ components:
               default: 500
               example: 50
     ClientInformation:
-      type: object
-      properties:
-        guaranteedMessaging:
-          type: object
-          properties:
-            name:
-              type: string
-              description: "The name of the queue that is available for this app"
-              example: "AlAOLG3xxuYCVDpoXl4wKGwWAIURFGuK"
-            accessType:
-              type: string
-              description: access mode for the queue
-              example: exclusive
-              default: exclusive
-              enum:
-              - exclusive
-              - non-exclusive
+      type: array
+      items:
+        type: object
+        properties:
+          guaranteedMessaging:
+            type: object
+            properties:
+              name:
+                type: string
+                description: "The name of the queue that is available for this app's API Product subcription"
+                example: "AlAOLG3xxuYCVDpoXl4wKGwWAIURFGuK"
+              apiProduct:
+                type: string
+                description: "The name of the APi Product this queue is associated with"
+                example: "Product 1"
+              accessType:
+                type: string
+                description: access mode for the queue
+                example: exclusive
+                default: exclusive
+                enum:
+                - exclusive
+                - non-exclusive
 
     App:
       type: object
@@ -1233,6 +1239,10 @@ paths:
       responses:
        '200':
          description: list of organizations
+         headers:
+          X-Paging-TotalCount:
+            schema:
+              type: integer
          content:
            application/json:
              schema:
