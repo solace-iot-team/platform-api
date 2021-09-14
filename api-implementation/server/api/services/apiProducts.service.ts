@@ -100,10 +100,7 @@ export class ApiProductsService {
   }
 
   private async validateReferences(product: APIProduct): Promise<boolean> {
-    var protocolPresent = {};
-    for (var protocol of product.protocols) {
-      protocolPresent[protocol.name] = false;
-    }
+
     if (product.apis != null) {
       for (var apiName of product.apis) {
         const errMsg = `Referenced API ${apiName} does not exist`;
@@ -119,7 +116,13 @@ export class ApiProductsService {
     }
 
     // all apis exist, now check environments
-    if (product.environments != null) {
+    var protocolPresent = {};
+    if (product.protocols) {
+      for (var protocol of product.protocols) {
+        protocolPresent[protocol.name] = false;
+      }
+    } 
+    if (product.environments != null && product.protocols) {
       for (var envName of product.environments) {
         const errMsg = `Referenced environment ${envName} does not exist`;
         try {
@@ -136,6 +139,7 @@ export class ApiProductsService {
             }
           }
         } catch (e) {
+          L.error(e);
           throw new ErrorResponseInternal(422, errMsg);
         }
       }
