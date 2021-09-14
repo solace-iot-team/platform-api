@@ -15,6 +15,7 @@ import ApiProduct = Components.Schemas.APIProduct;
 import Attributes = Components.Schemas.Attributes;
 import TopicSyntax = Components.Parameters.TopicSyntax.TopicSyntax;
 import WebHook = Components.Schemas.WebHook;
+import AsyncApiGenerator from './apis/asyncapigenerator';
 
 import AsyncAPIHelper from '../../../src/asyncapihelper';
 import { AsyncAPIServer } from '../../../src/model/asyncapiserver';
@@ -171,48 +172,7 @@ export class AppsService {
 
   async apiByName(appName: string, name: string): Promise<string> {
     const app = await this.persistenceService.byName(appName);
-    const envs = await BrokerService.getMessagingProtocols(app);
-    const servers = {};
-    for (const env of envs) {
-      for (const protocol of env.messagingProtocols) {
-        const server: AsyncAPIServer = {
-          protocol: protocol.protocol.name,
-          protocolVersion: protocol.protocol.version,
-          url: protocol.uri,
-        };
-        let serverKey: string = env.name;
-        if (env.messagingProtocols.length > 1) {
-          serverKey = `${env.name}-${protocol.protocol.name}`;
-        }
-        if (protocol.protocol.name.toUpperCase().startsWith('HTTP')) {
-          server.security = [{ httpBasic: [] }];
-        } else {
-          server.security = [{ userPassword: [] }];
-        }
-        servers[serverKey] = server;
-      }
-    }
-    const spec = await ApisService.byName(name);
-    // parse the spec - try to treat as JSON, if ails treat as YAML
-    let specModel = null;
-    try {
-      specModel = JSON.parse(spec);
-    } catch (e) {
-      specModel = JSON.parse(AsyncAPIHelper.YAMLtoJSON(spec));
-    }
-    specModel.servers = servers;
-    // add the username password security scheme
-    specModel.components.securitySchemes = {};
-    specModel.components.securitySchemes.userPassword = {
-      type: 'userPassword',
-      description: 'Username Password',
-    };
-    specModel.components.securitySchemes.httpBasic = {
-      type: 'http',
-      description: 'HTTP Basic',
-      scheme: 'basic',
-    };
-    return JSON.stringify(specModel);
+    return AsyncApiGenerator.getSpecificationByApp(name, app);
   }
 
   async update(
