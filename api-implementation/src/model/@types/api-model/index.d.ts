@@ -173,6 +173,7 @@ declare namespace Components {
              */
             subResources: string[];
             protocols?: Protocol[];
+            clientOptions?: ClientOptions;
         }
         /**
          * Used for PATCH operation, An API product consists of a list of API resources (URIs) and custom metadata required by the API provider. API products enable you to bundle and distribute your APIs to multiple developer groups simultaneously
@@ -230,6 +231,7 @@ declare namespace Components {
              */
             subResources?: string[];
             protocols?: Protocol[];
+            clientOptions?: ClientOptions;
         }
         /**
          * An app associated with an owner (developer, team etc). Associates the app with an API product, and auto-generates an API credentials for the app to use
@@ -253,7 +255,6 @@ declare namespace Components {
             expiresIn?: number;
             apiProducts: string[];
             attributes?: Attributes;
-            clientOptions?: ClientOptions;
             /**
              * callback url
              */
@@ -292,7 +293,6 @@ declare namespace Components {
             displayName?: string;
             apiProducts?: string[];
             attributes?: Attributes;
-            clientOptions?: ClientOptions;
             /**
              * callback url
              */
@@ -323,7 +323,6 @@ declare namespace Components {
             expiresIn?: number;
             apiProducts: string[];
             attributes?: Attributes;
-            clientOptions?: ClientOptions;
             clientInformation?: ClientInformation;
             /**
              * callback url
@@ -362,6 +361,12 @@ declare namespace Components {
                  * AlAOLG3xxuYCVDpoXl4wKGwWAIURFGuK
                  */
                 name?: string;
+                /**
+                 * access mode for the queue
+                 * example:
+                 * exclusive
+                 */
+                accessType?: "exclusive" | "non-exclusive";
             };
         }
         export interface ClientOptions {
@@ -378,6 +383,18 @@ declare namespace Components {
                  * exclusive
                  */
                 accessType?: "exclusive" | "non-exclusive";
+                /**
+                 * retention policy for message on the queue, default to 24 hours. Set to 0 if messages are to be kept indefinitely
+                 * example:
+                 * 3600
+                 */
+                maxTtl?: number;
+                /**
+                 * The maximum message spool usage allowed by the Queue, in megabytes (MB). A value of 0 only allows spooling of the last message received and disables quota checking
+                 * example:
+                 * 50
+                 */
+                maxMsgSpoolUsage?: number;
             };
         }
         /**

@@ -112,7 +112,9 @@ class BrokerService {
     L.info(`created acl exceptions ${app.name}`);
 
     // provision queue if webhooks or clientoptions are configured
-    if ((app.webHooks != null && app.webHooks.length > 0) || this.clientOptionsRequireQueue(app.clientOptions)) {
+    // TODO - look at API Products
+    //if ((app.webHooks != null && app.webHooks.length > 0) || this.clientOptionsRequireQueue(app.clientOptions)) {
+    if (app.webHooks != null && app.webHooks.length > 0 ) {
       L.info("creating queues");
       var d = await this.createQueues(app, services, products, ownerAttributes);
       L.info(`created queues ${app.name}`);

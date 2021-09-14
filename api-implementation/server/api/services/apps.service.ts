@@ -3,7 +3,6 @@ import { ErrorResponseInternal } from '../middlewares/error.handler';
 import DevelopersService from './developers.service';
 import TeamsService from './teams.service';
 import ApiProductsService from './apiProducts.service';
-import ApisService from './apis.service';
 import BrokerService from './broker.service';
 import { PersistenceService } from './persistence.service';
 import App = Components.Schemas.App;
@@ -16,9 +15,6 @@ import Attributes = Components.Schemas.Attributes;
 import TopicSyntax = Components.Parameters.TopicSyntax.TopicSyntax;
 import WebHook = Components.Schemas.WebHook;
 import AsyncApiGenerator from './apis/asyncapigenerator';
-
-import AsyncAPIHelper from '../../../src/asyncapihelper';
-import { AsyncAPIServer } from '../../../src/model/asyncapiserver';
 
 export interface APISpecification {
   name: string;
@@ -105,10 +101,7 @@ export class AppsService {
           appEnv.permissions = permissions;
         }
         let queueName: string = '';
-        if (BrokerService.clientOptionsRequireQueue(app.clientOptions) && app.credentials != null && app.credentials.secret != null) {
-          queueName = app.internalName;
 
-        }
         if (queueName != '') {
           app.clientInformation = { guaranteedMessaging: { name: queueName } };
         }
