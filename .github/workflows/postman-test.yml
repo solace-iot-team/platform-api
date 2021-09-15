@@ -91,13 +91,7 @@ jobs:
         
       - name: Run POSTMAN collection
         run: |
-          newman run https://api.getpostman.com/collections/27d6a9b3-d711-47cf-9137-e2a2a44b724d?apikey=${{ secrets.POSTMAN_APIKEY }} -e https://api.getpostman.com/environments/527b7560-d632-482a-a56e-b09c79299db1?apikey=${{ secrets.POSTMAN_APIKEY }} \
-          -r htmlextra,json --reporter-json-export \
-          ${{ github.workspace }}/${{ env.TEST_TEST_RUNNER_OUTPUT_DIR }}/regression-report.json \
-          --reporter-htmlextra-export \
-          ${{ github.workspace }}/${{ env.TEST_TEST_RUNNER_OUTPUT_DIR }}/regression-report.html --reporter-htmlextra-darkTheme  > ${{ github.workspace }}/${{ env.TEST_TEST_RUNNER_OUTPUT_DIR }}/regression-report-stdout.html   
-
-
+          newman run https://api.getpostman.com/collections/27d6a9b3-d711-47cf-9137-e2a2a44b724d?apikey=${{ secrets.POSTMAN_APIKEY }} -e https://api.getpostman.com/environments/527b7560-d632-482a-a56e-b09c79299db1?apikey=${{ secrets.POSTMAN_APIKEY }} -r htmlextra --reporter-htmlextra-export ${{ github.workspace }}/${{ env.TEST_TEST_RUNNER_OUTPUT_DIR }}/regression-report.html --reporter-htmlextra-darkTheme -O ${{ github.workspace }}/${{ env.TEST_TEST_RUNNER_OUTPUT_DIR }}/regression-verbose-log.txt > ${{ github.workspace }}/${{ env.TEST_TEST_RUNNER_OUTPUT_DIR }}/regression-report-stdout.html   
       - name: Stop Server
         run: |
           export APIM_SOLACE_PLATFORM_API_PROJECT_HOME="$GITHUB_WORKSPACE"
