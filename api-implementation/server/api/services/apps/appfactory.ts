@@ -71,9 +71,6 @@ class AppFactory {
     if (source.webHooks) {
       target.webHooks = source.webHooks;
     }
-    if (source.clientOptions) {
-      target.clientOptions = source.clientOptions;
-    }
   }
 
   private mapPatch(source: AppPatch, target: AppPatch) {
