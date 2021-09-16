@@ -78,7 +78,11 @@ class AsyncApiGenerator {
       for (const protocol of apiProduct.protocols) {
         L.info(`processChannelBindings processing  ${apiProduct.name} protocol ${protocol.name}`);
         const generator: BindingsGenerator = BindingsRegistry.getGeneratorByProtocol(protocol);
-        await generator.processChannels(channels, app, apiProduct);
+        if (generator) {
+          await generator.processChannels(channels, app, apiProduct);
+        } else {
+          L.warn(`No BindingsGenerator registered for ${protocol.name}`);
+        }
       }
     }
 
