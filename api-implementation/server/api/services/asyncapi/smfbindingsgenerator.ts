@@ -9,7 +9,7 @@ const DESTINATION_TYPE_QUEUE = 'queue';
 const DELIVERY_MODE_DIRECT = 'direct';
 
 export class SMFBindingsGenerator implements BindingsGenerator {
-  PROTOCOL_BINDING = 'smf';
+  PROTOCOL_BINDING = 'solace';
   APPLICABLE_PROTOCOLS = ['smf', 'smfs'];
   getBindingProtocol(): string {
     return this.PROTOCOL_BINDING;
@@ -34,10 +34,12 @@ export class SMFBindingsGenerator implements BindingsGenerator {
         publisherBindings = {};
         channel.subscribe.bindings = publisherBindings;
       }
+      const smfBindings: any[] = [];
       const smfBinding: any = {};
       smfBinding.destinationType = DESTINATION_TYPE_TOPIC;
       smfBinding.deliveryMode = DELIVERY_MODE_DIRECT;
-      publisherBindings[this.PROTOCOL_BINDING] = smfBinding;
+      smfBindings.push(smfBinding);
+      publisherBindings[this.PROTOCOL_BINDING] = smfBindings;
     }
     if (channel.publish) {
       let bindings: any = channel.publish.bindings;
@@ -45,6 +47,7 @@ export class SMFBindingsGenerator implements BindingsGenerator {
         bindings = {};
         channel.publish.bindings = bindings;
       }
+      const smfBindings: any[] = [];
       const smfBinding: any = {};
       if (QueueHelper.isAPIProductQueueRequired(apiProduct)) {
         smfBinding.destinationType = DESTINATION_TYPE_QUEUE;
@@ -55,9 +58,10 @@ export class SMFBindingsGenerator implements BindingsGenerator {
       } else {
         smfBinding.destinationType = DESTINATION_TYPE_TOPIC;
       }
-      bindings[this.PROTOCOL_BINDING] = smfBinding;
+      smfBindings.push(smfBinding);
+      bindings[this.PROTOCOL_BINDING] = smfBindings;
     }
-      
+
   }
 }
 export default new SMFBindingsGenerator();
