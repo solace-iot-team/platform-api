@@ -1,5 +1,6 @@
 import AppPatch = Components.Schemas.AppPatch;
 import App = Components.Schemas.App;
+import WebHook = Components.Schemas.WebHook;
 import { DeveloperAppPatch, DeveloperApp } from '../developers.service';
 import { TeamAppPatch, TeamApp } from '../teams.service';
 import passwordGenerator from 'generate-password';
@@ -70,6 +71,16 @@ class AppFactory {
     }
     if (source.webHooks) {
       target.webHooks = source.webHooks;
+      for (const webhook of target.webHooks){
+        const wh: WebHook = webhook as WebHook;
+        if (!wh.authentication.authMethod){
+          if (wh.authentication['username']){
+            wh.authentication.authMethod = 'Basic';
+          } else if (wh.authentication['headerName']){
+            wh.authentication.authMethod = 'Header';
+          }
+        }
+      }
     }
   }
 
