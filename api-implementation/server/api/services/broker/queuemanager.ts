@@ -1,5 +1,6 @@
 import L from '../../../common/logger';
 
+import QueueHelper from './queuehelper';
 import ACLManager from '../broker/aclmanager';
 import ApiProductsService from '../apiProducts.service';
 
@@ -27,8 +28,8 @@ export class QueueManager {
   public async createAPIProductQueues(app: App, services: Service[],
     apiProducts: APIProduct[], ownerAttributes: Attributes): Promise<void> {
     for (const apiProduct of apiProducts) {
-      const queueName: string = `${app.internalName}-${apiProduct.name}`;
-      if (this.isAPIProductQueueRequired(apiProduct)) {
+      const queueName: string = QueueHelper.getAPIProductQueueName(app, apiProduct);
+      if (QueueHelper.isAPIProductQueueRequired(apiProduct)) {
         await this.createQueues(app, services, [apiProduct], ownerAttributes, queueName, apiProduct.clientOptions);
       } else {
         await this.deleteQueues(app, services, queueName);
@@ -110,8 +111,8 @@ export class QueueManager {
 
     for (const productName of app.apiProducts) {
       const apiProduct: APIProduct = await ApiProductsService.byName(productName);
-      if (this.isAPIProductQueueRequired(apiProduct)) {
-        const queueName: string = `${app.internalName}-${apiProduct.name}`;
+      if (QueueHelper.isAPIProductQueueRequired(apiProduct)) {
+        const queueName: string = QueueHelper.getAPIProductQueueName(app, apiProduct);
         await this.deleteQueues(app, services, queueName);
       }
     }
@@ -135,17 +136,6 @@ export class QueueManager {
 
       }
     }
-  }
-
-  private isAPIProductQueueRequired(apiProduct: APIProduct): boolean {
-    // at the moment we require JMS or SMF protocols
-    if (!apiProduct.protocols) {
-      return false;
-    }
-    if (apiProduct.protocols.filter(e=>(e.name == 'jms' || e.name =='secure-jms' || e.name =='smf' || e.name == 'smfs')).length==0){
-      return false;
-    }
-    return apiProduct.clientOptions && apiProduct.clientOptions.guaranteedMessaging && apiProduct.clientOptions.guaranteedMessaging.requireQueue;
   }
 
 }

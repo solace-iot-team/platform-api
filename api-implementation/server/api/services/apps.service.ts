@@ -15,7 +15,8 @@ import Attributes = Components.Schemas.Attributes;
 import ClientInformation = Components.Schemas.ClientInformation;
 import TopicSyntax = Components.Parameters.TopicSyntax.TopicSyntax;
 import WebHook = Components.Schemas.WebHook;
-import AsyncApiGenerator from './apis/asyncapigenerator';
+import AsyncApiGenerator from './asyncapi/asyncapigenerator';
+import QueueHelper from './broker/queuehelper';
 
 export interface APISpecification {
   name: string;
@@ -108,7 +109,7 @@ export class AppsService {
           if (apiProduct.clientOptions 
             && apiProduct.clientOptions.guaranteedMessaging 
             && apiProduct.clientOptions.guaranteedMessaging.requireQueue){
-           clientInformation.push ({ guaranteedMessaging: { name: `${app.internalName}-${apiProduct.name}`, accessType: apiProduct.clientOptions.guaranteedMessaging.accessType, apiProduct: productName } });
+           clientInformation.push ({ guaranteedMessaging: { name: QueueHelper.getAPIProductQueueName(app, apiProduct), accessType: apiProduct.clientOptions.guaranteedMessaging.accessType, apiProduct: productName } });
           }
         }
         if (clientInformation.length>0){
