@@ -435,65 +435,6 @@ class BrokerService {
     }
   }
 
-
-  private async createQueues(app: App, services: Service[], apiProducts: APIProduct[], ownerAttributes: Attributes): Promise<void> {
-    L.info(`createQueueSubscriptions services: ${services}`);
-    var subscribeExceptions: string[] = await ACLManager.getQueueSubscriptions(app, apiProducts, ownerAttributes);
-    if (subscribeExceptions === undefined) {
-      subscribeExceptions = [];
-    }
-    const objectName: string = app.internalName;
-    // loop over services
-    for (var service of services) {
-      //create queues
-      var sempV2Client = SempV2ClientFactory.getSEMPv2Client(service);
-      var newQ: MsgVpnQueue = {
-        queueName: objectName,
-        msgVpnName: service.msgVpnName,
-        ingressEnabled: true,
-        egressEnabled: true,
-        owner: app.credentials.secret.consumerKey,
-        permission: MsgVpnQueue.permission.CONSUME
-      };
-      try {
-        var q = await AllService.getMsgVpnQueue(service.msgVpnName, objectName);
-        var updateResponseMsgVpnQueue = await AllService.updateMsgVpnQueue(service.msgVpnName, objectName, newQ);
-        L.debug(`createQueues updated ${app.internalName}`);
-      } catch (e) {
-        L.debug(`createQueues lookup  failed ${JSON.stringify(e)}`);
-        try {
-          var q = await AllService.createMsgVpnQueue(service.msgVpnName, newQ);
-        } catch (e) {
-          L.warn(`createQueues creation  failed ${JSON.stringify(e)}`);
-          throw new ErrorResponseInternal(500, e.message);
-        }
-      }
-
-      for (var subscription of subscribeExceptions) {
-        var queueSubscription: MsgVpnQueueSubscription = {
-          msgVpnName: service.msgVpnName,
-          queueName: objectName,
-          subscriptionTopic: subscription
-        }
-        try {
-          var subResult = await AllService.getMsgVpnQueueSubscription(service.msgVpnName, objectName, encodeURIComponent(subscription));
-        } catch (e) {
-          L.debug(`createQueues subscription lookup  failed ${JSON.stringify(e)}`);
-          try {
-            var subResult = await AllService.createMsgVpnQueueSubscription(service.msgVpnName, objectName, queueSubscription);
-          } catch (e) {
-            L.warn(`createQueues subscription creation  failed ${JSON.stringify(e)}`);
-            throw new ErrorResponseInternal(500, e.message);
-          }
-        }
-      }
-    }
-  }
-
-
-
-
-
   public getMessagingProtocols(app: App): Promise<AppEnvironment[]> {
 
     return new Promise<AppEnvironment[]>((resolve, reject) => {
