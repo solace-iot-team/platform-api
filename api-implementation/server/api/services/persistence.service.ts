@@ -36,6 +36,8 @@ export class PersistenceService {
     if (sort == null) {
       sort = {};
     }
+    L.debug(`PeristanceService.all query ${JSON.stringify(query)}`);
+
     // attempt to retrieve paging from context/namespace
     if (paging == null) {
       if (ns != null) {
