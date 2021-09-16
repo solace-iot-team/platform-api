@@ -928,13 +928,21 @@ declare namespace Components {
             environments?: string[];
             method: "POST" | "PUT";
             mode?: "parallel" | "serial";
-            authentication?: {
-                username?: string;
-                password?: string;
-            } | {
-                headerName?: string;
-                headerValue?: string;
-            };
+            authentication?: WebHookAuth;
+        }
+        export type WebHookAuth = WebHookBasicAuth | WebHookHeaderAuth;
+        export interface WebHookBasicAuth {
+            authMethod?: "Basic";
+            username: string;
+            password: string;
+        }
+        /**
+         * A HTTP header used for authentication
+         */
+        export interface WebHookHeaderAuth {
+            authMethod?: "Header";
+            headerName: string;
+            headerValue: string;
         }
     }
 }
