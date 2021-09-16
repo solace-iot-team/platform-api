@@ -1,7 +1,9 @@
+import Protocol = Components.Schemas.Protocol;
+
 import { BindingsGenerator } from './bindingsgenerator';
 import SMFBindingsGenerator from './smfbindingsgenerator';
-import Protocol = Components.Schemas.Protocol;
 import JMSBindingsGenerator from './jmsbindingsgenerator';
+import MQTTBindingsGenerator from './mqttbindingsgenerator';
 
 interface RegisteredGenerators{
   [details: string] : BindingsGenerator;
@@ -11,7 +13,7 @@ export class BindingsRegistry {
 
   }
   constructor(){
-    const generators: BindingsGenerator[] = [SMFBindingsGenerator, JMSBindingsGenerator];
+    const generators: BindingsGenerator[] = [SMFBindingsGenerator, JMSBindingsGenerator, MQTTBindingsGenerator];
     for (const generator of generators){
       for (const protocol of generator.getApplicableProtocols()){
         this.registeredGenerators[protocol] = generator;
