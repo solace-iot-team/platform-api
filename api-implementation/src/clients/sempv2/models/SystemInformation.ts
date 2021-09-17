@@ -1,6 +1,5 @@
-/* istanbul ignore file */
-/* tslint:disable */
 /* eslint-disable */
+
 
 export type SystemInformation = {
     /**
@@ -11,4 +10,14 @@ export type SystemInformation = {
      * The version of the SEMP API.
      */
     sempVersion: string;
+}
+
+export namespace SystemInformation {
+
+    /**
+     * the discriminator for the model if required for more complex api's
+     */
+    export const discriminator = 'SystemInformation';
+
+
 }

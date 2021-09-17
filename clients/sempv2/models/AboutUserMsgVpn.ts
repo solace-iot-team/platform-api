@@ -1,6 +1,5 @@
-/* istanbul ignore file */
-/* tslint:disable */
 /* eslint-disable */
+
 
 export type AboutUserMsgVpn = {
     /**
@@ -21,6 +20,11 @@ export type AboutUserMsgVpn = {
 }
 
 export namespace AboutUserMsgVpn {
+
+    /**
+     * the discriminator for the model if required for more complex api's
+     */
+    export const discriminator = 'AboutUserMsgVpn';
 
     /**
      * The Message VPN access level of the User. The allowed values and their meaning are:

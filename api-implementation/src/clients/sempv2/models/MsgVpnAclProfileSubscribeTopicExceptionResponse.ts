@@ -1,6 +1,5 @@
-/* istanbul ignore file */
-/* tslint:disable */
 /* eslint-disable */
+
 
 import type { MsgVpnAclProfileSubscribeTopicException } from './MsgVpnAclProfileSubscribeTopicException';
 import type { MsgVpnAclProfileSubscribeTopicExceptionLinks } from './MsgVpnAclProfileSubscribeTopicExceptionLinks';
@@ -10,4 +9,14 @@ export type MsgVpnAclProfileSubscribeTopicExceptionResponse = {
     data?: MsgVpnAclProfileSubscribeTopicException;
     links?: MsgVpnAclProfileSubscribeTopicExceptionLinks;
     meta: SempMeta;
+}
+
+export namespace MsgVpnAclProfileSubscribeTopicExceptionResponse {
+
+    /**
+     * the discriminator for the model if required for more complex api's
+     */
+    export const discriminator = 'MsgVpnAclProfileSubscribeTopicExceptionResponse';
+
+
 }

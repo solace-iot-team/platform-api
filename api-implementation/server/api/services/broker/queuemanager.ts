@@ -51,7 +51,7 @@ export class QueueManager {
     // loop over services
     for (var service of services) {
       //create queues
-      var sempV2Client = SempV2ClientFactory.getSEMPv2Client(service);
+      const apiClient: AllService = SempV2ClientFactory.getSEMPv2Client(service);
       var newQ: MsgVpnQueue = {
         queueName: objectName,
         msgVpnName: service.msgVpnName,
@@ -73,17 +73,33 @@ export class QueueManager {
         newQ.respectTtlEnabled = true;
       }
       try {
-        var q = await AllService.getMsgVpnQueue(service.msgVpnName, objectName);
-        var updateResponseMsgVpnQueue = await AllService.updateMsgVpnQueue(service.msgVpnName, objectName, newQ);
+        var q = await apiClient.getMsgVpnQueue(service.msgVpnName, objectName);
+        var updateResponseMsgVpnQueue = await apiClient.updateMsgVpnQueue(service.msgVpnName, objectName, newQ);
         L.debug(`createQueues updated ${app.internalName}`);
       } catch (e) {
         L.debug(`createQueues lookup  failed ${JSON.stringify(e)}`);
         try {
-          var q = await AllService.createMsgVpnQueue(service.msgVpnName, newQ);
+          var q = await apiClient.createMsgVpnQueue(service.msgVpnName, newQ);
         } catch (e) {
           L.warn(`createQueues creation  failed ${JSON.stringify(e)}`);
           throw new ErrorResponseInternal(500, e.message);
         }
+      }
+
+      // timing problem - check queue is visible via SEMPv2
+      let isError: boolean = true;
+      for (let i = 0; i < 100; i++) {
+        try {
+          var q = await apiClient.getMsgVpnQueue(service.msgVpnName, objectName);
+          isError = false;
+          break;
+        } catch (e) {
+          L.debug(`createQueues lookup  failed ${JSON.stringify(e)}`);
+          isError = true;
+        }
+      }
+      if (isError){
+        throw new ErrorResponseInternal(500, `Queue creation failed`);
       }
 
       for (var subscription of subscribeExceptions) {
@@ -93,11 +109,11 @@ export class QueueManager {
           subscriptionTopic: subscription
         }
         try {
-          var subResult = await AllService.getMsgVpnQueueSubscription(service.msgVpnName, objectName, encodeURIComponent(subscription));
+          var subResult = await apiClient.getMsgVpnQueueSubscription(service.msgVpnName, objectName, encodeURIComponent(subscription));
         } catch (e) {
           L.debug(`createQueues subscription lookup  failed ${JSON.stringify(e)}`);
           try {
-            var subResult = await AllService.createMsgVpnQueueSubscription(service.msgVpnName, objectName, queueSubscription);
+            var subResult = await apiClient.createMsgVpnQueueSubscription(service.msgVpnName, objectName, queueSubscription);
           } catch (e) {
             L.warn(`createQueues subscription creation  failed ${JSON.stringify(e)}`);
             throw new ErrorResponseInternal(500, e.message);
@@ -125,9 +141,9 @@ export class QueueManager {
 
   private async deleteQueues(app: App, services: Service[], name: string) {
     for (var service of services) {
-      var sempv2Client = SempV2ClientFactory.getSEMPv2Client(service);
+      const apiClient: AllService = SempV2ClientFactory.getSEMPv2Client(service);
       try {
-        var getResponse = await AllService.deleteMsgVpnQueue(service.msgVpnName, name);
+        var getResponse = await apiClient.deleteMsgVpnQueue(service.msgVpnName, name);
         L.info('Queue deleted');
       } catch (e) {
         if (!(e.body.meta.error.status == "NOT_FOUND")) {

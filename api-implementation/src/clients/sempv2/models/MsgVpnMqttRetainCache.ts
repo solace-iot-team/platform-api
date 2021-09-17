@@ -1,6 +1,5 @@
-/* istanbul ignore file */
-/* tslint:disable */
 /* eslint-disable */
+
 
 export type MsgVpnMqttRetainCache = {
     /**
@@ -19,4 +18,14 @@ export type MsgVpnMqttRetainCache = {
      * The name of the Message VPN.
      */
     msgVpnName?: string;
+}
+
+export namespace MsgVpnMqttRetainCache {
+
+    /**
+     * the discriminator for the model if required for more complex api's
+     */
+    export const discriminator = 'MsgVpnMqttRetainCache';
+
+
 }

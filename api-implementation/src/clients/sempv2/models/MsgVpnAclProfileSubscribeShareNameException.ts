@@ -1,6 +1,5 @@
-/* istanbul ignore file */
-/* tslint:disable */
 /* eslint-disable */
+
 
 export type MsgVpnAclProfileSubscribeShareNameException = {
     /**
@@ -28,6 +27,11 @@ export type MsgVpnAclProfileSubscribeShareNameException = {
 }
 
 export namespace MsgVpnAclProfileSubscribeShareNameException {
+
+    /**
+     * the discriminator for the model if required for more complex api's
+     */
+    export const discriminator = 'MsgVpnAclProfileSubscribeShareNameException';
 
     /**
      * The syntax of the subscribe share name for the exception to the default action taken. The allowed values and their meaning are:

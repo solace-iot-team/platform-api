@@ -1,6 +1,5 @@
-/* istanbul ignore file */
-/* tslint:disable */
 /* eslint-disable */
+
 
 import type { EventThreshold } from './EventThreshold';
 
@@ -92,6 +91,11 @@ export type MsgVpnMqttSession = {
 }
 
 export namespace MsgVpnMqttSession {
+
+    /**
+     * the discriminator for the model if required for more complex api's
+     */
+    export const discriminator = 'MsgVpnMqttSession';
 
     /**
      * The virtual router of the MQTT Session. The allowed values and their meaning are:

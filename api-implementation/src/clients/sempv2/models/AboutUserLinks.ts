@@ -1,6 +1,5 @@
-/* istanbul ignore file */
-/* tslint:disable */
 /* eslint-disable */
+
 
 export type AboutUserLinks = {
     /**
@@ -11,4 +10,14 @@ export type AboutUserLinks = {
      * The URI of this User object.
      */
     uri?: string;
+}
+
+export namespace AboutUserLinks {
+
+    /**
+     * the discriminator for the model if required for more complex api's
+     */
+    export const discriminator = 'AboutUserLinks';
+
+
 }

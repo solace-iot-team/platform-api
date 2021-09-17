@@ -1,6 +1,5 @@
-/* istanbul ignore file */
-/* tslint:disable */
 /* eslint-disable */
+
 
 export type MsgVpnDistributedCacheClusterGlobalCachingHomeClusterLinks = {
     /**
@@ -11,4 +10,14 @@ export type MsgVpnDistributedCacheClusterGlobalCachingHomeClusterLinks = {
      * The URI of this Home Cache Cluster object.
      */
     uri?: string;
+}
+
+export namespace MsgVpnDistributedCacheClusterGlobalCachingHomeClusterLinks {
+
+    /**
+     * the discriminator for the model if required for more complex api's
+     */
+    export const discriminator = 'MsgVpnDistributedCacheClusterGlobalCachingHomeClusterLinks';
+
+
 }

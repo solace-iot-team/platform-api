@@ -1,6 +1,5 @@
-/* istanbul ignore file */
-/* tslint:disable */
 /* eslint-disable */
+
 
 import type { CertAuthorityOcspTlsTrustedCommonName } from './CertAuthorityOcspTlsTrustedCommonName';
 import type { CertAuthorityOcspTlsTrustedCommonNameLinks } from './CertAuthorityOcspTlsTrustedCommonNameLinks';
@@ -10,4 +9,14 @@ export type CertAuthorityOcspTlsTrustedCommonNameResponse = {
     data?: CertAuthorityOcspTlsTrustedCommonName;
     links?: CertAuthorityOcspTlsTrustedCommonNameLinks;
     meta: SempMeta;
+}
+
+export namespace CertAuthorityOcspTlsTrustedCommonNameResponse {
+
+    /**
+     * the discriminator for the model if required for more complex api's
+     */
+    export const discriminator = 'CertAuthorityOcspTlsTrustedCommonNameResponse';
+
+
 }

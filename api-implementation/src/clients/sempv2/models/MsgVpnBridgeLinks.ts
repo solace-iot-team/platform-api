@@ -1,6 +1,5 @@
-/* istanbul ignore file */
-/* tslint:disable */
 /* eslint-disable */
+
 
 export type MsgVpnBridgeLinks = {
     /**
@@ -19,4 +18,14 @@ export type MsgVpnBridgeLinks = {
      * The URI of this Bridge object.
      */
     uri?: string;
+}
+
+export namespace MsgVpnBridgeLinks {
+
+    /**
+     * the discriminator for the model if required for more complex api's
+     */
+    export const discriminator = 'MsgVpnBridgeLinks';
+
+
 }

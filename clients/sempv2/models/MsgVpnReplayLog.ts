@@ -1,6 +1,5 @@
-/* istanbul ignore file */
-/* tslint:disable */
 /* eslint-disable */
+
 
 export type MsgVpnReplayLog = {
     /**
@@ -23,4 +22,14 @@ export type MsgVpnReplayLog = {
      * The name of the Replay Log.
      */
     replayLogName?: string;
+}
+
+export namespace MsgVpnReplayLog {
+
+    /**
+     * the discriminator for the model if required for more complex api's
+     */
+    export const discriminator = 'MsgVpnReplayLog';
+
+
 }

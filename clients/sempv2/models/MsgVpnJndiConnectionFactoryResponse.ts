@@ -1,6 +1,5 @@
-/* istanbul ignore file */
-/* tslint:disable */
 /* eslint-disable */
+
 
 import type { MsgVpnJndiConnectionFactory } from './MsgVpnJndiConnectionFactory';
 import type { MsgVpnJndiConnectionFactoryLinks } from './MsgVpnJndiConnectionFactoryLinks';
@@ -10,4 +9,14 @@ export type MsgVpnJndiConnectionFactoryResponse = {
     data?: MsgVpnJndiConnectionFactory;
     links?: MsgVpnJndiConnectionFactoryLinks;
     meta: SempMeta;
+}
+
+export namespace MsgVpnJndiConnectionFactoryResponse {
+
+    /**
+     * the discriminator for the model if required for more complex api's
+     */
+    export const discriminator = 'MsgVpnJndiConnectionFactoryResponse';
+
+
 }

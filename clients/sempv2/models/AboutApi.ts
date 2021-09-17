@@ -1,6 +1,5 @@
-/* istanbul ignore file */
-/* tslint:disable */
 /* eslint-disable */
+
 
 export type AboutApi = {
     /**
@@ -11,4 +10,14 @@ export type AboutApi = {
      * The version of the SEMP API.
      */
     sempVersion: string;
+}
+
+export namespace AboutApi {
+
+    /**
+     * the discriminator for the model if required for more complex api's
+     */
+    export const discriminator = 'AboutApi';
+
+
 }

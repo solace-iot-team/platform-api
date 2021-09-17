@@ -1,6 +1,5 @@
-/* istanbul ignore file */
-/* tslint:disable */
 /* eslint-disable */
+
 
 export type MsgVpnBridgeRemoteMsgVpn = {
     /**
@@ -73,6 +72,11 @@ export type MsgVpnBridgeRemoteMsgVpn = {
 }
 
 export namespace MsgVpnBridgeRemoteMsgVpn {
+
+    /**
+     * the discriminator for the model if required for more complex api's
+     */
+    export const discriminator = 'MsgVpnBridgeRemoteMsgVpn';
 
     /**
      * The virtual router of the Bridge. The allowed values and their meaning are:

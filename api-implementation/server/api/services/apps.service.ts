@@ -104,15 +104,15 @@ export class AppsService {
         }
 
         const clientInformation: ClientInformation = []
-        for (const productName of app.apiProducts){
+        for (const productName of app.apiProducts) {
           const apiProduct = await ApiProductsService.byName(productName);
-          if (apiProduct.clientOptions 
-            && apiProduct.clientOptions.guaranteedMessaging 
-            && apiProduct.clientOptions.guaranteedMessaging.requireQueue){
-           clientInformation.push ({ guaranteedMessaging: { name: QueueHelper.getAPIProductQueueName(app, apiProduct), accessType: apiProduct.clientOptions.guaranteedMessaging.accessType, apiProduct: productName } });
+          if (apiProduct.clientOptions
+            && apiProduct.clientOptions.guaranteedMessaging
+            && apiProduct.clientOptions.guaranteedMessaging.requireQueue) {
+            clientInformation.push({ guaranteedMessaging: { name: QueueHelper.getAPIProductQueueName(app, apiProduct), accessType: apiProduct.clientOptions.guaranteedMessaging.accessType, apiProduct: productName } });
           }
         }
-        if (clientInformation.length>0){
+        if (clientInformation.length > 0) {
           app.clientInformation = clientInformation;
         }
 
@@ -126,8 +126,18 @@ export class AppsService {
   }
 
   async create(name: string, newApp: App, ownerAttributes: Attributes): Promise<App> {
+    L.info(`App create request ${JSON.stringify(newApp)}`);
+    let appExists = null;
+    try {
+      appExists = await this.persistenceService.byName(name);
+    } catch (e) {
+      // do nothing, we want the app to be missing
+    }
+    if (appExists) {
+      throw new ErrorResponseInternal(422, `Duplicate app name`);
+    }
+
     const app = newApp as OwnedApp;
-    L.info(`App create request ${JSON.stringify(app)}`);
     try {
       const validated = await this.validate(app);
       if (validated) {

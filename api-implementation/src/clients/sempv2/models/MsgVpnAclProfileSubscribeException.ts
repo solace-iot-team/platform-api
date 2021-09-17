@@ -1,6 +1,5 @@
-/* istanbul ignore file */
-/* tslint:disable */
 /* eslint-disable */
+
 
 export type MsgVpnAclProfileSubscribeException = {
     /**
@@ -28,6 +27,11 @@ export type MsgVpnAclProfileSubscribeException = {
 }
 
 export namespace MsgVpnAclProfileSubscribeException {
+
+    /**
+     * the discriminator for the model if required for more complex api's
+     */
+    export const discriminator = 'MsgVpnAclProfileSubscribeException';
 
     /**
      * The syntax of the topic for the exception to the default action taken. The allowed values and their meaning are:
