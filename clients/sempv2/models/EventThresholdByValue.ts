@@ -1,6 +1,5 @@
-/* istanbul ignore file */
-/* tslint:disable */
 /* eslint-disable */
+
 
 export type EventThresholdByValue = {
     /**
@@ -11,4 +10,14 @@ export type EventThresholdByValue = {
      * The set threshold for the absolute value of this counter or rate. Exceeding this value will trigger a corresponding event.
      */
     setValue?: number;
+}
+
+export namespace EventThresholdByValue {
+
+    /**
+     * the discriminator for the model if required for more complex api's
+     */
+    export const discriminator = 'EventThresholdByValue';
+
+
 }

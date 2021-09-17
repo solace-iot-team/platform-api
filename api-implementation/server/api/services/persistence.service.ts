@@ -94,35 +94,6 @@ export class PersistenceService {
     }
 
   }
-  async byNameOld(name: string, query?: any): Promise<any> {
-    return new Promise<any>((resolve, reject) => {
-      const collection: mongodb.Collection = this.getCollection();
-      var q = query;
-      if (q) {
-        q._id = name;
-      } else {
-        q = { _id: name };
-      }
-      L.debug(`PersistenceService.byName the query ${JSON.stringify(q)}, ${collection.collectionName}, ${collection.namespace}`);
-      collection.findOne(q).then(
-        (item) => {
-          L.trace(item);
-          if (item === null) {
-            var msg = `Object ${name} not found`;
-            L.debug(msg);
-            reject(new ErrorResponseInternal(404, msg));
-
-          } else {
-            delete item._id;
-            resolve(item);
-          }
-        }
-
-      ).catch((e: MongoError) => {
-        reject(this.createPublicErrorMessage(e));
-      });
-    });
-  }
 
   delete(name: string, query?: any): Promise<number> {
     return new Promise<number>((resolve, reject) => {

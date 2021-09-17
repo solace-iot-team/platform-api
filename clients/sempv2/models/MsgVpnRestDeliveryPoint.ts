@@ -1,6 +1,5 @@
-/* istanbul ignore file */
-/* tslint:disable */
 /* eslint-disable */
+
 
 export type MsgVpnRestDeliveryPoint = {
     /**
@@ -27,4 +26,14 @@ export type MsgVpnRestDeliveryPoint = {
      * The name of the vendor that this REST Delivery Point connects to. Internally the broker does not use this value; it is informational only. The default value is `""`. Available since 2.19.
      */
     vendor?: string;
+}
+
+export namespace MsgVpnRestDeliveryPoint {
+
+    /**
+     * the discriminator for the model if required for more complex api's
+     */
+    export const discriminator = 'MsgVpnRestDeliveryPoint';
+
+
 }

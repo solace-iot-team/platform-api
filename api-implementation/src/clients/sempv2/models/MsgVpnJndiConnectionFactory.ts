@@ -1,6 +1,5 @@
-/* istanbul ignore file */
-/* tslint:disable */
 /* eslint-disable */
+
 
 export type MsgVpnJndiConnectionFactory = {
     /**
@@ -176,6 +175,11 @@ export type MsgVpnJndiConnectionFactory = {
 }
 
 export namespace MsgVpnJndiConnectionFactory {
+
+    /**
+     * the discriminator for the model if required for more complex api's
+     */
+    export const discriminator = 'MsgVpnJndiConnectionFactory';
 
     /**
      * The default delivery mode for messages sent by the Publisher (Producer). The default value is `"persistent"`. The allowed values and their meaning are:

@@ -1,6 +1,5 @@
-/* istanbul ignore file */
-/* tslint:disable */
 /* eslint-disable */
+
 
 export type MsgVpnJndiQueue = {
     /**
@@ -15,4 +14,14 @@ export type MsgVpnJndiQueue = {
      * The JNDI name of the JMS Queue.
      */
     queueName?: string;
+}
+
+export namespace MsgVpnJndiQueue {
+
+    /**
+     * the discriminator for the model if required for more complex api's
+     */
+    export const discriminator = 'MsgVpnJndiQueue';
+
+
 }

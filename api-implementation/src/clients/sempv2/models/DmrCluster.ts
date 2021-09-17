@@ -1,6 +1,5 @@
-/* istanbul ignore file */
-/* tslint:disable */
 /* eslint-disable */
+
 
 export type DmrCluster = {
     /**
@@ -68,6 +67,11 @@ export type DmrCluster = {
 }
 
 export namespace DmrCluster {
+
+    /**
+     * the discriminator for the model if required for more complex api's
+     */
+    export const discriminator = 'DmrCluster';
 
     /**
      * The type of basic authentication to use for Cluster Links. The default value is `"internal"`. The allowed values and their meaning are:

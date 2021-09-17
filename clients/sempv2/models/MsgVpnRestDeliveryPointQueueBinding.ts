@@ -1,6 +1,5 @@
-/* istanbul ignore file */
-/* tslint:disable */
 /* eslint-disable */
+
 
 export type MsgVpnRestDeliveryPointQueueBinding = {
     /**
@@ -23,4 +22,14 @@ export type MsgVpnRestDeliveryPointQueueBinding = {
      * The name of the REST Delivery Point.
      */
     restDeliveryPointName?: string;
+}
+
+export namespace MsgVpnRestDeliveryPointQueueBinding {
+
+    /**
+     * the discriminator for the model if required for more complex api's
+     */
+    export const discriminator = 'MsgVpnRestDeliveryPointQueueBinding';
+
+
 }

@@ -1,6 +1,5 @@
-/* istanbul ignore file */
-/* tslint:disable */
 /* eslint-disable */
+
 
 export type MsgVpnRestDeliveryPointRestConsumer = {
     /**
@@ -118,6 +117,11 @@ export type MsgVpnRestDeliveryPointRestConsumer = {
 }
 
 export namespace MsgVpnRestDeliveryPointRestConsumer {
+
+    /**
+     * the discriminator for the model if required for more complex api's
+     */
+    export const discriminator = 'MsgVpnRestDeliveryPointRestConsumer';
 
     /**
      * The authentication scheme used by the REST Consumer to login to the REST host. The default value is `"none"`. The allowed values and their meaning are:

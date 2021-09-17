@@ -1,6 +1,5 @@
-/* istanbul ignore file */
-/* tslint:disable */
 /* eslint-disable */
+
 
 export type MsgVpnReplicatedTopic = {
     /**
@@ -24,6 +23,11 @@ export type MsgVpnReplicatedTopic = {
 }
 
 export namespace MsgVpnReplicatedTopic {
+
+    /**
+     * the discriminator for the model if required for more complex api's
+     */
+    export const discriminator = 'MsgVpnReplicatedTopic';
 
     /**
      * The replication mode for the Replicated Topic. The default value is `"async"`. The allowed values and their meaning are:

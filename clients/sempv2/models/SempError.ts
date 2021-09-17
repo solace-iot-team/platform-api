@@ -1,6 +1,5 @@
-/* istanbul ignore file */
-/* tslint:disable */
 /* eslint-disable */
+
 
 export type SempError = {
     /**
@@ -15,4 +14,14 @@ export type SempError = {
      * The terse status string associated with `code`.
      */
     status: string;
+}
+
+export namespace SempError {
+
+    /**
+     * the discriminator for the model if required for more complex api's
+     */
+    export const discriminator = 'SempError';
+
+
 }

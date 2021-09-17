@@ -1,6 +1,5 @@
-/* istanbul ignore file */
-/* tslint:disable */
 /* eslint-disable */
+
 
 import type { SempMeta } from './SempMeta';
 import type { SystemInformation } from './SystemInformation';
@@ -10,4 +9,14 @@ export type SystemInformationResponse = {
     data?: SystemInformation;
     links?: SystemInformationLinks;
     meta: SempMeta;
+}
+
+export namespace SystemInformationResponse {
+
+    /**
+     * the discriminator for the model if required for more complex api's
+     */
+    export const discriminator = 'SystemInformationResponse';
+
+
 }

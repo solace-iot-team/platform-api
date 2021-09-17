@@ -1,6 +1,5 @@
-/* istanbul ignore file */
-/* tslint:disable */
 /* eslint-disable */
+
 
 export type MsgVpnRestDeliveryPointRestConsumerTlsTrustedCommonName = {
     /**
@@ -19,4 +18,14 @@ export type MsgVpnRestDeliveryPointRestConsumerTlsTrustedCommonName = {
      * The expected trusted common name of the remote certificate. Deprecated since (will be deprecated in next SEMP version). Common Name validation has been replaced by Server Certificate Name validation.
      */
     tlsTrustedCommonName?: string;
+}
+
+export namespace MsgVpnRestDeliveryPointRestConsumerTlsTrustedCommonName {
+
+    /**
+     * the discriminator for the model if required for more complex api's
+     */
+    export const discriminator = 'MsgVpnRestDeliveryPointRestConsumerTlsTrustedCommonName';
+
+
 }

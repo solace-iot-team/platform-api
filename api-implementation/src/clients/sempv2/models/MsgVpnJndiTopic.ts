@@ -1,6 +1,5 @@
-/* istanbul ignore file */
-/* tslint:disable */
 /* eslint-disable */
+
 
 export type MsgVpnJndiTopic = {
     /**
@@ -15,4 +14,14 @@ export type MsgVpnJndiTopic = {
      * The JNDI name of the JMS Topic.
      */
     topicName?: string;
+}
+
+export namespace MsgVpnJndiTopic {
+
+    /**
+     * the discriminator for the model if required for more complex api's
+     */
+    export const discriminator = 'MsgVpnJndiTopic';
+
+
 }

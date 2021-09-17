@@ -1,6 +1,5 @@
-/* istanbul ignore file */
-/* tslint:disable */
 /* eslint-disable */
+
 
 export type MsgVpnDistributedCacheClusterTopic = {
     /**
@@ -19,4 +18,14 @@ export type MsgVpnDistributedCacheClusterTopic = {
      * The value of the Topic in the form a/b/c.
      */
     topic?: string;
+}
+
+export namespace MsgVpnDistributedCacheClusterTopic {
+
+    /**
+     * the discriminator for the model if required for more complex api's
+     */
+    export const discriminator = 'MsgVpnDistributedCacheClusterTopic';
+
+
 }

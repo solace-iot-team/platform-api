@@ -1,6 +1,5 @@
-/* istanbul ignore file */
-/* tslint:disable */
 /* eslint-disable */
+
 
 export type MsgVpnAclProfileClientConnectException = {
     /**
@@ -15,4 +14,14 @@ export type MsgVpnAclProfileClientConnectException = {
      * The name of the Message VPN.
      */
     msgVpnName?: string;
+}
+
+export namespace MsgVpnAclProfileClientConnectException {
+
+    /**
+     * the discriminator for the model if required for more complex api's
+     */
+    export const discriminator = 'MsgVpnAclProfileClientConnectException';
+
+
 }

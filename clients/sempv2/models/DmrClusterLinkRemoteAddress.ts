@@ -1,6 +1,5 @@
-/* istanbul ignore file */
-/* tslint:disable */
 /* eslint-disable */
+
 
 export type DmrClusterLinkRemoteAddress = {
     /**
@@ -15,4 +14,14 @@ export type DmrClusterLinkRemoteAddress = {
      * The name of the node at the remote end of the Link.
      */
     remoteNodeName?: string;
+}
+
+export namespace DmrClusterLinkRemoteAddress {
+
+    /**
+     * the discriminator for the model if required for more complex api's
+     */
+    export const discriminator = 'DmrClusterLinkRemoteAddress';
+
+
 }

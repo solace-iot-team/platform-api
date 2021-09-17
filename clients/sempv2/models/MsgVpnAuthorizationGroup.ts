@@ -1,6 +1,5 @@
-/* istanbul ignore file */
-/* tslint:disable */
 /* eslint-disable */
+
 
 export type MsgVpnAuthorizationGroup = {
     /**
@@ -31,4 +30,14 @@ export type MsgVpnAuthorizationGroup = {
      * Raise the priority to be greater than this group. This attribute is absent from a GET and not updated when absent in a PUT, subject to the exceptions in note 4. The default is not applicable.
      */
     orderBeforeAuthorizationGroupName?: string;
+}
+
+export namespace MsgVpnAuthorizationGroup {
+
+    /**
+     * the discriminator for the model if required for more complex api's
+     */
+    export const discriminator = 'MsgVpnAuthorizationGroup';
+
+
 }

@@ -1,6 +1,5 @@
-/* istanbul ignore file */
-/* tslint:disable */
 /* eslint-disable */
+
 
 export type AboutUser = {
     /**
@@ -18,6 +17,11 @@ export type AboutUser = {
 }
 
 export namespace AboutUser {
+
+    /**
+     * the discriminator for the model if required for more complex api's
+     */
+    export const discriminator = 'AboutUser';
 
     /**
      * The global access level of the User. The allowed values and their meaning are:

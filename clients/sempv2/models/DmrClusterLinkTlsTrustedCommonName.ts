@@ -1,6 +1,5 @@
-/* istanbul ignore file */
-/* tslint:disable */
 /* eslint-disable */
+
 
 export type DmrClusterLinkTlsTrustedCommonName = {
     /**
@@ -15,4 +14,14 @@ export type DmrClusterLinkTlsTrustedCommonName = {
      * The expected trusted common name of the remote certificate. Deprecated since 2.18. Common Name validation has been replaced by Server Certificate Name validation.
      */
     tlsTrustedCommonName?: string;
+}
+
+export namespace DmrClusterLinkTlsTrustedCommonName {
+
+    /**
+     * the discriminator for the model if required for more complex api's
+     */
+    export const discriminator = 'DmrClusterLinkTlsTrustedCommonName';
+
+
 }

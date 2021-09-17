@@ -1,6 +1,5 @@
-/* istanbul ignore file */
-/* tslint:disable */
 /* eslint-disable */
+
 
 export type MsgVpnDistributedCache = {
     /**
@@ -27,4 +26,14 @@ export type MsgVpnDistributedCache = {
      * The scheduled delete message time(s), specified as "hourly" or a comma-separated list of 24-hour times in the form hh:mm, or h:mm. There must be no spaces, and times must be in sorted order from 0:00 to 23:59. The default value is `""`.
      */
     scheduledDeleteMsgTimeList?: string;
+}
+
+export namespace MsgVpnDistributedCache {
+
+    /**
+     * the discriminator for the model if required for more complex api's
+     */
+    export const discriminator = 'MsgVpnDistributedCache';
+
+
 }

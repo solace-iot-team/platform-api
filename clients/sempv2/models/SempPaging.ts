@@ -1,6 +1,5 @@
-/* istanbul ignore file */
-/* tslint:disable */
 /* eslint-disable */
+
 
 export type SempPaging = {
     /**
@@ -11,4 +10,14 @@ export type SempPaging = {
      * The URI of the next page of objects. `cursorQuery` is already embedded within this URI.
      */
     nextPageUri: string;
+}
+
+export namespace SempPaging {
+
+    /**
+     * the discriminator for the model if required for more complex api's
+     */
+    export const discriminator = 'SempPaging';
+
+
 }
