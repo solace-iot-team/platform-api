@@ -1,6 +1,5 @@
-/* istanbul ignore file */
-/* tslint:disable */
 /* eslint-disable */
+
 
 export type MsgVpnBridgeTlsTrustedCommonName = {
     /**
@@ -29,6 +28,11 @@ export type MsgVpnBridgeTlsTrustedCommonName = {
 }
 
 export namespace MsgVpnBridgeTlsTrustedCommonName {
+
+    /**
+     * the discriminator for the model if required for more complex api's
+     */
+    export const discriminator = 'MsgVpnBridgeTlsTrustedCommonName';
 
     /**
      * The virtual router of the Bridge. The allowed values and their meaning are:

@@ -1,6 +1,5 @@
-/* istanbul ignore file */
-/* tslint:disable */
 /* eslint-disable */
+
 
 export type SempRequest = {
     /**
@@ -11,4 +10,14 @@ export type SempRequest = {
      * The URI of the request which resulted in this response.
      */
     uri: string;
+}
+
+export namespace SempRequest {
+
+    /**
+     * the discriminator for the model if required for more complex api's
+     */
+    export const discriminator = 'SempRequest';
+
+
 }

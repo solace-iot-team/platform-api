@@ -1,6 +1,5 @@
-/* istanbul ignore file */
-/* tslint:disable */
 /* eslint-disable */
+
 
 export type MsgVpnLinks = {
     /**
@@ -91,4 +90,14 @@ export type MsgVpnLinks = {
      * The URI of this Message VPN object.
      */
     uri?: string;
+}
+
+export namespace MsgVpnLinks {
+
+    /**
+     * the discriminator for the model if required for more complex api's
+     */
+    export const discriminator = 'MsgVpnLinks';
+
+
 }

@@ -1,6 +1,5 @@
-/* istanbul ignore file */
-/* tslint:disable */
 /* eslint-disable */
+
 
 import type { MsgVpnBridgeRemoteMsgVpn } from './MsgVpnBridgeRemoteMsgVpn';
 import type { MsgVpnBridgeRemoteMsgVpnLinks } from './MsgVpnBridgeRemoteMsgVpnLinks';
@@ -10,4 +9,14 @@ export type MsgVpnBridgeRemoteMsgVpnsResponse = {
     data?: Array<MsgVpnBridgeRemoteMsgVpn>;
     links?: Array<MsgVpnBridgeRemoteMsgVpnLinks>;
     meta: SempMeta;
+}
+
+export namespace MsgVpnBridgeRemoteMsgVpnsResponse {
+
+    /**
+     * the discriminator for the model if required for more complex api's
+     */
+    export const discriminator = 'MsgVpnBridgeRemoteMsgVpnsResponse';
+
+
 }

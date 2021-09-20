@@ -1,6 +1,5 @@
-/* istanbul ignore file */
-/* tslint:disable */
 /* eslint-disable */
+
 
 import type { EventThreshold } from './EventThreshold';
 import type { EventThresholdByValue } from './EventThresholdByValue';
@@ -504,6 +503,11 @@ export type MsgVpn = {
 }
 
 export namespace MsgVpn {
+
+    /**
+     * the discriminator for the model if required for more complex api's
+     */
+    export const discriminator = 'MsgVpn';
 
     /**
      * The type of basic authentication to use for clients connecting to the Message VPN. The default value is `"radius"`. The allowed values and their meaning are:

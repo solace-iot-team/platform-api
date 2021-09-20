@@ -1,6 +1,5 @@
-/* istanbul ignore file */
-/* tslint:disable */
 /* eslint-disable */
+
 
 export type MsgVpnClientUsername = {
     /**
@@ -35,4 +34,14 @@ export type MsgVpnClientUsername = {
      * Enable or disable the subscription management capability of the Client Username. This is the ability to manage subscriptions on behalf of other Client Usernames. The default value is `false`.
      */
     subscriptionManagerEnabled?: boolean;
+}
+
+export namespace MsgVpnClientUsername {
+
+    /**
+     * the discriminator for the model if required for more complex api's
+     */
+    export const discriminator = 'MsgVpnClientUsername';
+
+
 }

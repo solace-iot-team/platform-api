@@ -1,6 +1,5 @@
-/* istanbul ignore file */
-/* tslint:disable */
 /* eslint-disable */
+
 
 export type MsgVpnAclProfile = {
     /**
@@ -54,6 +53,11 @@ export type MsgVpnAclProfile = {
 }
 
 export namespace MsgVpnAclProfile {
+
+    /**
+     * the discriminator for the model if required for more complex api's
+     */
+    export const discriminator = 'MsgVpnAclProfile';
 
     /**
      * The default action to take when a client using the ACL Profile connects to the Message VPN. The default value is `"disallow"`. The allowed values and their meaning are:

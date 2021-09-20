@@ -1,6 +1,5 @@
-/* istanbul ignore file */
-/* tslint:disable */
 /* eslint-disable */
+
 
 export type VirtualHostname = {
     /**
@@ -15,4 +14,14 @@ export type VirtualHostname = {
      * The virtual hostname.
      */
     virtualHostname?: string;
+}
+
+export namespace VirtualHostname {
+
+    /**
+     * the discriminator for the model if required for more complex api's
+     */
+    export const discriminator = 'VirtualHostname';
+
+
 }

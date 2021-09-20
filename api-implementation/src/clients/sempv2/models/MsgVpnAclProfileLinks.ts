@@ -1,6 +1,5 @@
-/* istanbul ignore file */
-/* tslint:disable */
 /* eslint-disable */
+
 
 export type MsgVpnAclProfileLinks = {
     /**
@@ -31,4 +30,14 @@ export type MsgVpnAclProfileLinks = {
      * The URI of this ACL Profile object.
      */
     uri?: string;
+}
+
+export namespace MsgVpnAclProfileLinks {
+
+    /**
+     * the discriminator for the model if required for more complex api's
+     */
+    export const discriminator = 'MsgVpnAclProfileLinks';
+
+
 }

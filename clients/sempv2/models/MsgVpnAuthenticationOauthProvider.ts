@@ -1,6 +1,5 @@
-/* istanbul ignore file */
-/* tslint:disable */
 /* eslint-disable */
+
 
 export type MsgVpnAuthenticationOauthProvider = {
     /**
@@ -115,6 +114,11 @@ export type MsgVpnAuthenticationOauthProvider = {
 }
 
 export namespace MsgVpnAuthenticationOauthProvider {
+
+    /**
+     * the discriminator for the model if required for more complex api's
+     */
+    export const discriminator = 'MsgVpnAuthenticationOauthProvider';
 
     /**
      * The audience claim source, indicating where to search for the audience value. The default value is `"id-token"`. The allowed values and their meaning are:

@@ -2,7 +2,7 @@ openapi: 3.0.0
 info:
   title: Solace API Management Connector
   description: 'Solace API Management Connector API. Note: basic authentication security mechanism is deprecated.'
-  version: 0.2.9
+  version: 0.3.1
 servers:
   - url: /v1
 
@@ -352,6 +352,8 @@ components:
             type: array
             items:
               $ref: '#/components/schemas/Protocol'
+          clientOptions:
+            $ref: '#/components/schemas/ClientOptions'  
 
     APIProductPatch:
       type: object
@@ -424,6 +426,8 @@ components:
             type: array
             items:
               $ref: '#/components/schemas/Protocol'
+          clientOptions:
+            $ref: '#/components/schemas/ClientOptions'  
 
     Developer:
       description: "A profile for a developer. After the developer is created, they can register an app and receive API credentials"
@@ -513,17 +517,40 @@ components:
               enum:
               - exclusive
               - non-exclusive
-
+            maxTtl:
+              type: integer
+              description: retention policy for message on the queue, default to 24 hours. Set to 0 if messages are to be kept indefinitely
+              default: 86400
+              example: 3600
+            maxMsgSpoolUsage:
+              type: integer
+              description: The maximum message spool usage allowed by the Queue, in megabytes (MB). A value of 0 only allows spooling of the last message received and disables quota checking
+              default: 500
+              example: 50
     ClientInformation:
-      type: object
-      properties:
-        guaranteedMessaging:
-          type: object
-          properties:
-            name:
-              type: string
-              description: "The name of the queue that is available for this app"
-              example: "AlAOLG3xxuYCVDpoXl4wKGwWAIURFGuK"
+      type: array
+      items:
+        type: object
+        properties:
+          guaranteedMessaging:
+            type: object
+            properties:
+              name:
+                type: string
+                description: "The name of the queue that is available for this app's API Product subcription"
+                example: "AlAOLG3xxuYCVDpoXl4wKGwWAIURFGuK"
+              apiProduct:
+                type: string
+                description: "The name of the APi Product this queue is associated with"
+                example: "Product 1"
+              accessType:
+                type: string
+                description: access mode for the queue
+                example: exclusive
+                default: exclusive
+                enum:
+                - exclusive
+                - non-exclusive
 
     App:
       type: object
@@ -549,8 +576,6 @@ components:
             type: string
         attributes:
           $ref: '#/components/schemas/attributes'
-        clientOptions:
-          $ref: '#/components/schemas/ClientOptions'  
         callbackUrl:
             description: callback url
             type: string
@@ -578,8 +603,6 @@ components:
             type: string
         attributes:
           $ref: '#/components/schemas/attributes'
-        clientOptions:
-          $ref: '#/components/schemas/ClientOptions'  
         callbackUrl:
             description: callback url
             type: string
@@ -619,8 +642,6 @@ components:
             type: string
         attributes:
           $ref: '#/components/schemas/attributes'
-        clientOptions:
-          $ref: '#/components/schemas/ClientOptions'  
         clientInformation:
           $ref: '#/components/schemas/ClientInformation'  
         callbackUrl:
@@ -1113,6 +1134,39 @@ components:
           - compressed-smf
         version:
           type: string
+    WebHookBasicAuth:
+      type: object
+      properties:
+        authMethod:
+          type: string
+          enum:
+          - Basic
+        username:
+          type: string
+        password:
+          type: string
+      required:
+      - username
+      - password
+    WebHookHeaderAuth:
+      type: object
+      description: A HTTP header used for authentication
+      properties:
+        authMethod:
+          type: string
+          enum:
+          - Header
+        headerName:
+          type: string
+        headerValue:
+          type: string
+      required:
+      - headerName
+      - headerValue     
+    WebHookAuth:
+      anyOf:
+        - $ref: '#/components/schemas/WebHookBasicAuth'
+        - $ref: '#/components/schemas/WebHookHeaderAuth'    
     WebHook:
       type: object
       required:
@@ -1142,20 +1196,7 @@ components:
           - serial
           default: parallel
         authentication:
-          anyOf:
-          - type: object
-            properties:
-              username:
-                type: string
-              password:
-                type: string
-          - type: object
-            description: A HTTP header used for authentication
-            properties:
-              headerName:
-                type: string
-              headerValue:
-                type: string
+          "$ref": "#/components/schemas/WebHookAuth"
 
     Endpoint:
       type: object
@@ -1218,6 +1259,10 @@ paths:
       responses:
        '200':
          description: list of organizations
+         headers:
+          X-Paging-TotalCount:
+            schema:
+              type: integer
          content:
            application/json:
              schema:

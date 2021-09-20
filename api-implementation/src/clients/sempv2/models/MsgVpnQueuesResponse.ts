@@ -1,6 +1,5 @@
-/* istanbul ignore file */
-/* tslint:disable */
 /* eslint-disable */
+
 
 import type { MsgVpnQueue } from './MsgVpnQueue';
 import type { MsgVpnQueueLinks } from './MsgVpnQueueLinks';
@@ -10,4 +9,14 @@ export type MsgVpnQueuesResponse = {
     data?: Array<MsgVpnQueue>;
     links?: Array<MsgVpnQueueLinks>;
     meta: SempMeta;
+}
+
+export namespace MsgVpnQueuesResponse {
+
+    /**
+     * the discriminator for the model if required for more complex api's
+     */
+    export const discriminator = 'MsgVpnQueuesResponse';
+
+
 }

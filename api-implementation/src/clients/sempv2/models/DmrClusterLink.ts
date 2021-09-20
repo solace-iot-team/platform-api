@@ -1,6 +1,5 @@
-/* istanbul ignore file */
-/* tslint:disable */
 /* eslint-disable */
+
 
 import type { EventThreshold } from './EventThreshold';
 
@@ -167,6 +166,11 @@ export type DmrClusterLink = {
 }
 
 export namespace DmrClusterLink {
+
+    /**
+     * the discriminator for the model if required for more complex api's
+     */
+    export const discriminator = 'DmrClusterLink';
 
     /**
      * The authentication scheme to be used by the Link which initiates connections to the remote node. The default value is `"basic"`. The allowed values and their meaning are:

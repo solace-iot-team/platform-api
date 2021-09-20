@@ -1,6 +1,5 @@
-/* istanbul ignore file */
-/* tslint:disable */
 /* eslint-disable */
+
 
 import type { EventThresholdByPercent } from './EventThresholdByPercent';
 import type { EventThresholdByValue } from './EventThresholdByValue';
@@ -69,4 +68,14 @@ export type MsgVpnDistributedCacheCluster = {
      * Enable or disable the advertising, onto the message bus, of new topics learned by each Cache Instance in the Cache Cluster. The default value is `false`.
      */
     newTopicAdvertisementEnabled?: boolean;
+}
+
+export namespace MsgVpnDistributedCacheCluster {
+
+    /**
+     * the discriminator for the model if required for more complex api's
+     */
+    export const discriminator = 'MsgVpnDistributedCacheCluster';
+
+
 }

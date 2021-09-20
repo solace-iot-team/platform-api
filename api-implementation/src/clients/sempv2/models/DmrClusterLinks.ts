@@ -1,6 +1,5 @@
-/* istanbul ignore file */
-/* tslint:disable */
 /* eslint-disable */
+
 
 export type DmrClusterLinks = {
     /**
@@ -11,4 +10,14 @@ export type DmrClusterLinks = {
      * The URI of this Cluster object.
      */
     uri?: string;
+}
+
+export namespace DmrClusterLinks {
+
+    /**
+     * the discriminator for the model if required for more complex api's
+     */
+    export const discriminator = 'DmrClusterLinks';
+
+
 }

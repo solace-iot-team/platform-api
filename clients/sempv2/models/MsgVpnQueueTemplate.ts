@@ -1,6 +1,5 @@
-/* istanbul ignore file */
-/* tslint:disable */
 /* eslint-disable */
+
 
 import type { EventThreshold } from './EventThreshold';
 
@@ -119,6 +118,11 @@ export type MsgVpnQueueTemplate = {
 }
 
 export namespace MsgVpnQueueTemplate {
+
+    /**
+     * the discriminator for the model if required for more complex api's
+     */
+    export const discriminator = 'MsgVpnQueueTemplate';
 
     /**
      * The access type for delivering messages to consumer flows. The default value is `"exclusive"`. The allowed values and their meaning are:

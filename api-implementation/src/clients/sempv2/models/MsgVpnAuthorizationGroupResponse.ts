@@ -1,6 +1,5 @@
-/* istanbul ignore file */
-/* tslint:disable */
 /* eslint-disable */
+
 
 import type { MsgVpnAuthorizationGroup } from './MsgVpnAuthorizationGroup';
 import type { MsgVpnAuthorizationGroupLinks } from './MsgVpnAuthorizationGroupLinks';
@@ -10,4 +9,14 @@ export type MsgVpnAuthorizationGroupResponse = {
     data?: MsgVpnAuthorizationGroup;
     links?: MsgVpnAuthorizationGroupLinks;
     meta: SempMeta;
+}
+
+export namespace MsgVpnAuthorizationGroupResponse {
+
+    /**
+     * the discriminator for the model if required for more complex api's
+     */
+    export const discriminator = 'MsgVpnAuthorizationGroupResponse';
+
+
 }

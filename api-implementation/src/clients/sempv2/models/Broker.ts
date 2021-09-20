@@ -1,6 +1,5 @@
-/* istanbul ignore file */
-/* tslint:disable */
 /* eslint-disable */
+
 
 import type { EventThreshold } from './EventThreshold';
 import type { EventThresholdByPercent } from './EventThresholdByPercent';
@@ -207,6 +206,11 @@ export type Broker = {
 }
 
 export namespace Broker {
+
+    /**
+     * the discriminator for the model if required for more complex api's
+     */
+    export const discriminator = 'Broker';
 
     /**
      * The client certificate revocation checking mode used when a client authenticates with a client certificate. The default value is `"none"`. The allowed values and their meaning are:

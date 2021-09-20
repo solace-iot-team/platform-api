@@ -1,6 +1,5 @@
-/* istanbul ignore file */
-/* tslint:disable */
 /* eslint-disable */
+
 
 export type CertAuthority = {
     /**
@@ -39,4 +38,14 @@ export type CertAuthority = {
      * Enable or disable Certificate Authority revocation checking. The default value is `false`. Deprecated since 2.19. certAuthorities replaced by clientCertAuthorities and domainCertAuthorities.
      */
     revocationCheckEnabled?: boolean;
+}
+
+export namespace CertAuthority {
+
+    /**
+     * the discriminator for the model if required for more complex api's
+     */
+    export const discriminator = 'CertAuthority';
+
+
 }

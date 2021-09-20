@@ -1,6 +1,5 @@
-/* istanbul ignore file */
-/* tslint:disable */
 /* eslint-disable */
+
 
 import type { MsgVpnDistributedCacheCluster } from './MsgVpnDistributedCacheCluster';
 import type { MsgVpnDistributedCacheClusterLinks } from './MsgVpnDistributedCacheClusterLinks';
@@ -10,4 +9,14 @@ export type MsgVpnDistributedCacheClusterResponse = {
     data?: MsgVpnDistributedCacheCluster;
     links?: MsgVpnDistributedCacheClusterLinks;
     meta: SempMeta;
+}
+
+export namespace MsgVpnDistributedCacheClusterResponse {
+
+    /**
+     * the discriminator for the model if required for more complex api's
+     */
+    export const discriminator = 'MsgVpnDistributedCacheClusterResponse';
+
+
 }

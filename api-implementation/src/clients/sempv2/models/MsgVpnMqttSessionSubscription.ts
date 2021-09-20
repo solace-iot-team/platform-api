@@ -1,6 +1,5 @@
-/* istanbul ignore file */
-/* tslint:disable */
 /* eslint-disable */
+
 
 export type MsgVpnMqttSessionSubscription = {
     /**
@@ -32,6 +31,11 @@ export type MsgVpnMqttSessionSubscription = {
 }
 
 export namespace MsgVpnMqttSessionSubscription {
+
+    /**
+     * the discriminator for the model if required for more complex api's
+     */
+    export const discriminator = 'MsgVpnMqttSessionSubscription';
 
     /**
      * The virtual router of the MQTT Session. The allowed values and their meaning are:

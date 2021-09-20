@@ -1,6 +1,5 @@
-/* istanbul ignore file */
-/* tslint:disable */
 /* eslint-disable */
+
 
 export type MsgVpnQueueSubscription = {
     /**
@@ -15,4 +14,14 @@ export type MsgVpnQueueSubscription = {
      * The topic of the Subscription.
      */
     subscriptionTopic?: string;
+}
+
+export namespace MsgVpnQueueSubscription {
+
+    /**
+     * the discriminator for the model if required for more complex api's
+     */
+    export const discriminator = 'MsgVpnQueueSubscription';
+
+
 }

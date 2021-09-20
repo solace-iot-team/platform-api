@@ -1,6 +1,5 @@
-/* istanbul ignore file */
-/* tslint:disable */
 /* eslint-disable */
+
 
 export type EventThresholdByPercent = {
     /**
@@ -11,4 +10,14 @@ export type EventThresholdByPercent = {
      * The set threshold for the value of this counter as a percentage of its maximum value. Exceeding this value will trigger a corresponding event.
      */
     setPercent?: number;
+}
+
+export namespace EventThresholdByPercent {
+
+    /**
+     * the discriminator for the model if required for more complex api's
+     */
+    export const discriminator = 'EventThresholdByPercent';
+
+
 }

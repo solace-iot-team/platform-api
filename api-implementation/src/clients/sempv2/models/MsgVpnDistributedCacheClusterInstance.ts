@@ -1,6 +1,5 @@
-/* istanbul ignore file */
-/* tslint:disable */
 /* eslint-disable */
+
 
 export type MsgVpnDistributedCacheClusterInstance = {
     /**
@@ -31,4 +30,14 @@ export type MsgVpnDistributedCacheClusterInstance = {
      * Enable or disable stop-on-lost-message for the Cache Instance. When enabled, the Cache Instance will transition to the stopped operational state upon losing a message. When stopped, it cannot accept or respond to cache requests, but continues to cache messages. The default value is `true`.
      */
     stopOnLostMsgEnabled?: boolean;
+}
+
+export namespace MsgVpnDistributedCacheClusterInstance {
+
+    /**
+     * the discriminator for the model if required for more complex api's
+     */
+    export const discriminator = 'MsgVpnDistributedCacheClusterInstance';
+
+
 }

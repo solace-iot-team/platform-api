@@ -1,6 +1,5 @@
-/* istanbul ignore file */
-/* tslint:disable */
 /* eslint-disable */
+
 
 import type { EventThreshold } from './EventThreshold';
 import type { EventThresholdByPercent } from './EventThresholdByPercent';
@@ -226,6 +225,11 @@ export type MsgVpnClientProfile = {
 }
 
 export namespace MsgVpnClientProfile {
+
+    /**
+     * the discriminator for the model if required for more complex api's
+     */
+    export const discriminator = 'MsgVpnClientProfile';
 
     /**
      * The types of Queues and Topic Endpoints that clients using the client-profile can create. Changing this value does not affect existing client connections. The default value is `"all"`. The allowed values and their meaning are:
