@@ -98,9 +98,6 @@ class AppFactory {
       target.credentials = source.credentials;
     }
     this.map(source, target);
-    if (!source.clientOptions) {
-      delete target.clientOptions;
-    }
   }
 
   private mapNewApp(source: App, target: App) {
