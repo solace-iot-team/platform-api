@@ -1,3 +1,4 @@
+import L from './common/logger';
 import { Application } from 'express';
 import apisRouter from './api/controllers/apis/router';
 import appsRouter from './api/controllers/apps/router';
@@ -10,7 +11,7 @@ import accountRouter from './api/controllers/account/router';
 import organizationsRouter from './api/controllers/organizations/router';
 import historyRouter from './api/controllers/history/router';
 import tokenRouter from './api/controllers/token/router';
-
+import healthCheckRouter from './api/controllers/healthcheck/router';
 import { ContextConstants } from './common/constants';
 import { Request, Response } from 'express';
 import pagingHandler from './api/middlewares/paging.handler';
@@ -27,13 +28,14 @@ export default function routes(app: Application): void {
   router.use(passport.initialize());
   router.use(contextHandler);
   router.use(pagingHandler);
-  router.use('/*', passport.authenticate(['provider','basic'], PassportFactory.getAuthenticationOptions()));
+  router.use('/*', passport.authenticate(['provider', 'basic'], PassportFactory.getAuthenticationOptions()));
   router.get('/', (req: Request, res: Response) => {
+    L.info('Request to root emit 404');
     res.status(404).end();
   });
   router.param(ContextConstants.ORG_NAME, authorizedOrgs);
 
-  
+
   router.use('/*', auditHandler);
   router.use('/organizations', authorizedRoles(['platform-admin']), organizationsRouter);
   router.use('/:org/apis', authorizedRoles(['org-admin']), apisRouter);
@@ -46,6 +48,6 @@ export default function routes(app: Application): void {
   router.use('/:org/history', authorizedRoles(['org-admin']), historyRouter);
   router.use('/:org/token', authorizedRoles(['org-admin']), tokenRouter);
   router.use('/:org/apps', authorizedRoles(['org-admin']), appsRouter);
-
+  router.use('/healthcheck', healthCheckRouter);
   app.use('/v1', router);
 }

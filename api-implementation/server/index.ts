@@ -13,13 +13,6 @@ const callback: serverCallback = async () => {
   printEnv(function (s: string) {
     L.info.apply(L, [s]);
   });
-  const dbURL = process.env.DB_URL || `mongodb://@localhost:27017/solace-platform?retryWrites=true&w=majority`;
-  try {
-    await databaseaccess.connect(dbURL);
-    L.info(`Connected to Mongo!`);
-  } catch (err) {
-    L.error(err, `Unable to connect to Mongo, err=${JSON.stringify(err)}`);
-  }
   if (L.isLevelEnabled('debug') || L.isLevelEnabled('trace')) {
     L.info('Activating unhandled promise logger');
     process.on('unhandledRejection', error => {
@@ -27,8 +20,20 @@ const callback: serverCallback = async () => {
     });
   }
   loadUserRegistry();
+  const dbURL = process.env.DB_URL || `mongodb://@localhost:27017/solace-platform?retryWrites=true&w=majority`;
+  let isConnected = false;
+  while (!isConnected) {
+    try {
+      await databaseaccess.connect(dbURL);
+      L.info(`Connected to Mongo!`);
+      isConnected = true;
+    } catch (err) {
+      L.error(err, `Unable to connect to Mongo, err=${JSON.stringify(err)}. Continue retrying`);
+
+    }
+  }
 };
 
-const port = parseInt(process.env.PLATFORM_PORT) || 3000;
+export const port = parseInt(process.env.PLATFORM_PORT) || 3000;
 var server = new Server().router(routes).listenWithCallback(port, callback);
 export default server;
