@@ -1,6 +1,6 @@
 {
   "name": "@solace-iot-team/platform-api-openapi-client-fe",
-  "version": "0.3.1",
+  "version": "0.3.4",
   "description": "Solace API-M Connector - OpenAPI for Front-End (Typescript)",
   "homepage": "https://github.com/solace-iot-team/platform-api",
   "repository": {
