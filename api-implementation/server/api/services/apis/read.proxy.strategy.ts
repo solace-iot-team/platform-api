@@ -1,3 +1,4 @@
+import L from '../../../common/logger';
 import { ApisReadStrategy } from './read.strategy';
 import { APISpecification } from '../apis.service';
 import { ErrorResponseInternal } from '../../middlewares/error.handler';
@@ -7,6 +8,7 @@ import EventPortalFacade from '../../../../src/eventportalfacade';
 import { ns } from '../../middlewares/context.handler';
 import { Paging } from '../../../../src/model/paging';
 import { ContextConstants } from '../../../common/constants';
+import { SortDirection, SortInfo } from '../../../../src/model/sortinfo';
 
 class ApisReadProxyStrategy implements ApisReadStrategy {
   private persistenceService: PersistenceService;
@@ -20,7 +22,7 @@ class ApisReadProxyStrategy implements ApisReadStrategy {
     this.apiInfoPersistenceService = new PersistenceService('apisInfo');
   }
   async all(): Promise<string[]> {
-    ns.getStore().set('paging', this.p);
+    ns.getStore().set(ContextConstants.PAGING, this.p);
     return new Promise<string[]>(async (resolve, reject) => {
       const products = await EventPortalFacade.getEventApiProducts();
       const names: string[] = [];
@@ -32,7 +34,18 @@ class ApisReadProxyStrategy implements ApisReadStrategy {
           all.forEach((spec: APISpecification) => {
             names.push(spec.name);
           });
-          names.sort((a, b) => a.localeCompare(b));
+          let direction: SortDirection = SortDirection.asc;
+          if (ns != null) {
+            L.debug(`PersistenceService: Found namespace ${ns}`);
+            const sortInfo: SortInfo = ns.getStore().get(ContextConstants.SORT);
+            L.debug(`sort ${sortInfo}`);
+            direction = sortInfo.direction;
+          }
+          if (direction == SortDirection.asc){
+            names.sort((a, b) => a.localeCompare(b));
+          } else {
+            names.sort((a, b) => a.localeCompare(b)).reverse();
+          }
           resolve(names);
         })
         .catch((e) => {
@@ -95,7 +108,7 @@ class ApisReadProxyStrategy implements ApisReadStrategy {
   async canCreate(name: string): Promise<boolean> {
     try {
       const api = await EventPortalFacade.getEventApiProductByName(name);
-      if (api){
+      if (api) {
         return false;
       } else {
         return true;

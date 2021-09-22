@@ -4,8 +4,9 @@ import { databaseaccess } from '../../../src/databaseaccess';
 import mongodb, { DeleteWriteOpResultObject, MongoError, CollectionInsertOneOptions, UpdateOneOptions } from 'mongodb';
 
 import { ErrorResponseInternal } from '../middlewares/error.handler';
-import {ns} from '../middlewares/context.handler';
+import { ns } from '../middlewares/context.handler';
 import { Paging } from '../../../src/model/paging';
+import { SortInfo } from '../../../src/model/sortinfo';
 
 export class PersistenceService {
   private collection: string;
@@ -35,9 +36,14 @@ export class PersistenceService {
     }
     if (sort == null) {
       sort = {};
+      if (ns != null && ns.getStore().get(ContextConstants.SORT)) {
+        L.debug(`PersistenceService: Found namespace ${ns}`);
+        const sortInfo: SortInfo = ns.getStore().get(ContextConstants.SORT);
+        sort[sortInfo.fieldName] = sortInfo.direction;
+      }
+      L.debug(`PeristanceService.all query ${JSON.stringify(query)}`);
+      L.debug(`sort ${JSON.stringify(sort)}`);
     }
-    L.debug(`PeristanceService.all query ${JSON.stringify(query)}`);
-
     // attempt to retrieve paging from context/namespace
     if (paging == null) {
       if (ns != null) {
