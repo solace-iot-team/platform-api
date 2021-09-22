@@ -2,7 +2,7 @@ openapi: 3.0.0
 info:
   title: Solace API Management Connector
   description: 'Solace API Management Connector API. Note: basic authentication security mechanism is deprecated.'
-  version: 0.3.2
+  version: 0.3.3
 servers:
   - url: /v1
 
@@ -114,6 +114,24 @@ components:
        type: integer
        format: int32
        default: 1
+    sort_direction:
+      name: sortDirection
+      in: query
+      description: sort direction
+      required: false
+      schema:
+        type: string
+        default: asc
+        enum:
+        - asc
+        - desc
+    sort_field_name:
+      name: sortFieldName
+      in: query
+      description: name of a field to sort on
+      required: false
+      schema:
+        type: string
     topicSyntax:
       name: topicSyntax
       in: query
@@ -1320,6 +1338,11 @@ paths:
         - org-admin
       tags:
       - administration
+      parameters:
+      - $ref: '#/components/parameters/page_size'
+      - $ref: '#/components/parameters/page_number'
+      - $ref: '#/components/parameters/sort_field_name'
+      - $ref: '#/components/parameters/sort_direction'
       responses:
        '200':
          description: list of organizations
@@ -1801,6 +1824,8 @@ paths:
      parameters:
      - $ref: '#/components/parameters/page_size'
      - $ref: '#/components/parameters/page_number'
+     - $ref: '#/components/parameters/sort_field_name'
+     - $ref: '#/components/parameters/sort_direction'
      responses:
        '200':
          description: list of APIs
@@ -2340,6 +2365,8 @@ paths:
      parameters:
      - $ref: '#/components/parameters/page_size'
      - $ref: '#/components/parameters/page_number'
+     - $ref: '#/components/parameters/sort_field_name'
+     - $ref: '#/components/parameters/sort_direction'
      responses:
        '200':
          description: list of API Products
@@ -2658,6 +2685,8 @@ paths:
      parameters:
      - $ref: '#/components/parameters/page_size'
      - $ref: '#/components/parameters/page_number'
+     - $ref: '#/components/parameters/sort_field_name'
+     - $ref: '#/components/parameters/sort_direction'
      responses:
        '200':
          description: list of Developers
@@ -2902,6 +2931,8 @@ paths:
     parameters:
     - $ref: '#/components/parameters/organization'
     - $ref: '#/components/parameters/developer_username'
+    - $ref: '#/components/parameters/sort_field_name'
+    - $ref: '#/components/parameters/sort_direction'
     post:
      operationId: createDeveloperApp
      tags:
@@ -3308,6 +3339,8 @@ paths:
      parameters:
      - $ref: '#/components/parameters/page_size'
      - $ref: '#/components/parameters/page_number'
+     - $ref: '#/components/parameters/sort_field_name'
+     - $ref: '#/components/parameters/sort_direction'
      responses:
        '200':
          description: list of Teams
@@ -3633,6 +3666,8 @@ paths:
         "$ref": "#/components/schemas/AppStatus"
      - $ref: '#/components/parameters/page_size'
      - $ref: '#/components/parameters/page_number'
+     - $ref: '#/components/parameters/sort_field_name'
+     - $ref: '#/components/parameters/sort_direction'
      responses:
        '200':
          description: list of apps
@@ -3894,6 +3929,8 @@ paths:
      parameters:
      - $ref: '#/components/parameters/page_size'
      - $ref: '#/components/parameters/page_number'
+     - $ref: '#/components/parameters/sort_field_name'
+     - $ref: '#/components/parameters/sort_direction'
      responses:
        '200':
          description: list of apps
@@ -4018,6 +4055,11 @@ paths:
      operationId: listAppApiSpecifications
      tags:
      - apps
+     parameters:
+     - $ref: '#/components/parameters/page_size'
+     - $ref: '#/components/parameters/page_number'
+     - $ref: '#/components/parameters/sort_field_name'
+     - $ref: '#/components/parameters/sort_direction'
      responses:
        '200':
          description:  an app
@@ -4223,6 +4265,8 @@ paths:
      parameters:
      - $ref: '#/components/parameters/page_size'
      - $ref: '#/components/parameters/page_number'
+     - $ref: '#/components/parameters/sort_field_name'
+     - $ref: '#/components/parameters/sort_direction'
      - name: format
        in: query
        schema:
@@ -4481,6 +4525,8 @@ paths:
      parameters:
      - $ref: '#/components/parameters/page_size'
      - $ref: '#/components/parameters/page_number'
+     - $ref: '#/components/parameters/sort_field_name'
+     - $ref: '#/components/parameters/sort_direction'
      responses:
        '200':
          description: list of services on the associated Solace Cloud account
@@ -4543,6 +4589,11 @@ paths:
      operationId: listEventAPIProducts
      tags:
       - eventPortal
+     parameters:
+     - $ref: '#/components/parameters/page_size'
+     - $ref: '#/components/parameters/page_number'
+     - $ref: '#/components/parameters/sort_field_name'
+     - $ref: '#/components/parameters/sort_direction'
      responses:
        '200':
          description: list of event api products defined in the associated Event Portal
