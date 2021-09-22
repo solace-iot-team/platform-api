@@ -1668,6 +1668,8 @@ paths:
      parameters:
      - $ref: '#/components/parameters/page_size'
      - $ref: '#/components/parameters/page_number'
+     - $ref: '#/components/parameters/sort_field_name'
+     - $ref: '#/components/parameters/sort_direction'
      responses:
        '200':
          description: audit history
@@ -2929,8 +2931,6 @@ paths:
     parameters:
     - $ref: '#/components/parameters/organization'
     - $ref: '#/components/parameters/developer_username'
-    - $ref: '#/components/parameters/sort_field_name'
-    - $ref: '#/components/parameters/sort_direction'
     post:
      operationId: createDeveloperApp
      tags:
@@ -3012,6 +3012,8 @@ paths:
         "$ref": "#/components/schemas/AppStatus"
      - $ref: '#/components/parameters/page_size'
      - $ref: '#/components/parameters/page_number'
+     - $ref: '#/components/parameters/sort_field_name'
+     - $ref: '#/components/parameters/sort_direction'
      responses:
        '200':
          description: list of apps
@@ -4587,11 +4589,6 @@ paths:
      operationId: listEventAPIProducts
      tags:
       - eventPortal
-     parameters:
-     - $ref: '#/components/parameters/page_size'
-     - $ref: '#/components/parameters/page_number'
-     - $ref: '#/components/parameters/sort_field_name'
-     - $ref: '#/components/parameters/sort_direction'
      responses:
        '200':
          description: list of event api products defined in the associated Event Portal
