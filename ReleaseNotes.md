@@ -1,5 +1,36 @@
 # Release Notes
 
+
+## Version 0.2.5
+* OpenAPI: 0.3.4
+* API Management Connector Server: 0.2.5
+
+### Features
+* **API Product - ability to set Guaranteed Messaging Policy**
+  - When an API Product is created a guaranteed messaging configuration can be supplied. During provisioning, if guaranteed messaging is required an app specific, per API Product queue is created and all the app's allowed subscriptions for the paerticular API Product are attached to the queue.
+* **App specific Async APIs (/{organization_name}/apps/{app_name}/apis/{api_name}) now include binding information**
+  - If an API Product requires guaranteed messaging appropriate operation bindings are included in the Async API spec
+  - Protocols supported are SMF, MQTT. JMS is also provided provisionally utilising the SMF binding
+* **Various GET reources that return a list**
+  - These endpoints now support sorting, please refer to the OpenAPI documentation for details
+
+### Fixes
+* **App - removed ability to request message persistence on app creation**
+  - Guaranteed messaging is now governed by API Product settings
+  - The name of the queue and access type is still returned in the AppResponse's clientInformation element
+* **App Provisioning**
+  - In cases of an API Product referencing multiple environments the broker connection parameters were misapplied
+  - Fixed concurrency issue with generated SEMPv2 REST Client 
+* **Org Creation/Update - Token Validation**
+  - Provided tokens were not validated against the Event API Product API
+  - Access to Event Portal API is now tested using the token provided
+* **Event Portal Integration - Invalid URL**
+  - API was relocated to different URL, Connector is now up to date with new URL
+  - Workaround for previous releases - instead of a simple token provide the token object which allows to specify the Event Portal and Solace Cloud base url. 
+    - For Event Portal use - `https://api.solace.cloud/api/v0/eventPortal`
+    - For Solace Cloud use - `https://api.solace.cloud/api/v0` 
+
+
 ## Version 0.2.4
 * OpenAPI: 0.2.9
 * API Management Connector Server: 0.2.4
