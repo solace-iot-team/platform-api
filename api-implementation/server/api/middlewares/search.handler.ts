@@ -1,25 +1,24 @@
 import { Request, Response, NextFunction } from 'express';
 import L from '../../common/logger';
-import { Paging } from '../../../src/model/paging';
+import { SearchInfo } from '../../../src/model/searchinfo';
 import { ErrorResponseInternal } from './error.handler';
 import { ns } from './context.handler';
 import { ContextConstants } from '../../common/constants';
 
 
-export default function pagingHandler(
+export default function searchHandler(
   req: Request,
   res: Response,
   next: NextFunction
 ): void {
-  if (req.query.pageNumber != null && req.query.pageSize != null) {
-    var p: Paging = {
-      pageNumber: parseInt(req.query.pageNumber as string),
-      pageSize: parseInt(req.query.pageSize as string)
+  if (req.query.filter != null) {
+    var p: SearchInfo = {
+      searchWordList: req.query.filter as string,
     };
-    L.debug(`Found paging parameters ${JSON.stringify(p)}`);
+    L.debug(`Found search parameters ${JSON.stringify(p)}`);
     if (ns != null) {
-      L.debug(`PersistenceService: Found namespace ${ns}`);
-      ns.getStore().set(ContextConstants.PAGING, p);
+      L.debug(`searchHandler: Found namespace ${ns}`);
+      ns.getStore().set(ContextConstants.FILTER, p);
       next();
 
     } else {

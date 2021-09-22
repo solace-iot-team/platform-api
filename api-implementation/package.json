@@ -1,6 +1,6 @@
 {
   "name": "apim-connector-server",
-  "version": "0.2.4",
+  "version": "0.2.5",
   "description": "Solace API Management Connector",
   "homepage": "https://github.com/solace-iot-team/platform-api",
   "repository": {
@@ -38,6 +38,7 @@
   "license": "MIT",
   "dependencies": {
     "@asyncapi/parser": "^1.1.1",
+    "@godaddy/terminus": "^4.9.0",
     "@types/jsonpath": "^0.2.0",
     "@types/passport": "^1.0.6",
     "@types/passport-http": "^0.3.8",

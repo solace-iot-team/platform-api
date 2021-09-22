@@ -9,6 +9,8 @@ export class ContextConstants {
   public static ORG_OBJECT = 'organization';
   public static CLOUD_TOKEN = 'cloud-token';
   public static PAGING = 'paging';
+  public static SORT = 'sort';
+  public static FILTER = 'filter';
   public static REQUEST_ID = 'requestId';
   public static AUTHENTICATED_USER = 'user';
 }

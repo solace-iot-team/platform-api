@@ -7,24 +7,39 @@ export class databaseaccess {
 
   }
   public static connect(url: string): Promise<any> {
-    return new Promise<any>((resolve, reject) => {
+    return new Promise<any>(async (resolve, reject) => {
       try {
         url = databaseaccess.validateUrl(url);
         L.info(`Attempting to connect to [${url}]`);
-        mongo.MongoClient.connect(url, { useNewUrlParser: true, useUnifiedTopology: true }, (err, client: mongo.MongoClient) => {
-          if (err) {
-            L.error(`Not connected to database`);
-            reject(err);
-          } else {
-            databaseaccess.client = client;
-            L.info(`Connected to database ${url}`);
-            resolve(client);
-          }
+        
+        databaseaccess.client = new mongo.MongoClient(url, {
+          useNewUrlParser: true, 
+          useUnifiedTopology: true,
+          serverSelectionTimeoutMS: 3000,
+          connectTimeoutMS: 1000, 
+          socketTimeoutMS: 5000,
+          poolSize: 10,
+          minPoolSize: 5,
         });
+        await databaseaccess.client.connect();
+        resolve("");
       } catch (e) {
         reject(e);
       }
     });
+  }
+
+  public static async isHealthy(): Promise<boolean> {
+    if (!databaseaccess.client) {
+      return false;
+    }
+    try {
+      await databaseaccess.client.db('platform').collection('organizations').find({}).maxTimeMS(100).toArray();
+      return true;
+    } catch (e) {
+      L.error(`database probe timed out`)
+      return false;
+    }
   }
 
   public disconnect(): void {

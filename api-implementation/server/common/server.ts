@@ -14,11 +14,18 @@ import * as OpenApiValidator from 'express-openapi-validator';
 
 import cors from 'cors';
 
+import fetch from 'node-fetch';
+import https from 'https';
+
 const app = express();
 
 const corsOptions: cors.CorsOptions = {
   origin: true,
 };
+
+import { databaseaccess } from '../../src/databaseaccess';
+
+import { createTerminus, TerminusOptions, HealthCheckMap, HealthCheckError } from '@godaddy/terminus';
 
 export default class ExpressServer {
   private routes: (app: Application) => void;
@@ -81,8 +88,76 @@ export default class ExpressServer {
       callback.apply(callback);
     }*/
 
-    http.createServer(app).listen(port, callback);
+    const server = http.createServer(app);
+    server.listen(port, callback);
+    const hsMap: HealthCheckMap = {
+      verbatim: false,
+      '/readiness': healthCheck,
+      '/liveliness': healthCheck,
+    };
 
+    const options: TerminusOptions = {
+      // health check options
+      healthChecks: hsMap,
+      onSignal: shutdown,
+      onShutdown: shutdown,
+      onSigterm: shutdown
+    };
+    createTerminus(server, options);
     return app;
   }
+
 }
+
+const checkSolaceCloudAccess = async () => {
+  const agent = new https.Agent({
+    rejectUnauthorized: false
+  });
+  try {
+    const response = await fetch('https://api.solace.cloud/api/v0', { agent });
+    if (response.status == 401) {
+    } else {
+      return false;
+    }
+  } catch (e) {
+    return false;
+  }
+  try {
+    const response = await fetch('https://api.solace.cloud/api/v0/eventPortal/apiProducts', { agent });
+    if (response.status == 401) {
+    } else {
+      return false;
+    }
+  } catch (e) {
+    return false;
+  }
+  return true;
+  
+}
+
+const shutdown = async () => {
+  console.log('server is starting cleanup');
+  return databaseaccess.client.close().then(() => console.log('client has disconnected'))
+    .catch(err => console.error('error during disconnection', err.stack))
+}
+export const healthCheck = async () => {
+
+  if (await databaseaccess.isHealthy() && await checkSolaceCloudAccess()) {
+    return Promise.resolve(
+    );
+  } else {
+    let errs: Error[] = [];
+    if (!(await databaseaccess.isHealthy())) {
+      errs.push(new Error('NO_DB_CONNECTION'));
+    }
+    if (!(await checkSolaceCloudAccess())) {
+      errs.push(new Error('NO_OUTBOUND_HTTPS_ACCESS'));
+    }
+    const error: HealthCheckError = {
+      causes: errs,
+      message: 'Not ready',
+      name: 'NOT_READY'
+    }
+    return Promise.reject(error);
+  }
+};
