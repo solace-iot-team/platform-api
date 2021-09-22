@@ -27,6 +27,8 @@ import { databaseaccess } from '../../src/databaseaccess';
 
 import { createTerminus, TerminusOptions, HealthCheckMap, HealthCheckError } from '@godaddy/terminus';
 
+import audit from 'express-requests-logger';
+
 export default class ExpressServer {
   private routes: (app: Application) => void;
   constructor() {
@@ -57,6 +59,13 @@ export default class ExpressServer {
         ignorePaths: /.*\/spec(\/|$)/,
       })
     );
+    if (l.isLevelEnabled('debug')) {
+      l.info('Enabling HTTP audit handler');
+      app.use(audit({
+        logger: l,
+        excludeURLs: ['liveliness', 'readiness'],
+      }));
+    }
 
   }
 
@@ -132,7 +141,7 @@ const checkSolaceCloudAccess = async () => {
     return false;
   }
   return true;
-  
+
 }
 
 const shutdown = async () => {
