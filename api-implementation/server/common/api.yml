@@ -1822,8 +1822,6 @@ paths:
      tags:
       - apis
      parameters:
-     - $ref: '#/components/parameters/page_size'
-     - $ref: '#/components/parameters/page_number'
      - $ref: '#/components/parameters/sort_field_name'
      - $ref: '#/components/parameters/sort_direction'
      responses:
