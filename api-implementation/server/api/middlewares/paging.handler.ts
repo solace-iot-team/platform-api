@@ -3,6 +3,7 @@ import L from '../../common/logger';
 import { Paging } from '../../../src/model/paging';
 import { ErrorResponseInternal } from './error.handler';
 import { ns } from './context.handler';
+import { ContextConstants } from '../../common/constants';
 
 
 export default function pagingHandler(
@@ -18,7 +19,7 @@ export default function pagingHandler(
     L.debug(`Found paging parameters ${JSON.stringify(p)}`);
     if (ns != null) {
       L.debug(`PersistenceService: Found namespace ${ns}`);
-      ns.getStore().set('paging', p);
+      ns.getStore().set(ContextConstants.PAGING, p);
       next();
 
     } else {
