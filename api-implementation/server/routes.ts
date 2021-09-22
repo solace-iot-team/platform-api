@@ -11,6 +11,7 @@ import accountRouter from './api/controllers/account/router';
 import organizationsRouter from './api/controllers/organizations/router';
 import historyRouter from './api/controllers/history/router';
 import tokenRouter from './api/controllers/token/router';
+import aboutRouter from './api/controllers/about/router';
 import healthCheckRouter from './api/controllers/healthcheck/router';
 import { ContextConstants } from './common/constants';
 import { Request, Response } from 'express';
@@ -41,6 +42,7 @@ export default function routes(app: Application): void {
 
 
   router.use('/*', auditHandler);
+  router.use('/about', authorizedRoles(['platform-admin','org-admin']), aboutRouter);
   router.use('/organizations', authorizedRoles(['platform-admin']), organizationsRouter);
   router.use('/:org/apis', authorizedRoles(['org-admin']), apisRouter);
   router.use('/:org/apiProducts', authorizedRoles(['org-admin']), apiProductsRouter);

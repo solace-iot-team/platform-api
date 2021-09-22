@@ -1241,6 +1241,17 @@ components:
           format: uri
           example: "smf://1234abc.messaging.solace.cloud:55555"
 
+    About:
+      type: object
+      properties:
+        APIS_PROXY_MODE:
+          type: boolean
+          example: true
+          description: indicates if the Connector is running in Proxy Mode. In this mode all published Event API Products in Event Portal are automatically available as APIs in the connector
+        version:
+          type: object
+          description: version information
+          example: {"connector-version":"1.0"}
 
 security:
   - OpenId: []
@@ -1658,6 +1669,22 @@ paths:
           "application/json":
            schema:
             "$ref": "#/components/schemas/ErrorResponse"
+  /about:
+    get:
+      operationId: about
+      description: Returns informaiton about the Connector Version and configuration
+      security:
+      - OpenId:
+        - org-admin
+      tags:
+      - administration
+      responses:
+       '200':
+         description: Informaiton about the connector
+         content:
+           application/json:
+             schema:
+              "$ref": "#/components/schemas/About"
 
   /{organization_name}/history:
     parameters:

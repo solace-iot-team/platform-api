@@ -36,6 +36,12 @@ declare namespace Components {
         namespace PageSize {
             export type PageSize = number; // int32
         }
+        namespace SortDirection {
+            export type SortDirection = "asc" | "desc";
+        }
+        namespace SortFieldName {
+            export type SortFieldName = string;
+        }
         namespace TeamName {
             export type TeamName = string;
         }
@@ -232,6 +238,23 @@ declare namespace Components {
             subResources?: string[];
             protocols?: Protocol[];
             clientOptions?: ClientOptions;
+        }
+        export interface About {
+            /**
+             * indicates if the Connector is running in Proxy Mode. In this mode all published Event API Products in Event Portal are automatically available as APIs in the connector
+             * example:
+             * true
+             */
+            APIS_PROXY_MODE?: boolean;
+            /**
+             * version information
+             * example:
+             * {
+             *   "connector-version": "1.0"
+             * }
+             */
+            version?: {
+            };
         }
         /**
          * An app associated with an owner (developer, team etc). Associates the app with an API product, and auto-generates an API credentials for the app to use
@@ -955,6 +978,11 @@ declare namespace Paths {
             status?: Parameters.Status;
         }
     }
+    namespace About {
+        namespace Responses {
+            export type $200 = Components.Schemas.About;
+        }
+    }
     namespace CreateApi {
         export type RequestBody = string;
         namespace Responses {
@@ -1389,6 +1417,33 @@ declare namespace Paths {
             export type $500 = Components.Schemas.ErrorResponse;
             export type $503 = Components.Schemas.ErrorResponse;
             export type $504 = Components.Schemas.ErrorResponse;
+        }
+    }
+    namespace Healthcheck {
+        namespace Responses {
+            export interface $200 {
+                status?: string;
+            }
+            export type $401 = Components.Schemas.ErrorResponse;
+            export type $403 = Components.Schemas.ErrorResponse;
+            export type $500 = Components.Schemas.ErrorResponse;
+            export interface $503 {
+                status?: string;
+                error?: {
+                    /**
+                     * example:
+                     * NO_DB_CONNECTION
+                     */
+                    message?: string;
+                }[];
+                details?: {
+                    /**
+                     * example:
+                     * NO_DB_CONNECTION
+                     */
+                    message?: string;
+                }[];
+            }
         }
     }
     namespace ImportApi {
