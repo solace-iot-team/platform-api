@@ -1,10 +1,11 @@
 import L from '../../../common/logger'; import ApisService from '../../services/apis.service';
 import { NextFunction, Request, Response } from 'express';
 import AsyncAPIHelper from '../../../../src/asyncapihelper'
+import ApiListFormat = Components.Parameters.ApiListFormat.Format;
 
 export class Controller {
   all(req: Request, res: Response, next: NextFunction): void {
-    ApisService.all().then((r) => res.json(r)).catch(e => {
+    ApisService.all(req.query['format'] as ApiListFormat).then((r) => res.json(r)).catch(e => {
       L.error(e);
       next(e);
     });

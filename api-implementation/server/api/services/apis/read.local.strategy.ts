@@ -3,6 +3,10 @@ import { APISpecification } from '../apis.service';
 import { ErrorResponseInternal } from '../../middlewares/error.handler';
 import { PersistenceService } from '../persistence.service';
 import APIInfo = Components.Schemas.APIInfo;
+import Format = Components.Parameters.ApiListFormat.Format;
+import { SortDirection, SortInfo } from '../../../../src/model/sortinfo';
+import { ContextConstants } from '../../../common/constants';
+import { ns } from '../../middlewares/context.handler';
 import L from '../../../common/logger';
 
 class ApisReadLocalStrategy implements ApisReadStrategy {
@@ -13,16 +17,47 @@ class ApisReadLocalStrategy implements ApisReadStrategy {
     this.persistenceService = new PersistenceService('apis');
     this.apiInfoPersistenceService = new PersistenceService('apisInfo');
   }
-  async all(): Promise<string[]> {
-    return new Promise<string[]>((resolve, reject) => {
+  async all(format?: Format): Promise<any[]> {
+    return new Promise<any[]>((resolve, reject) => {
       this.persistenceService
         .all()
-        .then((all: APISpecification[]) => {
+        .then(async (all: APISpecification[]) => {
           const names: string[] = [];
           all.forEach((spec: APISpecification) => {
             names.push(spec.name);
           });
-          resolve(names);
+          let direction: SortDirection = SortDirection.asc;
+          if (ns != null) {
+            L.debug(`PersistenceService: Found namespace ${ns}`);
+            const sortInfo: SortInfo = ns.getStore().get(ContextConstants.SORT);
+            L.debug(`sort ${sortInfo}`);
+            if (sortInfo) {
+              direction = sortInfo.direction;
+            }
+          }
+          if (direction == SortDirection.asc) {
+            names.sort((a, b) => a.localeCompare(b));
+          } else {
+            names.sort((a, b) => a.localeCompare(b)).reverse();
+          }
+          L.debug(`requested format is ${format}`);
+          if (format as string == 'compact' || !format ){
+            resolve(names);
+          } else if (format as string == 'summary'){
+            const apiInfos: APIInfo[] = await this.apiInfoPersistenceService.all({},{name:direction});
+            apiInfos.forEach(apiInfo=>{
+              delete apiInfo.sourceId;
+              delete apiInfo.sourceMetadata;
+              delete apiInfo.createdTime;
+              delete apiInfo.summary;
+              delete apiInfo.updatedTime;
+              delete apiInfo.version;
+            });
+            resolve(apiInfos);
+          } else {
+            const apiInfos: APIInfo[] = await this.apiInfoPersistenceService.all({},{name:direction});
+            resolve(apiInfos);
+          }
         })
         .catch((e) => {
           reject(e);

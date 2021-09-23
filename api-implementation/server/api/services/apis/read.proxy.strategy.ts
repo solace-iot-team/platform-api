@@ -10,6 +10,8 @@ import { Paging } from '../../../../src/model/paging';
 import { ContextConstants } from '../../../common/constants';
 import { SortDirection, SortInfo } from '../../../../src/model/sortinfo';
 
+import ApiListFormat = Components.Parameters.ApiListFormat.Format;
+
 class ApisReadProxyStrategy implements ApisReadStrategy {
   private persistenceService: PersistenceService;
   private apiInfoPersistenceService: PersistenceService;
@@ -21,19 +23,20 @@ class ApisReadProxyStrategy implements ApisReadStrategy {
     this.persistenceService = new PersistenceService('apis');
     this.apiInfoPersistenceService = new PersistenceService('apisInfo');
   }
-  async all(): Promise<string[]> {
+  async all(format?: ApiListFormat): Promise<any[]> {
     ns.getStore().set(ContextConstants.PAGING, this.p);
-    return new Promise<string[]>(async (resolve, reject) => {
+    return new Promise<any[]>(async (resolve, reject) => {
       const products = await EventPortalFacade.getEventApiProducts();
-      const names: string[] = [];
+      let names: string[] = [];
       products.forEach(p => names.push(p.name));
       this.persistenceService
         .all()
-        .then((all: APISpecification[]) => {
+        .then(async (all: APISpecification[]) => {
 
           all.forEach((spec: APISpecification) => {
             names.push(spec.name);
           });
+          names = Array.from(new Set(names));
           let direction: SortDirection = SortDirection.asc;
           if (ns != null) {
             L.debug(`PersistenceService: Found namespace ${ns}`);
@@ -47,6 +50,32 @@ class ApisReadProxyStrategy implements ApisReadStrategy {
             names.sort((a, b) => a.localeCompare(b));
           } else {
             names.sort((a, b) => a.localeCompare(b)).reverse();
+          }
+          L.debug(`requested format is ${format}`);
+          if (format as string == 'compact' || !format) {
+            resolve(names);
+          } else if (format as string == 'summary') {
+            const apiInfos: APIInfo[] = [];
+            for (const name of names) {
+              const apiInfo: APIInfo = await this.infoByName(name);
+              apiInfos.push(apiInfo);
+            }
+            apiInfos.forEach(apiInfo => {
+              delete apiInfo.sourceId;
+              delete apiInfo.sourceMetadata;
+              delete apiInfo.createdTime;
+              delete apiInfo.summary;
+              delete apiInfo.updatedTime;
+              delete apiInfo.version;
+            });
+            resolve(apiInfos);
+          } else {
+            const apiInfos: APIInfo[] = [];
+            for (const name of names) {
+              const apiInfo: APIInfo = await this.infoByName(name);
+              apiInfos.push(apiInfo);
+            }
+            resolve(apiInfos);
           }
           resolve(names);
         })
