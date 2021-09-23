@@ -236,6 +236,7 @@ components:
           enum:
           - EventAPIProduct
           - Upload
+          - EventPortalLink
         sourceId:
           description: id of the entity in the source system
           type: string
