@@ -6,6 +6,12 @@ import { getEventPortalBaseUrl, getEventPortalToken, validateToken, resolve } fr
 
 import { EventAPIProductResponse, EventAPIProductListResponse, EventApiProductService, OpenAPI, EventAPIProduct } from './clients/eventportal/index';
 
+import { Cache, CacheContainer } from 'node-ts-cache'
+import { MemoryStorage } from 'node-ts-cache-storage-memory'
+
+const apiProductCache = new CacheContainer(new MemoryStorage())
+const apiProductNameCache = new CacheContainer(new MemoryStorage())
+const apiProductsCache = new CacheContainer(new MemoryStorage())
 
 class EventPortalFacade {
   constructor() {
@@ -21,7 +27,7 @@ class EventPortalFacade {
     return validateToken(token, url);
   }
 
-
+  @Cache(apiProductsCache, {ttl: 120})
   public async getEventApiProducts(): Promise<Components.Schemas.EventAPIProductList> {
     try {
       let list: EventAPIProduct[] = (await EventApiProductService.getapiproducts()).data;
@@ -36,6 +42,7 @@ class EventPortalFacade {
     }
   }
 
+  @Cache(apiProductCache, {ttl: 120})
   public async getEventApiProduct(id: string): Promise<Components.Schemas.EventAPIProduct> {
     try {
       const product: EventAPIProduct = (await EventApiProductService.getapiproduct(id)).data;
@@ -48,6 +55,7 @@ class EventPortalFacade {
     }
   }
 
+  @Cache(apiProductNameCache, {ttl: 120})
   public async getEventApiProductByName(name: string): Promise<Components.Schemas.EventAPIProduct> {
     try {
       const products = await this.getEventApiProducts();

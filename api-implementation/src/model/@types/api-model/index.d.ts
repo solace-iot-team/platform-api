@@ -1,5 +1,8 @@
 declare namespace Components {
     namespace Parameters {
+        namespace ApiListFormat {
+            export type Format = "compact" | "summary" | "extended";
+        }
         namespace ApiName {
             export type ApiName = string;
         }
@@ -119,6 +122,8 @@ declare namespace Components {
                 [name: string]: any;
             };
         }
+        export type APIInfoList = APIInfo[];
+        export type APIList = string[];
         /**
          * An API product consists of a list of API resources (URIs) and custom metadata required by the API provider. API products enable you to bundle and distribute your APIs to multiple developer groups simultaneously
          */
@@ -239,6 +244,27 @@ declare namespace Components {
             protocols?: Protocol[];
             clientOptions?: ClientOptions;
         }
+        export type APISummaryList = {
+            /**
+             * source of the API spec
+             * example:
+             * IoT Sensor API
+             */
+            name?: string;
+            /**
+             * Description of the API
+             * example:
+             * An IoT Sensor API
+             */
+            description?: string;
+            source?: "EventAPIProduct" | "Upload" | "EventPortalLink";
+            /**
+             * user who created this API
+             * example:
+             * tom
+             */
+            createdBy?: string;
+        }[];
         export interface About {
             /**
              * indicates if the Connector is running in Proxy Mode. In this mode all published Event API Products in Event Portal are automatically available as APIs in the connector
@@ -1475,7 +1501,7 @@ declare namespace Paths {
     }
     namespace ListApis {
         namespace Responses {
-            export type $200 = string[];
+            export type $200 = Components.Schemas.APIList | Components.Schemas.APISummaryList | Components.Schemas.APIInfoList;
             export type $400 = Components.Schemas.ErrorResponse;
             export type $401 = Components.Schemas.ErrorResponse;
             export type $403 = Components.Schemas.ErrorResponse;

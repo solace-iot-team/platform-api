@@ -10,6 +10,8 @@ import { ns } from '../middlewares/context.handler';
 import { ContextConstants } from '../../common/constants';
 import { ApisReadStrategy } from './apis/read.strategy';
 import ApisReadStrategyFactory from './apis/read.strategy.factory';
+import ApiListFormat = Components.Parameters.ApiListFormat.Format;
+
 export interface APISpecification {
   name: string;
   specification: string;
@@ -26,8 +28,8 @@ export class ApisService {
     this.readStrategy = ApisReadStrategyFactory.getReadStrategy();
   }
 
-  async all(): Promise<string[]> {
-    return this.readStrategy.all();
+  async all(format?: ApiListFormat): Promise<string[]> {
+    return this.readStrategy.all(format);
   }
 
   byName(name: string): Promise<string> {

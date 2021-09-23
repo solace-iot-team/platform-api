@@ -2,7 +2,7 @@ openapi: 3.0.0
 info:
   title: Solace API Management Connector
   description: 'Solace API Management Connector API. Note: basic authentication security mechanism is deprecated.'
-  version: 0.3.5
+  version: 0.3.6
 servers:
   - url: /v1
 
@@ -141,6 +141,17 @@ components:
         enum:
         - smf
         - mqtt
+    api_list_format:
+      name: format
+      in: query
+      description: the format of the API List returned, compact returns the API names, summary and extended return additional API metadata
+      schema:
+        type: string
+        default: compact
+        enum:
+        - compact
+        - summary
+        - extended
   schemas:
     ErrorResponse:
      type: object
@@ -1253,7 +1264,39 @@ components:
           type: object
           description: version information
           example: {"connector-version":"1.0"}
-
+    
+    APIList:
+      type: array
+      items: 
+        type: string
+    APISummaryList:
+      type: array
+      items: 
+        type: object
+        properties:
+          name: 
+            type: string
+            description: source of the API spec
+            example: IoT Sensor API
+          description:
+            type: string
+            description: Description of the API
+            example: An IoT Sensor API
+          source:
+            type: string
+            enum:
+            - EventAPIProduct
+            - Upload
+            - EventPortalLink
+          createdBy:
+            type: string
+            description: user who created this API
+            example: tom
+    APIInfoList:
+      type: array
+      items: 
+        "$ref": "#/components/schemas/APIInfo"
+        
 security:
   - OpenId: []
   - BasicAuth: []
@@ -1855,15 +1898,17 @@ paths:
      parameters:
      - $ref: '#/components/parameters/sort_field_name'
      - $ref: '#/components/parameters/sort_direction'
+     - $ref: '#/components/parameters/api_list_format'
      responses:
        '200':
          description: list of APIs
          content:
            application/json:
              schema:
-               type: array
-               items:
-                 type: string
+              anyOf:
+              - $ref: '#/components/schemas/APIList'
+              - $ref: '#/components/schemas/APISummaryList'
+              - $ref: '#/components/schemas/APIInfoList'
        '400':
          description: "Bad Request."
          content:
