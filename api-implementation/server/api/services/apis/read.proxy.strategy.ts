@@ -39,9 +39,11 @@ class ApisReadProxyStrategy implements ApisReadStrategy {
             L.debug(`PersistenceService: Found namespace ${ns}`);
             const sortInfo: SortInfo = ns.getStore().get(ContextConstants.SORT);
             L.debug(`sort ${sortInfo}`);
-            direction = sortInfo.direction;
+            if (sortInfo) {
+              direction = sortInfo.direction;
+            }
           }
-          if (direction == SortDirection.asc){
+          if (direction == SortDirection.asc) {
             names.sort((a, b) => a.localeCompare(b));
           } else {
             names.sort((a, b) => a.localeCompare(b)).reverse();
@@ -90,7 +92,7 @@ class ApisReadProxyStrategy implements ApisReadStrategy {
               createdTime: api.createdTime,
               description: api.description,
               name: api.name,
-              source: 'EventAPIProduct',
+              source: 'EventPortalLink',
               sourceId: api.id,
               sourceMetadata: api,
               summary: api.summary,

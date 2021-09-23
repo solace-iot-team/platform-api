@@ -70,7 +70,7 @@ declare namespace Components {
             /**
              * source of the API spec
              */
-            source?: "EventAPIProduct" | "Upload";
+            source?: "EventAPIProduct" | "Upload" | "EventPortalLink";
             /**
              * id of the entity in the source system
              * example:
