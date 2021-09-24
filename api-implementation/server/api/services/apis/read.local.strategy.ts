@@ -4,9 +4,6 @@ import { ErrorResponseInternal } from '../../middlewares/error.handler';
 import { PersistenceService } from '../persistence.service';
 import APIInfo = Components.Schemas.APIInfo;
 import Format = Components.Parameters.ApiListFormat.Format;
-import { SortDirection, SortInfo } from '../../../../src/model/sortinfo';
-import { ContextConstants } from '../../../common/constants';
-import { ns } from '../../middlewares/context.handler';
 import L from '../../../common/logger';
 
 class ApisReadLocalStrategy implements ApisReadStrategy {
@@ -26,26 +23,12 @@ class ApisReadLocalStrategy implements ApisReadStrategy {
           all.forEach((spec: APISpecification) => {
             names.push(spec.name);
           });
-          let direction: SortDirection = SortDirection.asc;
-          if (ns != null) {
-            L.debug(`PersistenceService: Found namespace ${ns}`);
-            const sortInfo: SortInfo = ns.getStore().get(ContextConstants.SORT);
-            L.debug(`sort ${sortInfo}`);
-            if (sortInfo) {
-              direction = sortInfo.direction;
-            }
-          }
-          if (direction == SortDirection.asc) {
-            names.sort((a, b) => a.localeCompare(b));
-          } else {
-            names.sort((a, b) => a.localeCompare(b)).reverse();
-          }
           L.debug(`requested format is ${format}`);
-          if (format as string == 'compact' || !format ){
+          if (format as string == 'compact' || !format) {
             resolve(names);
-          } else if (format as string == 'summary'){
-            const apiInfos: APIInfo[] = await this.apiInfoPersistenceService.all({},{name:direction});
-            apiInfos.forEach(apiInfo=>{
+          } else if (format as string == 'summary') {
+            const apiInfos: APIInfo[] = await this.apiInfoPersistenceService.all();
+            apiInfos.forEach(apiInfo => {
               delete apiInfo.sourceId;
               delete apiInfo.sourceMetadata;
               delete apiInfo.createdTime;
@@ -55,7 +38,7 @@ class ApisReadLocalStrategy implements ApisReadStrategy {
             });
             resolve(apiInfos);
           } else {
-            const apiInfos: APIInfo[] = await this.apiInfoPersistenceService.all({},{name:direction});
+            const apiInfos: APIInfo[] = await this.apiInfoPersistenceService.all();
             resolve(apiInfos);
           }
         })
