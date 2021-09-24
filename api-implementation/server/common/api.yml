@@ -2,7 +2,7 @@ openapi: 3.0.0
 info:
   title: Solace API Management Connector
   description: 'Solace API Management Connector API. Note: basic authentication security mechanism is deprecated.'
-  version: 0.3.6
+  version: 0.3.7
 servers:
   - url: /v1
 
@@ -1272,8 +1272,11 @@ components:
     APISummaryList:
       type: array
       items: 
-        type: object
-        properties:
+        "$ref": "#/components/schemas/APISummary"
+
+    APISummary:
+      type: object
+      properties:
           name: 
             type: string
             description: source of the API spec
@@ -1292,6 +1295,7 @@ components:
             type: string
             description: user who created this API
             example: tom
+
     APIInfoList:
       type: array
       items: 
@@ -1408,6 +1412,12 @@ paths:
             "$ref": "#/components/schemas/Organization"
      responses:
        '200':
+         description: Updated Organization
+         content:
+           application/json:
+             schema:
+               $ref: '#/components/schemas/Organization'
+       '201':
          description: Updated Organization
          content:
            application/json:
