@@ -51,9 +51,9 @@ export class AsyncAPIHelper {
       L.info(contentType);
       if (contentType == "application/json") {
         if (this.getContentType(r) == "application/json") {
-          res.status(statusCode).contentType(contentType).send(r);
+          res.status(statusCode).contentType(contentType).json(r);
         } else {
-          res.status(statusCode).contentType(contentType).send(this.YAMLtoJSON(r));
+          res.status(statusCode).contentType(contentType).json(this.YAMLtoJSON(r));
         }
       } else if (contentType == "application/x-yaml") {
         if (this.getContentType(r) == "application/x-yaml") {

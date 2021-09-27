@@ -5,13 +5,13 @@ import { ErrorResponseInternal } from '../../middlewares/error.handler';
 
 export class Controller {
   all(req: Request, res: Response): void {
-    ApiProductsService.all().then((r) => res.json(r).send());
+    ApiProductsService.all().then((r) => res.json(r));
   }
 
   create(req: Request, res: Response, next: NextFunction): void {
     ApiProductsService.create(req.body).then((r) => {
       if (r) {
-        res.status(201).json(r).send();
+        res.status(201).json(r);
       }
       else
         next(new ErrorResponseInternal(500, `No response`));
@@ -22,7 +22,7 @@ export class Controller {
   update(req: Request, res: Response, next: NextFunction): void {
     ApiProductsService.update(req.params['name'], req.body).then((r) => {
       if (r) {
-        res.status(200).json(r).send();
+        res.status(200).json(r);
       }
       else
         next(new ErrorResponseInternal(500, `No response`));
@@ -30,8 +30,8 @@ export class Controller {
   }
   byName(req: Request, res: Response, next: NextFunction): void {
     ApiProductsService.byName(req.params['name']).then((r) => {
-      if (r) res.json(r).status(200).send();
-      else res.status(404);
+      if (r) res.status(200).json(r);
+      else res.status(404).send();
     }).catch((e) => next(e));
   }
 

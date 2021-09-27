@@ -9,15 +9,15 @@ export class Controller {
 
     fetch(`http://localhost:${port}/liveliness`).then(async (response) => {
       if (response.status == 200) {
-        res.status(200).json({ status: 'ok' }).end();
+        res.status(200).json({ status: 'ok' });
       } else {
         L.error(`Unhealthy ${response.status}`);
         let j = await response.json();
-        res.status(503).json(j).end();
+        res.status(503).json(j);
       }
     }).catch(e => {
       L.error(e);
-      res.status(503).json(e).end();
+      res.status(503).json(e);
     });
   }
 }

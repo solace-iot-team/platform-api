@@ -46,7 +46,7 @@ export class Controller {
     AppsService.byName(req.params['name'], topicSyntax)
       .then((r) => {
         if (r != null) {
-          res.json(r).end();
+          res.json(r);
         } else {
           next(new ErrorResponseInternal(404, `Not found`));
         }
