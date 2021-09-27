@@ -2,7 +2,7 @@ openapi: 3.0.0
 info:
   title: Solace API Management Connector
   description: 'Solace API Management Connector API. Note: basic authentication security mechanism is deprecated.'
-  version: 0.3.8
+  version: 0.3.9
 servers:
   - url: /v1
 
@@ -104,7 +104,6 @@ components:
      schema:
       type: integer
       format: int32
-      default: 20
     page_number:
      name: pageNumber
      in: query
@@ -113,7 +112,6 @@ components:
      schema:
        type: integer
        format: int32
-       default: 1
     sort_direction:
       name: sortDirection
       in: query
