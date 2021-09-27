@@ -1,6 +1,28 @@
 # Release Notes
 
 
+## Version 0.2.6
+* OpenAPI: 0.3.9
+* API Management Connector Server: 0.2.6
+
+### Features
+
+* **APIs - GET / List APIs**
+  - Added additional return formats, the format required can be specified in a query parameter
+  - Supported formats are `compact` (default, returns only API names), `summary` and `extended` which provide more API meta data. `compact` is the default and provides backwards compatibility
+  - Added paging when Connector is running in Event Portal proxy mode
+* **Logging and Operation Improvements**
+  - Added /v1/about API endpoint that returns relevant environment variables alongside connector and API version information.
+  - For debugging purposes - when `debug` level logging is enabled the full HTTP request and response messages of incoming requests are logged
+
+### Fixes
+* **Event API Product Resource / Event Portal**
+  - Added caching of Event Portal responses for better performance. API return values are cached for 120 seconds.
+  - Added paging support on the list Event API Products resource
+* **Connector Open API Spec**
+  - Removed default values for paging to prevent generated code sending in paging parameters and rtherefore enforcing use of paging on these clients.
+
+
 ## Version 0.2.5
 * OpenAPI: 0.3.4
 * API Management Connector Server: 0.2.5
