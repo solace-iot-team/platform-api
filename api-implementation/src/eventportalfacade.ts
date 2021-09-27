@@ -1,5 +1,8 @@
 import L from '../server/common/logger';
 
+import { ns } from '../server/api/middlewares/context.handler';
+import { Paging } from './model/paging';
+import { ContextConstants } from '../server/common/constants';
 import { ErrorResponseInternal } from '../server/api/middlewares/error.handler';
 
 import { getEventPortalBaseUrl, getEventPortalToken, validateToken, resolve } from './cloudtokenhelper';
@@ -27,11 +30,20 @@ class EventPortalFacade {
     return validateToken(token, url);
   }
 
-  @Cache(apiProductsCache, {ttl: 120})
   public async getEventApiProducts(): Promise<Components.Schemas.EventAPIProductList> {
+    let paging: Paging = ns.getStore().get(ContextConstants.PAGING);
+    let list: Components.Schemas.EventAPIProductList = await this.getEventApiProductsInternal();
+    if (paging && paging.pageNumber && paging.pageSize) {
+      list = list.slice((paging.pageNumber - 1) * paging.pageSize, ((paging.pageNumber) * paging.pageSize));
+    }
+    return list;
+  }
+
+  @Cache(apiProductsCache, { ttl: 120 })
+  public async getEventApiProductsInternal(): Promise<Components.Schemas.EventAPIProductList> {
     try {
       let list: EventAPIProduct[] = (await EventApiProductService.getapiproducts()).data;
-      list = list.filter(l=>l.published==true);
+      list = list.filter(l => l.published == true);
       for (const l of list) {
         delete l['hosted'];
       }
@@ -42,7 +54,7 @@ class EventPortalFacade {
     }
   }
 
-  @Cache(apiProductCache, {ttl: 120})
+  @Cache(apiProductCache, { ttl: 120 })
   public async getEventApiProduct(id: string): Promise<Components.Schemas.EventAPIProduct> {
     try {
       const product: EventAPIProduct = (await EventApiProductService.getapiproduct(id)).data;
@@ -55,7 +67,7 @@ class EventPortalFacade {
     }
   }
 
-  @Cache(apiProductNameCache, {ttl: 120})
+  @Cache(apiProductNameCache, { ttl: 120 })
   public async getEventApiProductByName(name: string): Promise<Components.Schemas.EventAPIProduct> {
     try {
       const products = await this.getEventApiProducts();

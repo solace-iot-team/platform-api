@@ -2,7 +2,7 @@ openapi: 3.0.0
 info:
   title: Solace API Management Connector
   description: 'Solace API Management Connector API. Note: basic authentication security mechanism is deprecated.'
-  version: 0.3.7
+  version: 0.3.8
 servers:
   - url: /v1
 
@@ -1906,6 +1906,8 @@ paths:
      tags:
       - apis
      parameters:
+     - $ref: '#/components/parameters/page_size'
+     - $ref: '#/components/parameters/page_number'
      - $ref: '#/components/parameters/sort_field_name'
      - $ref: '#/components/parameters/sort_direction'
      - $ref: '#/components/parameters/api_list_format'
@@ -4673,6 +4675,9 @@ paths:
      operationId: listEventAPIProducts
      tags:
       - eventPortal
+     parameters:
+     - $ref: '#/components/parameters/page_size'
+     - $ref: '#/components/parameters/page_number'
      responses:
        '200':
          description: list of event api products defined in the associated Event Portal

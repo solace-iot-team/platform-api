@@ -24,6 +24,8 @@ class ApisReadProxyStrategy implements ApisReadStrategy {
     this.apiInfoPersistenceService = new PersistenceService('apisInfo');
   }
   async all(format?: ApiListFormat): Promise<any[]> {
+    let paging: Paging = ns.getStore().get(ContextConstants.PAGING);
+
     ns.getStore().set(ContextConstants.PAGING, this.p);
     return new Promise<any[]>(async (resolve, reject) => {
       const products = await EventPortalFacade.getEventApiProducts();
@@ -51,6 +53,10 @@ class ApisReadProxyStrategy implements ApisReadStrategy {
           } else {
             names.sort((a, b) => a.localeCompare(b)).reverse();
           }
+          // extract requested page
+          if (paging && paging.pageNumber && paging.pageSize){
+            names = names.slice((paging.pageNumber - 1) * paging.pageSize, ((paging.pageNumber) * paging.pageSize));
+          } 
           L.debug(`requested format is ${format}`);
           if (format as string == 'compact' || !format) {
             resolve(names);

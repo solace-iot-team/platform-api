@@ -11,7 +11,7 @@ export class Controller {
     EnvironmentsService.create(req.body)
       .then((r) => {
         if (r) {
-          res.status(201).json(r).send();
+          res.status(201).json(r);
         }
         else
           next(new ErrorResponseInternal(500, `No response`));
@@ -24,7 +24,7 @@ export class Controller {
     EnvironmentsService.update(req.params['name'], req.body)
       .then((r) => {
         if (r) {
-          res.status(200).json(r).send();
+          res.status(200).json(r);
         }
         else
           next(new ErrorResponseInternal(500, `No response`));
@@ -34,7 +34,7 @@ export class Controller {
   byName(req: Request, res: Response, next: NextFunction): void {
     EnvironmentsService.byName(req.params['name'])
       .then((r) => {
-        if (r) res.json(r).send();
+        if (r) res.json(r);
         else
           next(new ErrorResponseInternal(404, `Not found`));
       })

@@ -7,7 +7,7 @@ export class Controller {
   all(req: Request, res: Response, next: NextFunction): void {
     OrganizationsService.all()
       .then((r) => {
-        res.json(r).status(200).end();
+        res.status(200).json(r);
       })
       .catch((e) => next(e));
   }
@@ -16,7 +16,7 @@ export class Controller {
     OrganizationsService.create(req.body)
       .then((r) => {
         if (r) {
-          res.status(201).json(r).send();
+          res.status(201).json(r);
         }
         else
           next(new ErrorResponseInternal(500, `No response`));
@@ -30,7 +30,7 @@ export class Controller {
     OrganizationsService.update(req.params['name'], req.body)
       .then((r) => {
         if (r) {
-          res.status(200).json(r).send();
+          res.status(200).json(r);
         }
         else next(new ErrorResponseInternal(500, `No response`));
       })
@@ -41,7 +41,7 @@ export class Controller {
     OrganizationsService.byName(req.params['name'])
       .then((r) => {
         if (r) {
-          res.status(200).json(r).send();
+          res.status(200).json(r);
         } else
           next(new ErrorResponseInternal(404, `No response`));
       })

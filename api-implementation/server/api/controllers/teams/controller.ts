@@ -14,7 +14,7 @@ export class Controller {
     TeamsService.create(req.body)
       .then((r) => {
         if (r) {
-          res.status(201).json(r).send();
+          res.status(201).json(r);
         }
         else
           next(new ErrorResponseInternal(500, `No response`));
@@ -27,7 +27,7 @@ export class Controller {
     TeamsService.update(req.params['name'], req.body)
       .then((r) => {
         if (r) {
-          res.status(200).json(r).send();
+          res.status(200).json(r);
         }
         else
           next(new ErrorResponseInternal(500, `No response`));
@@ -40,7 +40,7 @@ export class Controller {
       .byName(req.params['name'])
       .then((r) => {
         if (r) {
-          res.json(r).send();
+          res.json(r);
         } else {
           next(new ErrorResponseInternal(404, `Not found`));
         }
@@ -68,7 +68,7 @@ export class Controller {
     }
     TeamsService.allTeamsApps(req.params['team'], q)
       .then((r) => {
-        res.json(r).send();
+        res.json(r);
       })
       .catch((e) => next(e));
     ;
@@ -76,7 +76,7 @@ export class Controller {
   appByName(req: Request, res: Response, next: NextFunction): void {
     TeamsService.appByName(req.params['team'], req.params['name'], req.query['topicSyntax'] as TopicSyntax)
       .then((r) => {
-        if (r) res.json(r).end();
+        if (r) res.json(r);
         else next(new ErrorResponseInternal(404, `Not found`));
       })
       .catch((e) => next(e));
@@ -85,7 +85,7 @@ export class Controller {
     TeamsService.createApp(req.params['team'], req.body)
       .then((r) => {
         if (r) {
-          res.status(201).json(r).send();
+          res.status(201).json(r);
         }
         else
           next(new ErrorResponseInternal(500, `No response`));
@@ -97,7 +97,7 @@ export class Controller {
     TeamsService.updateApp(req.params['team'], req.params['name'], req.body)
       .then((r) => {
         if (r) {
-          res.status(200).json(r).send();
+          res.status(200).json(r);
         }
         else
           next(new ErrorResponseInternal(500, `No response`));
