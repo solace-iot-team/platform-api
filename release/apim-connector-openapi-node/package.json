@@ -1,0 +1,58 @@
+{
+  "name": "@solace-iot-team/apim-connector-openapi-node",
+  "version": "0.3.9",
+  "description": "Solace API-M Connector - OpenAPI Client for Node.js (Typescript)",
+  "homepage": "https://github.com/solace-iot-team/platform-api",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/solace-iot-team/platform-api"
+  },
+  "bugs": {
+    "url": "https://github.com/solace-iot-team/platform-api/issues"
+  },
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "updateVersion": "ts-node updateVersion.ts",
+    "prepublishOnly": "ts-node build.ts && tsc",
+    "test": "echo \"Error: no test specified\""
+  },
+  "author": "Solace Corporation",
+  "contributors": [
+    {
+      "name": "Swen-Helge Huber",
+      "email": "swen-helge.huber@solace.com"
+    },
+    {
+      "name": "Ricardo Gomez-Ulmke",
+      "email": "ricardo.gomez-ulmke@solace.com"
+    }
+  ],
+  "license": "MIT",
+  "keywords": [
+    "solace",
+    "asyncapi",
+    "apimanagement",
+    "integration"
+  ],
+  "publishConfig": {
+    "access": "public",
+    "cache": ".cache/.npm",
+    "registry": "https://registry.npmjs.org",
+    "tag": "latest"
+  },
+  "devDependencies": {
+    "@types/js-yaml": "^4.0.0",
+    "@types/shelljs": "^0.8.8",
+    "js-yaml": "^4.0.0",
+    "openapi-typescript-codegen": "^0.9.3",
+    "shelljs": "^0.8.4",
+    "typescript": "^4.2.3"
+  },
+  "dependencies": {
+    "@types/node-fetch": "^2.5.8",
+    "form-data": "^4.0.0",
+    "node-fetch": "^2.6.1",
+    "ts-node": "^9.1.1"
+  }
+}
