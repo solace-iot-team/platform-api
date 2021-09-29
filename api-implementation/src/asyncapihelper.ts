@@ -1,6 +1,7 @@
 import { ErrorResponseInternal } from "../server/api/middlewares/error.handler";
 import L from '../server/common/logger';
 import Format = Paths.GetApi.Parameters.Format;
+import { isString } from './typehelpers';
 
 var YAML = require('js-yaml');
 
@@ -51,7 +52,10 @@ export class AsyncAPIHelper {
       L.info(contentType);
       if (contentType == "application/json") {
         if (this.getContentType(r) == "application/json") {
-          res.status(statusCode).contentType(contentType).json(r);
+          if (isString(r))
+            res.status(statusCode).contentType(contentType).json(JSON.parse(r));
+          else
+            res.status(statusCode).contentType(contentType).json(r);
         } else {
           res.status(statusCode).contentType(contentType).json(this.YAMLtoJSON(r));
         }
