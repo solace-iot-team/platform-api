@@ -2,7 +2,7 @@ openapi: 3.0.0
 info:
   title: Solace API Management Connector
   description: 'Solace API Management Connector API. Note: basic authentication security mechanism is deprecated.'
-  version: 0.3.9
+  version: 0.4.0
 servers:
   - url: /v1
 
@@ -236,6 +236,33 @@ components:
       - id
       - name
 
+    APIParameter:
+      type: object
+      required:
+      - name
+      - type
+      properties:
+        name:
+          type: string
+          description: name of the parameter as defined in the AsyncAPI Spec
+          example: model
+        type:
+          type: string
+          description: type of the parameter
+          enum:
+          - string
+          - number
+          - integer
+          - boolean
+        enum:
+          type: array
+          description: any allowed enumerated values for the parameter 
+          items: 
+            type: string
+          example:
+          - A
+          - T
+          - N
     APIInfo:
       type: object
       properties:
@@ -271,6 +298,10 @@ components:
         version:
           type: string
           example: 1
+        apiParameters:
+          type: array
+          items:
+            $ref: '#/components/schemas/APIParameter'  
         sourceMetadata:
           description: any metadata as returned by the external System (if applicable)
           type: object

@@ -3,6 +3,7 @@ import { ErrorResponseInternal } from '../middlewares/error.handler';
 import { PersistenceService } from './persistence.service';
 import APIProductsService from './apiProducts.service';
 import parser from '@asyncapi/parser';
+import { AsyncAPIDocument } from '@asyncapi/parser';
 import AsyncAPIHelper from '../../../src/asyncapihelper';
 import EventPortalFacade from '../../../src/eventportalfacade';
 import APIInfo = Components.Schemas.APIInfo;
@@ -11,7 +12,7 @@ import { ContextConstants } from '../../common/constants';
 import { ApisReadStrategy } from './apis/read.strategy';
 import ApisReadStrategyFactory from './apis/read.strategy.factory';
 import ApiListFormat = Components.Parameters.ApiListFormat.Format;
-
+import APIParameter = Components.Schemas.APIParameter;
 export interface APISpecification {
   name: string;
   specification: string;
@@ -36,8 +37,14 @@ export class ApisService {
     return this.readStrategy.byName(name);
   }
 
-  infoByName(name: string): Promise<APIInfo> {
-    return this.readStrategy.infoByName(name);
+  async infoByName(name: string): Promise<APIInfo> {
+    const apiInfo = await this.readStrategy.infoByName(name);
+    const spec: string = await this.byName(name);
+    const params = await this.getAsyncAPIParameters(spec);
+    if (params) {
+      apiInfo.apiParameters = params;
+    }
+    return apiInfo;
   }
 
   async delete(name: string): Promise<number> {
@@ -54,7 +61,7 @@ export class ApisService {
 
   async create(name: string, body: string): Promise<string> {
     const canCreate: boolean = await this.readStrategy.canCreate(name);
-    if (!canCreate){
+    if (!canCreate) {
       throw new ErrorResponseInternal(
         422,
         `API ${name} can not be created`
@@ -196,7 +203,7 @@ export class ApisService {
       L.debug(`validating spec`);
       parser
         .parse(spec)
-        .then(() => {
+        .then((d: AsyncAPIDocument) => {
           L.debug('valid spec');
           resolve(true);
         })
@@ -232,6 +239,43 @@ export class ApisService {
       name: 'apim-connector',
     };
     spec.info['x-origin'] = origin;
+  }
+
+  private async getAsyncAPIParameters(spec: string): Promise<APIParameter[]> {
+    try {
+      let parameterNames: APIParameter[] = [];
+      const d: AsyncAPIDocument = await parser
+        .parse(spec);
+      d.channelNames().forEach(s => {
+        const c = d.channel(s);
+        if (c.hasParameters()) {
+          const keys = Object.keys(c.parameters());
+          keys.forEach(k => {
+            const param: APIParameter = {
+              name: k,
+              type: (c.parameter(k).schema().type() as string) == "string" ? "string" : "number"
+            };
+            if (c.parameter(k).schema().enum()) {
+              param.enum = c.parameter(k).schema().enum();
+            }
+            parameterNames.push(param);
+          });
+        }
+      });
+
+      return this.uniqueLastVal(parameterNames, it=>it.name);
+    } catch (e) {
+      L.fatal(`Unable to parse Async API spec ${name}`)
+      throw new ErrorResponseInternal(500, `Unable to parse ${name}`);
+    }
+  }
+
+  private uniqueLastVal(data: any[], key: any): any[] {
+    return [
+      ...new Map(
+        data.map(x => [key(x), x])
+      ).values()
+    ]
   }
 
 }

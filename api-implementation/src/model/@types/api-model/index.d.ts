@@ -115,6 +115,7 @@ declare namespace Components {
              * 1
              */
             version?: string;
+            apiParameters?: APIParameter[];
             /**
              * any metadata as returned by the external System (if applicable)
              */
@@ -124,6 +125,28 @@ declare namespace Components {
         }
         export type APIInfoList = APIInfo[];
         export type APIList = string[];
+        export interface APIParameter {
+            /**
+             * name of the parameter as defined in the AsyncAPI Spec
+             * example:
+             * model
+             */
+            name: string;
+            /**
+             * type of the parameter
+             */
+            type?: "string" | "number" | "integer" | "boolean";
+            /**
+             * any allowed enumerated values for the parameter
+             * example:
+             * [
+             *   "A",
+             *   "T",
+             *   "N"
+             * ]
+             */
+            enum?: string[];
+        }
         /**
          * An API product consists of a list of API resources (URIs) and custom metadata required by the API provider. API products enable you to bundle and distribute your APIs to multiple developer groups simultaneously
          */
@@ -244,7 +267,7 @@ declare namespace Components {
             protocols?: Protocol[];
             clientOptions?: ClientOptions;
         }
-        export type APISummaryList = {
+        export interface APISummary {
             /**
              * source of the API spec
              * example:
@@ -264,7 +287,8 @@ declare namespace Components {
              * tom
              */
             createdBy?: string;
-        }[];
+        }
+        export type APISummaryList = APISummary[];
         export interface About {
             /**
              * indicates if the Connector is running in Proxy Mode. In this mode all published Event API Products in Event Portal are automatically available as APIs in the connector
@@ -1084,6 +1108,7 @@ declare namespace Paths {
         export type RequestBody = Components.Schemas.Organization;
         namespace Responses {
             export type $200 = Components.Schemas.Organization;
+            export type $201 = Components.Schemas.Organization;
             export type $400 = Components.Schemas.ErrorResponse;
             export type $401 = Components.Schemas.ErrorResponse;
             export type $403 = Components.Schemas.ErrorResponse;
