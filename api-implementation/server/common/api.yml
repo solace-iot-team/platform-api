@@ -2,7 +2,7 @@ openapi: 3.0.0
 info:
   title: Solace API Management Connector
   description: 'Solace API Management Connector API. Note: basic authentication security mechanism is deprecated.'
-  version: 0.4.1
+  version: 1.0.0
 servers:
   - url: /v1
 
@@ -170,6 +170,7 @@ components:
       type: array
       items:
         "$ref": "#/components/schemas/EventAPIProduct"
+
     EventAPIProduct:
       type: object
       properties:
@@ -265,6 +266,14 @@ components:
           - N
     APIInfo:
       type: object
+      required:
+      - name
+      - source
+      - createdBy
+      - createdTime
+      - description
+      - summary
+      - version
       properties:
         source:
           type: string
@@ -324,7 +333,6 @@ components:
           type: boolean
           default: true
 
-
     APIProduct:
       required:
       - name
@@ -350,24 +358,7 @@ components:
               - auto
               type: string
           attributes:
-              description: Arbitrary name/value pairs associated with the product.
-              items:
-                properties:
-                  name:
-                    description: Attribute name, access is a special value as it governs access control to the product.
-                    example:
-                      access
-                    type: string
-                  value:
-                    description: Value of the attribute.
-                    example:
-                      '{public, private, or internal}'
-                    type: string
-                required:
-                  - name
-                  - value
-                type: object
-              type: array
+            $ref: '#/components/schemas/attributes'
           description:
               default: ''
               description: An overview of the API product. Include key information about the API product that is not captured by other fields..
@@ -432,24 +423,7 @@ components:
               - auto
               type: string
           attributes:
-              description: Arbitrary name/value pairs associated with the product.
-              items:
-                properties:
-                  name:
-                    description: Attribute name, access is a special value as it governs access control to the product.
-                    example:
-                    - access
-                    type: string
-                  value:
-                    description: Value of the attribute.
-                    example:
-                      '{public, private, or internal}'
-                    type: string
-                required:
-                  - name
-                  - value
-                type: object
-              type: array
+            $ref: '#/components/schemas/attributes'
           description:
               description: An overview of the API product. Include key information about the API product that is not captured by other fields..
               example:
@@ -546,71 +520,83 @@ components:
           $ref: '#/components/schemas/attributes'
 
     attributes:
-      type: array
+      description: Arbitrary name/value pairs associated with an API product, team, developer or app.
       items:
-        type: object
         properties:
           name:
+            description: Attribute name, access is a special value as it governs access control to the product.
+            example:
+              access
             type: string
           value:
+            description: Value of the attribute.
+            example:
+              '{public, private, or internal}'
             type: string
         required:
         - name
         - value
+        type: object
+      type: array
 
     ClientOptions:
       type: object
       properties:
         guaranteedMessaging:
-          type: object
-          properties:
-            requireQueue:
-              type: boolean
-              description: "Automatically provision a queue with all subscriptions permitted for this app attached"
-              example: true
-            accessType:
-              type: string
-              description: access mode for the queue
-              example: exclusive
-              default: exclusive
-              enum:
-              - exclusive
-              - non-exclusive
-            maxTtl:
-              type: integer
-              description: retention policy for message on the queue, default to 24 hours. Set to 0 if messages are to be kept indefinitely
-              default: 86400
-              example: 3600
-            maxMsgSpoolUsage:
-              type: integer
-              description: The maximum message spool usage allowed by the Queue, in megabytes (MB). A value of 0 only allows spooling of the last message received and disables quota checking
-              default: 500
-              example: 50
-    ClientInformation:
-      type: array
-      items:
-        type: object
-        properties:
-          guaranteedMessaging:
-            type: object
-            properties:
-              name:
-                type: string
-                description: "The name of the queue that is available for this app's API Product subcription"
-                example: "AlAOLG3xxuYCVDpoXl4wKGwWAIURFGuK"
-              apiProduct:
-                type: string
-                description: "The name of the APi Product this queue is associated with"
-                example: "Product 1"
-              accessType:
-                type: string
-                description: access mode for the queue
-                example: exclusive
-                default: exclusive
-                enum:
-                - exclusive
-                - non-exclusive
+          $ref: '#/components/schemas/ClientOptionsGuaranteedMessaging'
 
+    ClientOptionsGuaranteedMessaging:
+      type: object
+      properties:
+        requireQueue:
+          type: boolean
+          description: "Automatically provision a queue with all subscriptions permitted for this app attached"
+          example: true
+        accessType:
+          type: string
+          description: access mode for the queue
+          example: exclusive
+          default: exclusive
+          enum:
+          - exclusive
+          - non-exclusive
+        maxTtl:
+          type: integer
+          description: retention policy for message on the queue, default to 24 hours. Set to 0 if messages are to be kept indefinitely
+          default: 86400
+          example: 3600
+        maxMsgSpoolUsage:
+          type: integer
+          description: The maximum message spool usage allowed by the Queue, in megabytes (MB). A value of 0 only allows spooling of the last message received and disables quota checking
+          default: 500
+          example: 50
+    
+    ClientInformation:
+      type: object
+      properties:
+        guaranteedMessaging:
+          $ref: '#/components/schemas/ClientInformationGuaranteedMessaging'
+
+    ClientInformationGuaranteedMessaging:
+      type: object
+      properties:
+        name:
+          type: string
+          description: "The name of the queue that is available for this app's API Product subcription"
+          example: "AlAOLG3xxuYCVDpoXl4wKGwWAIURFGuK"
+        apiProduct:
+          type: string
+          description: "The name of the APi Product this queue is associated with"
+          example: "Product 1"
+        accessType:
+          type: string
+          description: access mode for the queue
+          example: exclusive
+          default: exclusive
+          enum:
+          - exclusive
+          - non-exclusive
+    
     App:
       type: object
       description: "An app associated with an owner (developer, team etc). Associates the app with an API product, and auto-generates an API credentials for the app to use"
@@ -635,10 +621,6 @@ components:
             type: string
         attributes:
           $ref: '#/components/schemas/attributes'
-        callbackUrl:
-            description: callback url
-            type: string
-            format: uri
         webHooks:
           type: array
           items:
@@ -649,6 +631,7 @@ components:
       - name
       - apiProducts
       - credentials
+
     AppPatch:
       description: "Used for PATCH operation. An app associated with a developer. Associates the app with an API product, and auto-generates an API credentials for the app to use"
       type: object
@@ -662,9 +645,6 @@ components:
             type: string
         attributes:
           $ref: '#/components/schemas/attributes'
-        callbackUrl:
-            description: callback url
-            type: string
         webHooks:
           type: array
           items:
@@ -702,10 +682,9 @@ components:
         attributes:
           $ref: '#/components/schemas/attributes'
         clientInformation:
-          $ref: '#/components/schemas/ClientInformation'  
-        callbackUrl:
-            description: callback url
-            type: string
+          type: array
+          items:
+            $ref: '#/components/schemas/ClientInformation'  
         webHooks:
           type: array
           items:
@@ -746,17 +725,18 @@ components:
              $ref: '#/components/schemas/AppStatus'
 
     AppEnvironment:
-          type: object
-          properties:
-            name:
-              type: string
-              example: dev
-            messagingProtocols:
-              type: array
-              items:
-                $ref: '#/components/schemas/Endpoint'
-            permissions:
-              $ref: '#/components/schemas/Permissions'
+      type: object
+      properties:
+        name:
+          type: string
+          example: dev
+        messagingProtocols:
+          type: array
+          items:
+            $ref: '#/components/schemas/Endpoint'
+        permissions:
+          $ref: '#/components/schemas/Permissions'
+
     Permissions:
       description: lists all the publish and subscribe topics an app has access to. Restrictions on   topic elements are taken into account.
       type: object
@@ -834,14 +814,18 @@ components:
         issuedAt:
           type: number
         secret:
-          type: object
-          required:
-          - consumerKey
-          properties:
-            consumerKey:
-              type: string
-            consumerSecret:
-              type: string
+          $ref: '#/components/schemas/Secret'
+
+    Secret:
+      type: object
+      required:
+      - consumerKey
+      properties:
+        consumerKey:
+          type: string
+        consumerSecret:
+          type: string
+
     Environment:
       description: an environment
       type: object
@@ -882,6 +866,7 @@ components:
           description: All of the protocols that the broker service exposes
           items:
             $ref: '#/components/schemas/Endpoint'
+
     EnvironmentResponse:
       description: an environment
       type: object
@@ -928,31 +913,33 @@ components:
         creationState:
           type: string
         serviceClassDisplayedAttributes:
-          type: object
-          properties:
-            High Availability:
-              type: string
-            Network Speed:
-              type: string
-            Storage:
-              type: string
-            Message Broker Tenancy:
-              type: string
-            Queues:
-              type: string
-            Clients:
-              type: string
-            Network Usage:
-              type: string
-          required:
-          - High Availability
-          - Network Speed
-          - Storage
-          - Message Broker Tenancy
-          - Queues
-          - Clients
-          - Network Usage
+          $ref: '#/components/schemas/ServiceClassDisplayedAttributes'  
 
+    ServiceClassDisplayedAttributes:
+      type: object
+      properties:
+        High Availability:
+          type: string
+        Network Speed:
+          type: string
+        Storage:
+          type: string
+        Message Broker Tenancy:
+          type: string
+        Queues:
+          type: string
+        Clients:
+          type: string
+        Network Usage:
+          type: string
+      required:
+      - High Availability
+      - Network Speed
+      - Storage
+      - Message Broker Tenancy
+      - Queues
+      - Clients
+      - Network Usage
 
     EnvironmentPatch:
       description: used for PATCH operation, an environment
@@ -1013,15 +1000,7 @@ components:
           items:
             $ref: '#/components/schemas/Endpoint'
         msgVpnAttributes:
-          type: object
-          properties:
-            authenticationClientCertEnabled:
-              type: string
-            authenticationBasicEnabled:
-              type: string
-          required:
-          - authenticationClientCertEnabled
-          - authenticationBasicEnabled
+          $ref: '#/components/schemas/MsgVpnAttributes'
         locked:
           type: boolean
         messagingStorage:
@@ -1031,58 +1010,51 @@ components:
         servicePackageId:
           type: string
         serviceClassDisplayedAttributes:
-          type: object
-          properties:
-            High Availability:
-              type: string
-            Network Speed:
-              type: string
-            Storage:
-              type: string
-            Message Broker Tenancy:
-              type: string
-            Queues:
-              type: string
-            Clients:
-              type: string
-            Network Usage:
-              type: string
-          required:
-          - High Availability
-          - Network Speed
-          - Storage
-          - Message Broker Tenancy
-          - Queues
-          - Clients
-          - Network Usage
+          $ref: '#/components/schemas/ServiceClassDisplayedAttributes'  
         accountingLimits:
           type: array
           items:
-            type: object
-            properties:
-              id:
-                type: string
-              value:
-                type: string
-              unit:
-                type: string
-              thresholds:
-                type: array
-                items:
-                  type: object
-                  properties:
-                    type:
-                      type: string
-                    value:
-                      type: string
-                  required:
-                  - type
-                  - value
-            required:
-            - id
-            - value
-            - unit
-            - thresholds
+            $ref: '#/components/schemas/AccountingLimit'
+
+    AccountingLimit:
+        type: object
+        properties:
+          id:
+            type: string
+          value:
+            type: string
+          unit:
+            type: string
+          thresholds:
+            $ref: '#/components/schemas/Threshold'
+        required:
+        - id
+        - value
+        - unit
+        - thresholds
+
+    Threshold:
+      type: object
+      properties:
+        type:
+          type: string
+        value:
+          type: string
+      required:
+      - type
+      - value
+
+    MsgVpnAttributes:
+      type: object
+      properties:
+        authenticationClientCertEnabled:
+          type: string
+        authenticationBasicEnabled:
+          type: string
+      required:
+      - authenticationClientCertEnabled
+      - authenticationBasicEnabled
+
     Organization:
       type: object
       required:
@@ -1093,46 +1065,50 @@ components:
           example: myorg
           pattern: ^[^\/\\\.\s"\$]{4,64}$
         sempV2Authentication:
-          description: Specifies how requests to the SEMPv2 Management API are authenticated, defaults to BasicAuth. If APIKey is specified the username returned in the Services/Environments response is used as API Key. 
-          type: object
-          required: 
-          - authType
-          properties:
-            authType:
-              type: string
-              enum:
-              - BasicAuth
-              - APIKey
-              default: BasicAuth
-              example: APIKey
-            apiKeyLocation:
-              type: string
-              enum:
-              - header
-              - query
-              default: query
-              example: header
-            apiKeyName:
-              type: string
-              description: the name of the query parameter or HTTP header for submitting the API Key
-              example: X-API-KEY
-            
-            
-
+          $ref: "#/components/schemas/SempV2Authentication"
         cloud-token:
           oneOf:
           - type: string
             description: a Solace Cloud API Token, requires "get services" and "event portal read" permissions
             example: eyXhbGciOiJSUzI1NiIsImtpZCI6Im1hYXNfcHJvZF8yMDIwMDMyNiIsInR5cCI6IkpXVCJ9.eyJvcmcifiJzb2xhY2Vpb3R0ZWFtIiwib3JnVHlwZSI6IkVOVEVSUFJJU0UiLCJzdWIiOiIzZTJvY214MTA1IiwicGVybWlzc2lvbnMiOiJBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQXdBQU09IiwiYXBpVG9rZW5JZCI6Inlhb2wzc2ZveG03IiwiaXNzIjoiU29sYWNlIENvcnBvcmF0aW9uIiwiaWF0IjoxNjAzODA3NzQ1fQ.QIBpi5_U6b1DnAwbDbJiFIT0pomqa4AyOLtmSOEF6zhoxKMm4Y27WbILZnxnh_gpdX-tvt18Ycuck4xs3T5JjFfU3qrczRHSuj2vEdsCpDQWdyZTPV4NQ-zPxRvigTjaTlcdXin8XwMGh8nZdylgRMlRQjvotomnXQxgbUol0Kl1ziFFMybqeD10qCDsUW6Jv-PKibBN3cnCsWwPZX6d_XYUECs1AHjgs5pk-A8v3DHcnvbXiAP4XXrry6ztopAWKMc5rVFoB_WFY4yi0reuTYjn6Sf0g7vZxFifRZZHZmqZtNQUiX6S80eQG4kF3YDKlr5PfLDNp4iRfe0-3svIPw
-          - type: object
-            required:
-            - eventPortal
-            - cloud
-            properties:
-              eventPortal:
-                "$ref": "#/components/schemas/CustomCloudEndpoint"
-              cloud:
-                "$ref": "#/components/schemas/CustomCloudEndpoint"
+          - "$ref": "#/components/schemas/CloudToken"
+
+    SempV2Authentication:
+      description: Specifies how requests to the SEMPv2 Management API are authenticated, defaults to BasicAuth. If APIKey is specified the username returned in the Services/Environments response is used as API Key. 
+      type: object
+      required: 
+      - authType
+      properties:
+        authType:
+          type: string
+          enum:
+          - BasicAuth
+          - APIKey
+          default: BasicAuth
+          example: APIKey
+        apiKeyLocation:
+          type: string
+          enum:
+          - header
+          - query
+          default: query
+          example: header
+        apiKeyName:
+          type: string
+          description: the name of the query parameter or HTTP header for submitting the API Key
+          example: X-API-KEY  
+    
+    CloudToken:
+      type: object
+      required:
+      - eventPortal
+      - cloud
+      properties:
+        eventPortal:
+          "$ref": "#/components/schemas/CustomCloudEndpoint"
+        cloud:
+          "$ref": "#/components/schemas/CustomCloudEndpoint"
+
     CustomCloudEndpoint:
       type: object
       required:
@@ -1169,6 +1145,7 @@ components:
         responseCode:
           type: integer
           example: 200
+
     Protocol:
       type: object
       required:
