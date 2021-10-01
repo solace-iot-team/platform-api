@@ -55,27 +55,6 @@ components:
       required: true
       schema:
         type: string
-    attribute_name:
-      name: attribute_name
-      description: name of an attribute attached to a resource
-      in: path
-      required: true
-      schema:
-        type: string
-    app_id:
-      name: app_id
-      description: id of an app
-      in: path
-      required: true
-      schema:
-        type: string
-    company_id:
-      name: company_id
-      description: id of a company
-      in: path
-      required: true
-      schema:
-        type: string
     developer_username:
       name: developer_username
       description: username of developer
