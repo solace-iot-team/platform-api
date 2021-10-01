@@ -1,5 +1,19 @@
 # Release Notes
 
+## Version 0.2.7
+* OpenAPI: 0.4.1
+* API Management Connector Server: 0.2.7
+
+### Features
+
+* **API Info Endpoint (/{organization_name}/apis/{api_name}/info) - Channel Parameters**
+  - The endpoint GET response now includes a list of all channel parameters defined in the Async API specificaiton associated with the API.
+  - Parameters are described with their name, JSON schema type and - in case of an enum - all allowed values.
+
+### Fixes
+* **Apps Async API Resource (/{organization_name}/apps/{app_name}/apis/{api_name})**
+  - Returned incomplete/incorrect payload when `format` parameter was set to `application/json`
+  - Now returns the correct payload - JSON format as an object type, matching the Open API specification 
 
 ## Version 0.2.6
 * OpenAPI: 0.3.9
