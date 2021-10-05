@@ -2,6 +2,9 @@ import L from '../../common/logger';
 import SolaceCloudFacade from '../../../src/solacecloudfacade';
 import { Service } from '../../../src/clients/solacecloud';
 import { ProtocolMapper } from '../../../src/protocolmapper';
+import AccountingLimit = Components.Schemas.AccountingLimit;
+import Threshold = Components.Schemas.Threshold;
+
 export class SolaceCloudService {
 
   constructor() {
@@ -17,6 +20,23 @@ export class SolaceCloudService {
           authenticationClientCertEnabled: cloudService.msgVpnAttributes.authenticationClientCertEnabled,
           authenticationBasicEnabled: cloudService.msgVpnAttributes.authenticationBasicEnabled,
         };
+        const accountingLimits: AccountingLimit[] = [];
+        cloudService.accountingLimits.forEach(a=>{
+          const thresholds: Threshold[] = [];
+          a.thresholds.forEach(t=>{
+            thresholds.push({
+              type: t.type,
+              value: t.value
+            });
+          });
+          accountingLimits.push({
+            id: a.id,
+            thresholds: thresholds,
+            unit: a.unit,
+            value: a.value
+          });
+        });
+
         const service: Components.Schemas.Service = {
           accountingLimits: cloudService.accountingLimits,
           adminProgress: cloudService.adminProgress,
