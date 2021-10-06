@@ -31,7 +31,7 @@ class AppFactory {
       ownerId: developer,
       appType: APP_TYPE_DEVELOPER,
       name: body.name,
-      displayName: body.displayName,
+      displayName: body.displayName?body.displayName:body.name,
       apiProducts: body.apiProducts,
       credentials: body.credentials,
     };
@@ -53,7 +53,7 @@ class AppFactory {
       ownerId: team,
       appType: APP_TYPE_TEAM,
       name: body.name,
-      displayName: body.displayName,
+      displayName: body.displayName?body.displayName:body.name,
       apiProducts: body.apiProducts,
       credentials: body.credentials,
     };
