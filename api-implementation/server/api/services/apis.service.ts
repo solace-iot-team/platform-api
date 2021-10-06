@@ -85,7 +85,7 @@ export class ApisService {
     const api = await EventPortalFacade.getEventApiProduct(body.id);
     const canImport = await this.readStrategy.canImport(api.name);
     if (!canImport) {
-      throw new ErrorResponseInternal(500, `Entity ${api.name} can not be imported`)
+      throw new ErrorResponseInternal(422, `Entity ${api.name} can not be imported`)
     }
     const info: APIInfo = {
       createdBy: ns.getStore().get(ContextConstants.AUTHENTICATED_USER),

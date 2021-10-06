@@ -103,7 +103,7 @@ export class AppsService {
           appEnv.permissions = permissions;
         }
 
-        const clientInformation: ClientInformation = []
+        const clientInformation: ClientInformation[] = []
         for (const productName of app.apiProducts) {
           const apiProduct = await ApiProductsService.byName(productName);
           if (apiProduct.clientOptions
