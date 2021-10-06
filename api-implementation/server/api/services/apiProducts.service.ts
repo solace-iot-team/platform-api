@@ -121,7 +121,7 @@ export class ApiProductsService {
       for (var protocol of product.protocols) {
         protocolPresent[protocol.name] = false;
       }
-    } 
+    }
     if (product.environments != null && product.protocols) {
       for (var envName of product.environments) {
         const errMsg = `Referenced environment ${envName} does not exist`;
@@ -131,10 +131,13 @@ export class ApiProductsService {
             throw new ErrorResponseInternal(422, errMsg);
           } else {
             for (var protocol of product.protocols) {
-              if (env.exposedProtocols != null && env.exposedProtocols.length > 0) {
-                protocolPresent[protocol.name] = (env.exposedProtocols.find(e => e.name == protocol.name) != null);
-              } else {
-                protocolPresent[protocol.name] = (env.messagingProtocols.find(e => e.protocol.name == protocol.name) != null);
+              // check if the protocol was already found before
+              if (!protocolPresent[protocol.name]) {
+                if (env.exposedProtocols != null && env.exposedProtocols.length > 0) {
+                  protocolPresent[protocol.name] = (env.exposedProtocols.find(e => e.name == protocol.name) != null);
+                } else {
+                  protocolPresent[protocol.name] = (env.messagingProtocols.find(e => e.protocol.name == protocol.name) != null);
+                }
               }
             }
           }
