@@ -135,7 +135,7 @@ declare namespace Components {
             /**
              * type of the parameter
              */
-            type?: "string" | "number" | "integer" | "boolean";
+            type: "string" | "number" | "integer" | "boolean";
             /**
              * any allowed enumerated values for the parameter
              * example:
@@ -347,7 +347,7 @@ declare namespace Components {
         export interface AppListItem {
             name?: string;
             displayName?: string;
-            appType?: "developer";
+            appType?: "developer" | "team";
             /**
              * example:
              * Developer-1
