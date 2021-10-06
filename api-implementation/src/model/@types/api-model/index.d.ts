@@ -43,6 +43,18 @@ declare namespace Components {
             export type TopicSyntax = "smf" | "mqtt";
         }
     }
+    namespace Responses {
+        export type BadRequest = Schemas.ErrorResponse;
+        export type Forbidden = Schemas.ErrorResponse;
+        export type GatewayTimeout = Schemas.ErrorResponse;
+        export type InternalServerError = Schemas.ErrorResponse;
+        export type NotAcceptable = Schemas.ErrorResponse;
+        export type NotFound = Schemas.ErrorResponse;
+        export type ServiceUnavailable = Schemas.ErrorResponse;
+        export type TooManyRequests = Schemas.ErrorResponse;
+        export type Unauthorized = Schemas.ErrorResponse;
+        export type UnsupportedMediaType = Schemas.ErrorResponse;
+    }
     namespace Schemas {
         export interface APIImport {
             /**
@@ -228,6 +240,7 @@ declare namespace Components {
             expiresIn?: number; // int64
             apiProducts: CommonName /* [a-zA-Z0-9_-]{2,188} */ [];
             attributes?: Attributes;
+            callbackUrl?: CommonURL; // https?:\/\/[A-Za-z\.:0-9\-]*.{0,2083}$
             webHooks?: WebHook[];
             credentials: Credentials;
         }
@@ -255,6 +268,7 @@ declare namespace Components {
             displayName?: CommonDisplayName; // [\/\sa-z.A-z0-9_-]{1,256}
             apiProducts?: string /* [a-zA-Z0-9_-]{4,188} */ [];
             attributes?: Attributes;
+            callbackUrl?: CommonURL; // https?:\/\/[A-Za-z\.:0-9\-]*.{0,2083}$
             webHooks?: WebHook[];
             credentials?: Credentials;
             status?: AppStatus;
@@ -276,6 +290,7 @@ declare namespace Components {
             apiProducts: string /* [a-zA-Z0-9_-]{4,188} */ [];
             attributes?: Attributes;
             clientInformation?: ClientInformation[];
+            callbackUrl?: CommonURL; // https?:\/\/[A-Za-z\.:0-9\-]*.{0,2083}$
             webHooks?: WebHook[];
             credentials: Credentials;
             environments?: AppEnvironment[];
@@ -297,7 +312,7 @@ declare namespace Components {
              * example:
              * public, private, or internal
              */
-            value: string; // [a-zA-Z0-9_\-\s,]{2,1024}
+            value: string; // [a-zA-Z0-9_\-\s,\*]{1,1024}
         }[];
         /**
          * a permission and its associated channel
@@ -443,8 +458,8 @@ declare namespace Components {
          */
         export interface Developer {
             email: string; // email .*@.*\.[a-zA-Z]{1,63}
-            firstName: string; // [a-zA-Z0-9'-\s]{2,128}
-            lastName: string; // [a-zA-Z0-9'-\s]{2,128}
+            firstName: string; // ([[:punct:]]|[a-zA-Z]){2,128}
+            lastName: string; // ([[:punct:]]|[a-zA-Z]){2,128}
             userName: CommonUserName; // [.a-zA-Z0-9@-_]{1,64}
             attributes?: Attributes;
         }
@@ -453,8 +468,8 @@ declare namespace Components {
          */
         export interface DeveloperPatch {
             email?: string; // email .*@.*\.[a-zA-Z]{1,63}
-            firstName?: string; // [a-zA-Z0-9'-\s]{4,188}
-            lastName?: string; // [a-zA-Z0-9'-\s]{4,188}
+            firstName?: string; // ([[:punct:]]|[a-zA-Z]){2,128}
+            lastName?: string; // ([[:punct:]]|[a-zA-Z]){2,128}
             attributes?: Attributes;
         }
         export interface Endpoint {
@@ -467,7 +482,11 @@ declare namespace Components {
             transport?: string; // [A-Za-z0-9\/\.]
             secure?: "yes" | "no";
             compressed?: "yes" | "no";
-            uri?: CommonURL; // https?:\/\/[A-Za-z\.:0-9\-]*.{0,2083}$
+            /**
+             * example:
+             * amqp://mr1i5g7tif6z9h.messaging.solace.cloud:5672
+             */
+            uri?: string; // [a-zA-Z0-9\.\-+]{2,64}:\/\/[A-Za-z\.:0-9\-]*.{0,2083}$
         }
         /**
          * an environment
@@ -554,7 +573,7 @@ declare namespace Components {
              * example:
              * An error occurred
              */
-            message?: string; // ([A-Za-z,;'"\s]+[.?!])*
+            message?: string; // [\S]([\S\s]|[[:punct:]])*
             /**
              * example:
              * 123e4567-e89b-12d3-a456-426655440000
@@ -615,13 +634,15 @@ declare namespace Components {
              * example:
              * 1610714525243
              */
-            at?: number; // unit64
+            at?: number;
             user?: CommonUserName; // [.a-zA-Z0-9@-_]{1,64}
             /**
              * the request URI
              */
             requestURI?: string; // .{1,1024}
-            requestBody?: string; // [\s\S]*
+            requestBody?: {
+                [name: string]: any;
+            };
             /**
              * example:
              * 200
@@ -716,8 +737,8 @@ declare namespace Components {
             version?: CommonVersion; // [_\-\S\.]{0,100}
         }
         export interface Secret {
-            consumerKey: string; // [a-zA-Z0-9_-]{8,32}
-            consumerSecret?: string; // [a-zA-Z0-9_-]{8,16}
+            consumerKey: string; // [a-zA-Z0-9_-]{8,64}
+            consumerSecret?: string; // [a-zA-Z0-9_-]{8,64}
         }
         /**
          * Specifies how requests to the SEMPv2 Management API are authenticated, defaults to BasicAuth. If APIKey is specified the username returned in the Services/Environments response is used as API Key.
@@ -852,7 +873,15 @@ declare namespace Paths {
     namespace About {
         namespace Responses {
             export type $200 = Components.Schemas.About;
-            export type Default = Components.Schemas.ErrorResponse;
+            export type $400 = Components.Responses.BadRequest;
+            export type $401 = Components.Responses.Unauthorized;
+            export type $403 = Components.Responses.Forbidden;
+            export type $404 = Components.Responses.NotFound;
+            export type $406 = Components.Responses.NotAcceptable;
+            export type $429 = Components.Responses.TooManyRequests;
+            export type $500 = Components.Responses.InternalServerError;
+            export type $503 = Components.Responses.ServiceUnavailable;
+            export type $504 = Components.Responses.GatewayTimeout;
         }
     }
     namespace CreateApi {
@@ -862,22 +891,48 @@ declare namespace Paths {
                 [name: string]: any;
             }
             export type $400 = Components.Schemas.ErrorResponse;
-            export type Default = Components.Schemas.ErrorResponse;
+            export type $401 = Components.Responses.Unauthorized;
+            export type $403 = Components.Responses.Forbidden;
+            export type $404 = Components.Responses.NotFound;
+            export type $406 = Components.Responses.NotAcceptable;
+            export type $415 = Components.Responses.UnsupportedMediaType;
+            export type $429 = Components.Responses.TooManyRequests;
+            export type $500 = Components.Responses.InternalServerError;
+            export type $503 = Components.Responses.ServiceUnavailable;
+            export type $504 = Components.Responses.GatewayTimeout;
         }
     }
     namespace CreateApiProduct {
         export type RequestBody = Components.Schemas.APIProduct;
         namespace Responses {
             export type $201 = Components.Schemas.APIProduct;
+            export type $400 = Components.Responses.BadRequest;
+            export type $401 = Components.Responses.Unauthorized;
+            export type $403 = Components.Responses.Forbidden;
+            export type $404 = Components.Responses.NotFound;
+            export type $406 = Components.Responses.NotAcceptable;
+            export type $415 = Components.Responses.UnsupportedMediaType;
             export type $422 = Components.Schemas.ErrorResponse;
-            export type Default = Components.Schemas.ErrorResponse;
+            export type $429 = Components.Responses.TooManyRequests;
+            export type $500 = Components.Responses.InternalServerError;
+            export type $503 = Components.Responses.ServiceUnavailable;
+            export type $504 = Components.Responses.GatewayTimeout;
         }
     }
     namespace CreateDeveloper {
         export type RequestBody = Components.Schemas.Developer;
         namespace Responses {
             export type $201 = Components.Schemas.Developer;
-            export type Default = Components.Schemas.ErrorResponse;
+            export type $400 = Components.Responses.BadRequest;
+            export type $401 = Components.Responses.Unauthorized;
+            export type $403 = Components.Responses.Forbidden;
+            export type $404 = Components.Responses.NotFound;
+            export type $406 = Components.Responses.NotAcceptable;
+            export type $415 = Components.Responses.UnsupportedMediaType;
+            export type $429 = Components.Responses.TooManyRequests;
+            export type $500 = Components.Responses.InternalServerError;
+            export type $503 = Components.Responses.ServiceUnavailable;
+            export type $504 = Components.Responses.GatewayTimeout;
         }
     }
     namespace CreateDeveloperApp {
@@ -885,17 +940,33 @@ declare namespace Paths {
         namespace Responses {
             export type $201 = Components.Schemas.AppResponse;
             export type $400 = Components.Schemas.ErrorResponse;
+            export type $401 = Components.Responses.Unauthorized;
+            export type $403 = Components.Responses.Forbidden;
+            export type $404 = Components.Responses.NotFound;
+            export type $406 = Components.Responses.NotAcceptable;
+            export type $415 = Components.Responses.UnsupportedMediaType;
             export type $422 = Components.Schemas.ErrorResponse;
+            export type $429 = Components.Responses.TooManyRequests;
             export type $500 = Components.Schemas.ErrorResponse;
-            export type Default = Components.Schemas.ErrorResponse;
+            export type $503 = Components.Responses.ServiceUnavailable;
+            export type $504 = Components.Responses.GatewayTimeout;
         }
     }
     namespace CreateEnvironment {
         export type RequestBody = Components.Schemas.Environment;
         namespace Responses {
             export type $201 = Components.Schemas.Environment;
+            export type $400 = Components.Responses.BadRequest;
+            export type $401 = Components.Responses.Unauthorized;
+            export type $403 = Components.Responses.Forbidden;
+            export type $404 = Components.Responses.NotFound;
+            export type $406 = Components.Responses.NotAcceptable;
+            export type $415 = Components.Responses.UnsupportedMediaType;
             export type $422 = Components.Schemas.ErrorResponse;
-            export type Default = Components.Schemas.ErrorResponse;
+            export type $429 = Components.Responses.TooManyRequests;
+            export type $500 = Components.Responses.InternalServerError;
+            export type $503 = Components.Responses.ServiceUnavailable;
+            export type $504 = Components.Responses.GatewayTimeout;
         }
     }
     namespace CreateOrganization {
@@ -903,14 +974,31 @@ declare namespace Paths {
         namespace Responses {
             export type $201 = Components.Schemas.Organization;
             export type $400 = Components.Schemas.ErrorResponse;
-            export type Default = Components.Schemas.ErrorResponse;
+            export type $401 = Components.Responses.Unauthorized;
+            export type $403 = Components.Responses.Forbidden;
+            export type $404 = Components.Responses.NotFound;
+            export type $406 = Components.Responses.NotAcceptable;
+            export type $415 = Components.Responses.UnsupportedMediaType;
+            export type $429 = Components.Responses.TooManyRequests;
+            export type $500 = Components.Responses.InternalServerError;
+            export type $503 = Components.Responses.ServiceUnavailable;
+            export type $504 = Components.Responses.GatewayTimeout;
         }
     }
     namespace CreateTeam {
         export type RequestBody = Components.Schemas.Team;
         namespace Responses {
             export type $201 = Components.Schemas.Team;
-            export type Default = Components.Schemas.ErrorResponse;
+            export type $400 = Components.Responses.BadRequest;
+            export type $401 = Components.Responses.Unauthorized;
+            export type $403 = Components.Responses.Forbidden;
+            export type $404 = Components.Responses.NotFound;
+            export type $406 = Components.Responses.NotAcceptable;
+            export type $415 = Components.Responses.UnsupportedMediaType;
+            export type $429 = Components.Responses.TooManyRequests;
+            export type $500 = Components.Responses.InternalServerError;
+            export type $503 = Components.Responses.ServiceUnavailable;
+            export type $504 = Components.Responses.GatewayTimeout;
         }
     }
     namespace CreateTeamApp {
@@ -918,68 +1006,139 @@ declare namespace Paths {
         namespace Responses {
             export type $201 = Components.Schemas.AppResponse;
             export type $400 = Components.Schemas.ErrorResponse;
+            export type $401 = Components.Responses.Unauthorized;
+            export type $403 = Components.Responses.Forbidden;
+            export type $404 = Components.Responses.NotFound;
+            export type $406 = Components.Responses.NotAcceptable;
+            export type $415 = Components.Responses.UnsupportedMediaType;
             export type $422 = Components.Schemas.ErrorResponse;
+            export type $429 = Components.Responses.TooManyRequests;
             export type $500 = Components.Schemas.ErrorResponse;
-            export type Default = Components.Schemas.ErrorResponse;
+            export type $503 = Components.Responses.ServiceUnavailable;
+            export type $504 = Components.Responses.GatewayTimeout;
         }
     }
     namespace DeleteApi {
         namespace Responses {
             export interface $204 {
             }
-            export type Default = Components.Schemas.ErrorResponse;
+            export type $400 = Components.Responses.BadRequest;
+            export type $401 = Components.Responses.Unauthorized;
+            export type $403 = Components.Responses.Forbidden;
+            export type $404 = Components.Responses.NotFound;
+            export type $406 = Components.Responses.NotAcceptable;
+            export type $429 = Components.Responses.TooManyRequests;
+            export type $500 = Components.Responses.InternalServerError;
+            export type $503 = Components.Responses.ServiceUnavailable;
+            export type $504 = Components.Responses.GatewayTimeout;
         }
     }
     namespace DeleteApiProduct {
         namespace Responses {
             export interface $204 {
             }
+            export type $400 = Components.Responses.BadRequest;
+            export type $401 = Components.Responses.Unauthorized;
+            export type $403 = Components.Responses.Forbidden;
+            export type $404 = Components.Responses.NotFound;
+            export type $406 = Components.Responses.NotAcceptable;
             export type $409 = Components.Schemas.ErrorResponse;
-            export type Default = Components.Schemas.ErrorResponse;
+            export type $429 = Components.Responses.TooManyRequests;
+            export type $500 = Components.Responses.InternalServerError;
+            export type $503 = Components.Responses.ServiceUnavailable;
+            export type $504 = Components.Responses.GatewayTimeout;
         }
     }
     namespace DeleteDeveloper {
         namespace Responses {
             export interface $204 {
             }
+            export type $400 = Components.Responses.BadRequest;
+            export type $401 = Components.Responses.Unauthorized;
+            export type $403 = Components.Responses.Forbidden;
+            export type $404 = Components.Responses.NotFound;
+            export type $406 = Components.Responses.NotAcceptable;
             export type $409 = Components.Schemas.ErrorResponse;
-            export type Default = Components.Schemas.ErrorResponse;
+            export type $429 = Components.Responses.TooManyRequests;
+            export type $500 = Components.Responses.InternalServerError;
+            export type $503 = Components.Responses.ServiceUnavailable;
+            export type $504 = Components.Responses.GatewayTimeout;
         }
     }
     namespace DeleteDeveloperApp {
         namespace Responses {
             export interface $204 {
             }
-            export type Default = Components.Schemas.ErrorResponse;
+            export type $400 = Components.Responses.BadRequest;
+            export type $401 = Components.Responses.Unauthorized;
+            export type $403 = Components.Responses.Forbidden;
+            export type $404 = Components.Responses.NotFound;
+            export type $406 = Components.Responses.NotAcceptable;
+            export type $429 = Components.Responses.TooManyRequests;
+            export type $500 = Components.Responses.InternalServerError;
+            export type $503 = Components.Responses.ServiceUnavailable;
+            export type $504 = Components.Responses.GatewayTimeout;
         }
     }
     namespace DeleteEnvironment {
         namespace Responses {
             export interface $204 {
             }
-            export type Default = Components.Schemas.ErrorResponse;
+            export type $400 = Components.Responses.BadRequest;
+            export type $401 = Components.Responses.Unauthorized;
+            export type $403 = Components.Responses.Forbidden;
+            export type $404 = Components.Responses.NotFound;
+            export type $406 = Components.Responses.NotAcceptable;
+            export type $429 = Components.Responses.TooManyRequests;
+            export type $500 = Components.Responses.InternalServerError;
+            export type $503 = Components.Responses.ServiceUnavailable;
+            export type $504 = Components.Responses.GatewayTimeout;
         }
     }
     namespace DeleteOrganization {
         namespace Responses {
             export interface $204 {
             }
-            export type Default = Components.Schemas.ErrorResponse;
+            export type $400 = Components.Responses.BadRequest;
+            export type $401 = Components.Responses.Unauthorized;
+            export type $403 = Components.Responses.Forbidden;
+            export type $404 = Components.Responses.NotFound;
+            export type $406 = Components.Responses.NotAcceptable;
+            export type $429 = Components.Responses.TooManyRequests;
+            export type $500 = Components.Responses.InternalServerError;
+            export type $503 = Components.Responses.ServiceUnavailable;
+            export type $504 = Components.Responses.GatewayTimeout;
         }
     }
     namespace DeleteTeam {
         namespace Responses {
             export interface $204 {
             }
+            export type $400 = Components.Responses.BadRequest;
+            export type $401 = Components.Responses.Unauthorized;
+            export type $403 = Components.Responses.Forbidden;
+            export type $404 = Components.Responses.NotFound;
+            export type $406 = Components.Responses.NotAcceptable;
             export type $409 = Components.Schemas.ErrorResponse;
-            export type Default = Components.Schemas.ErrorResponse;
+            export type $429 = Components.Responses.TooManyRequests;
+            export type $500 = Components.Responses.InternalServerError;
+            export type $503 = Components.Responses.ServiceUnavailable;
+            export type $504 = Components.Responses.GatewayTimeout;
         }
     }
     namespace DeleteTeamApp {
         namespace Responses {
             export interface $204 {
             }
-            export type Default = Components.Schemas.ErrorResponse;
+            export type $400 = Components.Responses.BadRequest;
+            export type $401 = Components.Responses.Unauthorized;
+            export type $403 = Components.Responses.Forbidden;
+            export type $404 = Components.Responses.NotFound;
+            export type $406 = Components.Responses.NotAcceptable;
+            export type $429 = Components.Responses.TooManyRequests;
+            export type $500 = Components.Responses.InternalServerError;
+            export type $503 = Components.Responses.ServiceUnavailable;
+            export type $504 = Components.Responses.GatewayTimeout;
         }
     }
     namespace GetApi {
@@ -992,25 +1151,57 @@ declare namespace Paths {
         namespace Responses {
             export interface $200 {
             }
-            export type Default = Components.Schemas.ErrorResponse;
+            export type $400 = Components.Responses.BadRequest;
+            export type $401 = Components.Responses.Unauthorized;
+            export type $403 = Components.Responses.Forbidden;
+            export type $404 = Components.Responses.NotFound;
+            export type $406 = Components.Responses.NotAcceptable;
+            export type $429 = Components.Responses.TooManyRequests;
+            export type $500 = Components.Responses.InternalServerError;
+            export type $503 = Components.Responses.ServiceUnavailable;
+            export type $504 = Components.Responses.GatewayTimeout;
         }
     }
     namespace GetApiInfo {
         namespace Responses {
             export type $200 = Components.Schemas.APIInfo;
-            export type Default = Components.Schemas.ErrorResponse;
+            export type $400 = Components.Responses.BadRequest;
+            export type $401 = Components.Responses.Unauthorized;
+            export type $403 = Components.Responses.Forbidden;
+            export type $404 = Components.Responses.NotFound;
+            export type $406 = Components.Responses.NotAcceptable;
+            export type $429 = Components.Responses.TooManyRequests;
+            export type $500 = Components.Responses.InternalServerError;
+            export type $503 = Components.Responses.ServiceUnavailable;
+            export type $504 = Components.Responses.GatewayTimeout;
         }
     }
     namespace GetApiProduct {
         namespace Responses {
             export type $200 = Components.Schemas.APIProduct;
-            export type Default = Components.Schemas.ErrorResponse;
+            export type $400 = Components.Responses.BadRequest;
+            export type $401 = Components.Responses.Unauthorized;
+            export type $403 = Components.Responses.Forbidden;
+            export type $404 = Components.Responses.NotFound;
+            export type $406 = Components.Responses.NotAcceptable;
+            export type $429 = Components.Responses.TooManyRequests;
+            export type $500 = Components.Responses.InternalServerError;
+            export type $503 = Components.Responses.ServiceUnavailable;
+            export type $504 = Components.Responses.GatewayTimeout;
         }
     }
     namespace GetApp {
         namespace Responses {
             export type $200 = Components.Schemas.AppResponse;
-            export type Default = Components.Schemas.ErrorResponse;
+            export type $400 = Components.Responses.BadRequest;
+            export type $401 = Components.Responses.Unauthorized;
+            export type $403 = Components.Responses.Forbidden;
+            export type $404 = Components.Responses.NotFound;
+            export type $406 = Components.Responses.NotAcceptable;
+            export type $429 = Components.Responses.TooManyRequests;
+            export type $500 = Components.Responses.InternalServerError;
+            export type $503 = Components.Responses.ServiceUnavailable;
+            export type $504 = Components.Responses.GatewayTimeout;
         }
     }
     namespace GetAppApiSpecification {
@@ -1024,32 +1215,72 @@ declare namespace Paths {
             export interface $200 {
                 [name: string]: any;
             }
-            export type Default = Components.Schemas.ErrorResponse;
+            export type $400 = Components.Responses.BadRequest;
+            export type $401 = Components.Responses.Unauthorized;
+            export type $403 = Components.Responses.Forbidden;
+            export type $404 = Components.Responses.NotFound;
+            export type $406 = Components.Responses.NotAcceptable;
+            export type $429 = Components.Responses.TooManyRequests;
+            export type $500 = Components.Responses.InternalServerError;
+            export type $503 = Components.Responses.ServiceUnavailable;
+            export type $504 = Components.Responses.GatewayTimeout;
         }
     }
     namespace GetDeveloper {
         namespace Responses {
             export type $200 = Components.Schemas.Developer;
-            export type Default = Components.Schemas.ErrorResponse;
+            export type $400 = Components.Responses.BadRequest;
+            export type $401 = Components.Responses.Unauthorized;
+            export type $403 = Components.Responses.Forbidden;
+            export type $404 = Components.Responses.NotFound;
+            export type $406 = Components.Responses.NotAcceptable;
+            export type $429 = Components.Responses.TooManyRequests;
+            export type $500 = Components.Responses.InternalServerError;
+            export type $503 = Components.Responses.ServiceUnavailable;
+            export type $504 = Components.Responses.GatewayTimeout;
         }
     }
     namespace GetDeveloperApp {
         namespace Responses {
             export type $200 = Components.Schemas.AppResponse;
-            export type Default = Components.Schemas.ErrorResponse;
+            export type $400 = Components.Responses.BadRequest;
+            export type $401 = Components.Responses.Unauthorized;
+            export type $403 = Components.Responses.Forbidden;
+            export type $404 = Components.Responses.NotFound;
+            export type $406 = Components.Responses.NotAcceptable;
+            export type $429 = Components.Responses.TooManyRequests;
+            export type $500 = Components.Responses.InternalServerError;
+            export type $503 = Components.Responses.ServiceUnavailable;
+            export type $504 = Components.Responses.GatewayTimeout;
         }
     }
     namespace GetEnvironment {
         namespace Responses {
             export type $200 = Components.Schemas.EnvironmentResponse;
+            export type $400 = Components.Responses.BadRequest;
+            export type $401 = Components.Responses.Unauthorized;
+            export type $403 = Components.Responses.Forbidden;
+            export type $404 = Components.Responses.NotFound;
+            export type $406 = Components.Responses.NotAcceptable;
             export type $409 = Components.Schemas.ErrorResponse;
-            export type Default = Components.Schemas.ErrorResponse;
+            export type $429 = Components.Responses.TooManyRequests;
+            export type $500 = Components.Responses.InternalServerError;
+            export type $503 = Components.Responses.ServiceUnavailable;
+            export type $504 = Components.Responses.GatewayTimeout;
         }
     }
     namespace GetEventAPIProduct {
         namespace Responses {
             export type $200 = Components.Schemas.EventAPIProduct;
-            export type Default = Components.Schemas.ErrorResponse;
+            export type $400 = Components.Responses.BadRequest;
+            export type $401 = Components.Responses.Unauthorized;
+            export type $403 = Components.Responses.Forbidden;
+            export type $404 = Components.Responses.NotFound;
+            export type $406 = Components.Responses.NotAcceptable;
+            export type $429 = Components.Responses.TooManyRequests;
+            export type $500 = Components.Responses.InternalServerError;
+            export type $503 = Components.Responses.ServiceUnavailable;
+            export type $504 = Components.Responses.GatewayTimeout;
         }
     }
     namespace GetEventAPIProductAsyncAPI {
@@ -1084,31 +1315,71 @@ declare namespace Paths {
             export interface $200 {
                 [name: string]: any;
             }
-            export type Default = Components.Schemas.ErrorResponse;
+            export type $400 = Components.Responses.BadRequest;
+            export type $401 = Components.Responses.Unauthorized;
+            export type $403 = Components.Responses.Forbidden;
+            export type $404 = Components.Responses.NotFound;
+            export type $406 = Components.Responses.NotAcceptable;
+            export type $429 = Components.Responses.TooManyRequests;
+            export type $500 = Components.Responses.InternalServerError;
+            export type $503 = Components.Responses.ServiceUnavailable;
+            export type $504 = Components.Responses.GatewayTimeout;
         }
     }
     namespace GetOrganization {
         namespace Responses {
             export type $200 = Components.Schemas.Organization;
-            export type Default = Components.Schemas.ErrorResponse;
+            export type $400 = Components.Responses.BadRequest;
+            export type $401 = Components.Responses.Unauthorized;
+            export type $403 = Components.Responses.Forbidden;
+            export type $404 = Components.Responses.NotFound;
+            export type $406 = Components.Responses.NotAcceptable;
+            export type $429 = Components.Responses.TooManyRequests;
+            export type $500 = Components.Responses.InternalServerError;
+            export type $503 = Components.Responses.ServiceUnavailable;
+            export type $504 = Components.Responses.GatewayTimeout;
         }
     }
     namespace GetTeam {
         namespace Responses {
             export type $200 = Components.Schemas.Team;
-            export type Default = Components.Schemas.ErrorResponse;
+            export type $400 = Components.Responses.BadRequest;
+            export type $401 = Components.Responses.Unauthorized;
+            export type $403 = Components.Responses.Forbidden;
+            export type $404 = Components.Responses.NotFound;
+            export type $406 = Components.Responses.NotAcceptable;
+            export type $429 = Components.Responses.TooManyRequests;
+            export type $500 = Components.Responses.InternalServerError;
+            export type $503 = Components.Responses.ServiceUnavailable;
+            export type $504 = Components.Responses.GatewayTimeout;
         }
     }
     namespace GetTeamApp {
         namespace Responses {
             export type $200 = Components.Schemas.AppResponse;
-            export type Default = Components.Schemas.ErrorResponse;
+            export type $400 = Components.Responses.BadRequest;
+            export type $401 = Components.Responses.Unauthorized;
+            export type $403 = Components.Responses.Forbidden;
+            export type $404 = Components.Responses.NotFound;
+            export type $406 = Components.Responses.NotAcceptable;
+            export type $429 = Components.Responses.TooManyRequests;
+            export type $500 = Components.Responses.InternalServerError;
+            export type $503 = Components.Responses.ServiceUnavailable;
+            export type $504 = Components.Responses.GatewayTimeout;
         }
     }
     namespace GetToken {
         namespace Responses {
             export type $200 = string; // ^[A-Za-z0-9-_=]+\.[A-Za-z0-9-_=]+\.?[A-Za-z0-9-_.+/=]*$
-            export type Default = Components.Schemas.ErrorResponse;
+            export type $400 = Components.Responses.BadRequest;
+            export type $401 = Components.Responses.Unauthorized;
+            export type $403 = Components.Responses.Forbidden;
+            export type $404 = Components.Responses.NotFound;
+            export type $406 = Components.Responses.NotAcceptable;
+            export type $429 = Components.Responses.TooManyRequests;
+            export type $500 = Components.Responses.InternalServerError;
+            export type $503 = Components.Responses.ServiceUnavailable;
+            export type $504 = Components.Responses.GatewayTimeout;
         }
     }
     namespace Healthcheck {
@@ -1116,6 +1387,13 @@ declare namespace Paths {
             export interface $200 {
                 status?: "ok" | "failure";
             }
+            export type $400 = Components.Responses.BadRequest;
+            export type $401 = Components.Responses.Unauthorized;
+            export type $403 = Components.Responses.Forbidden;
+            export type $404 = Components.Responses.NotFound;
+            export type $406 = Components.Responses.NotAcceptable;
+            export type $429 = Components.Responses.TooManyRequests;
+            export type $500 = Components.Responses.InternalServerError;
             export interface $503 {
                 status?: string; // [\S]{1,128}
                 error?: {
@@ -1133,7 +1411,7 @@ declare namespace Paths {
                     message?: string; // [\S\s]{0,1024}
                 }[];
             }
-            export type Default = Components.Schemas.ErrorResponse;
+            export type $504 = Components.Responses.GatewayTimeout;
         }
     }
     namespace ImportApi {
@@ -1143,31 +1421,71 @@ declare namespace Paths {
                 [name: string]: any;
             }
             export type $400 = Components.Schemas.ErrorResponse;
-            export type Default = Components.Schemas.ErrorResponse;
+            export type $401 = Components.Responses.Unauthorized;
+            export type $403 = Components.Responses.Forbidden;
+            export type $404 = Components.Responses.NotFound;
+            export type $406 = Components.Responses.NotAcceptable;
+            export type $415 = Components.Responses.UnsupportedMediaType;
+            export type $429 = Components.Responses.TooManyRequests;
+            export type $500 = Components.Responses.InternalServerError;
+            export type $503 = Components.Responses.ServiceUnavailable;
+            export type $504 = Components.Responses.GatewayTimeout;
         }
     }
     namespace ListApiProducts {
         namespace Responses {
             export type $200 = Components.Schemas.APIProduct[];
-            export type Default = Components.Schemas.ErrorResponse;
+            export type $400 = Components.Responses.BadRequest;
+            export type $401 = Components.Responses.Unauthorized;
+            export type $403 = Components.Responses.Forbidden;
+            export type $404 = Components.Responses.NotFound;
+            export type $406 = Components.Responses.NotAcceptable;
+            export type $429 = Components.Responses.TooManyRequests;
+            export type $500 = Components.Responses.InternalServerError;
+            export type $503 = Components.Responses.ServiceUnavailable;
+            export type $504 = Components.Responses.GatewayTimeout;
         }
     }
     namespace ListApis {
         namespace Responses {
             export type $200 = Components.Schemas.APIList | Components.Schemas.APISummaryList | Components.Schemas.APIInfoList;
-            export type Default = Components.Schemas.ErrorResponse;
+            export type $400 = Components.Responses.BadRequest;
+            export type $401 = Components.Responses.Unauthorized;
+            export type $403 = Components.Responses.Forbidden;
+            export type $404 = Components.Responses.NotFound;
+            export type $406 = Components.Responses.NotAcceptable;
+            export type $429 = Components.Responses.TooManyRequests;
+            export type $500 = Components.Responses.InternalServerError;
+            export type $503 = Components.Responses.ServiceUnavailable;
+            export type $504 = Components.Responses.GatewayTimeout;
         }
     }
     namespace ListAppApiSpecifications {
         namespace Responses {
             export type $200 = string /* [a-zA-Z0-9_-]{4,188} */ [];
-            export type Default = Components.Schemas.ErrorResponse;
+            export type $400 = Components.Responses.BadRequest;
+            export type $401 = Components.Responses.Unauthorized;
+            export type $403 = Components.Responses.Forbidden;
+            export type $404 = Components.Responses.NotFound;
+            export type $406 = Components.Responses.NotAcceptable;
+            export type $429 = Components.Responses.TooManyRequests;
+            export type $500 = Components.Responses.InternalServerError;
+            export type $503 = Components.Responses.ServiceUnavailable;
+            export type $504 = Components.Responses.GatewayTimeout;
         }
     }
     namespace ListApps {
         namespace Responses {
             export type $200 = Components.Schemas.AppListItem[];
-            export type Default = Components.Schemas.ErrorResponse;
+            export type $400 = Components.Responses.BadRequest;
+            export type $401 = Components.Responses.Unauthorized;
+            export type $403 = Components.Responses.Forbidden;
+            export type $404 = Components.Responses.NotFound;
+            export type $406 = Components.Responses.NotAcceptable;
+            export type $429 = Components.Responses.TooManyRequests;
+            export type $500 = Components.Responses.InternalServerError;
+            export type $503 = Components.Responses.ServiceUnavailable;
+            export type $504 = Components.Responses.GatewayTimeout;
         }
     }
     namespace ListDeveloperApps {
@@ -1179,13 +1497,29 @@ declare namespace Paths {
         }
         namespace Responses {
             export type $200 = Components.Schemas.App[];
-            export type Default = Components.Schemas.ErrorResponse;
+            export type $400 = Components.Responses.BadRequest;
+            export type $401 = Components.Responses.Unauthorized;
+            export type $403 = Components.Responses.Forbidden;
+            export type $404 = Components.Responses.NotFound;
+            export type $406 = Components.Responses.NotAcceptable;
+            export type $429 = Components.Responses.TooManyRequests;
+            export type $500 = Components.Responses.InternalServerError;
+            export type $503 = Components.Responses.ServiceUnavailable;
+            export type $504 = Components.Responses.GatewayTimeout;
         }
     }
     namespace ListDevelopers {
         namespace Responses {
             export type $200 = Components.Schemas.Developer[];
-            export type Default = Components.Schemas.ErrorResponse;
+            export type $400 = Components.Responses.BadRequest;
+            export type $401 = Components.Responses.Unauthorized;
+            export type $403 = Components.Responses.Forbidden;
+            export type $404 = Components.Responses.NotFound;
+            export type $406 = Components.Responses.NotAcceptable;
+            export type $429 = Components.Responses.TooManyRequests;
+            export type $500 = Components.Responses.InternalServerError;
+            export type $503 = Components.Responses.ServiceUnavailable;
+            export type $504 = Components.Responses.GatewayTimeout;
         }
     }
     namespace ListEnvironments {
@@ -1197,31 +1531,71 @@ declare namespace Paths {
         }
         namespace Responses {
             export type $200 = Components.Schemas.EnvironmentListItem[];
-            export type Default = Components.Schemas.ErrorResponse;
+            export type $400 = Components.Responses.BadRequest;
+            export type $401 = Components.Responses.Unauthorized;
+            export type $403 = Components.Responses.Forbidden;
+            export type $404 = Components.Responses.NotFound;
+            export type $406 = Components.Responses.NotAcceptable;
+            export type $429 = Components.Responses.TooManyRequests;
+            export type $500 = Components.Responses.InternalServerError;
+            export type $503 = Components.Responses.ServiceUnavailable;
+            export type $504 = Components.Responses.GatewayTimeout;
         }
     }
     namespace ListEventAPIProducts {
         namespace Responses {
             export type $200 = Components.Schemas.EventAPIProductList;
-            export type Default = Components.Schemas.ErrorResponse;
+            export type $400 = Components.Responses.BadRequest;
+            export type $401 = Components.Responses.Unauthorized;
+            export type $403 = Components.Responses.Forbidden;
+            export type $404 = Components.Responses.NotFound;
+            export type $406 = Components.Responses.NotAcceptable;
+            export type $429 = Components.Responses.TooManyRequests;
+            export type $500 = Components.Responses.InternalServerError;
+            export type $503 = Components.Responses.ServiceUnavailable;
+            export type $504 = Components.Responses.GatewayTimeout;
         }
     }
     namespace ListHistory {
         namespace Responses {
             export type $200 = Components.Schemas.History[];
-            export type Default = Components.Schemas.ErrorResponse;
+            export type $400 = Components.Responses.BadRequest;
+            export type $401 = Components.Responses.Unauthorized;
+            export type $403 = Components.Responses.Forbidden;
+            export type $404 = Components.Responses.NotFound;
+            export type $406 = Components.Responses.NotAcceptable;
+            export type $429 = Components.Responses.TooManyRequests;
+            export type $500 = Components.Responses.InternalServerError;
+            export type $503 = Components.Responses.ServiceUnavailable;
+            export type $504 = Components.Responses.GatewayTimeout;
         }
     }
     namespace ListOrganizations {
         namespace Responses {
             export type $200 = Components.Schemas.Organization[];
-            export type Default = Components.Schemas.ErrorResponse;
+            export type $400 = Components.Responses.BadRequest;
+            export type $401 = Components.Responses.Unauthorized;
+            export type $403 = Components.Responses.Forbidden;
+            export type $404 = Components.Responses.NotFound;
+            export type $406 = Components.Responses.NotAcceptable;
+            export type $429 = Components.Responses.TooManyRequests;
+            export type $500 = Components.Responses.InternalServerError;
+            export type $503 = Components.Responses.ServiceUnavailable;
+            export type $504 = Components.Responses.GatewayTimeout;
         }
     }
     namespace ListServices {
         namespace Responses {
             export type $200 = Components.Schemas.Service[];
-            export type Default = Components.Schemas.ErrorResponse;
+            export type $400 = Components.Responses.BadRequest;
+            export type $401 = Components.Responses.Unauthorized;
+            export type $403 = Components.Responses.Forbidden;
+            export type $404 = Components.Responses.NotFound;
+            export type $406 = Components.Responses.NotAcceptable;
+            export type $429 = Components.Responses.TooManyRequests;
+            export type $500 = Components.Responses.InternalServerError;
+            export type $503 = Components.Responses.ServiceUnavailable;
+            export type $504 = Components.Responses.GatewayTimeout;
         }
     }
     namespace ListTeamApps {
@@ -1233,13 +1607,29 @@ declare namespace Paths {
         }
         namespace Responses {
             export type $200 = Components.Schemas.AppResponse[];
-            export type Default = Components.Schemas.ErrorResponse;
+            export type $400 = Components.Responses.BadRequest;
+            export type $401 = Components.Responses.Unauthorized;
+            export type $403 = Components.Responses.Forbidden;
+            export type $404 = Components.Responses.NotFound;
+            export type $406 = Components.Responses.NotAcceptable;
+            export type $429 = Components.Responses.TooManyRequests;
+            export type $500 = Components.Responses.InternalServerError;
+            export type $503 = Components.Responses.ServiceUnavailable;
+            export type $504 = Components.Responses.GatewayTimeout;
         }
     }
     namespace ListTeams {
         namespace Responses {
             export type $200 = Components.Schemas.Team[];
-            export type Default = Components.Schemas.ErrorResponse;
+            export type $400 = Components.Responses.BadRequest;
+            export type $401 = Components.Responses.Unauthorized;
+            export type $403 = Components.Responses.Forbidden;
+            export type $404 = Components.Responses.NotFound;
+            export type $406 = Components.Responses.NotAcceptable;
+            export type $429 = Components.Responses.TooManyRequests;
+            export type $500 = Components.Responses.InternalServerError;
+            export type $503 = Components.Responses.ServiceUnavailable;
+            export type $504 = Components.Responses.GatewayTimeout;
         }
     }
     namespace UpdateApi {
@@ -1249,22 +1639,48 @@ declare namespace Paths {
                 [name: string]: any;
             }
             export type $400 = Components.Schemas.ErrorResponse;
-            export type Default = Components.Schemas.ErrorResponse;
+            export type $401 = Components.Responses.Unauthorized;
+            export type $403 = Components.Responses.Forbidden;
+            export type $404 = Components.Responses.NotFound;
+            export type $406 = Components.Responses.NotAcceptable;
+            export type $415 = Components.Responses.UnsupportedMediaType;
+            export type $429 = Components.Responses.TooManyRequests;
+            export type $500 = Components.Responses.InternalServerError;
+            export type $503 = Components.Responses.ServiceUnavailable;
+            export type $504 = Components.Responses.GatewayTimeout;
         }
     }
     namespace UpdateApiProduct {
         export type RequestBody = Components.Schemas.APIProductPatch;
         namespace Responses {
             export type $200 = Components.Schemas.APIProduct;
+            export type $400 = Components.Responses.BadRequest;
+            export type $401 = Components.Responses.Unauthorized;
+            export type $403 = Components.Responses.Forbidden;
+            export type $404 = Components.Responses.NotFound;
+            export type $406 = Components.Responses.NotAcceptable;
+            export type $415 = Components.Responses.UnsupportedMediaType;
             export type $422 = Components.Schemas.ErrorResponse;
-            export type Default = Components.Schemas.ErrorResponse;
+            export type $429 = Components.Responses.TooManyRequests;
+            export type $500 = Components.Responses.InternalServerError;
+            export type $503 = Components.Responses.ServiceUnavailable;
+            export type $504 = Components.Responses.GatewayTimeout;
         }
     }
     namespace UpdateDeveloper {
         export type RequestBody = Components.Schemas.DeveloperPatch;
         namespace Responses {
             export type $200 = Components.Schemas.Developer;
-            export type Default = Components.Schemas.ErrorResponse;
+            export type $400 = Components.Responses.BadRequest;
+            export type $401 = Components.Responses.Unauthorized;
+            export type $403 = Components.Responses.Forbidden;
+            export type $404 = Components.Responses.NotFound;
+            export type $406 = Components.Responses.NotAcceptable;
+            export type $415 = Components.Responses.UnsupportedMediaType;
+            export type $429 = Components.Responses.TooManyRequests;
+            export type $500 = Components.Responses.InternalServerError;
+            export type $503 = Components.Responses.ServiceUnavailable;
+            export type $504 = Components.Responses.GatewayTimeout;
         }
     }
     namespace UpdateDeveloperApp {
@@ -1272,17 +1688,33 @@ declare namespace Paths {
         namespace Responses {
             export type $200 = Components.Schemas.AppResponse;
             export type $400 = Components.Schemas.ErrorResponse;
+            export type $401 = Components.Responses.Unauthorized;
+            export type $403 = Components.Responses.Forbidden;
+            export type $404 = Components.Responses.NotFound;
+            export type $406 = Components.Responses.NotAcceptable;
+            export type $415 = Components.Responses.UnsupportedMediaType;
             export type $422 = Components.Schemas.ErrorResponse;
+            export type $429 = Components.Responses.TooManyRequests;
             export type $500 = Components.Schemas.ErrorResponse;
-            export type Default = Components.Schemas.ErrorResponse;
+            export type $503 = Components.Responses.ServiceUnavailable;
+            export type $504 = Components.Responses.GatewayTimeout;
         }
     }
     namespace UpdateEnvironment {
         export type RequestBody = Components.Schemas.EnvironmentPatch;
         namespace Responses {
             export type $200 = Components.Schemas.Environment;
+            export type $400 = Components.Responses.BadRequest;
+            export type $401 = Components.Responses.Unauthorized;
+            export type $403 = Components.Responses.Forbidden;
+            export type $404 = Components.Responses.NotFound;
+            export type $406 = Components.Responses.NotAcceptable;
+            export type $415 = Components.Responses.UnsupportedMediaType;
             export type $422 = Components.Schemas.ErrorResponse;
-            export type Default = Components.Schemas.ErrorResponse;
+            export type $429 = Components.Responses.TooManyRequests;
+            export type $500 = Components.Responses.InternalServerError;
+            export type $503 = Components.Responses.ServiceUnavailable;
+            export type $504 = Components.Responses.GatewayTimeout;
         }
     }
     namespace UpdateOrganization {
@@ -1290,14 +1722,30 @@ declare namespace Paths {
         namespace Responses {
             export type $200 = Components.Schemas.Organization;
             export type $400 = Components.Schemas.ErrorResponse;
-            export type Default = Components.Schemas.ErrorResponse;
+            export type $401 = Components.Responses.Unauthorized;
+            export type $403 = Components.Responses.Forbidden;
+            export type $404 = Components.Responses.NotFound;
+            export type $406 = Components.Responses.NotAcceptable;
+            export type $429 = Components.Responses.TooManyRequests;
+            export type $500 = Components.Responses.InternalServerError;
+            export type $503 = Components.Responses.ServiceUnavailable;
+            export type $504 = Components.Responses.GatewayTimeout;
         }
     }
     namespace UpdateTeam {
         export type RequestBody = Components.Schemas.TeamPatch;
         namespace Responses {
             export type $200 = Components.Schemas.Team;
-            export type Default = Components.Schemas.ErrorResponse;
+            export type $400 = Components.Responses.BadRequest;
+            export type $401 = Components.Responses.Unauthorized;
+            export type $403 = Components.Responses.Forbidden;
+            export type $404 = Components.Responses.NotFound;
+            export type $406 = Components.Responses.NotAcceptable;
+            export type $415 = Components.Responses.UnsupportedMediaType;
+            export type $429 = Components.Responses.TooManyRequests;
+            export type $500 = Components.Responses.InternalServerError;
+            export type $503 = Components.Responses.ServiceUnavailable;
+            export type $504 = Components.Responses.GatewayTimeout;
         }
     }
     namespace UpdateTeamApp {
@@ -1305,16 +1753,32 @@ declare namespace Paths {
         namespace Responses {
             export type $200 = Components.Schemas.AppResponse;
             export type $400 = Components.Schemas.ErrorResponse;
+            export type $401 = Components.Responses.Unauthorized;
+            export type $403 = Components.Responses.Forbidden;
+            export type $404 = Components.Responses.NotFound;
+            export type $406 = Components.Responses.NotAcceptable;
+            export type $415 = Components.Responses.UnsupportedMediaType;
             export type $422 = Components.Schemas.ErrorResponse;
+            export type $429 = Components.Responses.TooManyRequests;
             export type $500 = Components.Schemas.ErrorResponse;
-            export type Default = Components.Schemas.ErrorResponse;
+            export type $503 = Components.Responses.ServiceUnavailable;
+            export type $504 = Components.Responses.GatewayTimeout;
         }
     }
     namespace UpdateToken {
         export type RequestBody = string; // ^[A-Za-z0-9-_=]+\.[A-Za-z0-9-_=]+\.?[A-Za-z0-9-_.+/=]*$
         namespace Responses {
             export type $201 = string; // ^[A-Za-z0-9-_=]+\.[A-Za-z0-9-_=]+\.?[A-Za-z0-9-_.+/=]*$
-            export type Default = Components.Schemas.ErrorResponse;
+            export type $400 = Components.Responses.BadRequest;
+            export type $401 = Components.Responses.Unauthorized;
+            export type $403 = Components.Responses.Forbidden;
+            export type $404 = Components.Responses.NotFound;
+            export type $406 = Components.Responses.NotAcceptable;
+            export type $415 = Components.Responses.UnsupportedMediaType;
+            export type $429 = Components.Responses.TooManyRequests;
+            export type $500 = Components.Responses.InternalServerError;
+            export type $503 = Components.Responses.ServiceUnavailable;
+            export type $504 = Components.Responses.GatewayTimeout;
         }
     }
 }
