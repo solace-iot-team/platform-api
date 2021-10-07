@@ -1,0 +1,17 @@
+on:
+  # for testing
+  workflow_dispatch:
+  # production
+  pull_request:
+    branches:
+      - main
+jobs:
+  api_audit_job:
+    runs-on: ubuntu-latest
+    name: Audit OpenAPI files
+    steps:
+      - uses: actions/checkout@v2
+      - uses: 42Crunch/api-security-audit-action@v2
+        with:
+          api-token: ${{ secrets.APIKEY_42CRUNCH }}
+          min-score: 90
