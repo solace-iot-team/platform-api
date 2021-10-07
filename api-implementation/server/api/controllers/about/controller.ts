@@ -1,6 +1,8 @@
 import { NextFunction, Request, Response } from 'express';
 import About = Components.Schemas.About;
 import fs from 'fs';
+import path from 'path';
+import L from '../../../common/logger';
 
 export class Controller {
   about(req: Request, res: Response, next: NextFunction): void {
@@ -18,9 +20,11 @@ export class Controller {
 }
 export default new Controller();
 
+const projectPath = path.normalize(__dirname + '../../../../..');
 const loadAboutJSON = function loadAboutJson(): any {
     try {
-      var fileName = './public/about.json';
+      var fileName = projectPath + '/public/about.json';
+      L.info(fileName);
       var regFile = fs.readFileSync(fileName, 'utf8');
       let obj = JSON.parse(regFile);
      return obj;
