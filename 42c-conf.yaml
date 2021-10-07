@@ -7,3 +7,5 @@ audit:
           - '**/*.yaml'
           - '**/*.yml'
           - '!clients/**'
+      fail_on:
+        invalid_contract: false
