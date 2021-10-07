@@ -1,3 +1,4 @@
+name: security-scan
 on:
   # for testing
   workflow_dispatch:
