@@ -1,0 +1,9 @@
+audit:
+  branches:
+    '*':
+      discovery:
+        search:
+          - '**/*.json'
+          - '**/*.yaml'
+          - '**/*.yml'
+          - '!clients/**'
