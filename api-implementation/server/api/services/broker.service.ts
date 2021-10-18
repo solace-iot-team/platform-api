@@ -49,9 +49,9 @@ class BrokerService {
   }
 
   async provisionApp(app: App, ownerAttributes: Attributes, isUpdate?: boolean): Promise<void> {
-    return new Promise<void>((resolve, reject) => {
-      if (this.provisionedByConsumerKey(app)){
-        this.doDeprovisionApp(app, app.credentials.secret.consumerKey);
+    return new Promise<void>(async (resolve, reject) => {
+      if (await this.provisionedByConsumerKey(app)){
+        await this.doDeprovisionApp(app, app.credentials.secret.consumerKey);
       }
       var apiProductPromises: Promise<APIProduct>[] = [];
       app.apiProducts.forEach((productName: string) => {
@@ -152,8 +152,8 @@ class BrokerService {
       await QueueManager.deleteAPIProductQueues(app, services,objectName);
       
     } catch (err) {
-      L.error('De-Provisioninig error');
-      L.error(err);
+      L.error(`De-Provisioninig error ${err.message}`);
+      L.error(err.body);
       throw new ErrorResponseInternal(500, err.message);
     }
   }
@@ -196,11 +196,14 @@ class BrokerService {
     for (var service of services) {
       const apiClient: AllService = SempV2ClientFactory.getSEMPv2Client(service);
       try {
-        var getResponse = await apiClient.deleteMsgVpnRestDeliveryPoint(service.msgVpnName, name);
+        var delResponse = await apiClient.deleteMsgVpnRestDeliveryPoint(service.msgVpnName, name);
         L.info("RDP deleted");
       } catch (e) {
-        if (!(e.body.meta.error.status == "NOT_FOUND"))
+        if (e.body.meta.error.status != "NOT_FOUND"){
+          L.error('deleteRDPs');
+          L.error(e);
           throw e;
+        }
       }
     }
   }
@@ -241,8 +244,9 @@ class BrokerService {
      try {
         const getResponse = await apiClient.deleteMsgVpnClientUsername(service.msgVpnName, app.credentials.secret.consumerKey);
       } catch (err) {
-        L.error(err);
         if (err.body && err.body.meta && !(err.body.meta.error.status == "NOT_FOUND")) {
+        L.error('deleteClientUsernames');
+        L.error(err);
           throw err;
         }
       }

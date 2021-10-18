@@ -79,6 +79,8 @@ class ACLManager {
         L.info("ACL deleted");
       } catch (err) {
         if (!(err.body.meta.error.status == "NOT_FOUND")) {
+          L.error('deleteACLs');
+          L.error(err.body);
           throw err;
         }
       }
@@ -119,8 +121,10 @@ class ACLManager {
       try {
         const getResponse = await apiClient.deleteMsgVpnAuthorizationGroup(service.msgVpnName, name);
       } catch (err) {
-        L.error(err);
+
         if (!(err.body.meta.error.status == "NOT_FOUND")) {
+          L.error('deleteAuthorizationGroups');
+          L.error(err);
           throw err;
         }
       }
