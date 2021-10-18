@@ -112,7 +112,7 @@
           },
           "adminState": {
             "type": "string",
-            "example": "start",
+            "example": "start"
           },
           "adminProgress": {
             "type": "string",
@@ -120,11 +120,11 @@
           },
           "created": {
             "type": "integer",
-            "example": 1610703520719,
+            "example": 1610703520719
           },
           "creationState": {
             "type": "string",
-            "example": "completed",
+            "example": "completed"
           },
           "messagingProtocols": {
             "type": "array",
