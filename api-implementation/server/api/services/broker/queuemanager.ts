@@ -147,6 +147,8 @@ export class QueueManager {
         L.info('Queue deleted');
       } catch (e) {
         if (!(e.body.meta.error.status == "NOT_FOUND")) {
+          L.error('deleteQueues');
+          L.error(e);
           throw e;
         }
 

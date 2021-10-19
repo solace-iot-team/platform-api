@@ -739,7 +739,7 @@ components:
           type: integer
           format: int64
           maximum: 9007199254740991
-          minimum: 0
+          minimum: -1
           description: A setting, in milliseconds, for the lifetime of the consumer key that will be  generated for the developer app. The default value, -1, indicates an infinite validity period. Once set, the expiration can't be updated.
         apiProducts:
           type: array

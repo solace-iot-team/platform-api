@@ -209,7 +209,7 @@ export class AppsService {
     }
     if (appPatch.status == 'approved') {
       if (areCredentialsUpdated) {
-        const r = await BrokerService.deprovisionApp(appPatch as App);
+        const r = await BrokerService.deprovisionApp(appNotModified as App);
       }
       L.info(`provisioning app ${name}`);
       try {
