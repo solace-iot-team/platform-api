@@ -478,7 +478,7 @@ class ACLManager {
         publishPermissions.forEach((s, index, arr) => {
           arr[index] = this.scrubDestination(s, syntax);
         });
-        channel[Object.keys(channel)[0]].permissions = publishPermissions;
+        channel[Object.keys(channel)[0]].permissions = Array.from(new Set(publishPermissions));
       });
       subscribeExceptions.forEach((channel, index, arr) => {
         const s: string[] = [];
@@ -488,7 +488,7 @@ class ACLManager {
         subscribePermissions.forEach((s, index, arr) => {
           arr[index] = this.scrubDestination(s, syntax);
         });
-        channel[Object.keys(channel)[0]].permissions = subscribePermissions;
+        channel[Object.keys(channel)[0]].permissions = Array.from(new Set(subscribePermissions));
       });
       var permissions: Permissions = {
         publish: subscribeExceptions,
