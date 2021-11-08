@@ -73,7 +73,7 @@ class AppFactory {
       target.webHooks = source.webHooks;
       for (const webhook of target.webHooks){
         const wh: WebHook = webhook as WebHook;
-        if (!wh.authentication.authMethod){
+        if (wh.authentication && wh.authentication.authMethod){
           if (wh.authentication['username']){
             wh.authentication.authMethod = 'Basic';
           } else if (wh.authentication['headerName']){
