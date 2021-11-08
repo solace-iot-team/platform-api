@@ -50,7 +50,7 @@ class BrokerService {
 
   async provisionApp(app: App, ownerAttributes: Attributes, isUpdate?: boolean): Promise<void> {
     return new Promise<void>(async (resolve, reject) => {
-      if (await this.provisionedByConsumerKey(app)){
+      if (await this.provisionedByConsumerKey(app)) {
         await this.doDeprovisionApp(app, app.credentials.secret.consumerKey);
       }
       var apiProductPromises: Promise<APIProduct>[] = [];
@@ -112,7 +112,7 @@ class BrokerService {
     L.info(`created acl exceptions ${app.name}`);
 
     // provision queue if webhooks are configured
-    if (app.webHooks != null && app.webHooks.length > 0 ) {
+    if (app.webHooks != null && app.webHooks.length > 0) {
       L.info("creating webhook queues");
       var d = await QueueManager.createWebHookQueues(app, services, products, ownerAttributes);
       L.info(`created webhook queues ${app.name}`);
@@ -149,8 +149,8 @@ class BrokerService {
       await ACLManager.deleteACLs(app, services, objectName);
       await this.deleteRDPs(app, services, objectName);
       await QueueManager.deleteWebHookQueues(app, services, objectName);
-      await QueueManager.deleteAPIProductQueues(app, services,objectName);
-      
+      await QueueManager.deleteAPIProductQueues(app, services, objectName);
+
     } catch (err) {
       L.error(`De-Provisioninig error ${err.message}`);
       L.error(err.body);
@@ -160,17 +160,19 @@ class BrokerService {
 
   private async getServices(environmentNames: string[]): Promise<Service[]> {
     try {
-      L.info(`all-env: ${environmentNames}`);
+      L.info(`all-env: ${environmentNames} ${environmentNames.length}`);
       const returnServices: Service[] = [];
       for (const envName of environmentNames) {
-        L.info(envName);
-        const env: Environment = (await EnvironmentsService.byName(envName) as any) as Environment;
-        L.info(env.serviceId);
-        const service: Service = await SolaceCloudFacade.getServiceByEnvironment(
-          env
-        );
-        service['environment'] = env.name;
-        returnServices.push(service);
+        L.info(`env-name: ${envName}`);
+        if (envName) {
+          const env: Environment = (await EnvironmentsService.byName(envName) as any) as Environment;
+          L.info(env.serviceId);
+          const service: Service = await SolaceCloudFacade.getServiceByEnvironment(
+            env
+          );
+          service['environment'] = env.name;
+          returnServices.push(service);
+        }
       }
       return returnServices;
     } catch (err) {
@@ -199,7 +201,7 @@ class BrokerService {
         var delResponse = await apiClient.deleteMsgVpnRestDeliveryPoint(service.msgVpnName, name);
         L.info("RDP deleted");
       } catch (e) {
-        if (e.body.meta.error.status != "NOT_FOUND"){
+        if (e.body.meta.error.status != "NOT_FOUND") {
           L.error('deleteRDPs');
           L.error(e);
           throw e;
@@ -240,13 +242,13 @@ class BrokerService {
 
   private async deleteClientUsernames(app: App, services: Service[]): Promise<void> {
     for (var service of services) {
-       const apiClient: AllService = SempV2ClientFactory.getSEMPv2Client(service);
-     try {
+      const apiClient: AllService = SempV2ClientFactory.getSEMPv2Client(service);
+      try {
         const getResponse = await apiClient.deleteMsgVpnClientUsername(service.msgVpnName, app.credentials.secret.consumerKey);
       } catch (err) {
         if (err.body && err.body.meta && !(err.body.meta.error.status == "NOT_FOUND")) {
-        L.error('deleteClientUsernames');
-        L.error(err);
+          L.error('deleteClientUsernames');
+          L.error(err);
           throw err;
         }
       }
@@ -332,7 +334,7 @@ class BrokerService {
       };
       try {
         var q = await apiClient.getMsgVpnRestDeliveryPoint(service.msgVpnName, objectName);
-        var updateResponse = await apiClient.updateMsgVpnRestDeliveryPoint(service.msgVpnName, 
+        var updateResponse = await apiClient.updateMsgVpnRestDeliveryPoint(service.msgVpnName,
           objectName, newRDP);
         L.debug(`createRDP updated ${objectName}`);
       } catch (e) {
@@ -472,7 +474,7 @@ class BrokerService {
                   L.info(`getMessagingProtocols ${keys.name} ${keys.protocol}`);
                   const endpoint = service.messagingProtocols
                     .find((mp) => mp.endPoints.find((ep) => ep.transport == keys.protocol && ep.name == keys.name))
-                    .endPoints.find((ep)=> ep.transport == keys.protocol);
+                    .endPoints.find((ep) => ep.transport == keys.protocol);
                   //L.info(endpoint);
                   let newEndpoint: Endpoint = endpoints.find(
                     (ep) => ep.uri == endpoint.uris[0]
@@ -514,7 +516,7 @@ class BrokerService {
 
   async provisionedByConsumerKey(app: App): Promise<boolean> {
     const envs: string[] = await this.getEnvironments(app);
-    const services: Service[] = await this.getServices(envs); 
+    const services: Service[] = await this.getServices(envs);
     return await ACLManager.hasConsumerKeyACLs(app, services);
   }
 }
