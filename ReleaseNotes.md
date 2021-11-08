@@ -1,5 +1,25 @@
 # Release Notes
 
+## Version 0.2.8
+* OpenAPI: 0.5.0
+* API Management Connector Server: 0.2.8
+
+### Features
+
+### Fixes
+* **App Resources**
+  - Ensured App Display Name is set to a default if not provided by client
+  - App deprovisioning: fixed deprovisioning error when App update (PATCH) resulted in a change of client key.
+  - App WebHook without authentication: Omitting authentication in webhooks resulted in a 500 error.
+  - App permissions returned in App GET now contain only unique entries: fixed an issue that resulted in du0plicate permission entries
+* **API Product Validation**
+  - fixed validation of exposed protocols: Previously any protocol had to be contained in every environment referenced in the APi Product. This resulted in a reference check failure (422 response)
+* **Open API Specification**
+  - Removed onsolete URL parameters
+  - Added explicit type definitions for better client code gen
+  - Added validation rules to JSON schemas
+  - Fixed API responses that did not comply with the OpenAPI JSON schemas.
+
 ## Version 0.2.7
 * OpenAPI: 0.4.1
 * API Management Connector Server: 0.2.7
