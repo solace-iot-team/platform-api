@@ -75,13 +75,15 @@ class AsyncApiGenerator {
     const apiProducts: APIProduct[] = await this.findAPIProductsByAPIName(apiName, app);
     L.debug(`processChannelBindings found API Products ${apiProducts}`);
     for (const apiProduct of apiProducts) {
-      for (const protocol of apiProduct.protocols) {
-        L.info(`processChannelBindings processing  ${apiProduct.name} protocol ${protocol.name}`);
-        const generator: BindingsGenerator = BindingsRegistry.getGeneratorByProtocol(protocol);
-        if (generator) {
-          await generator.processChannels(channels, app, apiProduct);
-        } else {
-          L.warn(`No BindingsGenerator registered for ${protocol.name}`);
+      if (apiProduct.protocols) {
+        for (const protocol of apiProduct.protocols) {
+          L.info(`processChannelBindings processing  ${apiProduct.name} protocol ${protocol.name}`);
+          const generator: BindingsGenerator = BindingsRegistry.getGeneratorByProtocol(protocol);
+          if (generator) {
+            await generator.processChannels(channels, app, apiProduct);
+          } else {
+            L.warn(`No BindingsGenerator registered for ${protocol.name}`);
+          }
         }
       }
     }

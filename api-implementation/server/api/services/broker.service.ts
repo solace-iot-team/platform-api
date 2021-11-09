@@ -467,28 +467,30 @@ class BrokerService {
                 }
                 const service = await this.getServiceByEnv(envName);
                 const endpoints: Endpoint[] = [];
-                for (const protocol of product.protocols) {
-                  L.info(`getMessagingProtocols ${protocol.name}`);
-                  const keys = ProtocolMapper.findByAsyncAPIProtocol(protocol)
-                    .protocolKeys;
-                  L.info(`getMessagingProtocols ${keys.name} ${keys.protocol}`);
-                  const endpoint = service.messagingProtocols
-                    .find((mp) => mp.endPoints.find((ep) => ep.transport == keys.protocol && ep.name == keys.name))
-                    .endPoints.find((ep) => ep.transport == keys.protocol);
-                  //L.info(endpoint);
-                  let newEndpoint: Endpoint = endpoints.find(
-                    (ep) => ep.uri == endpoint.uris[0]
-                  );
-                  //L.info(newEndpoint);
-                  if (newEndpoint === undefined) {
-                    newEndpoint = {
-                      compressed: endpoint.compressed == 'yes' ? 'yes' : 'no',
-                      secure: endpoint.secured == 'yes' ? 'yes' : 'no',
-                      protocol: protocol,
-                      transport: endpoint.transport,
-                      uri: endpoint.uris[0],
-                    };
-                    endpoints.push(newEndpoint);
+                if (product.protocols) {
+                  for (const protocol of product.protocols) {
+                    L.info(`getMessagingProtocols ${protocol.name}`);
+                    const keys = ProtocolMapper.findByAsyncAPIProtocol(protocol)
+                      .protocolKeys;
+                    L.info(`getMessagingProtocols ${keys.name} ${keys.protocol}`);
+                    const endpoint = service.messagingProtocols
+                      .find((mp) => mp.endPoints.find((ep) => ep.transport == keys.protocol && ep.name == keys.name))
+                      .endPoints.find((ep) => ep.transport == keys.protocol);
+                    //L.info(endpoint);
+                    let newEndpoint: Endpoint = endpoints.find(
+                      (ep) => ep.uri == endpoint.uris[0]
+                    );
+                    //L.info(newEndpoint);
+                    if (newEndpoint === undefined) {
+                      newEndpoint = {
+                        compressed: endpoint.compressed == 'yes' ? 'yes' : 'no',
+                        secure: endpoint.secured == 'yes' ? 'yes' : 'no',
+                        protocol: protocol,
+                        transport: endpoint.transport,
+                        uri: endpoint.uris[0],
+                      };
+                      endpoints.push(newEndpoint);
+                    }
                   }
                 }
                 appEnv.messagingProtocols = endpoints;
