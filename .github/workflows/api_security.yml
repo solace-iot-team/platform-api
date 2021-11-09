@@ -3,7 +3,7 @@ on:
   # for testing
   workflow_dispatch:
   # production
-  pull_request:
+  push:
     branches:
       - main
 jobs:
