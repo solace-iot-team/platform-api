@@ -1,5 +1,16 @@
 # Release Notes
 
+## Version 0.2.9
+* OpenAPI: 0.5.0
+* API Management Connector Server: 0.2.9
+
+### Features
+
+### Fixes
+* **App Resources**
+  - Handle API Products without Protocols gracefully (fix-no-product-protocols): added safe guard in case no protocols are defined. previously led to internal server error on GET apps request
+  - Generate Async APIs correctly for Apps with multiple API Products (fix-async-api-app-multiple-products): fixed an issue where retrieving an Async API spec for an App results in an error if the app is associated with multiple API Products
+
 ## Version 0.2.8
 * OpenAPI: 0.5.0
 * API Management Connector Server: 0.2.8
