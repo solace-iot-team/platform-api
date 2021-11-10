@@ -61,7 +61,7 @@ export class QueueManager {
         permission: MsgVpnQueue.permission.CONSUME
       };
       if (clientOptions && clientOptions.guaranteedMessaging) {
-        newQ.accessType = (clientOptions.guaranteedMessaging.accessType.toUpperCase() == MsgVpnQueue.accessType.EXCLUSIVE) ?
+        newQ.accessType = (clientOptions.guaranteedMessaging.accessType.toLowerCase() == MsgVpnQueue.accessType.EXCLUSIVE.toLowerCase()) ?
           MsgVpnQueue.accessType.EXCLUSIVE : MsgVpnQueue.accessType.NON_EXCLUSIVE;
         newQ.maxTtl = clientOptions.guaranteedMessaging.maxTtl;
         newQ.maxMsgSpoolUsage = clientOptions.guaranteedMessaging.maxMsgSpoolUsage;
