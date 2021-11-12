@@ -26,6 +26,7 @@ import {
   MsgVpnRestDeliveryPoint,
   MsgVpnRestDeliveryPointRestConsumer,
   MsgVpnRestDeliveryPointQueueBinding,
+  MsgVpnRestDeliveryPointRestConsumerTlsTrustedCommonName,
 } from '../../../src/clients/sempv2';
 import SolaceCloudFacade from '../../../src/solacecloudfacade';
 import SempV2ClientFactory from './broker/sempv2clientfactory';
@@ -412,6 +413,25 @@ class BrokerService {
         } catch (e) {
           L.warn(`createRDP queue binding creation  failed ${JSON.stringify(e)}`);
           throw new ErrorResponseInternal(500, e);
+        }
+      }
+
+
+      // add the trusted common names
+      if (webHook.tlsOptions && webHook.tlsOptions.tlsTrustedCommonNames && webHook.tlsOptions.tlsTrustedCommonNames.length > 0) {
+        for (var trustedCN of webHook.tlsOptions.tlsTrustedCommonNames) {
+          const msgVpnRestDeliveryPointRestConsumerTlsTrustedCommonName: MsgVpnRestDeliveryPointRestConsumerTlsTrustedCommonName = {
+            msgVpnName: service.msgVpnName,
+            restConsumerName: restConsumerName,
+            restDeliveryPointName: objectName,
+            tlsTrustedCommonName: trustedCN,
+          };
+          try {
+            await apiClient.createMsgVpnRestDeliveryPointRestConsumerTlsTrustedCommonName(service.msgVpnName, objectName, restConsumerName, msgVpnRestDeliveryPointRestConsumerTlsTrustedCommonName);
+          } catch (e) {
+            L.warn(`add TLS Trusted CN failed ${JSON.stringify(e)}`);
+            throw new ErrorResponseInternal(500, e);
+          }
         }
       }
 

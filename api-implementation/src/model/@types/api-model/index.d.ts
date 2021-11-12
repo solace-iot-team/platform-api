@@ -4,25 +4,25 @@ declare namespace Components {
             export type Format = "compact" | "summary" | "extended";
         }
         namespace ApiName {
-            export type ApiName = string; // [a-zA-Z0-9_-]{4,188}
+            export type ApiName = string; // [a-zA-Z0-9_-]*
         }
         namespace ApiProductName {
-            export type ApiProductName = string; // [a-zA-Z0-9_-]{4,188}
+            export type ApiProductName = string; // [a-zA-Z0-9_-]*
         }
         namespace AppName {
-            export type AppName = string; // [a-zA-Z0-9_-]{4,188}
+            export type AppName = string; // [a-zA-Z0-9_-]*
         }
         namespace DeveloperUsername {
-            export type DeveloperUsername = Schemas.CommonUserName; // [.a-zA-Z0-9@-_]{1,64}
+            export type DeveloperUsername = Schemas.CommonUserName; // [.a-zA-Z0-9@-_]*
         }
         namespace EnvName {
-            export type EnvName = string; // [a-zA-Z0-9_-]{2,188}
+            export type EnvName = string; // [a-zA-Z0-9_-]*
         }
         namespace EventApiProductId {
-            export type EventApiProductId = string; // [a-z0-9]{4,32}
+            export type EventApiProductId = string; // [a-z0-9]*
         }
         namespace Organization {
-            export type OrganizationName = string; // [a-zA-Z0-9_-]{4,188}
+            export type OrganizationName = string; // [a-zA-Z0-9_-]*
         }
         namespace PageNumber {
             export type PageNumber = number; // int32
@@ -34,10 +34,10 @@ declare namespace Components {
             export type SortDirection = "asc" | "desc";
         }
         namespace SortFieldName {
-            export type SortFieldName = string; // [a-zA-Z0-9_-]{2,512}
+            export type SortFieldName = string; // [a-zA-Z0-9_-]*
         }
         namespace TeamName {
-            export type TeamName = string; // [a-zA-Z0-9_-]{4,188}
+            export type TeamName = string; // [a-zA-Z0-9_-]*
         }
         namespace TopicSyntax {
             export type TopicSyntax = "smf" | "mqtt";
@@ -66,7 +66,7 @@ declare namespace Components {
              * example:
              * 7avdj5n26cq
              */
-            id?: string; // [a-zA-Z0-9_-]{0,64}
+            id?: string; // [a-zA-Z0-9_-]*
             /**
              * indicates if an existing API entity shall be replaced
              */
@@ -82,14 +82,14 @@ declare namespace Components {
              * example:
              * 7avdj5n26cq
              */
-            sourceId?: string; // [a-zA-Z0-9_-]{0,64}
+            sourceId?: string; // [a-zA-Z0-9_-]*
             createdTime: CommonTimestampInteger; // int64
             updatedTime?: CommonTimestampInteger; // int64
-            createdBy: CommonUserName; // [.a-zA-Z0-9@-_]{1,64}
-            description: CommonDescription; // ^[\s\S]{0,4096}$
-            name: CommonName; // [a-zA-Z0-9_-]{2,188}
-            summary: CommonDescription; // ^[\s\S]{0,4096}$
-            version: CommonVersion; // [_\-\S\.]{0,100}
+            createdBy: CommonUserName; // [.a-zA-Z0-9@-_]*
+            description: CommonDescription; // ^[\s\S]*$
+            name: CommonName; // [a-zA-Z0-9_-]*
+            summary: CommonDescription; // ^[\s\S]*$
+            version: CommonVersion; // [_\-\S\.]*
             apiParameters?: APIParameter[];
             /**
              * any metadata as returned by the external System (if applicable)
@@ -99,14 +99,14 @@ declare namespace Components {
             };
         }
         export type APIInfoList = APIInfo[];
-        export type APIList = CommonName /* [a-zA-Z0-9_-]{2,188} */ [];
+        export type APIList = CommonName /* [a-zA-Z0-9_-]* */ [];
         export interface APIParameter {
             /**
              * name of the parameter as defined in the AsyncAPI Spec
              * example:
              * model
              */
-            name: string; // .{0,512}
+            name: string; // .*
             /**
              * type of the parameter
              */
@@ -120,7 +120,7 @@ declare namespace Components {
              *   "N"
              * ]
              */
-            enum?: string /* .{0,512} */ [];
+            enum?: string /* .* */ [];
         }
         /**
          * An API product consists of a list of API resources (URIs) and custom metadata required by the API provider. API products enable you to bundle and distribute your APIs to multiple developer groups simultaneously
@@ -134,27 +134,27 @@ declare namespace Components {
              *   "api2"
              * ]
              */
-            apis: CommonName /* [a-zA-Z0-9_-]{2,188} */ [];
+            apis: CommonName /* [a-zA-Z0-9_-]* */ [];
             /**
              * manual or auto. If manual, credetials will only be activated on manual approval
              */
             approvalType?: "manual" | "auto";
             attributes: Attributes;
-            description?: CommonDescription; // ^[\s\S]{0,4096}$
-            displayName: CommonDisplayName; // [\/\sa-z.A-z0-9_-]{1,256}
+            description?: CommonDescription; // ^[\s\S]*$
+            displayName: CommonDisplayName; // [\/\sa-z.A-z0-9_-]*
             /**
              * An array of environment names in an organization. Requests to environments not listed are rejected.
              */
-            environments?: CommonName /* [a-zA-Z0-9_-]{2,188} */ [];
-            name: CommonName; // [a-zA-Z0-9_-]{2,188}
+            environments?: CommonName /* [a-zA-Z0-9_-]* */ [];
+            name: CommonName; // [a-zA-Z0-9_-]*
             /**
              * An array of Publish API resources to be bundled in the API Product.
              */
-            pubResources: CommonTopic /* ^[a-zA-Z0-9][\S]{1,247}[^\/]$ */ [];
+            pubResources: CommonTopic /* ^[a-zA-Z0-9][\S]*[^\/]$ */ [];
             /**
              * An array of Subscribe API resources to be bundled in the API Product.
              */
-            subResources: CommonTopic /* ^[a-zA-Z0-9][\S]{1,247}[^\/]$ */ [];
+            subResources: CommonTopic /* ^[a-zA-Z0-9][\S]*[^\/]$ */ [];
             protocols?: Protocol[];
             clientOptions?: ClientOptions;
         }
@@ -170,34 +170,34 @@ declare namespace Components {
              *   "api2"
              * ]
              */
-            apis?: CommonName /* [a-zA-Z0-9_-]{2,188} */ [];
+            apis?: CommonName /* [a-zA-Z0-9_-]* */ [];
             /**
              * manual or auto. If manual, credentials will only be activated on manual approval
              */
             approvalType?: "manual" | "auto";
             attributes?: Attributes;
-            description?: CommonDescription; // ^[\s\S]{0,4096}$
-            displayName?: CommonDisplayName; // [\/\sa-z.A-z0-9_-]{1,256}
+            description?: CommonDescription; // ^[\s\S]*$
+            displayName?: CommonDisplayName; // [\/\sa-z.A-z0-9_-]*
             /**
              * A list of environment name in an organization. Requests to environments not listed are rejected.
              */
-            environments?: CommonName /* [a-zA-Z0-9_-]{2,188} */ [];
+            environments?: CommonName /* [a-zA-Z0-9_-]* */ [];
             /**
              * A comma separated list of Publish API resources to be bundled in the API Product.
              */
-            pubResources?: CommonTopic /* ^[a-zA-Z0-9][\S]{1,247}[^\/]$ */ [];
+            pubResources?: CommonTopic /* ^[a-zA-Z0-9][\S]*[^\/]$ */ [];
             /**
              * A comma separated list of Publish API resources to be bundled in the API Product.
              */
-            subResources?: CommonTopic /* ^[a-zA-Z0-9][\S]{1,247}[^\/]$ */ [];
+            subResources?: CommonTopic /* ^[a-zA-Z0-9][\S]*[^\/]$ */ [];
             protocols?: Protocol[];
             clientOptions?: ClientOptions;
         }
         export interface APISummary {
-            name?: CommonName; // [a-zA-Z0-9_-]{2,188}
-            description?: CommonDescription; // ^[\s\S]{0,4096}$
+            name?: CommonName; // [a-zA-Z0-9_-]*
+            description?: CommonDescription; // ^[\s\S]*$
             source?: "EventAPIProduct" | "Upload" | "EventPortalLink";
-            createdBy?: CommonUserName; // [.a-zA-Z0-9@-_]{1,64}
+            createdBy?: CommonUserName; // [.a-zA-Z0-9@-_]*
         }
         export type APISummaryList = APISummary[];
         export interface About {
@@ -219,56 +219,56 @@ declare namespace Components {
             };
         }
         export interface AccountingLimit {
-            id: CommonSolaceCloudObjectId; // [a-zA-Z0-9]{2,32}
-            value: string; // [\s\S]{1,256}
-            unit: string; // [\s\S]{1,256}
+            id: CommonSolaceCloudObjectId; // [a-zA-Z0-9]*
+            value: string; // [\s\S]*
+            unit: string; // [\s\S]*
             thresholds: Threshold[];
         }
         /**
          * An app associated with an owner (developer, team etc). Associates the app with an API product, and auto-generates an API credentials for the app to use
          */
         export interface App {
-            name: CommonName; // [a-zA-Z0-9_-]{2,188}
-            displayName?: CommonDisplayName; // [\/\sa-z.A-z0-9_-]{1,256}
+            name: CommonName; // [a-zA-Z0-9_-]*
+            displayName?: CommonDisplayName; // [\/\sa-z.A-z0-9_-]*
             /**
              * the internal name of the app used within the connector. This name is auto generated by default. Warning - should ONLY be set if a naming convention for broker objects must be imposed. This value can not be updated.
              */
-            internalName?: string; // [a-zA-Z0-9_]{4,32}
+            internalName?: string; // [a-zA-Z0-9_]*
             /**
              * A setting, in milliseconds, for the lifetime of the consumer key that will be  generated for the developer app. The default value, -1, indicates an infinite validity period. Once set, the expiration can't be updated.
              */
             expiresIn?: number; // int64
-            apiProducts: CommonName /* [a-zA-Z0-9_-]{2,188} */ [];
+            apiProducts: CommonName /* [a-zA-Z0-9_-]* */ [];
             attributes?: Attributes;
-            callbackUrl?: CommonURL; // https?:\/\/[A-Za-z\.:0-9\-]*.{0,2083}$
+            callbackUrl?: CommonURL; // https?:\/\/[A-Za-z\.:0-9\-]*.*$
             webHooks?: WebHook[];
             credentials: Credentials;
         }
         export interface AppEnvironment {
-            name?: CommonName; // [a-zA-Z0-9_-]{2,188}
+            name?: CommonName; // [a-zA-Z0-9_-]*
             messagingProtocols?: Endpoint[];
             permissions?: Permissions;
         }
         export interface AppListItem {
-            name?: CommonName; // [a-zA-Z0-9_-]{2,188}
-            displayName?: CommonDisplayName; // [\/\sa-z.A-z0-9_-]{1,256}
+            name?: CommonName; // [a-zA-Z0-9_-]*
+            displayName?: CommonDisplayName; // [\/\sa-z.A-z0-9_-]*
             appType?: "developer" | "team";
             /**
              * example:
              * Developer-1
              */
-            ownerId?: string; // .{4,188}
-            apiProducts?: string /* [a-zA-Z0-9_-]{4,188} */ [];
+            ownerId?: string; // .*
+            apiProducts?: string /* [a-zA-Z0-9_-]* */ [];
             status?: AppStatus;
         }
         /**
          * Used for PATCH operation. An app associated with a developer. Associates the app with an API product, and auto-generates an API credentials for the app to use
          */
         export interface AppPatch {
-            displayName?: CommonDisplayName; // [\/\sa-z.A-z0-9_-]{1,256}
-            apiProducts?: string /* [a-zA-Z0-9_-]{4,188} */ [];
+            displayName?: CommonDisplayName; // [\/\sa-z.A-z0-9_-]*
+            apiProducts?: string /* [a-zA-Z0-9_-]* */ [];
             attributes?: Attributes;
-            callbackUrl?: CommonURL; // https?:\/\/[A-Za-z\.:0-9\-]*.{0,2083}$
+            callbackUrl?: CommonURL; // https?:\/\/[A-Za-z\.:0-9\-]*.*$
             webHooks?: WebHook[];
             credentials?: Credentials;
             status?: AppStatus;
@@ -277,20 +277,20 @@ declare namespace Components {
          * App Response Object - includes protocol binding information and app premissions. An app associated with a developer. Associates the app with an API product, and auto-generates an API credentials for the app to use.
          */
         export interface AppResponse {
-            name: CommonName; // [a-zA-Z0-9_-]{2,188}
-            displayName?: CommonDisplayName; // [\/\sa-z.A-z0-9_-]{1,256}
+            name: CommonName; // [a-zA-Z0-9_-]*
+            displayName?: CommonDisplayName; // [\/\sa-z.A-z0-9_-]*
             /**
              * the internal name of the app used within the connector. This name is auto generated by default. Warning - should ONLY be set if a naming convention for broker objects must be imposed. This value can not be updated.
              */
-            internalName?: string; // [a-zA-Z0-9_]{4,32}
+            internalName?: string; // [a-zA-Z0-9_]*
             /**
              * A setting, in milliseconds, for the lifetime of the consumer key that will be  generated for the developer app. The default value, -1, indicates an infinite validity period. Once set, the expiration can't be updated.
              */
             expiresIn?: number; // int64
-            apiProducts: string /* [a-zA-Z0-9_-]{4,188} */ [];
+            apiProducts: string /* [a-zA-Z0-9_-]* */ [];
             attributes?: Attributes;
             clientInformation?: ClientInformation[];
-            callbackUrl?: CommonURL; // https?:\/\/[A-Za-z\.:0-9\-]*.{0,2083}$
+            callbackUrl?: CommonURL; // https?:\/\/[A-Za-z\.:0-9\-]*.*$
             webHooks?: WebHook[];
             credentials: Credentials;
             environments?: AppEnvironment[];
@@ -306,13 +306,13 @@ declare namespace Components {
              * example:
              * access
              */
-            name: string; // [a-zA-Z0-9_-]{2,1024}
+            name: string; // [a-zA-Z0-9_-]*
             /**
              * Value of the attribute.
              * example:
              * public, private, or internal
              */
-            value: string; // [a-zA-Z0-9_\-\s,\*]{1,1024}
+            value: string; // [a-zA-Z0-9_\-\s,\*]*
         }[];
         /**
          * a permission and its associated channel
@@ -325,8 +325,8 @@ declare namespace Components {
              *   "order/notifications/DE/>"
              * ]
              */
-            permissions: CommonTopic /* ^[a-zA-Z0-9][\S]{1,247}[^\/]$ */ [];
-            channelId?: string; // [\s\S]{1,2048}
+            permissions: CommonTopic /* ^[a-zA-Z0-9][\S]*[^\/]$ */ [];
+            channelId?: string; // [\s\S]*
             isChannel?: boolean;
         }
         export interface ClientInformation {
@@ -338,8 +338,8 @@ declare namespace Components {
              * example:
              * AlAOLG3xxuYCVDpoXl4wKGwWAIURFGuK
              */
-            name?: string; // .{2,250}
-            apiProduct?: CommonName; // [a-zA-Z0-9_-]{2,188}
+            name?: string; // .*
+            apiProduct?: CommonName; // [a-zA-Z0-9_-]*
             /**
              * access mode for the queue
              * example:
@@ -389,25 +389,25 @@ declare namespace Components {
          * Vivamus eget vulputate ipsum, vel ornare nulla. Aenean hendrerit, magna id mollis elementum, enim purus convallis arcu, eget eleifend metus ipsum vitae felis. Cras condimentum feugiat fringilla. Etiam ligula dui, malesuada ut finibus imperdiet, bibendum tristique velit. Phasellus consectetur venenatis augue ac ornare. Ut vel sem in lorem fermentum porttitor. Pellentesque eget fermentum enim. Suspendisse risus elit, imperdiet facilisis volutpat in, congue ac ligula. Aenean mollis sagittis finibus. Vestibulum viverra metus magna, ut volutpat dui imperdiet ultricies.
          * 
          */
-        export type CommonDescription = string; // ^[\s\S]{0,4096}$
+        export type CommonDescription = string; // ^[\s\S]*$
         /**
          * Friendly name of an object for display in UIs, Developer Portals. Can be changed after object creation
          * example:
          * A new IoT API / v2.0
          */
-        export type CommonDisplayName = string; // [\/\sa-z.A-z0-9_-]{1,256}
+        export type CommonDisplayName = string; // [\/\sa-z.A-z0-9_-]*
         /**
          * The internal name of an object. Characters you can use in the name are restricted to: A-Z0-9._-. Once the object is created the internal name can not be changed
          * example:
          * {name}
          */
-        export type CommonName = string; // [a-zA-Z0-9_-]{2,188}
+        export type CommonName = string; // [a-zA-Z0-9_-]*
         /**
          * id as used/issued by the back end apis, alphanumeric characters only
          * example:
          * n8kg4fjka9r
          */
-        export type CommonSolaceCloudObjectId = string; // [a-zA-Z0-9]{2,32}
+        export type CommonSolaceCloudObjectId = string; // [a-zA-Z0-9]*
         /**
          * example:
          * 1620311683577
@@ -417,22 +417,22 @@ declare namespace Components {
          * example:
          * deliver/*​/enroute/v1/45*​/-75*​/vehicle4*​/>
          */
-        export type CommonTopic = string; // ^[a-zA-Z0-9][\S]{1,247}[^\/]$
+        export type CommonTopic = string; // ^[a-zA-Z0-9][\S]*[^\/]$
         /**
          * example:
          * https://solace.cloud/api/v0/eventPortal/apiProducts/abc123/asyncApi.json
          */
-        export type CommonURL = string; // https?:\/\/[A-Za-z\.:0-9\-]*.{0,2083}$
+        export type CommonURL = string; // https?:\/\/[A-Za-z\.:0-9\-]*.*$
         /**
          * example:
          * tom
          */
-        export type CommonUserName = string; // [.a-zA-Z0-9@-_]{1,64}
+        export type CommonUserName = string; // [.a-zA-Z0-9@-_]*
         /**
          * example:
          * 3.1.1-alpha
          */
-        export type CommonVersion = string; // [_\-\S\.]{0,100}
+        export type CommonVersion = string; // [_\-\S\.]*
         /**
          * Credentials object associated with an app
          */
@@ -446,7 +446,7 @@ declare namespace Components {
              * example:
              * https://solace.cloud/v1
              */
-            baseUrl: string; // https?:\/\/[A-Za-z\.:0-9\-]*.{0,200}$
+            baseUrl: string; // https?:\/\/[A-Za-z\.:0-9\-]*.*$
             /**
              * example:
              * eyXhbGciOiJSUzI1NiIsImtpZCI6Im1hYXNfcHJvZF8yMDIwMDMyNiIsInR5cCI6IkpXVCJ9.eyJvcmcifiJzb2xhY2Vpb3R0ZWFtIiwib3JnVHlwZSI6IkVOVEVSUFJJU0UiLCJzdWIiOiIzZTJvY214MTA1IiwicGVybWlzc2lvbnMiOiJBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQXdBQU09IiwiYXBpVG9rZW5JZCI6Inlhb2wzc2ZveG03IiwiaXNzIjoiU29sYWNlIENvcnBvcmF0aW9uIiwiaWF0IjoxNjAzODA3NzQ1fQ.QIBpi5_U6b1DnAwbDbJiFIT0pomqa4AyOLtmSOEF6zhoxKMm4Y27WbILZnxnh_gpdX-tvt18Ycuck4xs3T5JjFfU3qrczRHSuj2vEdsCpDQWdyZTPV4NQ-zPxRvigTjaTlcdXin8XwMGh8nZdylgRMlRQjvotomnXQxgbUol0Kl1ziFFMybqeD10qCDsUW6Jv-PKibBN3cnCsWwPZX6d_XYUECs1AHjgs5pk-A8v3DHcnvbXiAP4XXrry6ztopAWKMc5rVFoB_WFY4yi0reuTYjn6Sf0g7vZxFifRZZHZmqZtNQUiX6S80eQG4kF3YDKlr5PfLDNp4iRfe0-3svIPw
@@ -457,19 +457,19 @@ declare namespace Components {
          * A profile for a developer. After the developer is created, they can register an app and receive API credentials
          */
         export interface Developer {
-            email: string; // email .*@.*\.[a-zA-Z]{1,63}
-            firstName: string; // ([[:punct:]]|[a-zA-Z]){2,128}
-            lastName: string; // ([[:punct:]]|[a-zA-Z]){2,128}
-            userName: CommonUserName; // [.a-zA-Z0-9@-_]{1,64}
+            email: string; // email .*@.*\.[a-zA-Z]*
+            firstName: string; // ([[:punct:]]|[a-zA-Z])*
+            lastName: string; // ([[:punct:]]|[a-zA-Z])*
+            userName: CommonUserName; // [.a-zA-Z0-9@-_]*
             attributes?: Attributes;
         }
         /**
          * Used for PATCH operation, A profile for a developer. After the developer is created, they can register an app and receive API credentials
          */
         export interface DeveloperPatch {
-            email?: string; // email .*@.*\.[a-zA-Z]{1,63}
-            firstName?: string; // ([[:punct:]]|[a-zA-Z]){2,128}
-            lastName?: string; // ([[:punct:]]|[a-zA-Z]){2,128}
+            email?: string; // email .*@.*\.[a-zA-Z]*
+            firstName?: string; // ([[:punct:]]|[a-zA-Z])*
+            lastName?: string; // ([[:punct:]]|[a-zA-Z])*
             attributes?: Attributes;
         }
         export interface Endpoint {
@@ -486,21 +486,21 @@ declare namespace Components {
              * example:
              * amqp://mr1i5g7tif6z9h.messaging.solace.cloud:5672
              */
-            uri?: string; // [a-zA-Z0-9\.\-+]{2,64}:\/\/[A-Za-z\.:0-9\-]*.{0,2083}$
+            uri?: string; // [a-zA-Z0-9\.\-+]*:\/\/[A-Za-z\.:0-9\-]*.*$
         }
         /**
          * an environment
          */
         export interface Environment {
             [name: string]: any;
-            name: CommonName; // [a-zA-Z0-9_-]{2,188}
-            displayName?: CommonDisplayName; // [\/\sa-z.A-z0-9_-]{1,256}
-            description: CommonDescription; // ^[\s\S]{0,4096}$
+            name: CommonName; // [a-zA-Z0-9_-]*
+            displayName?: CommonDisplayName; // [\/\sa-z.A-z0-9_-]*
+            description: CommonDescription; // ^[\s\S]*$
             /**
              * example:
              * xm7dc2dfas4
              */
-            serviceId: string; // [a-zA-Z0-9_-]{4,64}
+            serviceId: string; // [a-zA-Z0-9_-]*
             exposedProtocols: Protocol[];
         }
         /**
@@ -508,32 +508,32 @@ declare namespace Components {
          */
         export interface EnvironmentListItem {
             [name: string]: any;
-            msgVpnName?: MsgVpnName; // ^[^*^?]{0,256}$
+            msgVpnName?: MsgVpnName; // ^[^*^?]*$
             /**
              * All of the protocols that the broker service exposes
              */
             messagingProtocols?: Endpoint[];
-            name: CommonName; // [a-zA-Z0-9_-]{2,188}
-            displayName?: CommonDisplayName; // [\/\sa-z.A-z0-9_-]{1,256}
-            description: CommonDescription; // ^[\s\S]{0,4096}$
+            name: CommonName; // [a-zA-Z0-9_-]*
+            displayName?: CommonDisplayName; // [\/\sa-z.A-z0-9_-]*
+            description: CommonDescription; // ^[\s\S]*$
             /**
              * example:
              * xm7dc2dfas4
              */
-            serviceId: string; // [a-zA-Z0-9_-]{4,64}
+            serviceId: string; // [a-zA-Z0-9_-]*
             exposedProtocols: Protocol[];
         }
         /**
          * used for PATCH operation, an environment
          */
         export interface EnvironmentPatch {
-            displayName?: CommonDisplayName; // [\/\sa-z.A-z0-9_-]{1,256}
-            description?: CommonDescription; // ^[\s\S]{0,4096}$
+            displayName?: CommonDisplayName; // [\/\sa-z.A-z0-9_-]*
+            description?: CommonDescription; // ^[\s\S]*$
             /**
              * example:
              * xm7dc2dfas4
              */
-            serviceId?: string; // [a-zA-Z0-9]{1,64}
+            serviceId?: string; // [a-zA-Z0-9]*
             /**
              * The protocols that can be exposed for use with APIs
              */
@@ -543,9 +543,9 @@ declare namespace Components {
          * an environment
          */
         export interface EnvironmentResponse {
-            name: CommonName; // [a-zA-Z0-9_-]{2,188}
-            displayName?: CommonDisplayName; // [\/\sa-z.A-z0-9_-]{1,256}
-            description: CommonDescription; // ^[\s\S]{0,4096}$
+            name: CommonName; // [a-zA-Z0-9_-]*
+            displayName?: CommonDisplayName; // [\/\sa-z.A-z0-9_-]*
+            description: CommonDescription; // ^[\s\S]*$
             /**
              * The protocols that can be exposed for use with APIs
              */
@@ -554,18 +554,18 @@ declare namespace Components {
              * All of the protocols that the broker service exposes
              */
             messagingProtocols?: Endpoint[];
-            serviceId: CommonSolaceCloudObjectId; // [a-zA-Z0-9]{2,32}
+            serviceId: CommonSolaceCloudObjectId; // [a-zA-Z0-9]*
             /**
              * example:
              * DEV-GW
              */
-            serviceName?: string; // [\s\S]{1,256}
-            msgVpnName?: MsgVpnName; // ^[^*^?]{0,256}$
-            datacenterId?: string; // [\s\S]{1,256}
-            datacenterProvider?: string; // [\s\S]{1,256}
-            serviceTypeId?: string; // [\s\S]{1,256}
-            serviceClassId?: string; // [\s\S]{1,256}
-            creationState?: string; // [\s\S]{1,256}
+            serviceName?: string; // [\s\S]*
+            msgVpnName?: MsgVpnName; // ^[^*^?]*$
+            datacenterId?: string; // [\s\S]*
+            datacenterProvider?: string; // [\s\S]*
+            serviceTypeId?: string; // [\s\S]*
+            serviceClassId?: string; // [\s\S]*
+            creationState?: string; // [\s\S]*
             serviceClassDisplayedAttributes?: ServiceClassDisplayedAttributes;
         }
         export interface ErrorResponse {
@@ -578,7 +578,7 @@ declare namespace Components {
              * example:
              * 123e4567-e89b-12d3-a456-426655440000
              */
-            errorId?: string; // [a-zA-Z0-9_-]{0,64}
+            errorId?: string; // [a-zA-Z0-9_-]*
             meta?: {
                 [name: string]: any;
             };
@@ -586,36 +586,36 @@ declare namespace Components {
         export interface EventAPIProduct {
             createdTime?: CommonTimestampInteger; // int64
             updatedTime?: CommonTimestampInteger; // int64
-            createdBy?: CommonSolaceCloudObjectId; // [a-zA-Z0-9]{2,32}
-            changedBy?: CommonSolaceCloudObjectId; // [a-zA-Z0-9]{2,32}
-            id: CommonSolaceCloudObjectId; // [a-zA-Z0-9]{2,32}
-            virtualBrokerId?: CommonSolaceCloudObjectId; // [a-zA-Z0-9]{2,32}
-            description?: CommonDescription; // ^[\s\S]{0,4096}$
+            createdBy?: CommonSolaceCloudObjectId; // [a-zA-Z0-9]*
+            changedBy?: CommonSolaceCloudObjectId; // [a-zA-Z0-9]*
+            id: CommonSolaceCloudObjectId; // [a-zA-Z0-9]*
+            virtualBrokerId?: CommonSolaceCloudObjectId; // [a-zA-Z0-9]*
+            description?: CommonDescription; // ^[\s\S]*$
             /**
              * example:
              * IoT Sensor API
              */
-            name: string; // [\s\S]{4,256}
+            name: string; // [\s\S]*
             published?: boolean;
             publishedTime?: CommonTimestampInteger; // int64
-            serverUrl?: CommonURL; // https?:\/\/[A-Za-z\.:0-9\-]*.{0,2083}$
+            serverUrl?: CommonURL; // https?:\/\/[A-Za-z\.:0-9\-]*.*$
             /**
              * example:
              * mqtt
              */
-            serverProtocol?: string; // [a-zA-z0-9\-\.]{0,256}
-            summary?: CommonDescription; // ^[\s\S]{0,4096}$
+            serverProtocol?: string; // [a-zA-z0-9\-\.]*
+            summary?: CommonDescription; // ^[\s\S]*$
             unpublishedTime?: CommonTimestampInteger; // int64
-            version?: CommonVersion; // [_\-\S\.]{0,100}
+            version?: CommonVersion; // [_\-\S\.]*
             /**
              * example:
              * 3
              */
             numberOfEvents?: number; // int64
-            websiteUrl?: CommonURL; // https?:\/\/[A-Za-z\.:0-9\-]*.{0,2083}$
-            restUrlJson?: CommonURL; // https?:\/\/[A-Za-z\.:0-9\-]*.{0,2083}$
-            restUrlYaml?: CommonURL; // https?:\/\/[A-Za-z\.:0-9\-]*.{0,2083}$
-            type?: string; // [\s\S]{0,1024}
+            websiteUrl?: CommonURL; // https?:\/\/[A-Za-z\.:0-9\-]*.*$
+            restUrlJson?: CommonURL; // https?:\/\/[A-Za-z\.:0-9\-]*.*$
+            restUrlYaml?: CommonURL; // https?:\/\/[A-Za-z\.:0-9\-]*.*$
+            type?: string; // [\s\S]*
         }
         export type EventAPIProductList = EventAPIProduct[];
         export interface History {
@@ -623,7 +623,7 @@ declare namespace Components {
              * example:
              * Update product "Product 1"
              */
-            title?: string; // .{1,1024}
+            title?: string; // .*
             /**
              * example:
              * PATCH
@@ -635,11 +635,11 @@ declare namespace Components {
              * 1610714525243
              */
             at?: number;
-            user?: CommonUserName; // [.a-zA-Z0-9@-_]{1,64}
+            user?: CommonUserName; // [.a-zA-Z0-9@-_]*
             /**
              * the request URI
              */
-            requestURI?: string; // .{1,1024}
+            requestURI?: string; // .*
             requestBody?: {
                 [name: string]: any;
             };
@@ -650,16 +650,16 @@ declare namespace Components {
             responseCode?: number; // int64
         }
         export interface MsgVpnAttributes {
-            authenticationClientCertEnabled: string; // [\s\S]{1,256}
-            authenticationBasicEnabled: string; // [\s\S]{1,256}
+            authenticationClientCertEnabled: string; // [\s\S]*
+            authenticationBasicEnabled: string; // [\s\S]*
         }
         /**
          * example:
          * API-GW-EU:AWS:1
          */
-        export type MsgVpnName = string; // ^[^*^?]{0,256}$
+        export type MsgVpnName = string; // ^[^*^?]*$
         export interface Organization {
-            name: CommonName; // [a-zA-Z0-9_-]{2,188}
+            name: CommonName; // [a-zA-Z0-9_-]*
             sempV2Authentication?: SempV2Authentication;
             "cloud-token"?: string /* ^[A-Za-z0-9-_=]+\.[A-Za-z0-9-_=]+\.?[A-Za-z0-9-_.+/=]*$ */  | CloudToken;
         }
@@ -734,11 +734,11 @@ declare namespace Components {
         }
         export interface Protocol {
             name: "amqp" | "amqps" | "http" | "https" | "jms" | "secure-jms" | "mqtt" | "secure-mqtt" | "ws-mqtt" | "wss-mqtt" | "ws" | "wss" | "smf" | "smfs" | "compressed-smf";
-            version?: CommonVersion; // [_\-\S\.]{0,100}
+            version?: CommonVersion; // [_\-\S\.]*
         }
         export interface Secret {
-            consumerKey: string; // [a-zA-Z0-9_-]{8,64}
-            consumerSecret?: string; // [a-zA-Z0-9_-]{8,64}
+            consumerKey: string; // [a-zA-Z0-9_-]*
+            consumerSecret?: string; // [a-zA-Z0-9_-]*
         }
         /**
          * Specifies how requests to the SEMPv2 Management API are authenticated, defaults to BasicAuth. If APIKey is specified the username returned in the Services/Environments response is used as API Key.
@@ -759,27 +759,27 @@ declare namespace Components {
              * example:
              * X-API-KEY
              */
-            apiKeyName?: string; // [a-zA-Z0-9_-]{4,512}
+            apiKeyName?: string; // [a-zA-Z0-9_-]*
         }
         /**
          * provides information about a service in the Solace Cloud account.
          */
         export interface Service {
-            type?: string; // [\s\S]{1,256}
+            type?: string; // [\s\S]*
             timestamp?: CommonTimestampInteger; // int64
-            userId?: CommonSolaceCloudObjectId; // [a-zA-Z0-9]{2,32}
-            serviceId?: CommonSolaceCloudObjectId; // [a-zA-Z0-9]{2,32}
-            infrastructureId?: CommonSolaceCloudObjectId; // [a-zA-Z0-9]{2,32}
-            name?: string; // [\s\S]{1,256}
-            msgVpnName?: MsgVpnName; // ^[^*^?]{0,256}$
-            datacenterId?: CommonSolaceCloudObjectId; // [a-zA-Z0-9]{2,32}
-            datacenterProvider?: string; // [\s\S]{1,256}
-            serviceTypeId?: CommonSolaceCloudObjectId; // [a-zA-Z0-9]{2,32}
-            serviceClassId?: CommonSolaceCloudObjectId; // [a-zA-Z0-9]{2,32}
-            adminState?: string; // [\s\S]{1,256}
-            adminProgress?: string; // [\s\S]{1,256}
+            userId?: CommonSolaceCloudObjectId; // [a-zA-Z0-9]*
+            serviceId?: CommonSolaceCloudObjectId; // [a-zA-Z0-9]*
+            infrastructureId?: CommonSolaceCloudObjectId; // [a-zA-Z0-9]*
+            name?: string; // [\s\S]*
+            msgVpnName?: MsgVpnName; // ^[^*^?]*$
+            datacenterId?: CommonSolaceCloudObjectId; // [a-zA-Z0-9]*
+            datacenterProvider?: string; // [\s\S]*
+            serviceTypeId?: CommonSolaceCloudObjectId; // [a-zA-Z0-9]*
+            serviceClassId?: CommonSolaceCloudObjectId; // [a-zA-Z0-9]*
+            adminState?: string; // [\s\S]*
+            adminProgress?: string; // [\s\S]*
             created?: CommonTimestampInteger; // int64
-            creationState?: string; // [\s\S]{1,256}
+            creationState?: string; // [\s\S]*
             /**
              * The protocols supported by this service
              */
@@ -787,19 +787,19 @@ declare namespace Components {
             msgVpnAttributes?: MsgVpnAttributes;
             locked?: boolean;
             messagingStorage?: number; // int64
-            serviceStage?: string; // [\s\S]{1,256}
-            servicePackageId?: CommonSolaceCloudObjectId; // [a-zA-Z0-9]{2,32}
+            serviceStage?: string; // [\s\S]*
+            servicePackageId?: CommonSolaceCloudObjectId; // [a-zA-Z0-9]*
             serviceClassDisplayedAttributes?: ServiceClassDisplayedAttributes;
             accountingLimits?: AccountingLimit[];
         }
         export interface ServiceClassDisplayedAttributes {
-            "High Availability": string; // [\s\S]{1,256}
-            "Network Speed": string; // [\s\S]{1,256}
-            Storage: string; // [\s\S]{1,256}
-            "Message Broker Tenancy": string; // [\s\S]{1,256}
-            Queues: string; // [\s\S]{1,256}
-            Clients: string; // [\s\S]{1,256}
-            "Network Usage": string; // [\s\S]{1,256}
+            "High Availability": string; // [\s\S]*
+            "Network Speed": string; // [\s\S]*
+            Storage: string; // [\s\S]*
+            "Message Broker Tenancy": string; // [\s\S]*
+            Queues: string; // [\s\S]*
+            Clients: string; // [\s\S]*
+            "Network Usage": string; // [\s\S]*
         }
         /**
          * example:
@@ -820,44 +820,54 @@ declare namespace Components {
          * A profile of a team. After the team is created, an app can be registered and API credentials are created
          */
         export interface Team {
-            displayName: CommonDisplayName; // [\/\sa-z.A-z0-9_-]{1,256}
-            name: CommonName; // [a-zA-Z0-9_-]{2,188}
+            displayName: CommonDisplayName; // [\/\sa-z.A-z0-9_-]*
+            name: CommonName; // [a-zA-Z0-9_-]*
             attributes?: Attributes;
         }
         /**
          * Used for PATCH operation, A profile of a team. After the team is created, an app can be registered and API credentials are created
          */
         export interface TeamPatch {
-            displayName?: CommonDisplayName; // [\/\sa-z.A-z0-9_-]{1,256}
+            displayName?: CommonDisplayName; // [\/\sa-z.A-z0-9_-]*
             attributes?: Attributes;
         }
         export interface Threshold {
-            type: string; // [\s\S]{1,256}
-            value: string; // [\s\S]{1,256}
+            type: string; // [\s\S]*
+            value: string; // [\s\S]*
         }
         export interface WebHook {
-            uri: string; // https?:\/\/[A-Za-z\.:0-9\-]*.{0,200}$
+            uri: string; // https?:\/\/[A-Za-z\.:0-9\-]*.*$
             /**
              * environments that this webhook serves, if absent webhook will be used for all environments
              */
-            environments?: CommonName /* [a-zA-Z0-9_-]{2,188} */ [];
+            environments?: CommonName /* [a-zA-Z0-9_-]* */ [];
             method: "POST" | "PUT";
             mode?: "parallel" | "serial";
             authentication?: WebHookAuth;
+            tlsOptions?: WebHookTLSOptions;
         }
         export type WebHookAuth = WebHookBasicAuth | WebHookHeaderAuth;
         export interface WebHookBasicAuth {
             authMethod?: "Basic";
-            username: CommonUserName; // [.a-zA-Z0-9@-_]{1,64}
-            password: string; // [\S]{8,256}
+            username: CommonUserName; // [.a-zA-Z0-9@-_]*
+            password: string; // [\S]*
         }
         /**
          * A HTTP header used for authentication
          */
         export interface WebHookHeaderAuth {
             authMethod?: "Header";
-            headerName: string; // [\s\S]{1,512}
-            headerValue: string; // [\s\S]{1,16384}
+            headerName: string; // [\s\S]*
+            headerValue: string; // [\s\S]*
+        }
+        /**
+         * TLS options required to support older PS+ brokers.
+         */
+        export interface WebHookTLSOptions {
+            /**
+             * The Trusted Common Names for the REST Consumer are used by encrypted transports to verify the name in the certificate presented by the remote REST consumer. They must include the common name of the remote REST consumer's server certificate.
+             */
+            tlsTrustedCommonNames?: string[];
         }
     }
 }
@@ -1395,20 +1405,20 @@ declare namespace Paths {
             export type $429 = Components.Responses.TooManyRequests;
             export type $500 = Components.Responses.InternalServerError;
             export interface $503 {
-                status?: string; // [\S]{1,128}
+                status?: string; // [\S]*
                 error?: {
                     /**
                      * example:
                      * NO_DB_CONNECTION
                      */
-                    message?: string; // [\S\s]{0,1024}
+                    message?: string; // [\S\s]*
                 }[];
                 details?: {
                     /**
                      * example:
                      * NO_DB_CONNECTION
                      */
-                    message?: string; // [\S\s]{0,1024}
+                    message?: string; // [\S\s]*
                 }[];
             }
             export type $504 = Components.Responses.GatewayTimeout;
@@ -1462,7 +1472,7 @@ declare namespace Paths {
     }
     namespace ListAppApiSpecifications {
         namespace Responses {
-            export type $200 = string /* [a-zA-Z0-9_-]{4,188} */ [];
+            export type $200 = string /* [a-zA-Z0-9_-]* */ [];
             export type $400 = Components.Responses.BadRequest;
             export type $401 = Components.Responses.Unauthorized;
             export type $403 = Components.Responses.Forbidden;
