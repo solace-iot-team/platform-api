@@ -2,7 +2,7 @@ openapi: 3.0.0
 info:
   title: Solace API Management Connector
   description: 'Solace API Management Connector API. Note: basic authentication security mechanism is deprecated.'
-  version: 0.5.1
+  version: 0.5.2
 servers:
   - url: /v1
 
@@ -1542,6 +1542,19 @@ components:
       anyOf:
         - $ref: '#/components/schemas/WebHookBasicAuth'
         - $ref: '#/components/schemas/WebHookHeaderAuth'    
+    WebHookTLSOptions:
+      additionalProperties: false
+      description: TLS options required to support older PS+ brokers.
+      deprecated: true 
+      properties:
+        tlsTrustedCommonNames:
+          type: array
+          items: 
+            type: string
+          minItems: 0
+          maxItems: 255
+          description: "The Trusted Common Names for the REST Consumer are used by encrypted transports to verify the name in the certificate presented by the remote REST consumer. They must include the common name of the remote REST consumer's server certificate."
+    
     WebHook:
       type: object
       required:
@@ -1577,6 +1590,8 @@ components:
           default: parallel
         authentication:
           "$ref": "#/components/schemas/WebHookAuth"
+        tlsOptions:
+          "$ref": "#/components/schemas/WebHookTLSOptions"          
 
     Endpoint:
       type: object
