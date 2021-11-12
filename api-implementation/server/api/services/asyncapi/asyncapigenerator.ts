@@ -10,7 +10,7 @@ import ApiProductsService from '../apiProducts.service';
 
 import App = Components.Schemas.App;
 import APIProduct = Components.Schemas.APIProduct;
-
+import AppEnvironment = Components.Schemas.AppEnvironment;
 import { ErrorResponseInternal } from '../../middlewares/error.handler';
 
 class AsyncApiGenerator {
@@ -30,8 +30,33 @@ class AsyncApiGenerator {
 
   }
 
+  public async getSpecificationByApiProduct(apiName: string, apiProduct: APIProduct): Promise<string> {
+    const spec = await ApisService.byName(apiName);
+    // parse the spec - try to treat as JSON, if fails treat as YAML
+    let specModel = null;
+    try {
+      specModel = JSON.parse(spec);
+    } catch (e) {
+      specModel = JSON.parse(AsyncAPIHelper.YAMLtoJSON(spec));
+    }
+    specModel.servers = await this.getServersByApiProduct(apiProduct);
+    specModel.components.securitySchemes = this.getSecuritySchemes();
+    await this.processApiProductChannelBindings(apiProduct, null, specModel.channels);
+    return JSON.stringify(specModel);
+
+  }
+
   private async getServers(app: App): Promise<any> {
-    const envs = await BrokerService.getMessagingProtocols(app);
+    const envs: AppEnvironment[] = await BrokerService.getMessagingProtocols(app);
+    return this.mapServers(envs);
+  }
+
+  private async getServersByApiProduct(apiProduct: APIProduct): Promise<any> {
+    const envs: AppEnvironment[] = await BrokerService.getMessagingProtocolsByAPIProduct(apiProduct);
+    return this.mapServers(envs);
+  }
+
+  private mapServers(envs: AppEnvironment[]): any {
     const servers = {};
     for (const env of envs) {
       for (const protocol of env.messagingProtocols) {
@@ -75,21 +100,25 @@ class AsyncApiGenerator {
     const apiProducts: APIProduct[] = await this.findAPIProductsByAPIName(apiName, app);
     L.debug(`processChannelBindings found API Products ${apiProducts}`);
     for (const apiProduct of apiProducts) {
-      if (apiProduct.protocols) {
-        for (const protocol of apiProduct.protocols) {
-          L.info(`processChannelBindings processing  ${apiProduct.name} protocol ${protocol.name}`);
-          const generator: BindingsGenerator = BindingsRegistry.getGeneratorByProtocol(protocol);
-          if (generator) {
-            await generator.processChannels(channels, app, apiProduct);
-          } else {
-            L.warn(`No BindingsGenerator registered for ${protocol.name}`);
-          }
-        }
-      }
+      await this.processApiProductChannelBindings(apiProduct, app, channels);
     }
 
   }
 
+  private async processApiProductChannelBindings(apiProduct: APIProduct, app: App, channels: any) {
+    if (apiProduct.protocols) {
+      for (const protocol of apiProduct.protocols) {
+        L.info(`processChannelBindings processing  ${apiProduct.name} protocol ${protocol.name}`);
+        const generator: BindingsGenerator = BindingsRegistry.getGeneratorByProtocol(protocol);
+        if (generator) {
+          await generator.processChannels(channels, app, apiProduct);
+        } else {
+          L.warn(`No BindingsGenerator registered for ${protocol.name}`);
+        }
+      }
+
+    }
+  }
 
   private async findAPIProductsByAPIName(apiName: string, app: App): Promise<APIProduct[]> {
     let apiProducts: APIProduct[] = [];
@@ -97,7 +126,7 @@ class AsyncApiGenerator {
       const results = await ApiProductsService.all({ name: productName, apis: [apiName] });
       if (results.length > 1) {
         throw new ErrorResponseInternal(500, 'Find multiple matching documents for API Product Name');
-      } else if (results.length==1){
+      } else if (results.length == 1) {
         apiProducts = apiProducts.concat(results);
       }
     }

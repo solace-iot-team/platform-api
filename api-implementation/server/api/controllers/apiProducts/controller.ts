@@ -2,6 +2,7 @@ import ApiProductsService from '../../services/apiProducts.service';
 import { NextFunction, Request, Response } from 'express';
 import L from '../../../common/logger';
 import { ErrorResponseInternal } from '../../middlewares/error.handler';
+import AsyncAPIHelper from '../../../../src/asyncapihelper';
 
 export class Controller {
   all(req: Request, res: Response): void {
@@ -40,6 +41,26 @@ export class Controller {
       res.status(r).send();
     }).catch((e) => next(e));
   }
+
+  allApis(req: Request, res: Response, next: NextFunction): void {
+    ApiProductsService.apiList(req.params['name'])
+      .then((r) => res.json(r))
+      .catch(e => {
+        L.error(e);
+        next(e);
+      });
+  }
+
+  apiByName(req: Request, res: Response, next: NextFunction): void {
+    ApiProductsService.apiByName(req.params['name'], req.params['api'])
+      .then((r) => {
+        AsyncAPIHelper.handleResponse(r, req, res, next);
+      })
+      .catch((e) => {
+        L.error(e);
+        next(e);
+      });
+  };
 
 }
 export default new Controller();

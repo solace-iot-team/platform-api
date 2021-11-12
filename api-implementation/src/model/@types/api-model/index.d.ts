@@ -1200,6 +1200,28 @@ declare namespace Paths {
             export type $504 = Components.Responses.GatewayTimeout;
         }
     }
+    namespace GetApiProductApiSpecification {
+        namespace Parameters {
+            export type Format = "application/json" | "application/x-yaml";
+        }
+        export interface QueryParameters {
+            format?: Parameters.Format;
+        }
+        namespace Responses {
+            export interface $200 {
+                [name: string]: any;
+            }
+            export type $400 = Components.Responses.BadRequest;
+            export type $401 = Components.Responses.Unauthorized;
+            export type $403 = Components.Responses.Forbidden;
+            export type $404 = Components.Responses.NotFound;
+            export type $406 = Components.Responses.NotAcceptable;
+            export type $429 = Components.Responses.TooManyRequests;
+            export type $500 = Components.Responses.InternalServerError;
+            export type $503 = Components.Responses.ServiceUnavailable;
+            export type $504 = Components.Responses.GatewayTimeout;
+        }
+    }
     namespace GetApp {
         namespace Responses {
             export type $200 = Components.Schemas.AppResponse;
@@ -1436,6 +1458,20 @@ declare namespace Paths {
             export type $404 = Components.Responses.NotFound;
             export type $406 = Components.Responses.NotAcceptable;
             export type $415 = Components.Responses.UnsupportedMediaType;
+            export type $429 = Components.Responses.TooManyRequests;
+            export type $500 = Components.Responses.InternalServerError;
+            export type $503 = Components.Responses.ServiceUnavailable;
+            export type $504 = Components.Responses.GatewayTimeout;
+        }
+    }
+    namespace ListApiProductApis {
+        namespace Responses {
+            export type $200 = string /* [a-zA-Z0-9_-]* */ [];
+            export type $400 = Components.Responses.BadRequest;
+            export type $401 = Components.Responses.Unauthorized;
+            export type $403 = Components.Responses.Forbidden;
+            export type $404 = Components.Responses.NotFound;
+            export type $406 = Components.Responses.NotAcceptable;
             export type $429 = Components.Responses.TooManyRequests;
             export type $500 = Components.Responses.InternalServerError;
             export type $503 = Components.Responses.ServiceUnavailable;

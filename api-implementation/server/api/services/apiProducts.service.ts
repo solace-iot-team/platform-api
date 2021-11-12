@@ -7,6 +7,7 @@ import AppsService from './apps.service';
 
 import ApisService from './apis.service';
 import { ErrorResponseInternal } from '../middlewares/error.handler';
+import asyncapigenerator from './asyncapi/asyncapigenerator';
 
 
 export class ApiProductsService {
@@ -81,6 +82,16 @@ export class ApiProductsService {
       throw e;
     }
   }
+
+  async apiList(apiProductName: string): Promise<string[]> {
+    const apiProduct: APIProduct = await this.byName(apiProductName);
+    return apiProduct.apis;
+  }
+  async apiByName(apiProductName: string, name: string): Promise<string> {
+    const apiProduct = await this.byName(apiProductName);
+    return asyncapigenerator.getSpecificationByApiProduct(name, apiProduct);
+  }
+
 
   private async canDelete(name: string): Promise<boolean> {
     var q: any = {
