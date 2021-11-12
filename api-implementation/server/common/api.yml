@@ -2,7 +2,7 @@ openapi: 3.0.0
 info:
   title: Solace API Management Connector
   description: 'Solace API Management Connector API. Note: basic authentication security mechanism is deprecated.'
-  version: 0.5.2
+  version: 0.5.3
 servers:
   - url: /v1
 
@@ -2659,6 +2659,97 @@ paths:
            "application/json":
             schema:
              "$ref": "#/components/schemas/ErrorResponse"
+        '400':
+           $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '406':
+          $ref: '#/components/responses/NotAcceptable'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
+        '504':
+          $ref: '#/components/responses/GatewayTimeout'
+  /{organization_name}/apiProducts/{api_product_name}/apis:
+    parameters:
+    - $ref: '#/components/parameters/organization'
+    - $ref: '#/components/parameters/api_product_name'
+    get:
+     operationId: listApiProductApis
+     tags:
+     - apps
+     parameters:
+     - $ref: '#/components/parameters/page_size'
+     - $ref: '#/components/parameters/page_number'
+     - $ref: '#/components/parameters/sort_field_name'
+     - $ref: '#/components/parameters/sort_direction'
+     responses:
+        '200':
+          description:  api names associated with the api product
+          content:
+            application/json:
+              schema:
+                type: array
+                minItems: 0
+                maxItems: 32768
+                items:
+                 type: string
+                 minLength: 4
+                 maxLength: 188
+                 pattern: "[a-zA-Z0-9_-]*"
+        '400':
+           $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '406':
+          $ref: '#/components/responses/NotAcceptable'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
+        '504':
+          $ref: '#/components/responses/GatewayTimeout'
+  /{organization_name}/apiProducts/{api_product_name}/apis/{api_name}:
+    parameters:
+    - $ref: '#/components/parameters/organization'
+    - $ref: '#/components/parameters/api_product_name'
+    - $ref: '#/components/parameters/api_name'
+    get:
+     operationId: getApiProductApiSpecification
+     tags:
+     - apps
+     parameters:
+     - name: format
+       in: query
+       schema:
+        type: string
+        enum:
+        - application/json
+        - application/x-yaml
+     responses:
+        '200':
+          description:  async api sepc
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+            application/x-yaml:
+              schema:
+                $ref: "#/components/schemas/String2MB"
         '400':
            $ref: '#/components/responses/BadRequest'
         '401':

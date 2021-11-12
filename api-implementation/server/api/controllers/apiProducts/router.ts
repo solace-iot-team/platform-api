@@ -6,5 +6,8 @@ export default express
   .get('/:name', controller.byName)
   .post('/', controller.create)
   .patch('/:name', controller.update)
-  .delete('/:name', controller.delete);
+  .delete('/:name', controller.delete)
+  .get('/:name/apis', controller.allApis)
+  .get('/:name/apis/:api', controller.apiByName)
+  ;
 
