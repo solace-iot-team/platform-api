@@ -2,7 +2,7 @@ openapi: 3.0.0
 info:
   title: Solace API Management Connector
   description: 'Solace API Management Connector API. Note: basic authentication security mechanism is deprecated.'
-  version: 0.5.3
+  version: 0.5.4
 servers:
   - url: /v1
 
@@ -157,7 +157,7 @@ components:
         - compact
         - summary
         - extended
-  responses:        
+  responses:
     BadRequest:
       description: Bad Request.
       content:
@@ -334,10 +334,10 @@ components:
           - boolean
         enum:
           type: array
-          description: any allowed enumerated values for the parameter 
+          description: any allowed enumerated values for the parameter
           minItems: 1
           maxItems: 32768
-          items: 
+          items:
             type: string
             minLength: 1
             maxLength: 512
@@ -391,7 +391,7 @@ components:
           minItems: 0
           maxItems: 32768
           items:
-            $ref: '#/components/schemas/APIParameter'  
+            $ref: '#/components/schemas/APIParameter'
         sourceMetadata:
           description: any metadata as returned by the external System (if applicable)
           type: object
@@ -482,7 +482,7 @@ components:
             items:
               $ref: '#/components/schemas/Protocol'
           clientOptions:
-            $ref: '#/components/schemas/ClientOptions'  
+            $ref: '#/components/schemas/ClientOptions'
 
     APIProductPatch:
       type: object
@@ -539,7 +539,7 @@ components:
             items:
               $ref: '#/components/schemas/Protocol'
           clientOptions:
-            $ref: '#/components/schemas/ClientOptions'  
+            $ref: '#/components/schemas/ClientOptions'
 
     Developer:
       description: "A profile for a developer. After the developer is created, they can register an app and receive API credentials"
@@ -581,7 +581,7 @@ components:
           type: string
           minLength: 1
           maxLength: 512
-          format: email 
+          format: email
           pattern: ".*@.*\\.[a-zA-Z]*"
         firstName:
           type: string
@@ -649,7 +649,7 @@ components:
       type: array
       minItems: 0
       maxItems: 32768
-      
+
 
     ClientOptions:
       type: object
@@ -690,7 +690,7 @@ components:
           description: The maximum message spool usage allowed by the Queue, in megabytes (MB). A value of 0 only allows spooling of the last message received and disables quota checking
           default: 500
           example: 50
-    
+
     ClientInformation:
       type: object
       additionalProperties: false
@@ -719,7 +719,7 @@ components:
           enum:
           - exclusive
           - non-exclusive
-    
+
     App:
       type: object
       description: "An app associated with an owner (developer, team etc). Associates the app with an API product, and auto-generates an API credentials for the app to use"
@@ -777,7 +777,7 @@ components:
             type: string
             pattern: "[a-zA-Z0-9_-]*"
             minLength: 4
-            maxLength: 188            
+            maxLength: 188
           minItems: 0
           maxItems: 255
         attributes:
@@ -836,7 +836,7 @@ components:
           minItems: 0
           maxItems: 255
           items:
-            $ref: '#/components/schemas/ClientInformation'  
+            $ref: '#/components/schemas/ClientInformation'
         callbackUrl:
             $ref: '#/components/schemas/CommonURL'
         webHooks:
@@ -865,7 +865,7 @@ components:
       additionalProperties: false
       properties:
           name:
-            $ref: "#/components/schemas/CommonName"           
+            $ref: "#/components/schemas/CommonName"
           displayName:
             $ref: '#/components/schemas/CommonDisplayName'
           appType:
@@ -878,14 +878,14 @@ components:
             example: "Developer-1"
             pattern: ".*"
             minLength: 4
-            maxLength: 188          
+            maxLength: 188
           apiProducts:
             type: array
             items:
               type: string
               pattern: "[a-zA-Z0-9_-]*"
               minLength: 4
-              maxLength: 188            
+              maxLength: 188
             minItems: 0
             maxItems: 255
           status:
@@ -1027,11 +1027,11 @@ components:
       additionalProperties: true
       properties:
         name:
-          $ref: "#/components/schemas/CommonName"          
+          $ref: "#/components/schemas/CommonName"
         displayName:
           $ref: '#/components/schemas/CommonDisplayName'
         description:
-          $ref: "#/components/schemas/CommonDescription"          
+          $ref: "#/components/schemas/CommonDescription"
         serviceId:
           type: string
           example: xm7dc2dfas4
@@ -1072,7 +1072,7 @@ components:
       additionalProperties: false
       properties:
         name:
-          $ref: "#/components/schemas/CommonName"          
+          $ref: "#/components/schemas/CommonName"
         displayName:
           $ref: '#/components/schemas/CommonDisplayName'
         description:
@@ -1092,7 +1092,7 @@ components:
           items:
             $ref: '#/components/schemas/Endpoint'
         serviceId:
-          $ref: '#/components/schemas/CommonSolaceCloudObjectId'  
+          $ref: '#/components/schemas/CommonSolaceCloudObjectId'
         serviceName:
           type: string
           example: DEV-GW
@@ -1127,7 +1127,7 @@ components:
           maxLength: 256
           pattern: "[\\s\\S]*"
         serviceClassDisplayedAttributes:
-          $ref: '#/components/schemas/ServiceClassDisplayedAttributes'  
+          $ref: '#/components/schemas/ServiceClassDisplayedAttributes'
 
     ServiceClassDisplayedAttributes:
       type: object
@@ -1277,7 +1277,7 @@ components:
         servicePackageId:
           $ref: "#/components/schemas/CommonSolaceCloudObjectId"
         serviceClassDisplayedAttributes:
-          $ref: '#/components/schemas/ServiceClassDisplayedAttributes'  
+          $ref: '#/components/schemas/ServiceClassDisplayedAttributes'
         accountingLimits:
           type: array
           minItems: 0
@@ -1370,9 +1370,9 @@ components:
           - "$ref": "#/components/schemas/CloudToken"
 
     SempV2Authentication:
-      description: Specifies how requests to the SEMPv2 Management API are authenticated, defaults to BasicAuth. If APIKey is specified the username returned in the Services/Environments response is used as API Key. 
+      description: Specifies how requests to the SEMPv2 Management API are authenticated, defaults to BasicAuth. If APIKey is specified the username returned in the Services/Environments response is used as API Key.
       type: object
-      required: 
+      required:
       - authType
       additionalProperties: false
       properties:
@@ -1396,8 +1396,8 @@ components:
           maxLength: 512
           pattern: "[a-zA-Z0-9_-]*"
           description: the name of the query parameter or HTTP header for submitting the API Key
-          example: X-API-KEY  
-    
+          example: X-API-KEY
+
     CloudToken:
       type: object
       required:
@@ -1511,7 +1511,7 @@ components:
           minLength: 8
           maxLength: 256
           pattern: "[\\S]*"
-          
+
       required:
       - username
       - password
@@ -1536,25 +1536,26 @@ components:
           pattern: "[\\s\\S]*"
       required:
       - headerName
-      - headerValue     
+      - headerValue
     WebHookAuth:
       additionalProperties: true
       anyOf:
         - $ref: '#/components/schemas/WebHookBasicAuth'
-        - $ref: '#/components/schemas/WebHookHeaderAuth'    
+        - $ref: '#/components/schemas/WebHookHeaderAuth'
     WebHookTLSOptions:
-      additionalProperties: false
+      type: object
       description: TLS options required to support older PS+ brokers.
-      deprecated: true 
+      additionalProperties: false
+      deprecated: true
       properties:
         tlsTrustedCommonNames:
           type: array
-          items: 
+          items:
             type: string
           minItems: 0
           maxItems: 255
           description: "The Trusted Common Names for the REST Consumer are used by encrypted transports to verify the name in the certificate presented by the remote REST consumer. They must include the common name of the remote REST consumer's server certificate."
-    
+
     WebHook:
       type: object
       required:
@@ -1591,7 +1592,7 @@ components:
         authentication:
           "$ref": "#/components/schemas/WebHookAuth"
         tlsOptions:
-          "$ref": "#/components/schemas/WebHookTLSOptions"          
+          "$ref": "#/components/schemas/WebHookTLSOptions"
 
     Endpoint:
       type: object
@@ -1636,26 +1637,26 @@ components:
           description: version information
           example: {"connector-version":"1.0"}
           additionalProperties: true
-    
+
     APIList:
       type: array
       minItems: 0
       maxItems: 32768
-      items: 
+      items:
          "$ref": "#/components/schemas/CommonName"
-         
+
     APISummaryList:
       type: array
       minItems: 0
       maxItems: 32768
-      items: 
+      items:
         "$ref": "#/components/schemas/APISummary"
 
     APISummary:
       type: object
       additionalProperties: false
       properties:
-          name: 
+          name:
             $ref: "#/components/schemas/CommonName"
           description:
             $ref: "#/components/schemas/CommonDescription"
@@ -1672,7 +1673,7 @@ components:
       type: array
       minItems: 0
       maxItems: 32768
-      items: 
+      items:
         "$ref": "#/components/schemas/APIInfo"
 
     String2MB:
@@ -1706,7 +1707,7 @@ components:
       type: string
       pattern: "[a-zA-Z0-9_-]*"
       minLength: 2
-      maxLength: 188    
+      maxLength: 188
     CommonUserName:
       type: string
       minLength: 1
@@ -1735,7 +1736,7 @@ components:
       format: int64
       example: 1620311683577
       maximum: 9007199254740991
-      minimum: 0   
+      minimum: 0
     CommonURL:
       type: string
       minLength: 8
@@ -3119,7 +3120,7 @@ paths:
           content:
            "application/json":
             schema:
-             "$ref": "#/components/schemas/ErrorResponse"       
+             "$ref": "#/components/schemas/ErrorResponse"
         '401':
           $ref: '#/components/responses/Unauthorized'
         '403':
