@@ -246,6 +246,7 @@ declare namespace Components {
         }
         export interface AppEnvironment {
             name?: CommonName; // [a-zA-Z0-9_-]*
+            displayName?: CommonDisplayName; // [\/\sa-z.A-z0-9_-]*
             messagingProtocols?: Endpoint[];
             permissions?: Permissions;
         }
