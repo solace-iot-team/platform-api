@@ -2,7 +2,7 @@ openapi: 3.0.0
 info:
   title: Solace API Management Connector
   description: 'Solace API Management Connector API. Note: basic authentication security mechanism is deprecated.'
-  version: 0.5.4
+  version: 0.5.5
 servers:
   - url: /v1
 
@@ -897,6 +897,8 @@ components:
       properties:
         name:
           $ref: "#/components/schemas/CommonName"
+        displayName:
+          $ref: '#/components/schemas/CommonDisplayName'
         messagingProtocols:
           type: array
           minItems: 0
@@ -2685,7 +2687,7 @@ paths:
     get:
      operationId: listApiProductApis
      tags:
-     - apps
+     - apiProducts
      parameters:
      - $ref: '#/components/parameters/page_size'
      - $ref: '#/components/parameters/page_number'
@@ -2731,7 +2733,7 @@ paths:
     get:
      operationId: getApiProductApiSpecification
      tags:
-     - apps
+     - apiProducts
      parameters:
      - name: format
        in: query

@@ -9,6 +9,7 @@ import Endpoint = Components.Schemas.Endpoint;
 import AppEnvironment = Components.Schemas.AppEnvironment;
 import WebHook = Components.Schemas.WebHook;
 import TopicSyntax = Components.Parameters.TopicSyntax.TopicSyntax;
+import EnvironmentResponse = Components.Schemas.EnvironmentResponse;
 
 import ApiProductsService from './apiProducts.service';
 import ACLManager from './broker/aclmanager';
@@ -494,8 +495,10 @@ class BrokerService {
     for (const envName of product.environments) {
       let appEnv = appEnvironments.find((ae) => ae.name == envName);
       if (appEnv === undefined) {
+        const env: EnvironmentResponse = await EnvironmentsService.byName(envName);
         appEnv = {
-          name: envName,
+          name: env.name,
+          displayName: env.displayName?env.displayName:env.name,
         };
         appEnvironments.push(appEnv);
       }
