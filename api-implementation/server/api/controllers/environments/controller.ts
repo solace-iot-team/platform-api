@@ -41,6 +41,14 @@ export class Controller {
       .catch((e) => next(e));
   }
 
+  apiProductsByName(req: Request, res: Response, next: NextFunction): void {
+    EnvironmentsService.apiProductsByName(req.params['name'])
+      .then((r) => res.json(r))
+      .catch((e) => {
+        next(e);
+      });
+  };
+
   delete(req: Request, res: Response, next: NextFunction): void {
     EnvironmentsService.delete(req.params['name'])
       .then((r) => {

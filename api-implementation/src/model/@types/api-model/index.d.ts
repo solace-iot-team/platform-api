@@ -398,6 +398,17 @@ declare namespace Components {
          */
         export type CommonDisplayName = string; // [\/\sa-z.A-z0-9_-]*
         /**
+         * Name and display name attribute of an entity
+         */
+        export type CommonEntityNameList = CommonEntityNames[];
+        /**
+         * Name and display name attribute of an entity
+         */
+        export interface CommonEntityNames {
+            name?: CommonName; // [a-zA-Z0-9_-]*
+            displayName?: CommonName; // [a-zA-Z0-9_-]*
+        }
+        /**
          * The internal name of an object. Characters you can use in the name are restricted to: A-Z0-9._-. Once the object is created the internal name can not be changed
          * example:
          * {name}
@@ -1223,6 +1234,20 @@ declare namespace Paths {
             export type $504 = Components.Responses.GatewayTimeout;
         }
     }
+    namespace GetApiReferencedByAPIProducts {
+        namespace Responses {
+            export type $200 = Components.Schemas.CommonEntityNameList;
+            export type $400 = Components.Responses.BadRequest;
+            export type $401 = Components.Responses.Unauthorized;
+            export type $403 = Components.Responses.Forbidden;
+            export type $404 = Components.Responses.NotFound;
+            export type $406 = Components.Responses.NotAcceptable;
+            export type $429 = Components.Responses.TooManyRequests;
+            export type $500 = Components.Responses.InternalServerError;
+            export type $503 = Components.Responses.ServiceUnavailable;
+            export type $504 = Components.Responses.GatewayTimeout;
+        }
+    }
     namespace GetApp {
         namespace Responses {
             export type $200 = Components.Schemas.AppResponse;
@@ -1296,6 +1321,20 @@ declare namespace Paths {
             export type $404 = Components.Responses.NotFound;
             export type $406 = Components.Responses.NotAcceptable;
             export type $409 = Components.Schemas.ErrorResponse;
+            export type $429 = Components.Responses.TooManyRequests;
+            export type $500 = Components.Responses.InternalServerError;
+            export type $503 = Components.Responses.ServiceUnavailable;
+            export type $504 = Components.Responses.GatewayTimeout;
+        }
+    }
+    namespace GetEnvironmentReferencedByAPIProducts {
+        namespace Responses {
+            export type $200 = Components.Schemas.CommonEntityNameList;
+            export type $400 = Components.Responses.BadRequest;
+            export type $401 = Components.Responses.Unauthorized;
+            export type $403 = Components.Responses.Forbidden;
+            export type $404 = Components.Responses.NotFound;
+            export type $406 = Components.Responses.NotAcceptable;
             export type $429 = Components.Responses.TooManyRequests;
             export type $500 = Components.Responses.InternalServerError;
             export type $503 = Components.Responses.ServiceUnavailable;
@@ -1510,6 +1549,20 @@ declare namespace Paths {
     namespace ListAppApiSpecifications {
         namespace Responses {
             export type $200 = string /* [a-zA-Z0-9_-]* */ [];
+            export type $400 = Components.Responses.BadRequest;
+            export type $401 = Components.Responses.Unauthorized;
+            export type $403 = Components.Responses.Forbidden;
+            export type $404 = Components.Responses.NotFound;
+            export type $406 = Components.Responses.NotAcceptable;
+            export type $429 = Components.Responses.TooManyRequests;
+            export type $500 = Components.Responses.InternalServerError;
+            export type $503 = Components.Responses.ServiceUnavailable;
+            export type $504 = Components.Responses.GatewayTimeout;
+        }
+    }
+    namespace ListAppReferencesToAPIProducts {
+        namespace Responses {
+            export type $200 = Components.Schemas.CommonEntityNameList;
             export type $400 = Components.Responses.BadRequest;
             export type $401 = Components.Responses.Unauthorized;
             export type $403 = Components.Responses.Forbidden;

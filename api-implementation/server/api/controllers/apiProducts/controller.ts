@@ -62,5 +62,13 @@ export class Controller {
       });
   };
 
+  appsByName(req: Request, res: Response, next: NextFunction): void {
+    ApiProductsService.appsByName(req.params['name'])
+      .then((r) => res.json(r))
+      .catch((e) => {
+        L.error(e);
+        next(e);
+      });
+  };
 }
 export default new Controller();

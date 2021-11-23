@@ -13,6 +13,9 @@ import { ApisReadStrategy } from './apis/read.strategy';
 import ApisReadStrategyFactory from './apis/read.strategy.factory';
 import ApiListFormat = Components.Parameters.ApiListFormat.Format;
 import APIParameter = Components.Schemas.APIParameter;
+import CommonEntityNameList = Components.Schemas.CommonEntityNameList;
+import CommonEntityNames = Components.Schemas.CommonEntityNames;
+import APIProduct = Components.Schemas.APIProduct;
 export interface APISpecification {
   name: string;
   specification: string;
@@ -45,6 +48,19 @@ export class ApisService {
       apiInfo.apiParameters = params;
     }
     return apiInfo;
+  }
+
+  async apiProductsByName(name: string): Promise<CommonEntityNameList> {
+    const apiProducts: APIProduct[] = await APIProductsService.all({apis: name});
+    const names: CommonEntityNameList = [];
+    for (const apiProduct of apiProducts){
+      const name: CommonEntityNames = {
+        displayName: apiProduct.displayName,
+        name: apiProduct.name,
+      };
+      names.push(name);
+    }
+    return names;
   }
 
   async delete(name: string): Promise<number> {

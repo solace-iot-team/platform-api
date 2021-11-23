@@ -8,6 +8,9 @@ import { ProtocolMapper } from '../../../src/protocolmapper';
 import SolaceCloudFacade from '../../../src/solacecloudfacade';
 import { ErrorResponseInternal } from '../middlewares/error.handler';
 import APIProductsService from './apiProducts.service';
+import CommonEntityNameList = Components.Schemas.CommonEntityNameList;
+import CommonEntityNames = Components.Schemas.CommonEntityNames;
+import APIProduct = Components.Schemas.APIProduct;
 
 export class EnvironmentsService {
   private persistenceService: PersistenceService;
@@ -63,6 +66,19 @@ export class EnvironmentsService {
       messagingProtocols: messagingProtocols,
     };
     return response;
+  }
+
+  async apiProductsByName(name: string): Promise<CommonEntityNameList> {
+    const apiProducts: APIProduct[] = await APIProductsService.all({ environments: name });
+    const names: CommonEntityNameList = [];
+    for (const apiProduct of apiProducts) {
+      const name: CommonEntityNames = {
+        displayName: apiProduct.displayName,
+        name: apiProduct.name,
+      };
+      names.push(name);
+    }
+    return names;
   }
 
   async delete(name: string): Promise<number> {
@@ -129,6 +145,20 @@ export class EnvironmentsService {
   private async validateReferences(env: Environment): Promise<ErrorResponseInternal> {
     try {
       L.debug(`Validating env ${env.name}`);
+      const q = {
+        serviceId: env.serviceId,
+        name: {
+          $ne: env.name,
+        },
+      };
+
+      const envsWithMatchingServiceIds = await this.persistenceService.all(q);
+      if (envsWithMatchingServiceIds && envsWithMatchingServiceIds.length>0){
+        return new ErrorResponseInternal(
+          422,
+          `an environment referencing service ${env.serviceId} already exists`
+        );
+      }
       const svc = await SolaceCloudFacade.getServiceByEnvironment(env);
       if (svc == null) {
         return new ErrorResponseInternal(

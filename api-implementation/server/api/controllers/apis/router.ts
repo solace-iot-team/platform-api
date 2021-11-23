@@ -6,6 +6,7 @@ export default express
   .post('/', controller.import)
   .get('/:name', controller.byName)
   .get('/:name/info', controller.infoByName)
+  .get('/:name/apiProducts', controller.apiProductsByName)
   .put('/:name', controller.create)
   .patch('/:name', controller.update)
   .delete('/:name', controller.delete);
