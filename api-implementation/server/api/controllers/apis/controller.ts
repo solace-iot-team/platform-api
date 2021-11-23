@@ -31,6 +31,15 @@ export class Controller {
       });
   };
 
+  apiProductsByName(req: Request, res: Response, next: NextFunction): void {
+    ApisService.apiProductsByName(req.params['name'])
+      .then((r) => res.json(r))
+      .catch((e) => {
+        L.error(e);
+        next(e);
+      });
+  };
+
   create(req: Request, res: Response, next: NextFunction): void {
     ApisService.create(req.params['name'],req.body)
       .then((r) => {
