@@ -1,5 +1,8 @@
 import L from '../../common/logger';
 import APIProduct = Components.Schemas.APIProduct;
+import AppListitem = Components.Schemas.AppListItem;
+import CommonEntityNameList = Components.Schemas.CommonEntityNameList;
+import CommonEntityNames = Components.Schemas.CommonEntityNames;
 import { PersistenceService } from './persistence.service';
 
 import EnvironmentsService from './environments.service';
@@ -92,8 +95,28 @@ export class ApiProductsService {
     return asyncapigenerator.getSpecificationByApiProduct(name, apiProduct);
   }
 
-
+  async appsByName(name: string): Promise<CommonEntityNameList> {
+    const apps: AppListitem[] = await this.listAppsReferencingProduct(name);
+    const names: CommonEntityNameList = [];
+    for (const app of apps){
+      const name: CommonEntityNames = {
+        displayName: app.displayName,
+        name: app.name,
+      };
+      names.push(name);
+    }
+    return names;
+  }
   private async canDelete(name: string): Promise<boolean> {
+    var apps = await this.listAppsReferencingProduct(name);
+    if (apps == null || apps.length == 0) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+  private async listAppsReferencingProduct(name: string): Promise<AppListitem[]> {
     var q: any = {
       apiProducts: {
         $elemMatch: {
@@ -103,11 +126,7 @@ export class ApiProductsService {
     }
     L.info(q);
     var apps = await AppsService.list(q);
-    if (apps == null || apps.length == 0) {
-      return true;
-    } else {
-      return false;
-    }
+    return apps;
   }
 
   private async validateReferences(product: APIProduct): Promise<boolean> {
