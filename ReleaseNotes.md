@@ -1,5 +1,27 @@
 # Release Notes
 
+## Version 0.3.0
+* OpenAPI: 0.5.6
+* API Management Connector Server: 0.3.0
+
+### Features
+* **App Resources**
+  - WebHook specification: added TLS trusted common names to enable set up on older Solace broker versions
+  - AppEnvironments in GET responses now also contains displayName in addition to 
+* **API Products Resources**
+  - Added endpoints to retrieve API Product specific Async API (contains server and binding information) /{organization_name}/apiProducts/{api_product_name}/apis/{api_name}
+  - Added endpoint to retrieve a list of all apps referencing an API product /{organization_name}/apiProducts/{api_product_name}/apps
+* **APIs resource**
+  - Added endpoint to retrieve a list of all API Products referencing an API  /{organization_name}/apis/{api_product_name}/apiProducts
+* **Environments resource**
+  - Added endpoint to retrieve a list of all API Products referencing an environment  /{organization_name}/environments/{api_product_name}/apiProducts
+  - Added validation to prevent different environments referencing the same broker service id.
+### Fixes
+* **Connector OpenAPI**
+  - JSON Schemas: Updated string patterns (regular expressions) to remove length validation to better support generated Javascript clients
+* **Apps Resources**
+  - Access type to queues specified in the API Product's client options is now applied correctly when provisioning the queue
+
 ## Version 0.2.9
 * OpenAPI: 0.5.0
 * API Management Connector Server: 0.2.9
