@@ -301,16 +301,18 @@ class BrokerService {
       var rdpUrl: URL;
       var webHooks: WebHook[] = [];
       webHooks = app.webHooks.filter(w => w.environments == null || w.environments.find(e => e == service['environment']));
-      if (webHooks.length != 1) {
+      if (webHooks.length > 1) {
         var msg: string = `Invalid webhook configuration for ${service['environment']}, found ${webHooks.length} matching configurations`;
         L.warn(msg);
         throw new ErrorResponseInternal(400, msg);
       }
-      var webHook = webHooks[0];
+      var webHook = webHooks[0]?webHooks[0]:app.webHooks[0];
       try {
+        L.debug(`webHook.uri ${webHook.uri}`);
         rdpUrl = new URL(webHook.uri);
       } catch (e) {
-        throw new ErrorResponseInternal(400, "Webhook URL not provided or invalid");
+        L.error(e);
+        throw new ErrorResponseInternal(400, `Webhook URL not provided or invalid ${JSON.stringify(webHook)}`);
       }
 
       var protocol = rdpUrl.protocol.toUpperCase();
