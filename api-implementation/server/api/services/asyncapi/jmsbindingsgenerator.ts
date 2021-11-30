@@ -10,7 +10,7 @@ const DELIVERY_MODE_DIRECT = 'direct';
 
 export class JMSBindingsGenerator implements BindingsGenerator {
   PROTOCOL_BINDING = 'jms';
-  APPLICABLE_PROTOCOLS = ['jms', 'smfs'];
+  APPLICABLE_PROTOCOLS = ['jms', 'secure-jms'];
   getBindingProtocol(): string {
     return this.PROTOCOL_BINDING;
   }
