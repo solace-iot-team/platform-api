@@ -106,10 +106,18 @@ export class AppsService {
         const clientInformation: ClientInformation[] = []
         for (const productName of app.apiProducts) {
           const apiProduct = await ApiProductsService.byName(productName);
-          if (apiProduct.clientOptions
+          const isSupportedProtocol: boolean = apiProduct.protocols.find(p=>p.name.toString().indexOf('smf')>-1 
+            || p.name.toString().indexOf('jms')>-1)!=null;
+          if (isSupportedProtocol && apiProduct.clientOptions
             && apiProduct.clientOptions.guaranteedMessaging
             && apiProduct.clientOptions.guaranteedMessaging.requireQueue) {
-            clientInformation.push({ guaranteedMessaging: { name: QueueHelper.getAPIProductQueueName(app, apiProduct), accessType: apiProduct.clientOptions.guaranteedMessaging.accessType, apiProduct: productName } });
+            clientInformation.push({ guaranteedMessaging: { 
+              name: QueueHelper.getAPIProductQueueName(app, apiProduct), 
+              accessType: apiProduct.clientOptions.guaranteedMessaging.accessType, 
+              apiProduct: productName, 
+              maxMsgSpoolUsage: apiProduct.clientOptions.guaranteedMessaging.maxMsgSpoolUsage,
+              maxTtl: apiProduct.clientOptions.guaranteedMessaging.maxTtl,
+            } });
           }
         }
         if (clientInformation.length > 0) {

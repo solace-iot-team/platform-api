@@ -2,7 +2,7 @@ openapi: 3.0.0
 info:
   title: Solace API Management Connector
   description: 'Solace API Management Connector API. Note: basic authentication security mechanism is deprecated.'
-  version: 0.5.6
+  version: 0.5.7
 servers:
   - url: /v1
 
@@ -719,7 +719,22 @@ components:
           enum:
           - exclusive
           - non-exclusive
-
+        maxTtl:
+          type: integer
+          format: int64
+          maximum: 9007199254740991
+          minimum: 0
+          description: retention policy for message on the queue, in seconds
+          default: 86400
+          example: 3600
+        maxMsgSpoolUsage:
+          type: integer
+          format: int64
+          maximum: 9007199254740991
+          minimum: 0
+          description: The maximum message spool usage allowed by the Queue, in megabytes (MB). A value of 0 only allows spooling of the last message received and disables quota checking
+          default: 500
+          example: 50
     App:
       type: object
       description: "An app associated with an owner (developer, team etc). Associates the app with an API product, and auto-generates an API credentials for the app to use"
