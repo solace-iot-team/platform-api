@@ -111,7 +111,13 @@ export class AppsService {
           if (isSupportedProtocol && apiProduct.clientOptions
             && apiProduct.clientOptions.guaranteedMessaging
             && apiProduct.clientOptions.guaranteedMessaging.requireQueue) {
-            clientInformation.push({ guaranteedMessaging: { name: QueueHelper.getAPIProductQueueName(app, apiProduct), accessType: apiProduct.clientOptions.guaranteedMessaging.accessType, apiProduct: productName } });
+            clientInformation.push({ guaranteedMessaging: { 
+              name: QueueHelper.getAPIProductQueueName(app, apiProduct), 
+              accessType: apiProduct.clientOptions.guaranteedMessaging.accessType, 
+              apiProduct: productName, 
+              maxMsgSpoolUsage: apiProduct.clientOptions.guaranteedMessaging.maxMsgSpoolUsage,
+              maxTtl: apiProduct.clientOptions.guaranteedMessaging.maxTtl,
+            } });
           }
         }
         if (clientInformation.length > 0) {

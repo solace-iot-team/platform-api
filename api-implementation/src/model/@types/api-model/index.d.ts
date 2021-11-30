@@ -347,6 +347,18 @@ declare namespace Components {
              * exclusive
              */
             accessType?: "exclusive" | "non-exclusive";
+            /**
+             * retention policy for message on the queue, in seconds
+             * example:
+             * 3600
+             */
+            maxTtl?: number; // int64
+            /**
+             * The maximum message spool usage allowed by the Queue, in megabytes (MB). A value of 0 only allows spooling of the last message received and disables quota checking
+             * example:
+             * 50
+             */
+            maxMsgSpoolUsage?: number; // int64
         }
         export interface ClientOptions {
             guaranteedMessaging?: ClientOptionsGuaranteedMessaging;
