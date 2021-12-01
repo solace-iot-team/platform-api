@@ -1,6 +1,6 @@
 import { NextFunction, Request, Response } from 'express';
 import L from '../../../common/logger';
-import fetch from 'node-fetch';
+import fetch from 'fetch-with-proxy';
 
 export class Controller {
   async all(req: Request, res: Response, next: NextFunction): Promise<void> {

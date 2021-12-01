@@ -1,5 +1,5 @@
 import express, { NextFunction, Request, Response, response } from 'express';
-import fetch from 'node-fetch';
+import fetch from 'fetch-with-proxy';
 import https from 'https';
 import L from './logger';
 

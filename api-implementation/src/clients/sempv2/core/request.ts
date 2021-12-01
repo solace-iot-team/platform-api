@@ -1,7 +1,8 @@
 /* eslint-disable */
 import L from '../../../../server/common/logger';
 import FormData from 'form-data';
-import fetch, { BodyInit, Headers, RequestInit, Response } from 'node-fetch';
+import { BodyInit, Headers, RequestInit, Response } from 'node-fetch';
+import fetch from 'fetch-with-proxy';
 import { types } from 'util';
 
 import type { ApiRequestOptions } from './ApiRequestOptions';

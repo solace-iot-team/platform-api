@@ -14,7 +14,7 @@ import * as OpenApiValidator from 'express-openapi-validator';
 
 import cors from 'cors';
 
-import fetch from 'node-fetch';
+import fetch from 'fetch-with-proxy';
 import https from 'https';
 
 const app = express();
