@@ -1,5 +1,22 @@
 # Release Notes
 
+## Version 0.3.1
+* OpenAPI: 0.5.7
+* API Management Connector Server: 0.3.1
+
+### Features
+* **Proxy Support for Outgoing HTTP calls**
+  - Connector can be configured to use proxy for outbound calls to Solace APIs
+  - Outbound calls are via HTTPS so requires usage of HTTPS_PROXY environment variable
+  - See https://github.com/solace-iot-team/platform-api/wiki/Environment-Configuration-Variables 
+* **App Resource - GET**
+  - For JMS/SMF - extended clientInformation, it now returns max TTL and quota properties of the queue provisioned of the app (if applicable)
+### Fixes
+* **Apps Resources**
+  - Fixed issue in generated Async APIs - secure SMF (smfs) erronously resulted in JMS bindings being generated
+  - Fixed issue on app creation with webhooks that resulted in "Invalid webhook configuration" error
+  - Fixed issue in App GET response - only incldue clientInformation (JMS/SMF) if relevant protocols are usable 
+
 ## Version 0.3.0
 * OpenAPI: 0.5.6
 * API Management Connector Server: 0.3.0
