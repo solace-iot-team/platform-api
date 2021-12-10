@@ -1,7 +1,7 @@
 import L from '../server/common/logger';
 import { ErrorResponseInternal } from '../server/api/middlewares/error.handler';
 import { ns } from '../server/api/middlewares/context.handler';
-import axios, { AxiosRequestConfig } from 'axios';
+import fetch from 'fetch-with-proxy';
 import { ContextConstants } from '../server/common/constants';
 import { isString } from './typehelpers';
 
@@ -34,11 +34,17 @@ export async function getEventPortalToken(): Promise<string> {
 }
 export async function validateToken(token: string, url: string): Promise<boolean> {
   L.info(`url: ${url}, token: [${token}]`);
-  const config: AxiosRequestConfig = {
-    headers: { Authorization: `Bearer ${token}` },
-  };
+
+  const options = {
+  method: 'GET',
+  headers: {
+    'Accept': 'application/json',
+    'Content-Type': 'application/json;charset=UTF-8',
+    'Authorization': `Bearer ${token}`
+  }
+};
   try {
-    const response = await axios.get(url, config);
+    const response = await fetch(url, options);
     if (response.status > 299) {
       return false;
     } else {
@@ -67,7 +73,7 @@ export async function getCloudBaseUrl(): Promise<string> {
 export async function getEventPortalBaseUrl(): Promise<string> {
   var token: any = null;
   token = ns.getStore().get(ContextConstants.CLOUD_TOKEN);
-  if (token  == null || isString(token)) {
+  if (token == null || isString(token)) {
     L.trace('using default event portal base url');
     return 'https://api.solace.cloud/api/v0/eventPortal';
   } else {
