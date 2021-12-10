@@ -1,5 +1,14 @@
 # Release Notes
 
+
+## Version 0.3.2
+* OpenAPI: 0.5.7
+* API Management Connector Server: 0.3.2
+
+### Fixes
+* **Proxy Support for Outgoing HTTP calls**
+  - Solcae Cloud Token validation did not support HTTP proxy and attempted to request directly to Solace Cloud APIs. These calls are now also made through the HTTP proxy if the approrpiate environment variables (HTTP_PROXY, HTTPS_PROXY etc) are set..
+
 ## Version 0.3.1
 * OpenAPI: 0.5.7
 * API Management Connector Server: 0.3.1
