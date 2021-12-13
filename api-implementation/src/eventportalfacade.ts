@@ -72,8 +72,12 @@ class EventPortalFacade {
     try {
       const products = await this.getEventApiProducts();
       const api = products.find(p => p.name == name);
-      const product: EventAPIProduct = (await this.getEventApiProduct(api.id) as EventAPIProduct);
-      return product;
+      if (api) {
+        const product: EventAPIProduct = (await this.getEventApiProduct(api.id) as EventAPIProduct);
+        return product;
+      } else  {
+        return null;
+      }
     } catch (error) {
       L.error(error);
       throw new ErrorResponseInternal(error.status, error.message);
