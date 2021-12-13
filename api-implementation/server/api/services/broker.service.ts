@@ -10,6 +10,7 @@ import AppEnvironment = Components.Schemas.AppEnvironment;
 import WebHook = Components.Schemas.WebHook;
 import TopicSyntax = Components.Parameters.TopicSyntax.TopicSyntax;
 import EnvironmentResponse = Components.Schemas.EnvironmentResponse;
+import ClientOptions = Components.Schemas.ClientOptions;
 
 import ApiProductsService from './apiProducts.service';
 import ACLManager from './broker/aclmanager';
@@ -537,7 +538,7 @@ class BrokerService {
 
   }
 
-  clientOptionsRequireQueue(clientOptions): boolean {
+  clientOptionsRequireQueue(clientOptions: ClientOptions): boolean {
     L.debug(clientOptions);
     const requireQueue: boolean = (clientOptions != null
       && clientOptions.guaranteedMessaging != null
