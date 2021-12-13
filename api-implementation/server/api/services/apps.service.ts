@@ -79,16 +79,7 @@ export class AppsService {
   async statusByName(name: string): Promise<AppConnectionStatus> {
     const app: App = await this.persistenceService.byName(name);
    
-    return {
-      environments: [{
-        name:"dev",
-        queues: [{
-          consumerCount: 1,
-          messagesQueued: 5,
-          messagesQueuedMB: 1
-        }]
-      }],
-    };
+    return await BrokerService.getAppStatus(app);
   }
 
   async byNameAndOwnerId(

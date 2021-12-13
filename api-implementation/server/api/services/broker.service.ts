@@ -11,11 +11,13 @@ import WebHook = Components.Schemas.WebHook;
 import TopicSyntax = Components.Parameters.TopicSyntax.TopicSyntax;
 import EnvironmentResponse = Components.Schemas.EnvironmentResponse;
 import ClientOptions = Components.Schemas.ClientOptions;
+import AppConnectionStatus = Components.Schemas.AppConnectionStatus;
 
 import ApiProductsService from './apiProducts.service';
 import ACLManager from './broker/aclmanager';
 import QueueManager from './broker/queuemanager';
 import BrokerUtils from './broker/brokerutils';
+import StatusService from './broker/statusservice';
 
 import { ProtocolMapper } from '../../../src/protocolmapper';
 
@@ -23,13 +25,10 @@ import EnvironmentsService from './environments.service';
 import { Service } from '../../../src/clients/solacecloud';
 import {
   AllService, MsgVpnClientUsername,
-  MsgVpnQueue,
-  MsgVpnQueueSubscription,
   MsgVpnRestDeliveryPoint,
   MsgVpnRestDeliveryPointRestConsumer,
   MsgVpnRestDeliveryPointQueueBinding,
   MsgVpnRestDeliveryPointRestConsumerTlsTrustedCommonName,
-  Broker,
 } from '../../../src/clients/sempv2';
 import SolaceCloudFacade from '../../../src/solacecloudfacade';
 import SempV2ClientFactory from './broker/sempv2clientfactory';
@@ -139,6 +138,10 @@ class BrokerService {
 
   async deprovisionApp(app: App) {
     await this.doDeprovisionApp(app, app.internalName);
+  }
+
+  async getAppStatus(app: App) : Promise<AppConnectionStatus>{
+    return await StatusService.getAppStatus(app);
   }
 
   private async doDeprovisionApp(app: App, objectName: string) {
