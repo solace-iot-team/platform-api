@@ -15,7 +15,7 @@ import ClientOptions = Components.Schemas.ClientOptions;
 import ApiProductsService from './apiProducts.service';
 import ACLManager from './broker/aclmanager';
 import QueueManager from './broker/queuemanager';
-
+import BrokerUtils from './broker/brokerutils';
 
 import { ProtocolMapper } from '../../../src/protocolmapper';
 
@@ -29,6 +29,7 @@ import {
   MsgVpnRestDeliveryPointRestConsumer,
   MsgVpnRestDeliveryPointQueueBinding,
   MsgVpnRestDeliveryPointRestConsumerTlsTrustedCommonName,
+  Broker,
 } from '../../../src/clients/sempv2';
 import SolaceCloudFacade from '../../../src/solacecloudfacade';
 import SempV2ClientFactory from './broker/sempv2clientfactory';
@@ -82,7 +83,7 @@ class BrokerService {
           }
           if ((!productResults || productResults.length == 0) && isUpdate) {
             L.info(`No API Products present, updating Broker`);
-            const environmentNames = await this.getEnvironments(app);
+            const environmentNames = await BrokerUtils.getEnvironments(app);
             const products: APIProduct[] = [];
             await this.doProvision(app, environmentNames, products, ownerAttributes);
           } else {
@@ -104,7 +105,7 @@ class BrokerService {
     });
   }
   private async doProvision(app: App, environmentNames: string[], products: APIProduct[], ownerAttributes: Attributes): Promise<void> {
-    const services = await this.getServices(environmentNames);
+    const services = await BrokerUtils.getServices(environmentNames);
     var a = await ACLManager.createACLs(app, services);
     L.info(`created acl profile ${app.name}`);
     var b = await this.createClientUsernames(app, services);
@@ -143,10 +144,10 @@ class BrokerService {
   private async doDeprovisionApp(app: App, objectName: string) {
     var environmentNames: string[] = [];
 
-    environmentNames = await this.getEnvironments(app);
+    environmentNames = await BrokerUtils.getEnvironments(app);
 
     try {
-      const services = await this.getServices(environmentNames);
+      const services = await BrokerUtils.getServices(environmentNames);
       await this.deleteClientUsernames(app, services);
       await ACLManager.deleteAuthorizationGroups(app, services, objectName);
       await ACLManager.deleteACLs(app, services, objectName);
@@ -158,29 +159,6 @@ class BrokerService {
       L.error(`De-Provisioninig error ${err.message}`);
       L.error(err.body);
       throw new ErrorResponseInternal(500, err.message);
-    }
-  }
-
-  private async getServices(environmentNames: string[]): Promise<Service[]> {
-    try {
-      L.info(`all-env: ${environmentNames} ${environmentNames.length}`);
-      const returnServices: Service[] = [];
-      for (const envName of environmentNames) {
-        L.info(`env-name: ${envName}`);
-        if (envName) {
-          const env: Environment = (await EnvironmentsService.byName(envName) as any) as Environment;
-          L.info(env.serviceId);
-          const service: Service = await SolaceCloudFacade.getServiceByEnvironment(
-            env
-          );
-          service['environment'] = env.name;
-          returnServices.push(service);
-        }
-      }
-      return returnServices;
-    } catch (err) {
-      L.error(`getServices - ${JSON.stringify(err)}`);
-      throw err;
     }
   }
 
@@ -256,30 +234,6 @@ class BrokerService {
         }
       }
     }
-  }
-
-  private async getEnvironments(app: App): Promise<string[]> {
-    var environmentNames: string[] = [];
-    for (const productName of app.apiProducts) {
-      let product = await ApiProductsService.byName(productName);
-      environmentNames = environmentNames.concat(product.environments);
-
-    }
-    // if there are no API Products we need to find other references to environments in webhooks and finally fall back on all environments in the org
-    if (environmentNames.length == 0 && app.webHooks) {
-      for (const webHook of app.webHooks) {
-        environmentNames = environmentNames.concat(webHook.environments);
-      }
-    }
-    if (environmentNames.length == 0) {
-      let envs = await EnvironmentsService.all()
-      for (const env of envs) {
-        environmentNames = environmentNames.concat(env.name);
-      }
-    }
-    L.debug(`envs:`);
-    L.debug(Array.from(new Set(environmentNames)));
-    return Array.from(new Set(environmentNames));
   }
 
   private async createRDP(app: App, services: Service[], apiProducts: APIProduct[]): Promise<void> {
@@ -547,9 +501,8 @@ class BrokerService {
     return requireQueue;
   }
 
-  async provisionedByConsumerKey(app: App): Promise<boolean> {
-    const envs: string[] = await this.getEnvironments(app);
-    const services: Service[] = await this.getServices(envs);
+  private async provisionedByConsumerKey(app: App): Promise<boolean> {
+    const services: Service[] = await BrokerUtils.getServicesByApp(app);
     return await ACLManager.hasConsumerKeyACLs(app, services);
   }
 }
