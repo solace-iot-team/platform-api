@@ -9,6 +9,7 @@ import App = Components.Schemas.App;
 import AppListItem = Components.Schemas.AppListItem;
 import AppResponse = Components.Schemas.AppResponse;
 import AppPatch = Components.Schemas.AppPatch;
+import AppConnectionStatus = Components.Schemas.AppConnectionStatus;
 import passwordGenerator from 'generate-password';
 import ApiProduct = Components.Schemas.APIProduct;
 import Attributes = Components.Schemas.Attributes;
@@ -75,6 +76,20 @@ export class AppsService {
     return theApp;
   }
 
+  async statusByName(name: string): Promise<AppConnectionStatus> {
+    const app: App = await this.persistenceService.byName(name);
+   
+    return {
+      environments: [{
+        name:"dev",
+        queues: [{
+          consumerCount: 1,
+          messagesQueued: 5,
+          messagesQueuedMB: 1
+        }]
+      }],
+    };
+  }
 
   async byNameAndOwnerId(
     name: string,
