@@ -6,6 +6,7 @@ import AppEnvironmentStatus = Components.Schemas.AppEnvironmentStatus;
 import AppConnection = Components.Schemas.AppConnection;
 import WebHookStatus = Components.Schemas.WebHookStatus;
 import QueueStatus = Components.Schemas.QueueStatus;
+
 import { ErrorResponseInternal } from '../../middlewares/error.handler';
 
 import {
@@ -26,6 +27,7 @@ import BrokerUtils from './brokerutils';
 
 import { Cache, CacheContainer } from 'node-ts-cache'
 import { MemoryStorage } from 'node-ts-cache-storage-memory'
+import { ProtocolMapper } from '../../../../src/protocolmapper';
 
 
 const statusCache = new CacheContainer(new MemoryStorage());
@@ -73,12 +75,18 @@ class StatusService {
       const apiClient: AllService = SempV2MonitorFactory.getSEMPv2Client(service);
       const response: MsgVpnClientsResponse = await apiClient.getMsgVpnClients(service.msgVpnName, 100, null, [`clientUsername==${app.credentials.secret.consumerKey}`]);
       for (const c of response.data) {
-        const clientConn: MsgVpnClientConnectionsResponse = await apiClient.getMsgVpnClientConnections(service.msgVpnName, encodeURIComponent(c.clientName), 100);
         const conn: AppConnection = {
           clientAddress: c.clientAddress,
           uptime: c.uptime,
-          state: clientConn.data[0].tcpState.toUpperCase(),
-          roundtripTime: clientConn.data[0].smoothedRoundTripTime,
+          protocol: ProtocolMapper.mapSolaceClientNameToProtocol(c.clientName, c.tlsVersion!==undefined)
+        }
+        try {
+          const clientConn: MsgVpnClientConnectionsResponse = await apiClient.getMsgVpnClientConnections(service.msgVpnName, encodeURIComponent(c.clientName), 100);
+          conn.state = clientConn.data[0].tcpState.toUpperCase();
+          conn.roundtripTime = clientConn.data[0].smoothedRoundTripTime;
+        } catch (e) {
+          L.info('could not retrieve connection details');
+          L.info(JSON.stringify(e));
         }
         connections.push(conn);
       }
