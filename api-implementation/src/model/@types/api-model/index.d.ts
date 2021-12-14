@@ -803,6 +803,7 @@ declare namespace Components {
             version?: CommonVersion; // [_\-\S\.]*
         }
         export interface QueueStatus {
+            name?: CommonName; // [a-zA-Z0-9_-]*
             consumerCount?: number;
             messagesQueued?: number;
             messagesQueuedMB?: number;
@@ -943,6 +944,10 @@ declare namespace Components {
              * description if the webhook is down, otherwise empty string
              */
             failureReason?: string; // .*
+            /**
+             * time of last failure (seconds from epoch))
+             */
+            lastFailureTime?: number;
             messagesQueued?: number;
             messagesQueuedMB?: number;
         }

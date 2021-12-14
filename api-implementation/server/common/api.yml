@@ -1091,6 +1091,12 @@ components:
           pattern: ".*"
           minLength: 0
           maxLength: 1024
+        lastFailureTime:
+          description: time of last failure (seconds from epoch))
+          type: integer
+          minimum: 0
+          maximum: 2147483647
+          maxLength: 1024
         messagesQueued:
           type: integer
           minimum: 0
@@ -1104,6 +1110,8 @@ components:
       type: object
       additionalProperties: false
       properties:
+        name:
+          "$ref": "#/components/schemas/CommonName"
         consumerCount:
           type: number
         messagesQueued:
