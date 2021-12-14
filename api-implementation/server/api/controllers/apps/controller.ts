@@ -56,6 +56,19 @@ export class Controller {
       });
   };
 
+    statusByName(req: Request, res: Response, next: NextFunction): void {
+    AppsService.statusByName(req.params['name'])
+      .then((r) => {
+        if (r != null) {
+          res.json(r);
+        } else {
+          next(new ErrorResponseInternal(404, `Not found`));
+        }
+      }).catch((e) => {
+        L.error(e);
+        next(e);
+      });
+  };
 
 }
 export default new Controller();

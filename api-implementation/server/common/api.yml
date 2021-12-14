@@ -2,7 +2,7 @@ openapi: 3.0.0
 info:
   title: Solace API Management Connector
   description: 'Solace API Management Connector API. Note: basic authentication security mechanism is deprecated.'
-  version: 0.5.7
+  version: 0.6.0
 servers:
   - url: /v1
 
@@ -1033,6 +1033,127 @@ components:
           pattern: "[a-zA-Z0-9_-]*"
           minLength: 8
           maxLength: 64
+          
+    AppConnectionStatus:
+      description: provides status information on the app's connections to the Gateway Broker
+      type: object
+      properties:
+        environments:
+          type: array
+          minItems: 0
+          maxItems: 2048
+          items: 
+            '$ref': '#/components/schemas/AppEnvironmentStatus' 
+      additionalProperties: false
+
+    AppEnvironmentStatus:
+      description: provides status information on the app's connections to the Gateway Broker
+      type: object
+      properties:
+        name:
+          '$ref': '#/components/schemas/CommonName' 
+        connections:
+          type: array
+          minItems: 0
+          maxItems: 2048
+          items: 
+            '$ref': '#/components/schemas/AppConnection' 
+        webHooks:
+          type: array
+          minItems: 0
+          maxItems: 2048
+          items: 
+            '$ref': '#/components/schemas/WebHookStatus' 
+        queues:
+          type: array
+          minItems: 0
+          maxItems: 2048
+          items: 
+            '$ref': '#/components/schemas/QueueStatus' 
+      additionalProperties: false
+      
+    WebHookStatus:
+      type: object
+      additionalProperties: false
+      properties:
+        uri:
+          type: string
+          pattern: "https?:\\/\\/[A-Za-z\\.:0-9\\-]*.*$"
+          minLength: 0
+          maxLength: 200
+        up:
+          description: indicates if the webhook is up and running
+          type: boolean
+          example: true
+        failureReason:
+          description: description if the webhook is down, otherwise empty string
+          type: string
+          pattern: ".*"
+          minLength: 0
+          maxLength: 1024
+        lastFailureTime:
+          description: time of last failure (seconds from epoch))
+          type: integer
+          minimum: 0
+          maximum: 2147483647
+          maxLength: 1024
+        messagesQueued:
+          type: integer
+          minimum: 0
+          maximum: 2147483647
+        messagesQueuedMB:
+          type: number
+          minimum: 0
+          maximum: 2147483647
+  
+    QueueStatus:
+      type: object
+      additionalProperties: false
+      properties:
+        name:
+          "$ref": "#/components/schemas/CommonName"
+        consumerCount:
+          type: number
+        messagesQueued:
+          type: integer
+          minimum: 0
+          maximum: 2147483647
+        messagesQueuedMB:
+          type: number
+          minimum: 0
+          maximum: 2147483647
+    
+    AppConnection:
+      type: object
+      properties:
+        protocol:
+          "$ref": "#/components/schemas/Protocol"
+        state:
+          description: State of the connection (ESTABLISHED if up)
+          type: string
+          example: ESTABLISHED
+          minLength: 1
+          maxLength: 64
+          pattern: "[A-Z]*"
+        uptime:
+          description: uptime of connection in seconds
+          type: integer
+          example: 3601
+          minimum: 0
+          maximum: 2147483647
+        roundtripTime:
+          description: connection latency in nanoseconds
+          type: integer
+          example: 22000
+          minimum: 0
+          maximum: 2147483647
+        clientAddress:
+          description: client IP address and port
+          type: string
+          example: 127.0.0.1:561230
+          minLength: 9
+          maxLength: 24
+          pattern: (\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}):(\d{1,5})
     Environment:
       description: an environment
       type: object
@@ -1698,7 +1819,7 @@ components:
       minLength: 1
       maxLength: 2000000
       pattern: "[\\s\\S]*"
-      example: |
+      example: | 
         asyncapi: 2.0.0
           info:
             title: Hello world application
@@ -3726,6 +3847,40 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/AppResponse'
+        '400':
+           $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '406':
+          $ref: '#/components/responses/NotAcceptable'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
+        '504':
+          $ref: '#/components/responses/GatewayTimeout'
+
+  /{organization_name}/apps/{app_name}/status:
+    parameters:
+    - $ref: '#/components/parameters/organization'
+    - $ref: '#/components/parameters/app_name'
+    get:
+     operationId: getAppStatus
+     tags:
+     - apps
+     responses:
+        '200':
+          description:  status of the app - connections, webhooks, associated queues
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AppConnectionStatus'
         '400':
            $ref: '#/components/responses/BadRequest'
         '401':

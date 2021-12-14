@@ -244,11 +244,53 @@ declare namespace Components {
             webHooks?: WebHook[];
             credentials: Credentials;
         }
+        export interface AppConnection {
+            protocol?: Protocol;
+            /**
+             * State of the connection (ESTABLISHED if up)
+             * example:
+             * ESTABLISHED
+             */
+            state?: string; // [A-Z]*
+            /**
+             * uptime of connection in seconds
+             * example:
+             * 3601
+             */
+            uptime?: number;
+            /**
+             * connection latency in nanoseconds
+             * example:
+             * 22000
+             */
+            roundtripTime?: number;
+            /**
+             * client IP address and port
+             * example:
+             * 127.0.0.1:561230
+             */
+            clientAddress?: string; // (\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}):(\d{1,5})
+        }
+        /**
+         * provides status information on the app's connections to the Gateway Broker
+         */
+        export interface AppConnectionStatus {
+            environments?: AppEnvironmentStatus[];
+        }
         export interface AppEnvironment {
             name?: CommonName; // [a-zA-Z0-9_-]*
             displayName?: CommonDisplayName; // [\/\sa-z.A-z0-9_-]*
             messagingProtocols?: Endpoint[];
             permissions?: Permissions;
+        }
+        /**
+         * provides status information on the app's connections to the Gateway Broker
+         */
+        export interface AppEnvironmentStatus {
+            name?: CommonName; // [a-zA-Z0-9_-]*
+            connections?: AppConnection[];
+            webHooks?: WebHookStatus[];
+            queues?: QueueStatus[];
         }
         export interface AppListItem {
             name?: CommonName; // [a-zA-Z0-9_-]*
@@ -760,6 +802,12 @@ declare namespace Components {
             name: "amqp" | "amqps" | "http" | "https" | "jms" | "secure-jms" | "mqtt" | "secure-mqtt" | "ws-mqtt" | "wss-mqtt" | "ws" | "wss" | "smf" | "smfs" | "compressed-smf";
             version?: CommonVersion; // [_\-\S\.]*
         }
+        export interface QueueStatus {
+            name?: CommonName; // [a-zA-Z0-9_-]*
+            consumerCount?: number;
+            messagesQueued?: number;
+            messagesQueuedMB?: number;
+        }
         export interface Secret {
             consumerKey: string; // [a-zA-Z0-9_-]*
             consumerSecret?: string; // [a-zA-Z0-9_-]*
@@ -883,6 +931,25 @@ declare namespace Components {
             authMethod?: "Header";
             headerName: string; // [\s\S]*
             headerValue: string; // [\s\S]*
+        }
+        export interface WebHookStatus {
+            uri?: string; // https?:\/\/[A-Za-z\.:0-9\-]*.*$
+            /**
+             * indicates if the webhook is up and running
+             * example:
+             * true
+             */
+            up?: boolean;
+            /**
+             * description if the webhook is down, otherwise empty string
+             */
+            failureReason?: string; // .*
+            /**
+             * time of last failure (seconds from epoch))
+             */
+            lastFailureTime?: number;
+            messagesQueued?: number;
+            messagesQueuedMB?: number;
         }
         /**
          * TLS options required to support older PS+ brokers.
@@ -1285,6 +1352,20 @@ declare namespace Paths {
             export interface $200 {
                 [name: string]: any;
             }
+            export type $400 = Components.Responses.BadRequest;
+            export type $401 = Components.Responses.Unauthorized;
+            export type $403 = Components.Responses.Forbidden;
+            export type $404 = Components.Responses.NotFound;
+            export type $406 = Components.Responses.NotAcceptable;
+            export type $429 = Components.Responses.TooManyRequests;
+            export type $500 = Components.Responses.InternalServerError;
+            export type $503 = Components.Responses.ServiceUnavailable;
+            export type $504 = Components.Responses.GatewayTimeout;
+        }
+    }
+    namespace GetAppStatus {
+        namespace Responses {
+            export type $200 = Components.Schemas.AppConnectionStatus;
             export type $400 = Components.Responses.BadRequest;
             export type $401 = Components.Responses.Unauthorized;
             export type $403 = Components.Responses.Forbidden;
