@@ -1,6 +1,7 @@
 import L from '../../../common/logger';
 
 import Environment = Components.Schemas.Environment;
+import EnvironmentResponse = Components.Schemas.EnvironmentResponse;
 import App = Components.Schemas.App;
 import { Service } from '../../../../src/clients/solacecloud';
 
@@ -33,6 +34,16 @@ class BrokerUtils {
     L.debug(`envs:`);
     L.debug(Array.from(new Set(environmentNames)));
     return Array.from(new Set(environmentNames));
+  }
+
+    async getEnvironmentObjects(app: App): Promise<EnvironmentResponse[]> {
+    const environmentNames: string[] = await this.getEnvironments(app);
+    const environments: EnvironmentResponse[] = []; 
+    for (const envName of environmentNames){
+      environments.push (await EnvironmentsService.byName(envName));
+    }
+    
+    return environments;
   }
 
   async getServices(environmentNames: string[]): Promise<Service[]> {
