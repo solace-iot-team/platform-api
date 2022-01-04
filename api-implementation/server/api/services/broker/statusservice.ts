@@ -5,6 +5,7 @@ import AppConnectionStatus = Components.Schemas.AppConnectionStatus;
 import AppEnvironmentStatus = Components.Schemas.AppEnvironmentStatus;
 import AppConnection = Components.Schemas.AppConnection;
 import WebHookStatus = Components.Schemas.WebHookStatus;
+import WebHook = Components.Schemas.WebHook;
 import QueueStatus = Components.Schemas.QueueStatus;
 
 import { ErrorResponseInternal } from '../../middlewares/error.handler';
@@ -20,8 +21,7 @@ import { MsgVpnQueueResponse } from '../../../../src/clients/sempv2monitor/model
 import { MsgVpnQueuesResponse } from '../../../../src/clients/sempv2monitor/models/MsgVpnQueuesResponse';
 import { MsgVpnQueueTxFlowsResponse } from '../../../../src/clients/sempv2monitor/models/MsgVpnQueueTxFlowsResponse';
 
-import { MsgVpnRestDeliveryPointQueueBinding} from '../../../../src/clients/sempv2monitor/models/MsgVpnRestDeliveryPointQueueBinding';
-import { MsgVpnRestDeliveryPointQueueBindingResponse} from '../../../../src/clients/sempv2monitor/models/MsgVpnRestDeliveryPointQueueBindingResponse'; 
+import { MsgVpnRestDeliveryPointQueueBindingResponse } from '../../../../src/clients/sempv2monitor/models/MsgVpnRestDeliveryPointQueueBindingResponse';
 
 
 import { Service } from '../../../../src/clients/solacecloud';
@@ -33,6 +33,7 @@ import BrokerUtils from './brokerutils';
 import { Cache, CacheContainer } from 'node-ts-cache'
 import { MemoryStorage } from 'node-ts-cache-storage-memory'
 import { ProtocolMapper } from '../../../../src/protocolmapper';
+import { env } from 'process';
 
 
 const statusCache = new CacheContainer(new MemoryStorage());
@@ -83,7 +84,7 @@ class StatusService {
         const conn: AppConnection = {
           clientAddress: c.clientAddress,
           uptime: c.uptime,
-          protocol: ProtocolMapper.mapSolaceClientNameToProtocol(c.clientName, c.tlsVersion!==undefined)
+          protocol: ProtocolMapper.mapSolaceClientNameToProtocol(c.clientName, c.tlsVersion !== undefined)
         }
         try {
           const clientConn: MsgVpnClientConnectionsResponse = await apiClient.getMsgVpnClientConnections(service.msgVpnName, encodeURIComponent(c.clientName), 100);
@@ -110,18 +111,17 @@ class StatusService {
 
       for (const c of response.data) {
         const consumerStatus: MsgVpnRestDeliveryPointRestConsumerResponse = await apiClient.getMsgVpnRestDeliveryPointRestConsumer(service.msgVpnName, app.internalName, 'Consumer');
-        const bindingStatus: MsgVpnRestDeliveryPointQueueBindingResponse = await apiClient.getMsgVpnRestDeliveryPointQueueBinding(service.msgVpnName, app.internalName, app.internalName );
+        const bindingStatus: MsgVpnRestDeliveryPointQueueBindingResponse = await apiClient.getMsgVpnRestDeliveryPointQueueBinding(service.msgVpnName, app.internalName, app.internalName);
         const q: MsgVpnQueueResponse = await apiClient.getMsgVpnQueue(service.msgVpnName, encodeURIComponent(app.internalName));
-        const up: boolean = c.up && (consumerStatus.data && consumerStatus.data.up) && (bindingStatus.data && bindingStatus.data.up && bindingStatus.data.uptime>30);
-        
+        const up: boolean = c.up && (consumerStatus.data && consumerStatus.data.up) && (bindingStatus.data && bindingStatus.data.up && bindingStatus.data.uptime > 30);
+
         const conn: WebHookStatus = {
           up: up,
           failureReason: up ? '' : `${c.lastFailureReason} (${consumerStatus.data.lastConnectionFailureReason})`,
           lastFailureTime: c.lastFailureTime,
           messagesQueued: q.collections.msgs.count,
           messagesQueuedMB: (q.data.msgSpoolUsage / 1048576),
-          uri: app.webHooks.find(w => (w.environments === undefined || w.environments.length == 0 ||
-            w.environments.find(e => (e == envName)))).uri
+          uri: this.getWebHookURI(app, envName),
         }
         webHooks.push(conn);
       }
@@ -152,6 +152,21 @@ class StatusService {
     } catch (e) {
       L.error(e);
       throw new ErrorResponseInternal(500, 'Error retrieving queue status');
+    }
+  }
+
+  private getWebHookURI(app: App, envName: string): string {
+    let wh: WebHook;
+    // try to locate specific web hook for this environment
+    wh = app.webHooks.find(w => w.environments && w.environments.find(e => e == envName));
+    if (!wh) {
+      // fall back to find webhook without environment, this matches all environments
+      wh = app.webHooks.find(w => (w.environments === undefined || w.environments.length == 0));
+    }
+    if (wh) {
+      return wh.uri;
+    } else {
+      return '';
     }
   }
 }
