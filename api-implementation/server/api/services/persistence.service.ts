@@ -13,7 +13,7 @@ export class PersistenceService {
   private getCollection() {
     var db: string = PlatformConstants.PLATFORM_DB;
     var org: string = null;
-    if (ns != null) {
+    if (ns != null && ns.getStore()) {
       L.debug(`PersistenceService: Found namespace ${JSON.stringify(ns.getStore())}`);
       org = ns.getStore().get(ContextConstants.ORG_NAME);
     }
@@ -36,7 +36,7 @@ export class PersistenceService {
     }
     if (sort == null) {
       sort = {};
-      if (ns != null && ns.getStore().get(ContextConstants.SORT)) {
+      if (ns != null && ns.getStore() && ns.getStore().get(ContextConstants.SORT)) {
         L.debug(`PersistenceService: Found namespace ${ns}`);
         const sortInfo: SortInfo = ns.getStore().get(ContextConstants.SORT);
         sort[sortInfo.fieldName] = sortInfo.direction;
@@ -46,7 +46,7 @@ export class PersistenceService {
     }
     // attempt to retrieve paging from context/namespace
     if (paging == null) {
-      if (ns != null) {
+      if (ns != null && ns.getStore()) {
         L.debug(`PersistenceService: Found namespace ${ns}`);
         paging = ns.getStore().get(ContextConstants.PAGING);
         L.debug(`paging ${paging}`);
