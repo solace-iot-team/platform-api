@@ -1052,6 +1052,8 @@ components:
       properties:
         name:
           '$ref': '#/components/schemas/CommonName' 
+        displayName:
+          '$ref': '#/components/schemas/CommonDisplayName' 
         connections:
           type: array
           minItems: 0

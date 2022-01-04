@@ -7,7 +7,7 @@ import AppConnection = Components.Schemas.AppConnection;
 import WebHookStatus = Components.Schemas.WebHookStatus;
 import WebHook = Components.Schemas.WebHook;
 import QueueStatus = Components.Schemas.QueueStatus;
-
+import EnvironmentResponse = Components.Schemas.EnvironmentResponse;
 import { ErrorResponseInternal } from '../../middlewares/error.handler';
 
 import {
@@ -33,7 +33,6 @@ import BrokerUtils from './brokerutils';
 import { Cache, CacheContainer } from 'node-ts-cache'
 import { MemoryStorage } from 'node-ts-cache-storage-memory'
 import { ProtocolMapper } from '../../../../src/protocolmapper';
-import { env } from 'process';
 
 
 const statusCache = new CacheContainer(new MemoryStorage());
@@ -42,17 +41,18 @@ class StatusService {
   @Cache(statusCache, { ttl: 20 })
   async getAppStatus(app: App): Promise<AppConnectionStatus> {
 
-    const environmentNames: string[] = await BrokerUtils.getEnvironments(app);
+    const environments: EnvironmentResponse[] = await BrokerUtils.getEnvironmentObjects(app);
     const envs: AppEnvironmentStatus[] = [];
-    for (const envName of environmentNames) {
+    for (const currEnv of environments) {
       const env: AppEnvironmentStatus = {
-        name: envName,
+        name: currEnv.name,
+        displayName: currEnv.displayName,
       }
 
-      const services = await BrokerUtils.getServices([envName]);
+      const services = await BrokerUtils.getServices([currEnv.name]);
 
       for (const service of services) {
-        const webHooks: WebHookStatus[] = await this.getWebHookStatus(app, service, envName);
+        const webHooks: WebHookStatus[] = await this.getWebHookStatus(app, service, currEnv.name);
         if (webHooks.length > 0) {
           env.webHooks = webHooks;
         }

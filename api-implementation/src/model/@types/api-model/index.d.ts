@@ -288,6 +288,7 @@ declare namespace Components {
          */
         export interface AppEnvironmentStatus {
             name?: CommonName; // [a-zA-Z0-9_-]*
+            displayName?: CommonDisplayName; // [\/\sa-z.A-z0-9_-]*
             connections?: AppConnection[];
             webHooks?: WebHookStatus[];
             queues?: QueueStatus[];
