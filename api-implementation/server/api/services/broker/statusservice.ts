@@ -19,6 +19,11 @@ import { MsgVpnClientConnectionsResponse } from '../../../../src/clients/sempv2m
 import { MsgVpnQueueResponse } from '../../../../src/clients/sempv2monitor/models/MsgVpnQueueResponse';
 import { MsgVpnQueuesResponse } from '../../../../src/clients/sempv2monitor/models/MsgVpnQueuesResponse';
 import { MsgVpnQueueTxFlowsResponse } from '../../../../src/clients/sempv2monitor/models/MsgVpnQueueTxFlowsResponse';
+
+import { MsgVpnRestDeliveryPointQueueBinding} from '../../../../src/clients/sempv2monitor/models/MsgVpnRestDeliveryPointQueueBinding';
+import { MsgVpnRestDeliveryPointQueueBindingResponse} from '../../../../src/clients/sempv2monitor/models/MsgVpnRestDeliveryPointQueueBindingResponse'; 
+
+
 import { Service } from '../../../../src/clients/solacecloud';
 
 import SempV2MonitorFactory from '../broker/sempv2monitorfactory';
@@ -105,10 +110,13 @@ class StatusService {
 
       for (const c of response.data) {
         const consumerStatus: MsgVpnRestDeliveryPointRestConsumerResponse = await apiClient.getMsgVpnRestDeliveryPointRestConsumer(service.msgVpnName, app.internalName, 'Consumer');
+        const bindingStatus: MsgVpnRestDeliveryPointQueueBindingResponse = await apiClient.getMsgVpnRestDeliveryPointQueueBinding(service.msgVpnName, app.internalName, app.internalName );
         const q: MsgVpnQueueResponse = await apiClient.getMsgVpnQueue(service.msgVpnName, encodeURIComponent(app.internalName));
+        const up: boolean = c.up && (consumerStatus.data && consumerStatus.data.up) && (bindingStatus.data && bindingStatus.data.up && bindingStatus.data.uptime>30);
+        
         const conn: WebHookStatus = {
-          up: c.up,
-          failureReason: c.up ? '' : `${c.lastFailureReason} (${consumerStatus.data.lastConnectionFailureReason})`,
+          up: up,
+          failureReason: up ? '' : `${c.lastFailureReason} (${consumerStatus.data.lastConnectionFailureReason})`,
           lastFailureTime: c.lastFailureTime,
           messagesQueued: q.collections.msgs.count,
           messagesQueuedMB: (q.data.msgSpoolUsage / 1048576),
