@@ -114,7 +114,7 @@ class StatusService {
         const consumerStatus: MsgVpnRestDeliveryPointRestConsumerResponse = await apiClient.getMsgVpnRestDeliveryPointRestConsumer(service.msgVpnName, app.internalName, 'Consumer');
         const bindingStatus: MsgVpnRestDeliveryPointQueueBindingResponse = await apiClient.getMsgVpnRestDeliveryPointQueueBinding(service.msgVpnName, app.internalName, app.internalName);
         const q: MsgVpnQueueResponse = await apiClient.getMsgVpnQueue(service.msgVpnName, encodeURIComponent(app.internalName));
-        const up: boolean = c.up && (consumerStatus.data && consumerStatus.data.up) && (bindingStatus.data && bindingStatus.data.up && bindingStatus.data.uptime > 30);
+        const up: boolean = c.up && (consumerStatus.data && consumerStatus.data.up) && (bindingStatus.data && bindingStatus.data.up);
 
         const conn: WebHookStatus = {
           up: up,
