@@ -35,10 +35,10 @@ import { MemoryStorage } from 'node-ts-cache-storage-memory'
 import { ProtocolMapper } from '../../../../src/protocolmapper';
 
 
-const statusCache = new CacheContainer(new MemoryStorage());
+const connectionStatusCache = new CacheContainer(new MemoryStorage());
+const queueStatusCache = new CacheContainer(new MemoryStorage());
 
 class StatusService {
-  @Cache(statusCache, { ttl: 20 })
   async getAppStatus(app: App): Promise<AppConnectionStatus> {
 
     const environments: EnvironmentResponse[] = await BrokerUtils.getEnvironmentObjects(app);
@@ -75,6 +75,7 @@ class StatusService {
   }
 
 
+  @Cache(connectionStatusCache, { ttl: 20 })
   private async getConnectionStatus(app: App, service: Service): Promise<AppConnection[]> {
     try {
       const connections: AppConnection[] = [];
@@ -132,6 +133,7 @@ class StatusService {
     }
   }
 
+  @Cache(queueStatusCache, { ttl: 20 })
   private async getQueueStatus(app: App, service: Service): Promise<QueueStatus[]> {
     try {
       const queues: QueueStatus[] = [];
