@@ -140,7 +140,7 @@ class BrokerService {
     await this.doDeprovisionApp(app, app.internalName);
   }
 
-  async getAppStatus(app: App) : Promise<AppConnectionStatus>{
+  async getAppStatus(app: App): Promise<AppConnectionStatus> {
     return await StatusService.getAppStatus(app);
   }
 
@@ -263,8 +263,11 @@ class BrokerService {
         var msg: string = `Invalid webhook configuration for ${service['environment']}, found ${webHooks.length} matching configurations`;
         L.warn(msg);
         throw new ErrorResponseInternal(400, msg);
+      } else if (webHooks.length == 0) {
+        L.info(`no webhook to provision for service ${service.name}`);
+        return;
       }
-      var webHook = webHooks[0]?webHooks[0]:app.webHooks[0];
+      var webHook = webHooks[0];
       try {
         L.debug(`webHook.uri ${webHook.uri}`);
         rdpUrl = new URL(webHook.uri);
@@ -458,7 +461,7 @@ class BrokerService {
         const env: EnvironmentResponse = await EnvironmentsService.byName(envName);
         appEnv = {
           name: env.name,
-          displayName: env.displayName?env.displayName:env.name,
+          displayName: env.displayName ? env.displayName : env.name,
         };
         appEnvironments.push(appEnv);
       }
