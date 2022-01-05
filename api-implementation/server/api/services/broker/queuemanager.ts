@@ -37,6 +37,7 @@ export class QueueManager {
     }
   }
 
+  // todo - make sure queues are deleted on services where they are no longer required
   private async createQueues(app: App, services: Service[],
     apiProducts: APIProduct[], ownerAttributes: Attributes, queueName?: string, clientOptions?: ClientOptions): Promise<void> {
     L.info(`createQueueSubscriptions services: ${services}`);

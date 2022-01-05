@@ -240,6 +240,10 @@ class BrokerService {
   }
 
   private async createRDP(app: App, services: Service[], apiProducts: APIProduct[]): Promise<void> {
+    // delete any existing RDPs - this should lead to short service interruption but no message loss 
+    // as the underlying queue is not affected
+    this.deleteRDPs(app, services, app.internalName);
+
     L.info(`createRDP services: ${services}`);
     var subscribeExceptions: string[] = [];
     var useTls: boolean = false;
@@ -264,17 +268,18 @@ class BrokerService {
         L.warn(msg);
         throw new ErrorResponseInternal(400, msg);
       } else if (webHooks.length == 0) {
-        L.info(`no webhook to provision for service ${service.name}`);
+        L.info(`no webhook to provision for service ${service.name} (${service['environment']})`);
         return;
       }
       var webHook = webHooks[0];
       try {
-        L.debug(`webHook.uri ${webHook.uri}`);
+        L.debug(`webhook.uri ${webHook.uri}`);
         rdpUrl = new URL(webHook.uri);
       } catch (e) {
         L.error(e);
-        throw new ErrorResponseInternal(400, `Webhook URL not provided or invalid ${JSON.stringify(webHook)}`);
+        throw new ErrorResponseInternal(400, `webhook URL not provided or invalid ${JSON.stringify(webHook)}`);
       }
+      L.info(`webhook ${webHook.uri} provision for service ${service.name} (${service['environment']})`);
 
       var protocol = rdpUrl.protocol.toUpperCase();
       var port = rdpUrl.port;
