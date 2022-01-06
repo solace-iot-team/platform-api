@@ -1,6 +1,23 @@
 # Release Notes
 
 
+## Version 0.3.3
+* OpenAPI: 0.6.1
+* API Management Connector Server: 0.3.3
+
+### Features
+* **App Status Resource
+  - Added a resource to retrieve an app's status including webhook and queue status as well as client connections
+
+### Fixes
+* **App Provisioning**
+  - Fixed issue that caused WebHooks to be applied to environments they shouldn't be applied to
+
+### Known Issues
+* **App Provisioning - WebHook**
+  - When removing a WebHook from an App the associated queue on the broker may not be deleted.
+  - When including credentials im an App PATCH request a full app deprovisioning/provisioning is triggered.
+
 ## Version 0.3.2
 * OpenAPI: 0.5.7
 * API Management Connector Server: 0.3.2
