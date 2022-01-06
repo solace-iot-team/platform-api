@@ -78,7 +78,7 @@ export class AppsService {
 
   async statusByName(name: string): Promise<AppConnectionStatus> {
     const app: App = await this.persistenceService.byName(name);
-   
+
     return await BrokerService.getAppStatus(app);
   }
 
@@ -112,18 +112,20 @@ export class AppsService {
         const clientInformation: ClientInformation[] = []
         for (const productName of app.apiProducts) {
           const apiProduct = await ApiProductsService.byName(productName);
-          const isSupportedProtocol: boolean = apiProduct.protocols.find(p=>p.name.toString().indexOf('smf')>-1 
-            || p.name.toString().indexOf('jms')>-1)!=null;
+          const isSupportedProtocol: boolean = apiProduct.protocols.find(p => p.name.toString().indexOf('smf') > -1
+            || p.name.toString().indexOf('jms') > -1) != null;
           if (isSupportedProtocol && apiProduct.clientOptions
             && apiProduct.clientOptions.guaranteedMessaging
             && apiProduct.clientOptions.guaranteedMessaging.requireQueue) {
-            clientInformation.push({ guaranteedMessaging: { 
-              name: QueueHelper.getAPIProductQueueName(app, apiProduct), 
-              accessType: apiProduct.clientOptions.guaranteedMessaging.accessType, 
-              apiProduct: productName, 
-              maxMsgSpoolUsage: apiProduct.clientOptions.guaranteedMessaging.maxMsgSpoolUsage,
-              maxTtl: apiProduct.clientOptions.guaranteedMessaging.maxTtl,
-            } });
+            clientInformation.push({
+              guaranteedMessaging: {
+                name: QueueHelper.getAPIProductQueueName(app, apiProduct),
+                accessType: apiProduct.clientOptions.guaranteedMessaging.accessType,
+                apiProduct: productName,
+                maxMsgSpoolUsage: apiProduct.clientOptions.guaranteedMessaging.maxMsgSpoolUsage,
+                maxTtl: apiProduct.clientOptions.guaranteedMessaging.maxTtl,
+              }
+            });
           }
         }
         if (clientInformation.length > 0) {
@@ -210,31 +212,25 @@ export class AppsService {
   ): Promise<AppPatch> {
     L.info(`App patch request ${JSON.stringify(app)}`);
     const validated = await this.validate(app);
+    // need to hold on to unmodified app so we can roll back if required and can determine changes during reprovisioning
     const appNotModified: AppPatch = await this.persistenceService.byName(
       name
     );
+    // persist the updated app, need to do this to get the full app object, the patch rerquest contains only the updated properties
     let appPatch: AppPatch = await this.persistenceService.update(
       name,
       app
     );
-    let areCredentialsUpdated: boolean = false;
-    if (app.credentials) {
-      areCredentialsUpdated = true;
-    }
+    // we only take action if the app is in approved status
     if (appPatch.status == 'approved') {
-      if (areCredentialsUpdated) {
-        const r = await BrokerService.deprovisionApp(appNotModified as App);
-      }
-      L.info(`provisioning app ${name}`);
-      try {
-        const r = await BrokerService.provisionApp(appPatch as App, ownerAttributes, true);
-      }
-      catch (e) {
+      const result: boolean = await BrokerService.reProvisionApp(appPatch as App, appNotModified as App, ownerAttributes);
+      // roll back database changes
+      if (!result) {
         appPatch = await this.persistenceService.update(
           name,
           appNotModified
         );
-        const r = await BrokerService.provisionApp(appPatch as App, ownerAttributes, true);
+        throw new ErrorResponseInternal(500, 'App provisioning failed');
       }
     }
     return appPatch;
