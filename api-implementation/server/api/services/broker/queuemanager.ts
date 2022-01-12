@@ -22,7 +22,13 @@ import { ErrorResponseInternal } from '../../middlewares/error.handler';
 export class QueueManager {
   public async createWebHookQueues(app: App, services: Service[],
     apiProducts: APIProduct[], ownerAttributes: Attributes): Promise<void> {
-    await this.createQueues(app, services, apiProducts, ownerAttributes);
+    const webHookServices: Service[] = QueueHelper.filterServicesForWebHook(app, services);
+    L.info(`webHookServices ${webHookServices.length}`);
+    await this.createQueues(app, webHookServices, apiProducts, ownerAttributes);
+
+    const noWebHookServices: Service[] = QueueHelper.fiterServicesWithoutWebHook(app, services);
+    L.info(`nowebHookServices ${noWebHookServices.length}`);
+    await this.deleteQueues(app, noWebHookServices, app.internalName);
   }
 
   public async createAPIProductQueues(app: App, services: Service[],
@@ -37,7 +43,6 @@ export class QueueManager {
     }
   }
 
-  // todo - make sure queues are deleted on services where they are no longer required
   private async createQueues(app: App, services: Service[],
     apiProducts: APIProduct[], ownerAttributes: Attributes, queueName?: string, clientOptions?: ClientOptions): Promise<void> {
     L.info(`createQueueSubscriptions services: ${services}`);
@@ -99,7 +104,7 @@ export class QueueManager {
           isError = true;
         }
       }
-      if (isError){
+      if (isError) {
         throw new ErrorResponseInternal(500, `Queue creation failed`);
       }
 

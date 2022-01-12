@@ -51,6 +51,31 @@ class BrokerService {
     }
   }
 
+  async reProvisionApp(appPatch: App, appUnmodified: App, ownerAttributes: Attributes): Promise<boolean> {
+    // check if credentials were changed. this triggers a nem change of broker resources such as client name, password
+    let areCredentialsUpdated: boolean = false;
+    if (appPatch.credentials && appPatch.credentials.secret.consumerKey != appUnmodified.credentials.secret.consumerKey) {
+      areCredentialsUpdated = true;
+    }
+    // credentials change triggers a deprovision action. Too drastic as credentioals change merely impact the client username
+    if (areCredentialsUpdated) {
+      let services = await BrokerUtils.getServicesByApp(appUnmodified);
+      const r = await this.deleteClientUsernames(appUnmodified, services);
+      services = await BrokerUtils.getServicesByApp(appPatch);
+      await this.createClientUsernames(appPatch, services);
+    }
+    L.info(`provisioning app ${appPatch.name}`);
+    // try to provision the modified app, if it fails roll back to previous version and provision the previous version
+    try {
+      const r = await this.provisionApp(appPatch as App, ownerAttributes, true);
+      return true;
+    }
+    catch (e) {
+      const r = await this.provisionApp(appUnmodified as App, ownerAttributes, true);
+      return false;
+    }
+
+  }
   async provisionApp(app: App, ownerAttributes: Attributes, isUpdate?: boolean): Promise<void> {
     return new Promise<void>(async (resolve, reject) => {
       if (await this.provisionedByConsumerKey(app)) {
