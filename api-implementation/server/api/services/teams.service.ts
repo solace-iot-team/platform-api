@@ -110,6 +110,10 @@ export class TeamsService {
   }
 
   async createApp(team: string, body: App): Promise<App> {
+    const validationError: ErrorResponseInternal = AppFactory.validateApp(body);
+    if (validationError){
+      throw validationError;
+    }
     let teamObj: Team = null;
     try {
       teamObj = await this.persistenceService.byName(team);
@@ -151,6 +155,10 @@ export class TeamsService {
     name: string,
     body: AppPatch
   ): Promise<AppPatch> {
+    const validationError: ErrorResponseInternal = AppFactory.validateAppPatch(body);
+    if (validationError){
+      throw validationError;
+    }
     let teamObj = null;
     try {
       teamObj = await this.persistenceService.byName(team);
