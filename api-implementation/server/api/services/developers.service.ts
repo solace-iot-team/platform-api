@@ -11,6 +11,7 @@ import BrokerService from './broker.service';
 import { PersistenceService } from './persistence.service';
 import { ErrorResponseInternal } from '../middlewares/error.handler';
 
+
 export interface DeveloperApp extends App {
   appType?: string;
   ownerId?: string;
@@ -109,6 +110,10 @@ export class DevelopersService {
   }
 
   async createApp(developer: string, body: App): Promise<App> {
+    const validationError: ErrorResponseInternal = AppFactory.validateApp(body);
+    if (validationError) {
+      throw validationError;
+    }
     let dev: Developer = null;
     try {
       dev = await this.persistenceService.byName(developer);
@@ -147,6 +152,10 @@ export class DevelopersService {
     name: string,
     body: AppPatch
   ): Promise<AppPatch> {
+    const validationError: ErrorResponseInternal = AppFactory.validateAppPatch(body);
+    if (validationError) {
+      throw validationError;
+    }
     let dev = null;
     try {
       dev = await this.persistenceService.byName(developer);

@@ -3,6 +3,7 @@ import App = Components.Schemas.App;
 import WebHook = Components.Schemas.WebHook;
 import { DeveloperAppPatch, DeveloperApp } from '../developers.service';
 import { TeamAppPatch, TeamApp } from '../teams.service';
+import { ErrorResponseInternal } from '../../middlewares/error.handler';
 import passwordGenerator from 'generate-password';
 
 const APP_TYPE_DEVELOPER: string = 'developer';
@@ -10,7 +11,12 @@ const APP_TYPE_TEAM: string = 'team';
 
 
 class AppFactory {
-  
+  validateApp(app: App): ErrorResponseInternal{
+    return this.validateInternal(app);
+  }
+  validateAppPatch(app: AppPatch): ErrorResponseInternal{
+    return this.validateInternal(app as App);
+  }
   transformToExternalAppRepresentation(app){
     delete app['ownerId'];
     delete app['appType'];
@@ -115,6 +121,14 @@ class AppFactory {
           })
     }
   }
+  private validateInternal(app: App): ErrorResponseInternal{
+    if (app.apiProducts && (new Set(app.apiProducts).size !== app.apiProducts.length)){
+      return new ErrorResponseInternal(400, 'Duplicate entries in apiProducts are not supported');
+    } else {
+      return null;
+    }
+    
+  } 
 }
 
 export default new AppFactory();
