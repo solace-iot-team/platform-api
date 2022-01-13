@@ -490,9 +490,10 @@ class ACLManager {
         });
         channel[Object.keys(channel)[0]].permissions = Array.from(new Set(subscribePermissions));
       });
+      // revert the permissions to match the Async API.
       var permissions: Permissions = {
-        publish: subscribeExceptions,
-        subscribe: publishExceptions
+        publish: publishExceptions,
+        subscribe: subscribeExceptions
       }
       return permissions;
     } catch (err) {
