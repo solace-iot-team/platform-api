@@ -121,10 +121,13 @@ export class DevelopersService {
       // do nothing
     }
     if (dev === null) {
-      throw new ErrorResponseInternal(
-        404,
-        `Entity ${developer} does not exist`
-      );
+      dev = {
+        email: `${developer}@nowhere.com`,
+        firstName: developer,
+        lastName: developer,
+        userName: developer
+      };
+      dev = await this.create(dev);
     }
     L.debug(dev);
     const app: DeveloperApp = AppFactory.createDeveloperApp(body, developer);
