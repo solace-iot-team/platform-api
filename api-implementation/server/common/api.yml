@@ -758,6 +758,7 @@ components:
           description: A setting, in milliseconds, for the lifetime of the consumer key that will be  generated for the developer app. The default value, -1, indicates an infinite validity period. Once set, the expiration can't be updated.
         apiProducts:
           type: array
+          uniqueItems: true
           items:
             $ref: '#/components/schemas/CommonName'
           minItems: 0
@@ -788,6 +789,7 @@ components:
           $ref: '#/components/schemas/CommonDisplayName'
         apiProducts:
           type: array
+          uniqueItems: true
           items:
             type: string
             pattern: "[a-zA-Z0-9_-]*"
@@ -837,6 +839,7 @@ components:
           description: A setting, in milliseconds, for the lifetime of the consumer key that will be  generated for the developer app. The default value, -1, indicates an infinite validity period. Once set, the expiration can't be updated.
         apiProducts:
           type: array
+          uniqueItems: true
           items:
             type: string
             pattern: "[a-zA-Z0-9_-]*"
@@ -896,6 +899,7 @@ components:
             maxLength: 188
           apiProducts:
             type: array
+            uniqueItems: true
             items:
               type: string
               pattern: "[a-zA-Z0-9_-]*"

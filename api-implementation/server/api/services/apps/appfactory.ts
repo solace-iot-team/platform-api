@@ -11,12 +11,7 @@ const APP_TYPE_TEAM: string = 'team';
 
 
 class AppFactory {
-  validateApp(app: App): ErrorResponseInternal{
-    return this.validateInternal(app);
-  }
-  validateAppPatch(app: AppPatch): ErrorResponseInternal{
-    return this.validateInternal(app as App);
-  }
+
   transformToExternalAppRepresentation(app){
     delete app['ownerId'];
     delete app['appType'];
