@@ -503,15 +503,13 @@ class BrokerService {
           const keys = ProtocolMapper.findByAsyncAPIProtocol(protocol)
             .protocolKeys;
           L.info(`getMessagingProtocols ${keys.name} ${keys.protocol}`);
-          const endpoint = service.messagingProtocols
-            .find((mp) => mp.endPoints.find((ep) => ep.transport == keys.protocol && ep.name == keys.name))
-            .endPoints.find((ep) => ep.transport == keys.protocol);
-          //L.info(endpoint);
+          const tmp  = service.messagingProtocols
+            .find((mp) => mp.endPoints.find((ep) => ep.transport == keys.protocol && ep.name == keys.name));
+          const endpoint = tmp?tmp.endPoints.find((ep) => ep.transport == keys.protocol):null;
           let newEndpoint: Endpoint = endpoints.find(
             (ep) => ep.uri == endpoint.uris[0]
           );
-          //L.info(newEndpoint);
-          if (newEndpoint === undefined) {
+          if (newEndpoint === undefined && endpoint) {
             newEndpoint = {
               compressed: endpoint.compressed == 'yes' ? 'yes' : 'no',
               secure: endpoint.secured == 'yes' ? 'yes' : 'no',
