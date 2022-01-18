@@ -91,19 +91,20 @@ class BrokerService {
         L.info(`API Products looked up, processing provisioning`);
         L.debug(productResults);
         try {
-
-          for (var product of productResults) {
-            var environmentNames: string[] = [];
-            product.environments.forEach((e: string) => {
-              environmentNames.push(e);
-            })
-            L.info(`env: ${product.environments}`);
+          if (productResults && productResults.length > 0) {
             const products: APIProduct[] = [];
-            products.push(product);
+            for (var product of productResults) {
+              var environmentNames: string[] = [];
+              product.environments.forEach((e: string) => {
+                environmentNames.push(e);
+              })
+              L.info(`env: ${product.environments}`);
+              products.push(product);
+
+            }
             environmentNames = Array.from(new Set(environmentNames));
             L.info(`provisioning product ${product.name} to ${JSON.stringify(environmentNames)}`);
             await this.doProvision(app, environmentNames, products, ownerAttributes);
-
           }
           if ((!productResults || productResults.length == 0) && isUpdate) {
             L.info(`No API Products present, updating Broker`);
@@ -503,9 +504,9 @@ class BrokerService {
           const keys = ProtocolMapper.findByAsyncAPIProtocol(protocol)
             .protocolKeys;
           L.info(`getMessagingProtocols ${keys.name} ${keys.protocol}`);
-          const tmp  = service.messagingProtocols
+          const tmp = service.messagingProtocols
             .find((mp) => mp.endPoints.find((ep) => ep.transport == keys.protocol && ep.name == keys.name));
-          const endpoint = tmp?tmp.endPoints.find((ep) => ep.transport == keys.protocol):null;
+          const endpoint = tmp ? tmp.endPoints.find((ep) => ep.transport == keys.protocol) : null;
           let newEndpoint: Endpoint = endpoints.find(
             (ep) => ep.uri == endpoint.uris[0]
           );
