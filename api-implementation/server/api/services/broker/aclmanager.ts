@@ -16,10 +16,18 @@ import { AllService, MsgVpnAclProfile, MsgVpnAclProfilePublishException, MsgVpnA
 
 import ApisService from '../apis.service';
 import SempV2ClientFactory from './sempv2clientfactory';
+import brokerutils from './brokerutils';
+import EnvironmentService from '../environments.service';
 
 export enum Direction {
   Publish = 'Publish',
   Subscribe = 'Subscribe',
+}
+
+interface EnvironmentPermissions {
+  name: string,
+  publishExceptions: string[],
+  subscribeExceptions: string[],
 }
 
 class ACLManager {
@@ -131,14 +139,15 @@ class ACLManager {
     }
   }
 
-  public async createClientACLExceptions(app: App, services: Service[], apiProducts: APIProduct[], ownerAttributes: Attributes): Promise<void> {
-    var publishExceptions: string[] = [];
-    var subscribeExceptions: string[] = [];
+  public async createClientACLExceptions(app: App, apiProducts: APIProduct[], ownerAttributes: Attributes): Promise<void> {
+
+    const envPermissions: EnvironmentPermissions[] = [];
     // compile list of event destinations sub / pub separately
     for (var product of apiProducts) {
-      publishExceptions = this.getResources(product.pubResources).concat(publishExceptions);
-      subscribeExceptions = this.getResources(product.subResources).concat(subscribeExceptions);
+      const publishExceptions = this.getResources(product.pubResources);
+      const subscribeExceptions = this.getResources(product.subResources);
       var strs: string[] = await this.getResourcesFromAsyncAPIs(product.apis, Direction.Subscribe);
+      
       for (var s of strs) {
         subscribeExceptions.push(s);
       }
@@ -146,23 +155,59 @@ class ACLManager {
       for (var s of strs) {
         publishExceptions.push(s);
       }
+      for (const env of product.environments) {
+        L.info(`environment ${env} product ${product.name}`)
+        let permissions: EnvironmentPermissions = envPermissions.find(e => e.name == env);
+        if (permissions) {
+          permissions.subscribeExceptions = permissions.subscribeExceptions.concat(subscribeExceptions);
+          permissions.publishExceptions = permissions.publishExceptions.concat(publishExceptions);
+
+        } else {
+          permissions = {
+            name: env,
+            publishExceptions: publishExceptions,
+            subscribeExceptions: subscribeExceptions,
+
+          }
+
+          envPermissions.push(permissions);
+        }
+      }
     }
+    L.info(envPermissions);
 
     // inject attribute values into parameters within subscriptions
     var attributes: any[] = this.getAttributes(app, ownerAttributes, apiProducts);
-    subscribeExceptions = this.enrichTopics(subscribeExceptions, attributes);
-    publishExceptions = this.enrichTopics(publishExceptions, attributes);
-    publishExceptions.forEach((s, index, arr) => {
-      arr[index] = this.scrubDestination(s);
-    });
-    subscribeExceptions.forEach((s, index, arr) => {
-      arr[index] = this.scrubDestination(s);
-    });
     try {
+      for (const permissions of envPermissions) {
+        const services: Service[] = await brokerutils.getServices([permissions.name]);
+        let publishExceptions: string[] = permissions.publishExceptions;
+        let subscribeExceptions: string[] = permissions.subscribeExceptions;
+        subscribeExceptions = this.enrichTopics(subscribeExceptions, attributes);
+        publishExceptions = this.enrichTopics(publishExceptions, attributes);
+        publishExceptions.forEach((s, index, arr) => {
+          arr[index] = this.scrubDestination(s);
+        });
+        subscribeExceptions.forEach((s, index, arr) => {
+          arr[index] = this.scrubDestination(s);
+        });
+        L.info(`provisioning exceptions for env ${permissions.name} to ${services[0].serviceId}`);
+        // need to reverse publish->subscribe due to Async API terminology
+        var q = await this.addPublishTopicExceptions(app, services, subscribeExceptions);
+        var r = await this.addSubscribeTopicExceptions(app, services, publishExceptions);
 
-      // need to reverse publish->subscrobe due to Async API terminology
-      var q = await this.addPublishTopicExceptions(app, services, subscribeExceptions);
-      var r = await this.addSubscribeTopicExceptions(app, services, publishExceptions);
+      }
+
+      if (apiProducts.length == 0) {
+        const envNames: string[] = [];
+        for (const env of await EnvironmentService.all()) {
+          envNames.push(env.name);
+        }
+
+        const services: Service[] = await brokerutils.getServices(envNames);
+        var q = await this.addPublishTopicExceptions(app, services, []);
+        var r = await this.addSubscribeTopicExceptions(app, services, []);
+      }
 
     } catch (e) {
       throw new ErrorResponseInternal(400, e);

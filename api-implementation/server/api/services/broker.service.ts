@@ -103,7 +103,7 @@ class BrokerService {
 
             }
             environmentNames = Array.from(new Set(environmentNames));
-            L.info(`provisioning product ${product.name} to ${JSON.stringify(environmentNames)}`);
+            // L.info(`provisioning product ${product.name} to ${JSON.stringify(environmentNames)}`);
             await this.doProvision(app, environmentNames, products, ownerAttributes);
           }
           if ((!productResults || productResults.length == 0) && isUpdate) {
@@ -137,7 +137,7 @@ class BrokerService {
     L.info(`created client username ${app.name}`);
     var e = await ACLManager.createAuthorizationGroups(app, services);
     L.info(`created client username ${app.name}`);
-    var c = await ACLManager.createClientACLExceptions(app, services, products, ownerAttributes);
+    var c = await ACLManager.createClientACLExceptions(app, products, ownerAttributes);
     L.info(`created acl exceptions ${app.name}`);
 
     // provision queue if webhooks are configured
