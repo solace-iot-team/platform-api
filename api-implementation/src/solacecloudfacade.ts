@@ -28,6 +28,14 @@ class SolaceCloudFacade {
       if (result == null || result.data == null) {
         throw new ErrorResponseInternal(404, `Service ${id} does not exist`);
       } else {
+        for (const mp of result.data.messagingProtocols){
+          for (const ep of mp.endPoints){
+            for (let i = 0; i < ep.uris.length; i++){
+              let u = ep.uris[i].replace('smf://', 'tcp://').replace('smfs://', 'tcps://');
+              ep.uris[i] = u;
+            }
+          }
+        }
         return result.data;
       }
     }

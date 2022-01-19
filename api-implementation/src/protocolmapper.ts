@@ -205,7 +205,6 @@ export class ProtocolMapper {
       }
     };
     map.push(secureJms);
-
     return map;
   }
 
@@ -224,7 +223,7 @@ export class ProtocolMapper {
           const keys = mapping.protocolKeys;
           L.debug(`mapMessagingProtocols ${keys.name} ${keys.protocol}`);
           const endpoint = protocol.endPoints.find(ep => ep.name == serverEndpoint.name && ep.transport == serverEndpoint.transport);
-          let newEndpoint: Endpoint = endpoints.find(ep => ep.uri == endpoint.uris[0]);
+          let newEndpoint: Endpoint = endpoints.find(ep => (ep.uri == endpoint.uris[0] && ep.protocol.name == mapping.name));
           L.debug(endpoint);
           if (newEndpoint === undefined) {
             newEndpoint = {
