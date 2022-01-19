@@ -64,7 +64,15 @@ class BrokerService {
       services = await BrokerUtils.getServicesByApp(appPatch);
       await this.createClientUsernames(appPatch, services);
     }
+    // need to figure out if environments were removed and deprovision from these environments
+    const oldServices: Service[] = await BrokerUtils.getServicesByApp(appUnmodified);
+    const newServices: Service[] = await BrokerUtils.getServicesByApp(appPatch);
+    const deProvisionServices = oldServices.filter(s => !newServices.includes(s));
+    L.info(`updated app references less environments, deprovision from services ${JSON.stringify(deProvisionServices)}`)
     L.info(`provisioning app ${appPatch.name}`);
+    if (deProvisionServices && deProvisionServices.length>0){
+      await this.doDeprovisionAppByEnvironments(appUnmodified, appUnmodified.internalName, deProvisionServices);
+    }
     // try to provision the modified app, if it fails roll back to previous version and provision the previous version
     try {
       const r = await this.provisionApp(appPatch as App, ownerAttributes, true);
@@ -173,6 +181,16 @@ class BrokerService {
 
     try {
       const services = await BrokerUtils.getServices(environmentNames);
+      await this.doDeprovisionAppByEnvironments(app, objectName, services);
+
+    } catch (err) {
+      L.error(`De-Provisioninig error ${err.message}`);
+      L.error(err.body);
+      throw new ErrorResponseInternal(500, err.message);
+    }
+  }
+  private async doDeprovisionAppByEnvironments(app: App, objectName: string, services: Service[]){
+    try {
       await this.deleteClientUsernames(app, services);
       await ACLManager.deleteAuthorizationGroups(app, services, objectName);
       await ACLManager.deleteACLs(app, services, objectName);
