@@ -108,7 +108,7 @@ export class ApiProductsService {
     return names;
   }
   private async canDelete(name: string): Promise<boolean> {
-    var apps = await this.listAppsReferencingProduct(name);
+    const apps = await this.listAppsReferencingProduct(name);
     if (apps == null || apps.length == 0) {
       return true;
     } else {
@@ -117,7 +117,7 @@ export class ApiProductsService {
   }
 
   private async listAppsReferencingProduct(name: string): Promise<AppListitem[]> {
-    var q: any = {
+    const q: any = {
       apiProducts: {
         $elemMatch: {
           $eq: name
@@ -125,17 +125,17 @@ export class ApiProductsService {
       }
     }
     L.info(q);
-    var apps = await AppsService.list(q);
+    const apps = await AppsService.list(q);
     return apps;
   }
 
   private async validateReferences(product: APIProduct): Promise<boolean> {
 
     if (product.apis != null) {
-      for (var apiName of product.apis) {
+      for (const apiName of product.apis) {
         const errMsg = `Referenced API ${apiName} does not exist`;
         try {
-          var api = await ApisService.byName(apiName);
+          const api = await ApisService.byName(apiName);
           if (api == null) {
             throw new ErrorResponseInternal(422, errMsg);
           }
@@ -146,21 +146,21 @@ export class ApiProductsService {
     }
 
     // all apis exist, now check environments
-    var protocolPresent = {};
+    const protocolPresent = {};
     if (product.protocols) {
-      for (var protocol of product.protocols) {
+      for (const protocol of product.protocols) {
         protocolPresent[protocol.name] = false;
       }
     }
     if (product.environments != null && product.protocols) {
-      for (var envName of product.environments) {
+      for (const envName of product.environments) {
         const errMsg = `Referenced environment ${envName} does not exist`;
         try {
-          var env = await EnvironmentsService.byName(envName);
+          const env = await EnvironmentsService.byName(envName);
           if (env == null) {
             throw new ErrorResponseInternal(422, errMsg);
           } else {
-            for (var protocol of product.protocols) {
+            for (const protocol of product.protocols) {
               // check if the protocol was already found before
               if (!protocolPresent[protocol.name]) {
                 if (env.exposedProtocols != null && env.exposedProtocols.length > 0) {

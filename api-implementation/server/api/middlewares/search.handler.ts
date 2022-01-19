@@ -12,7 +12,7 @@ export default function searchHandler(
   next: NextFunction
 ): void {
   if (req.query.filter != null) {
-    var p: SearchInfo = {
+    let p: SearchInfo = {
       searchWordList: req.query.filter as string,
     };
     L.debug(`Found search parameters ${JSON.stringify(p)}`);

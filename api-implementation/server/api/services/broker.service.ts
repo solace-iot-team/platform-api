@@ -43,7 +43,7 @@ class BrokerService {
         const product = await ApiProductsService.byName(productName);
         products.push(product);
       }
-      var permissions: Permissions = await ACLManager.getClientACLExceptions(app, products, ownerAttributes, envName, syntax);
+      const permissions: Permissions = await ACLManager.getClientACLExceptions(app, products, ownerAttributes, envName, syntax);
       return permissions;
     } catch (err) {
       L.error("Get permissions error");
@@ -81,7 +81,7 @@ class BrokerService {
       if (await this.provisionedByConsumerKey(app)) {
         await this.doDeprovisionApp(app, app.credentials.secret.consumerKey);
       }
-      var apiProductPromises: Promise<APIProduct>[] = [];
+      const apiProductPromises: Promise<APIProduct>[] = [];
       app.apiProducts.forEach((productName: string) => {
         L.info(productName);
         apiProductPromises.push(ApiProductsService.byName(productName));
@@ -93,8 +93,8 @@ class BrokerService {
         try {
           if (productResults && productResults.length > 0) {
             const products: APIProduct[] = [];
-            var environmentNames: string[] = [];
-            for (var product of productResults) {
+            let environmentNames: string[] = [];
+            for (const product of productResults) {
               product.environments.forEach((e: string) => {
                 environmentNames.push(e);
               })
@@ -129,19 +129,19 @@ class BrokerService {
   }
   private async doProvision(app: App, environmentNames: string[], products: APIProduct[], ownerAttributes: Attributes): Promise<void> {
     const services = await BrokerUtils.getServices(environmentNames);
-    var a = await ACLManager.createACLs(app, services);
+    const a = await ACLManager.createACLs(app, services);
     L.info(`created acl profile ${app.name}`);
-    var b = await this.createClientUsernames(app, services);
+    const b = await this.createClientUsernames(app, services);
     L.info(`created client username ${app.name}`);
-    var e = await ACLManager.createAuthorizationGroups(app, services);
+    const e = await ACLManager.createAuthorizationGroups(app, services);
     L.info(`created client username ${app.name}`);
-    var c = await ACLManager.createClientACLExceptions(app, products, ownerAttributes);
+    const c = await ACLManager.createClientACLExceptions(app, products, ownerAttributes);
     L.info(`created acl exceptions ${app.name}`);
 
     // provision queue if webhooks are configured
     if (app.webHooks != null && app.webHooks.length > 0) {
       L.info("creating webhook queues");
-      var d = await QueueManager.createWebHookQueues(app, services, products, ownerAttributes);
+      const d = await QueueManager.createWebHookQueues(app, services, products, ownerAttributes);
       L.info(`created webhook queues ${app.name}`);
     } else {
       // clean up queues
@@ -152,7 +152,7 @@ class BrokerService {
     //L.info(app.webHooks);    
     if (app.webHooks != null && app.webHooks.length > 0) {
       L.info("creating webhook");
-      var d = await this.createRDP(app, services, products);
+      const d = await this.createRDP(app, services, products);
       L.info(`created rdps ${app.name}`);
     } else {
       // clean up RDPs
@@ -169,9 +169,7 @@ class BrokerService {
   }
 
   private async doDeprovisionApp(app: App, objectName: string) {
-    var environmentNames: string[] = [];
-
-    environmentNames = await BrokerUtils.getEnvironments(app);
+    const environmentNames = await BrokerUtils.getEnvironments(app);
 
     try {
       const services = await BrokerUtils.getServices(environmentNames);
@@ -203,10 +201,10 @@ class BrokerService {
   }
 
   private async deleteRDPs(app: App, services: Service[], name: string) {
-    for (var service of services) {
+    for (const service of services) {
       const apiClient: AllService = SempV2ClientFactory.getSEMPv2Client(service);
       try {
-        var delResponse = await apiClient.deleteMsgVpnRestDeliveryPoint(service.msgVpnName, name);
+        const delResponse = await apiClient.deleteMsgVpnRestDeliveryPoint(service.msgVpnName, name);
         L.info("RDP deleted");
       } catch (e) {
         if (e.body.meta.error.status != "NOT_FOUND") {
@@ -220,9 +218,9 @@ class BrokerService {
 
 
   private async createClientUsernames(app: App, services: Service[]): Promise<void> {
-    for (var service of services) {
+    for (const service of services) {
       const apiClient: AllService = SempV2ClientFactory.getSEMPv2Client(service);
-      var clientUsername: MsgVpnClientUsername = {
+      const clientUsername: MsgVpnClientUsername = {
         aclProfileName: app.internalName,
         clientUsername: app.credentials.secret.consumerKey,
         password: app.credentials.secret.consumerSecret,
@@ -231,14 +229,14 @@ class BrokerService {
         enabled: true
       };
       try {
-        var getResponse = await apiClient.getMsgVpnClientUsername(service.msgVpnName, app.credentials.secret.consumerKey);
+        const getResponse = await apiClient.getMsgVpnClientUsername(service.msgVpnName, app.credentials.secret.consumerKey);
         L.info("Client Username Looked up");
-        var responseUpd = await apiClient.updateMsgVpnClientUsername(service.msgVpnName, app.credentials.secret.consumerKey, clientUsername);
+        const responseUpd = await apiClient.updateMsgVpnClientUsername(service.msgVpnName, app.credentials.secret.consumerKey, clientUsername);
         L.info("Client Username updated");
       } catch (e) {
 
         try {
-          let response = await apiClient.createMsgVpnClientUsername(service.msgVpnName, clientUsername);
+          const response = await apiClient.createMsgVpnClientUsername(service.msgVpnName, clientUsername);
           L.info("created  Client Username");
         } catch (e) {
           throw e;
@@ -249,7 +247,7 @@ class BrokerService {
 
 
   private async deleteClientUsernames(app: App, services: Service[]): Promise<void> {
-    for (var service of services) {
+    for (const service of services) {
       const apiClient: AllService = SempV2ClientFactory.getSEMPv2Client(service);
       try {
         const getResponse = await apiClient.deleteMsgVpnClientUsername(service.msgVpnName, app.credentials.secret.consumerKey);
@@ -269,11 +267,11 @@ class BrokerService {
     this.deleteRDPs(app, services, app.internalName);
 
     L.info(`createRDP services: ${services}`);
-    var subscribeExceptions: string[] = [];
-    var useTls: boolean = false;
-    for (var product of apiProducts) {
-      var strs: string[] = await ACLManager.getSubscriptionsFromAsyncAPIs(product.apis);
-      for (var s of strs) {
+    const subscribeExceptions: string[] = [];
+    let useTls: boolean = false;
+    for (const product of apiProducts) {
+      const strs: string[] = await ACLManager.getSubscriptionsFromAsyncAPIs(product.apis);
+      for (const s of strs) {
         subscribeExceptions.push(s);
       }
     }
@@ -282,20 +280,20 @@ class BrokerService {
     }
     const objectName: string = app.internalName;
     // loop over services
-    for (var service of services) {
-      var restConsumerName = `Consumer`;
-      var rdpUrl: URL;
-      var webHooks: WebHook[] = [];
+    for (const service of services) {
+      const restConsumerName = `Consumer`;
+      let rdpUrl: URL;
+      let webHooks: WebHook[] = [];
       webHooks = app.webHooks.filter(w => w.environments == null || w.environments.find(e => e == service['environment']));
       if (webHooks.length > 1) {
-        var msg: string = `Invalid webhook configuration for ${service['environment']}, found ${webHooks.length} matching configurations`;
+        const msg: string = `Invalid webhook configuration for ${service['environment']}, found ${webHooks.length} matching configurations`;
         L.warn(msg);
         throw new ErrorResponseInternal(400, msg);
       } else if (webHooks.length == 0) {
         L.info(`no webhook to provision for service ${service.name} (${service['environment']})`);
         return;
       }
-      var webHook = webHooks[0];
+      let webHook = webHooks[0];
       try {
         L.debug(`webhook.uri ${webHook.uri}`);
         rdpUrl = new URL(webHook.uri);
@@ -305,8 +303,8 @@ class BrokerService {
       }
       L.info(`webhook ${webHook.uri} provision for service ${service.name} (${service['environment']})`);
 
-      var protocol = rdpUrl.protocol.toUpperCase();
-      var port = rdpUrl.port;
+      const protocol = rdpUrl.protocol.toUpperCase();
+      let port = rdpUrl.port;
       if (protocol == "HTTPS:") {
         useTls = true;
       }
@@ -320,37 +318,37 @@ class BrokerService {
       }
       //create RDPs
       const apiClient: AllService = SempV2ClientFactory.getSEMPv2Client(service);
-      var newRDP: MsgVpnRestDeliveryPoint = {
+      const newRDP: MsgVpnRestDeliveryPoint = {
         clientProfileName: "default",
         msgVpnName: service.msgVpnName,
         restDeliveryPointName: objectName,
         enabled: false
       };
       try {
-        var q = await apiClient.getMsgVpnRestDeliveryPoint(service.msgVpnName, objectName);
-        var updateResponse = await apiClient.updateMsgVpnRestDeliveryPoint(service.msgVpnName,
+        const q = await apiClient.getMsgVpnRestDeliveryPoint(service.msgVpnName, objectName);
+        const updateResponse = await apiClient.updateMsgVpnRestDeliveryPoint(service.msgVpnName,
           objectName, newRDP);
         L.debug(`createRDP updated ${objectName}`);
       } catch (e) {
         L.debug(`createRDP lookup  failed ${JSON.stringify(e)}`);
         try {
-          var q = await apiClient.createMsgVpnRestDeliveryPoint(service.msgVpnName, newRDP);
+          const q = await apiClient.createMsgVpnRestDeliveryPoint(service.msgVpnName, newRDP);
         } catch (e) {
           L.warn(`createRDP creation  failed ${JSON.stringify(e)}`);
           throw new ErrorResponseInternal(500, e);
         }
       }
-      var authScheme = webHook.authentication && webHook.authentication['username'] ? MsgVpnRestDeliveryPointRestConsumer.authenticationScheme.HTTP_BASIC : MsgVpnRestDeliveryPointRestConsumer.authenticationScheme.NONE;
+      let authScheme = webHook.authentication && webHook.authentication['username'] ? MsgVpnRestDeliveryPointRestConsumer.authenticationScheme.HTTP_BASIC : MsgVpnRestDeliveryPointRestConsumer.authenticationScheme.NONE;
       if (authScheme == MsgVpnRestDeliveryPointRestConsumer.authenticationScheme.NONE) {
         authScheme = webHook.authentication && webHook.authentication['headerName'] ? MsgVpnRestDeliveryPointRestConsumer.authenticationScheme.HTTP_HEADER : MsgVpnRestDeliveryPointRestConsumer.authenticationScheme.NONE;
       }
-      var method = webHook.method == 'PUT' ? MsgVpnRestDeliveryPointRestConsumer.httpMethod.PUT : MsgVpnRestDeliveryPointRestConsumer.httpMethod.POST;
+      const method = webHook.method == 'PUT' ? MsgVpnRestDeliveryPointRestConsumer.httpMethod.PUT : MsgVpnRestDeliveryPointRestConsumer.httpMethod.POST;
 
-      var connectionCount: number = 3;
+      let connectionCount: number = 3;
       if (webHook.mode == 'serial') {
         connectionCount = 1;
       }
-      var newRDPConsumer: MsgVpnRestDeliveryPointRestConsumer = {
+      const newRDPConsumer: MsgVpnRestDeliveryPointRestConsumer = {
         msgVpnName: service.msgVpnName,
         restDeliveryPointName: objectName,
         restConsumerName: restConsumerName,
@@ -376,33 +374,33 @@ class BrokerService {
       }
 
       try {
-        var r = await apiClient.getMsgVpnRestDeliveryPointRestConsumer(service.msgVpnName, objectName, restConsumerName);
-        var updateResponseRDPConsumer = await apiClient.updateMsgVpnRestDeliveryPointRestConsumer(service.msgVpnName, objectName, restConsumerName, newRDPConsumer);
+        const r = await apiClient.getMsgVpnRestDeliveryPointRestConsumer(service.msgVpnName, objectName, restConsumerName);
+        const updateResponseRDPConsumer = await apiClient.updateMsgVpnRestDeliveryPointRestConsumer(service.msgVpnName, objectName, restConsumerName, newRDPConsumer);
         L.debug(`createRDP consumer updated ${app.internalName}`);
       } catch (e) {
         L.debug(`createRDP consumer lookup  failed ${JSON.stringify(e)}`);
         try {
-          var r = await apiClient.createMsgVpnRestDeliveryPointRestConsumer(service.msgVpnName, objectName, newRDPConsumer);
+          const r = await apiClient.createMsgVpnRestDeliveryPointRestConsumer(service.msgVpnName, objectName, newRDPConsumer);
         } catch (e) {
           L.warn(`createRDP consumer creation  failed ${JSON.stringify(e)}`);
           throw new ErrorResponseInternal(500, e);
         }
       }
-      var newRDPQueueBinding: MsgVpnRestDeliveryPointQueueBinding = {
+      const newRDPQueueBinding: MsgVpnRestDeliveryPointQueueBinding = {
         msgVpnName: service.msgVpnName,
         restDeliveryPointName: objectName,
         postRequestTarget: `${rdpUrl.pathname}${rdpUrl.search}`,
         queueBindingName: objectName
       };
       try {
-        var b = await apiClient.getMsgVpnRestDeliveryPointQueueBinding(service.msgVpnName, objectName, objectName);
+        const b = await apiClient.getMsgVpnRestDeliveryPointQueueBinding(service.msgVpnName, objectName, objectName);
 
-        var updateResponseQueueBinding = await apiClient.updateMsgVpnRestDeliveryPointQueueBinding(service.msgVpnName, objectName, objectName, newRDPQueueBinding);
+        const updateResponseQueueBinding = await apiClient.updateMsgVpnRestDeliveryPointQueueBinding(service.msgVpnName, objectName, objectName, newRDPQueueBinding);
         L.debug(`createRDP queue binding updated ${app.internalName}`);
       } catch (e) {
         L.debug(`createRDP queue binding lookup  failed ${JSON.stringify(e)}`);
         try {
-          var b = await apiClient.createMsgVpnRestDeliveryPointQueueBinding(service.msgVpnName, objectName, newRDPQueueBinding);
+          const b = await apiClient.createMsgVpnRestDeliveryPointQueueBinding(service.msgVpnName, objectName, newRDPQueueBinding);
         } catch (e) {
           L.warn(`createRDP queue binding creation  failed ${JSON.stringify(e)}`);
           throw new ErrorResponseInternal(500, e);
@@ -412,7 +410,7 @@ class BrokerService {
 
       // add the trusted common names
       if (webHook.tlsOptions && webHook.tlsOptions.tlsTrustedCommonNames && webHook.tlsOptions.tlsTrustedCommonNames.length > 0) {
-        for (var trustedCN of webHook.tlsOptions.tlsTrustedCommonNames) {
+        for (const trustedCN of webHook.tlsOptions.tlsTrustedCommonNames) {
           const msgVpnRestDeliveryPointRestConsumerTlsTrustedCommonName: MsgVpnRestDeliveryPointRestConsumerTlsTrustedCommonName = {
             msgVpnName: service.msgVpnName,
             restConsumerName: restConsumerName,
@@ -430,9 +428,10 @@ class BrokerService {
 
       // enable the RDP
       try {
-        var enableRDP: MsgVpnRestDeliveryPoint = {
+        const enableRDP: MsgVpnRestDeliveryPoint = {
           enabled: true
-        }; var enableRDPResponse = await apiClient.updateMsgVpnRestDeliveryPoint(service.msgVpnName, objectName, enableRDP);
+        }; 
+        const enableRDPResponse = await apiClient.updateMsgVpnRestDeliveryPoint(service.msgVpnName, objectName, enableRDP);
         L.debug(`createRDP enabled ${objectName}`);
       } catch (e) {
         L.error(`createRDP enable failed ${JSON.stringify(e)}`);
@@ -442,10 +441,10 @@ class BrokerService {
       // enable the RDP consumer
 
       try {
-        var enableRDPConsumer: MsgVpnRestDeliveryPointRestConsumer = {
+        const enableRDPConsumer: MsgVpnRestDeliveryPointRestConsumer = {
           enabled: true
         };
-        var updateResponseRDPConsumer = await apiClient.updateMsgVpnRestDeliveryPointRestConsumer(service.msgVpnName, objectName, restConsumerName, enableRDPConsumer);
+        const updateResponseRDPConsumer = await apiClient.updateMsgVpnRestDeliveryPointRestConsumer(service.msgVpnName, objectName, restConsumerName, enableRDPConsumer);
         L.debug(`createRDP consumer enabled ${objectName}`);
       } catch (e) {
         L.debug(`createRDP consumer enablement  failed ${JSON.stringify(e)}`);

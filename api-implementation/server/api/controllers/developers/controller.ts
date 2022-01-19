@@ -61,7 +61,7 @@ export class Controller {
 
   // developer apps
   allApps(req: Request, res: Response, next: NextFunction): void {
-    var q: any = {
+    let q: any = {
     };
     if (req.query.status) {
       q.status = req.query.status;

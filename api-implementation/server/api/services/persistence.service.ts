@@ -11,8 +11,8 @@ import { SortInfo } from '../../../src/model/sortinfo';
 export class PersistenceService {
   private collection: string;
   private getCollection() {
-    var db: string = PlatformConstants.PLATFORM_DB;
-    var org: string = null;
+    let db: string = PlatformConstants.PLATFORM_DB;
+    let org: string = null;
     if (ns != null && ns.getStore()) {
       L.debug(`PersistenceService: Found namespace ${JSON.stringify(ns.getStore())}`);
       org = ns.getStore().get(ContextConstants.ORG_NAME);
@@ -54,7 +54,7 @@ export class PersistenceService {
     }
     return new Promise<any[]>((resolve, reject) => {
       const collection: mongodb.Collection = this.getCollection();
-      var x: mongodb.Cursor<any> = null;
+      let x: mongodb.Cursor<any> = null;
       if (paging !== null && paging !== undefined) {
         x = collection.find(query).sort(sort).skip((paging.pageNumber - 1) * paging.pageSize).limit(paging.pageSize);
       } else {
@@ -77,7 +77,7 @@ export class PersistenceService {
 
   async byName(name: string, query?: any): Promise<any> {
     const collection: mongodb.Collection = this.getCollection();
-    var q = query;
+    let q = query;
     if (q != null) {
       q._id = name;
     } else {
@@ -88,7 +88,7 @@ export class PersistenceService {
       const item = await collection.findOne(q);
       L.trace(item);
       if (item == null) {
-        var msg = `Object ${name} not found`;
+        const msg = `Object ${name} not found`;
         L.debug(msg);
         throw new ErrorResponseInternal(404, msg);
       } else {
@@ -104,7 +104,7 @@ export class PersistenceService {
   delete(name: string, query?: any): Promise<number> {
     return new Promise<number>((resolve, reject) => {
       const collection: mongodb.Collection = this.getCollection();
-      var q = query;
+      let q = query;
       if (q) {
         q._id = name;
       } else {
@@ -132,7 +132,7 @@ export class PersistenceService {
       L.info(`adding ${this.collection} with _id ${_id}`);
       const collection: mongodb.Collection = this.getCollection();
       body._id = _id;
-      var opts: CollectionInsertOneOptions = {
+      let opts: CollectionInsertOneOptions = {
         w: 1,
         j: true
       };
@@ -148,7 +148,7 @@ export class PersistenceService {
   update(_id: string, body: any, query?: any): Promise<any> {
     return new Promise<any>((resolve, reject) => {
       L.info(`patching ${this.collection} with _id ${_id}`);
-      var id = body.name;
+      let id = body.name;
       if (id == null) {
         id = body.id;
       }
@@ -161,13 +161,13 @@ export class PersistenceService {
       }
 
       const collection: mongodb.Collection = this.getCollection();
-      var q = query;
+      let q = query;
       if (q) {
         q._id = _id;
       } else {
         q = { _id: _id };
       }
-      var opts: UpdateOneOptions = {
+      const opts: UpdateOneOptions = {
         w: 1,
         j: true
       };
@@ -191,7 +191,7 @@ export class PersistenceService {
 
   validateReferences(names: string[]): Promise<boolean> {
     return new Promise<boolean>((resolve, reject) => {
-      var results: Promise<boolean>[] = [];
+      const results: Promise<boolean>[] = [];
       names.forEach((n) => {
         results.push(new Promise<boolean>((resolve, reject) => {
           this.byName(n).then((p) => {
@@ -215,9 +215,9 @@ export class PersistenceService {
   private createPublicErrorMessage(error: MongoError): ErrorResponseInternal {
     if (error instanceof MongoError) {
       L.debug(`Initial mongo error ${error.message}`);
-      var errorCode = 'E' + error.code;
-      var msg = error.message.replace(errorCode, '');
-      var statusCode = 422;
+      const errorCode = 'E' + error.code;
+      let msg = error.message.replace(errorCode, '');
+      let statusCode = 422;
       msg = msg.substring(0, msg.indexOf('error')).trim();
       let hexCode = '';
       if (error.code) {

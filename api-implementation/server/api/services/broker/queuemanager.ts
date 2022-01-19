@@ -46,7 +46,7 @@ export class QueueManager {
   private async createQueues(app: App, services: Service[],
     apiProducts: APIProduct[], ownerAttributes: Attributes, queueName?: string, clientOptions?: ClientOptions): Promise<void> {
     L.info(`createQueueSubscriptions services: ${services}`);
-    var subscribeExceptions: string[] = await ACLManager.getQueueSubscriptions(app, apiProducts, ownerAttributes);
+    let subscribeExceptions: string[] = await ACLManager.getQueueSubscriptions(app, apiProducts, ownerAttributes);
     if (subscribeExceptions === undefined) {
       subscribeExceptions = [];
     }
@@ -55,10 +55,10 @@ export class QueueManager {
       objectName = queueName;
     }
     // loop over services
-    for (var service of services) {
+    for (const service of services) {
       //create queues
       const apiClient: AllService = SempV2ClientFactory.getSEMPv2Client(service);
-      var newQ: MsgVpnQueue = {
+      const newQ: MsgVpnQueue = {
         queueName: objectName,
         msgVpnName: service.msgVpnName,
         ingressEnabled: true,
@@ -79,13 +79,13 @@ export class QueueManager {
         newQ.respectTtlEnabled = true;
       }
       try {
-        var q = await apiClient.getMsgVpnQueue(service.msgVpnName, objectName);
-        var updateResponseMsgVpnQueue = await apiClient.updateMsgVpnQueue(service.msgVpnName, objectName, newQ);
+        const q = await apiClient.getMsgVpnQueue(service.msgVpnName, objectName);
+        const updateResponseMsgVpnQueue = await apiClient.updateMsgVpnQueue(service.msgVpnName, objectName, newQ);
         L.debug(`createQueues updated ${app.internalName}`);
       } catch (e) {
         L.debug(`createQueues lookup  failed ${JSON.stringify(e)}`);
         try {
-          var q = await apiClient.createMsgVpnQueue(service.msgVpnName, newQ);
+          const q = await apiClient.createMsgVpnQueue(service.msgVpnName, newQ);
         } catch (e) {
           L.warn(`createQueues creation  failed ${JSON.stringify(e)}`);
           throw new ErrorResponseInternal(500, e.message);
@@ -96,7 +96,7 @@ export class QueueManager {
       let isError: boolean = true;
       for (let i = 0; i < 100; i++) {
         try {
-          var q = await apiClient.getMsgVpnQueue(service.msgVpnName, objectName);
+          const q = await apiClient.getMsgVpnQueue(service.msgVpnName, objectName);
           isError = false;
           break;
         } catch (e) {
@@ -108,18 +108,18 @@ export class QueueManager {
         throw new ErrorResponseInternal(500, `Queue creation failed`);
       }
 
-      for (var subscription of subscribeExceptions) {
-        var queueSubscription: MsgVpnQueueSubscription = {
+      for (const subscription of subscribeExceptions) {
+        const queueSubscription: MsgVpnQueueSubscription = {
           msgVpnName: service.msgVpnName,
           queueName: objectName,
           subscriptionTopic: subscription
         }
         try {
-          var subResult = await apiClient.getMsgVpnQueueSubscription(service.msgVpnName, objectName, encodeURIComponent(subscription));
+          const subResult = await apiClient.getMsgVpnQueueSubscription(service.msgVpnName, objectName, encodeURIComponent(subscription));
         } catch (e) {
           L.debug(`createQueues subscription lookup  failed ${JSON.stringify(e)}`);
           try {
-            var subResult = await apiClient.createMsgVpnQueueSubscription(service.msgVpnName, objectName, queueSubscription);
+            const subResult = await apiClient.createMsgVpnQueueSubscription(service.msgVpnName, objectName, queueSubscription);
           } catch (e) {
             L.warn(`createQueues subscription creation  failed ${JSON.stringify(e)}`);
             throw new ErrorResponseInternal(500, e.message);
@@ -146,10 +146,10 @@ export class QueueManager {
   }
 
   private async deleteQueues(app: App, services: Service[], name: string) {
-    for (var service of services) {
+    for (const service of services) {
       const apiClient: AllService = SempV2ClientFactory.getSEMPv2Client(service);
       try {
-        var getResponse = await apiClient.deleteMsgVpnQueue(service.msgVpnName, name);
+        const getResponse = await apiClient.deleteMsgVpnQueue(service.msgVpnName, name);
         L.info('Queue deleted');
       } catch (e) {
         if (!(e.body.meta.error.status == "NOT_FOUND")) {

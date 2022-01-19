@@ -80,10 +80,10 @@ class ACLManager {
   }
 
   public async deleteACLs(app: App, services: Service[], name: string) {
-    for (var service of services) {
+    for (const service of services) {
       const apiClient: AllService = SempV2ClientFactory.getSEMPv2Client(service);
       try {
-        var getResponse = await apiClient.deleteMsgVpnAclProfile(service.msgVpnName, name);
+        let getResponse = await apiClient.deleteMsgVpnAclProfile(service.msgVpnName, name);
         L.info("ACL deleted");
       } catch (err) {
         if (!(err.body.meta.error.status == "NOT_FOUND")) {
@@ -96,10 +96,10 @@ class ACLManager {
   }
 
   public async createAuthorizationGroups(app: App, services: Service[]): Promise<void> {
-    for (var service of services) {
+    for (const service of services) {
       const objectName: string = app.internalName;
       const apiClient: AllService = SempV2ClientFactory.getSEMPv2Client(service);
-      var authzGroup: MsgVpnAuthorizationGroup = {
+      const authzGroup: MsgVpnAuthorizationGroup = {
         aclProfileName: objectName,
         authorizationGroupName: objectName,
         clientProfileName: "default",
@@ -107,9 +107,9 @@ class ACLManager {
         enabled: true
       };
       try {
-        var getResponse = await apiClient.getMsgVpnAuthorizationGroup(service.msgVpnName, objectName);
+        const getResponse = await apiClient.getMsgVpnAuthorizationGroup(service.msgVpnName, objectName);
         L.info("AuthorizationGroup Looked up");
-        var responseUpd = await apiClient.updateMsgVpnAuthorizationGroup(service.msgVpnName, objectName, authzGroup);
+        const responseUpd = await apiClient.updateMsgVpnAuthorizationGroup(service.msgVpnName, objectName, authzGroup);
         L.info("AuthorizationGroup updated");
       } catch (e) {
 
@@ -124,7 +124,7 @@ class ACLManager {
   }
 
   public async deleteAuthorizationGroups(app: App, services: Service[], name: string): Promise<void> {
-    for (var service of services) {
+    for (const service of services) {
       const apiClient: AllService = SempV2ClientFactory.getSEMPv2Client(service);
       try {
         const getResponse = await apiClient.deleteMsgVpnAuthorizationGroup(service.msgVpnName, name);
@@ -143,16 +143,16 @@ class ACLManager {
 
     const envPermissions: EnvironmentPermissions[] = [];
     // compile list of event destinations sub / pub separately
-    for (var product of apiProducts) {
+    for (const product of apiProducts) {
       const publishExceptions = this.getResources(product.pubResources);
       const subscribeExceptions = this.getResources(product.subResources);
-      var strs: string[] = await this.getResourcesFromAsyncAPIs(product.apis, Direction.Subscribe);
+      let strs: string[] = await this.getResourcesFromAsyncAPIs(product.apis, Direction.Subscribe);
       
-      for (var s of strs) {
+      for (const s of strs) {
         subscribeExceptions.push(s);
       }
       strs = await this.getResourcesFromAsyncAPIs(product.apis, Direction.Publish);
-      for (var s of strs) {
+      for (const s of strs) {
         publishExceptions.push(s);
       }
       for (const env of product.environments) {
@@ -177,7 +177,7 @@ class ACLManager {
     L.info(envPermissions);
 
     // inject attribute values into parameters within subscriptions
-    var attributes: any[] = this.getAttributes(app, ownerAttributes, apiProducts);
+    const attributes: any[] = this.getAttributes(app, ownerAttributes, apiProducts);
     try {
       for (const permissions of envPermissions) {
         const services: Service[] = await brokerutils.getServices([permissions.name]);
@@ -193,8 +193,8 @@ class ACLManager {
         });
         L.info(`provisioning exceptions for env ${permissions.name} to ${services[0].serviceId}`);
         // need to reverse publish->subscribe due to Async API terminology
-        var q = await this.addPublishTopicExceptions(app, services, subscribeExceptions);
-        var r = await this.addSubscribeTopicExceptions(app, services, publishExceptions);
+        const q = await this.addPublishTopicExceptions(app, services, subscribeExceptions);
+        const r = await this.addSubscribeTopicExceptions(app, services, publishExceptions);
 
       }
 
@@ -205,8 +205,8 @@ class ACLManager {
         }
 
         const services: Service[] = await brokerutils.getServices(envNames);
-        var q = await this.addPublishTopicExceptions(app, services, []);
-        var r = await this.addSubscribeTopicExceptions(app, services, []);
+        const q = await this.addPublishTopicExceptions(app, services, []);
+        const r = await this.addSubscribeTopicExceptions(app, services, []);
       }
 
     } catch (e) {
@@ -218,7 +218,7 @@ class ACLManager {
 
 
   private getAttributes(app: App, ownerAttributes: Attributes, products: APIProduct[]) {
-    var attributes = [];
+    let attributes = [];
     if (app.attributes) {
       attributes = attributes.concat(app.attributes);
     }
@@ -235,37 +235,37 @@ class ACLManager {
   }
 
   private getResources(resources: string[]): string[] {
-    var returnResources: string[] = [];
+    const returnResources: string[] = [];
     resources.forEach((resource: string) => returnResources.push(resource));
     L.info(returnResources);
     return returnResources;
   }
 
   private enrichTopics(destinations: string[], attributes: any[]): string[] {
-    var enrichedDestinations: string[] = [];
+    let enrichedDestinations: string[] = [];
     destinations.forEach(d => {
-      var result = this.enrichDestination(d, attributes);
+      const result = this.enrichDestination(d, attributes);
       enrichedDestinations = enrichedDestinations.concat(result);
     });
     return enrichedDestinations;
   }
 
   private enrichDestination(destination: string, attributes: any[]): string[] {
-    var x = destination.match(/(?<=\{)[^}]*(?=\})/g);
-    var destinations: string[] = [];
+    const x = destination.match(/(?<=\{)[^}]*(?=\})/g);
+    let destinations: string[] = [];
     destinations.push(destination);
     if (x) {
       x.forEach(match => {
-        var newDestinations: string[] = [];
+        let newDestinations: string[] = [];
         //L.debug(match);
-        var att = attributes.find(element => element.name == match);
+        const att = attributes.find(element => element.name == match);
         if (att) {
-          var values = att.value.split(",");
+          const values = att.value.split(",");
           //L.debug(values);
-          for (var d of destinations) {
+          for (const d of destinations) {
             values.forEach((s: string) => {
               s = s.trim();
-              var newD = d.replace(`{${match}}`, s);
+              const newD = d.replace(`{${match}}`, s);
               //L.debug(newD);
               newDestinations.push(newD);
             });
@@ -283,22 +283,22 @@ class ACLManager {
   private getResourcesFromAsyncAPIs(apis: string[], direction: Direction): Promise<string[]> {
     return new Promise<string[]>(
       (resolve, reject) => {
-        var apiPromises: Promise<string>[] = [];
+        const apiPromises: Promise<string>[] = [];
         apis.forEach((api: string) => {
           apiPromises.push(ApisService.byName(api));
         });
         Promise.all(apiPromises).then(async (specs) => {
-          var parserPromises: Promise<any>[] = [];
-          var resources: string[] = [];
+          const parserPromises: Promise<any>[] = [];
+          const resources: string[] = [];
           specs.forEach((specification: string) => {
-            var p: Promise<any> = parser.parse(specification);
+            const p: Promise<any> = parser.parse(specification);
             parserPromises.push(p);
 
             p.then(
               (spec) => {
                 spec.channelNames().forEach((s: string) => {
 
-                  var channel = spec.channel(s);
+                  const channel = spec.channel(s);
 
                   if (direction == Direction.Subscribe && channel.hasSubscribe()) {
                     resources.push(s);
@@ -338,27 +338,27 @@ class ACLManager {
   }
 
   private async addPublishTopicExceptions(app: App, services: Service[], exceptions: string[]): Promise<void> {
-    for (var service of services) {
+    for (const service of services) {
       const objectName: string = app.internalName;
       const apiClient: AllService = SempV2ClientFactory.getSEMPv2Client(service);
 
       // fix - get all exceptions present on the acl profile  and remove those no longer required
-      var currentPublishExceptions: MsgVpnAclProfilePublishExceptionsResponse = await apiClient.getMsgVpnAclProfilePublishExceptions(service.msgVpnName, objectName, 999);
+      const currentPublishExceptions: MsgVpnAclProfilePublishExceptionsResponse = await apiClient.getMsgVpnAclProfilePublishExceptions(service.msgVpnName, objectName, 999);
       for (let pe of currentPublishExceptions.data) {
         if (!exceptions.includes(pe.publishExceptionTopic)) {
           await apiClient.deleteMsgVpnAclProfilePublishException(service.msgVpnName, objectName, pe.topicSyntax, encodeURIComponent(pe.publishExceptionTopic));
         }
       }
 
-      for (var exception of exceptions) {
-        var aclException: MsgVpnAclProfilePublishException = {
+      for (const exception of exceptions) {
+        const aclException: MsgVpnAclProfilePublishException = {
           aclProfileName: objectName,
           msgVpnName: service.msgVpnName,
           publishExceptionTopic: exception,
           topicSyntax: MsgVpnAclProfilePublishException.topicSyntax.SMF
         };
         try {
-          var getResponse = await apiClient.getMsgVpnAclProfilePublishException(service.msgVpnName, objectName, MsgVpnAclProfilePublishException.topicSyntax.SMF, encodeURIComponent(exception));
+          const getResponse = await apiClient.getMsgVpnAclProfilePublishException(service.msgVpnName, objectName, MsgVpnAclProfilePublishException.topicSyntax.SMF, encodeURIComponent(exception));
           L.info("ACL Looked up");
         } catch (e) {
           L.info(`addPublishTopicExceptions lookup  failed ${e}`);
@@ -374,30 +374,30 @@ class ACLManager {
     }
   }
   private async addSubscribeTopicExceptions(app: App, services: Service[], exceptions: string[]): Promise<void> {
-    for (var service of services) {
+    for (const service of services) {
       const objectName: string = app.internalName;
       const apiClient: AllService = SempV2ClientFactory.getSEMPv2Client(service);
       // fix - get al exceptions present on the acl profile  and remove those no longer required
-      var currentExceptions: MsgVpnAclProfileSubscribeExceptionsResponse = await apiClient.getMsgVpnAclProfileSubscribeExceptions(service.msgVpnName, objectName, 999);
+      const currentExceptions: MsgVpnAclProfileSubscribeExceptionsResponse = await apiClient.getMsgVpnAclProfileSubscribeExceptions(service.msgVpnName, objectName, 999);
       for (let se of currentExceptions.data) {
         if (!exceptions.includes(se.subscribeExceptionTopic)) {
           await apiClient.deleteMsgVpnAclProfileSubscribeException(service.msgVpnName, objectName, se.topicSyntax, encodeURIComponent(se.subscribeExceptionTopic));
         }
       }
-      for (var exception of exceptions) {
-        var aclException: MsgVpnAclProfileSubscribeException = {
+      for (const exception of exceptions) {
+        const aclException: MsgVpnAclProfileSubscribeException = {
           aclProfileName: objectName,
           msgVpnName: service.msgVpnName,
           subscribeExceptionTopic: exception,
           topicSyntax: MsgVpnAclProfileSubscribeException.topicSyntax.SMF
         };
         try {
-          var getResponse = await apiClient.getMsgVpnAclProfileSubscribeException(service.msgVpnName, objectName, MsgVpnAclProfileSubscribeException.topicSyntax.SMF, encodeURIComponent(exception));
+          const getResponse = await apiClient.getMsgVpnAclProfileSubscribeException(service.msgVpnName, objectName, MsgVpnAclProfileSubscribeException.topicSyntax.SMF, encodeURIComponent(exception));
           L.debug("addSubscribeTopicExceptions: exception exists");
         } catch (e) {
           L.warn(`addSubscribeTopicExceptions lookup  failed ${JSON.stringify(e)}`);
           try {
-            let response = await apiClient.createMsgVpnAclProfileSubscribeException(service.msgVpnName, objectName, aclException);
+            const response = await apiClient.createMsgVpnAclProfileSubscribeException(service.msgVpnName, objectName, aclException);
             L.debug("created SubscribeException");
           } catch (err) {
             L.error(`addSubscribeTopicExceptions add failed ${err}`);
@@ -431,22 +431,22 @@ class ACLManager {
   public getSubscriptionsFromAsyncAPIs(apis: string[]): Promise<string[]> {
     return new Promise<string[]>(
       (resolve, reject) => {
-        var apiPromises: Promise<string>[] = [];
+        const apiPromises: Promise<string>[] = [];
         apis.forEach((api: string) => {
           apiPromises.push(ApisService.byName(api));
         });
         Promise.all(apiPromises).then(async (specs) => {
-          var parserPromises: Promise<any>[] = [];
-          var resources: string[] = [];
+          const parserPromises: Promise<any>[] = [];
+          const resources: string[] = [];
           specs.forEach((specification: string) => {
-            var p: Promise<any> = parser.parse(specification);
+            const p: Promise<any> = parser.parse(specification);
             parserPromises.push(p);
 
             p.then(
               (spec) => {
                 spec.channelNames().forEach((s: string) => {
 
-                  var channel = spec.channel(s);
+                  const channel = spec.channel(s);
                   // publish means subscribe - async api transposition
                   if (channel.hasPublish()) {
                     L.info(`getSubscriptionsFromAsyncAPIs subscribe ${s}`)
@@ -470,10 +470,10 @@ class ACLManager {
   }
 
   public async getQueueSubscriptions(app: App, apiProducts: APIProduct[], ownerAttributes: Attributes): Promise<string[]> {
-    var subscribeExceptions: string[] = [];
-    for (var product of apiProducts) {
-      var strs: string[] = await this.getSubscriptionsFromAsyncAPIs(product.apis);
-      for (var s of strs) {
+    let subscribeExceptions: string[] = [];
+    for (const product of apiProducts) {
+      const strs: string[] = await this.getSubscriptionsFromAsyncAPIs(product.apis);
+      for (const s of strs) {
         subscribeExceptions.push(s);
       }
       // add in the pubresources as well (again, AsyncAPI reverse )
@@ -483,7 +483,7 @@ class ACLManager {
       return subscribeExceptions;
     }
     // inject attribute values into parameters within subscriptions
-    var attributes: any[] = this.getAttributes(app, ownerAttributes, apiProducts);
+    const attributes: any[] = this.getAttributes(app, ownerAttributes, apiProducts);
     subscribeExceptions = this.enrichTopics(subscribeExceptions, attributes);
     subscribeExceptions.forEach((s, index, arr) => {
       arr[index] = this.scrubDestination(s);
@@ -536,7 +536,7 @@ class ACLManager {
         channel[Object.keys(channel)[0]].permissions = Array.from(new Set(subscribePermissions));
       });
       // revert the permissions to match the Async API.
-      var permissions: Permissions = {
+      const permissions: Permissions = {
         publish: publishExceptions,
         subscribe: subscribeExceptions
       }

@@ -24,7 +24,7 @@ class SolaceCloudFacade {
   @Cache(serviceCache, {ttl: 3600})
   public async getServiceById(id: string): Promise<Service> {
     try {
-      var result: ServiceResponse = await ServicesService.getService(id);
+      const result: ServiceResponse = await ServicesService.getService(id);
       if (result == null || result.data == null) {
         throw new ErrorResponseInternal(404, `Service ${id} does not exist`);
       } else {
@@ -41,7 +41,7 @@ class SolaceCloudFacade {
   public async getServices(): Promise<Service[]> {
     let services: Service[]  = [];
     try {
-      var result: ServicesResponse = await ServicesService.listServices();
+      const result: ServicesResponse = await ServicesService.listServices();
       if (result == null) {
         throw new ErrorResponseInternal(404, `No services found`);
       } else {

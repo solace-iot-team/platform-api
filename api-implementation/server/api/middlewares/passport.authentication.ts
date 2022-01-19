@@ -36,7 +36,7 @@ export default class PassportFactory {
   private static getKey(): string {
     const key = process.env[`${ENV_PREFIX_VERIFIER}_KEY`];
     try {
-      var keyFile = fs.readFileSync(key, 'utf8');
+      let keyFile = fs.readFileSync(key, 'utf8');
       return keyFile;
     } catch (e) {
       L.error(e, `Error loading JWT Signer Public Key from ${key}`);
@@ -45,7 +45,7 @@ export default class PassportFactory {
   public static build(): passport.PassportStatic {
 
 
-    var opts: StrategyOptions = {
+    let opts: StrategyOptions = {
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
       secretOrKey: PassportFactory.getKey(),
       ignoreExpiration: true,

@@ -3,12 +3,12 @@ import L from '../server/common/logger';
 import Format = Paths.GetApi.Parameters.Format;
 import { isString } from './typehelpers';
 
-var YAML = require('js-yaml');
+import YAML from 'js-yaml';
 
 export class AsyncAPIHelper {
   getContentType(apiSpec: string): string {
     try {
-      var o = JSON.parse(apiSpec);
+      const o = JSON.parse(apiSpec);
       if (o && typeof o === "object") {
         return "application/json";
       } else {
@@ -22,7 +22,7 @@ export class AsyncAPIHelper {
 
   YAMLtoJSON(apiSpec: string): string {
     if (this.getContentType(apiSpec) == "application/x-yaml") {
-      var o = YAML.load(apiSpec);
+      const o = YAML.load(apiSpec);
       return JSON.stringify(o);
     } else {
       throw new ErrorResponseInternal(500, "Invalid YAMl");
@@ -30,7 +30,7 @@ export class AsyncAPIHelper {
   }
   JSONtoYAML(apiSpec: string): string {
     if (this.getContentType(apiSpec) == "application/json") {
-      var o = JSON.parse(apiSpec);
+      const o = JSON.parse(apiSpec);
       return YAML.dump(o);
     } else {
       throw new ErrorResponseInternal(500, "Invalid JSON");
@@ -38,7 +38,7 @@ export class AsyncAPIHelper {
   }
   YAMLtoObject(apiSpec: string): any {
     if (this.getContentType(apiSpec) == "application/x-yaml") {
-      var o = YAML.load(apiSpec);
+      const o = YAML.load(apiSpec);
       return o;
     } else {
       throw new ErrorResponseInternal(500, "Invalid YAMl");
@@ -48,7 +48,7 @@ export class AsyncAPIHelper {
   handleResponse(r, req, res, next, statusCode: number = 200) {
 
     if (r != null) {
-      var contentType: Format = req.query['format'] as Format;
+      const contentType: Format = req.query['format'] as Format;
       L.info(contentType);
       if (contentType == "application/json") {
         if (this.getContentType(r) == "application/json") {

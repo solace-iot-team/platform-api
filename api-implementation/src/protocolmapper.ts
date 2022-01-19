@@ -20,8 +20,8 @@ interface SolaceClientProtocol {
 }
 export class ProtocolMapper {
   public static getProtocolMappings(): ProtocolMapping[] {
-    var map: ProtocolMapping[] = [];
-    var mqtt: ProtocolMapping = {
+    const map: ProtocolMapping[] = [];
+    const mqtt: ProtocolMapping = {
       name: 'mqtt',
       version: '3.1.1',
       protocolKeys: {
@@ -35,7 +35,7 @@ export class ProtocolMapper {
     };
     map.push(mqtt);
 
-    var mqtts: ProtocolMapping = {
+    const mqtts: ProtocolMapping = {
       name: 'secure-mqtt',
       version: '3.1.1',
       protocolKeys: {
@@ -50,7 +50,7 @@ export class ProtocolMapper {
     };
     map.push(mqtts);
 
-    var wsMqtt: ProtocolMapping = {
+    const wsMqtt: ProtocolMapping = {
       name: 'ws-mqtt',
       version: '3.1.1',
       protocolKeys: {
@@ -65,7 +65,7 @@ export class ProtocolMapper {
     };
     map.push(wsMqtt);
 
-    var wssMqtt: ProtocolMapping = {
+    const wssMqtt: ProtocolMapping = {
       name: 'wss-mqtt',
       version: '3.1.1',
       protocolKeys: {
@@ -80,7 +80,7 @@ export class ProtocolMapper {
     map.push(wssMqtt);
 
 
-    var amqp: ProtocolMapping = {
+    const amqp: ProtocolMapping = {
       name: 'amqp',
       version: '1.0.0',
       protocolKeys: {
@@ -94,7 +94,7 @@ export class ProtocolMapper {
     };
     map.push(amqp);
 
-    var amqps: ProtocolMapping = {
+    const amqps: ProtocolMapping = {
       name: 'amqps',
       version: '1.0.0',
       protocolKeys: {
@@ -108,7 +108,7 @@ export class ProtocolMapper {
     };
     map.push(amqps);
 
-    var http: ProtocolMapping = {
+    const http: ProtocolMapping = {
       name: 'http',
       version: '1.1',
       protocolKeys: {
@@ -122,7 +122,7 @@ export class ProtocolMapper {
     };
     map.push(http);
 
-    var https: ProtocolMapping = {
+    const https: ProtocolMapping = {
       name: 'https',
       version: '1.1',
       protocolKeys: {
@@ -136,7 +136,7 @@ export class ProtocolMapper {
     };
     map.push(https);
 
-    var smf: ProtocolMapping = {
+    const smf: ProtocolMapping = {
       name: 'smf',
       version: 'smf',
       protocolKeys: {
@@ -150,7 +150,7 @@ export class ProtocolMapper {
     };
     map.push(smf);
 
-    var smfs: ProtocolMapping = {
+    const smfs: ProtocolMapping = {
       name: 'smfs',
       version: 'smfs',
       protocolKeys: {
@@ -164,7 +164,7 @@ export class ProtocolMapper {
     };
     map.push(smfs);
 
-    var compressedsmf: ProtocolMapping = {
+    const compressedsmf: ProtocolMapping = {
       name: 'compressed-smf',
       version: 'smf',
       protocolKeys: {
@@ -178,7 +178,7 @@ export class ProtocolMapper {
     };
     map.push(compressedsmf);
 
-    var jms: ProtocolMapping = {
+    const jms: ProtocolMapping = {
       name: 'jms',
       version: '1.1',
       protocolKeys: {
@@ -192,7 +192,7 @@ export class ProtocolMapper {
     };
     map.push(jms);
 
-    var secureJms: ProtocolMapping = {
+    const secureJms: ProtocolMapping = {
       name: 'secure-jms',
       version: '1.1',
       protocolKeys: {
@@ -214,17 +214,17 @@ export class ProtocolMapper {
   }
 
   public static async mapSolaceMessagingProtocolsToAsyncAPI(serverProtocols): Promise<Endpoint[]> {
-    var endpoints: Endpoint[] = [];
-    var mappings = ProtocolMapper.getProtocolMappings();
-    for (var protocol of serverProtocols) {
+    const endpoints: Endpoint[] = [];
+    const mappings = ProtocolMapper.getProtocolMappings();
+    for (const protocol of serverProtocols) {
       L.debug(`mapMessagingProtocols ${protocol.name}`);
-      for (var serverEndpoint of protocol.endPoints) {
-        var mapping = mappings.find(element => element.protocolKeys.name == serverEndpoint.name && element.protocolKeys.protocol == serverEndpoint.transport);
+      for (const serverEndpoint of protocol.endPoints) {
+        const mapping = mappings.find(element => element.protocolKeys.name == serverEndpoint.name && element.protocolKeys.protocol == serverEndpoint.transport);
         if (mapping != null) {
-          var keys = mapping.protocolKeys;
+          const keys = mapping.protocolKeys;
           L.debug(`mapMessagingProtocols ${keys.name} ${keys.protocol}`);
-          var endpoint = protocol.endPoints.find(ep => ep.name == serverEndpoint.name && ep.transport == serverEndpoint.transport);
-          var newEndpoint: Endpoint = endpoints.find(ep => ep.uri == endpoint.uris[0]);
+          const endpoint = protocol.endPoints.find(ep => ep.name == serverEndpoint.name && ep.transport == serverEndpoint.transport);
+          let newEndpoint: Endpoint = endpoints.find(ep => ep.uri == endpoint.uris[0]);
           L.debug(endpoint);
           if (newEndpoint === undefined) {
             newEndpoint = {
@@ -255,8 +255,8 @@ export class ProtocolMapper {
       if (clientName.startsWith('#rest')){
         clientProtocol = 'rest';
       }
-    var mappings = ProtocolMapper.getProtocolMappings();
-    var mapping = mappings.find(element => element.clientProtocol.name == clientProtocol && element.clientProtocol.tls == tls);
+    const mappings = ProtocolMapper.getProtocolMappings();
+    let mapping = mappings.find(element => element.clientProtocol.name == clientProtocol && element.clientProtocol.tls == tls);
     let protocol: Protocol;
     if (mapping) {
       protocol = {

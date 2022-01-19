@@ -17,7 +17,7 @@ export default function fileAuthorizer(
   if (user === undefined) {
     return null;
   }
-  var secret = userRegistry[username].password;
+  let secret = userRegistry[username].password;
   if (secret === null || secret === undefined) {
     L.debug(`Unknown principal ${username}`);
     return null;
@@ -40,9 +40,10 @@ export default function fileAuthorizer(
 }
 
 export function loadUserRegistry() {
+  let fileName = process.env.FILE_USER_REGISTRY || 'example-users.json';
   try {
-    var fileName = process.env.FILE_USER_REGISTRY || 'example-users.json';
-    var regFile = fs.readFileSync(fileName, 'utf8');
+    
+    let regFile = fs.readFileSync(fileName, 'utf8');
     userRegistry = JSON.parse(regFile);
     L.info(`Loaded user registry from ${fileName}, number of users: ${Object.keys(userRegistry).length}`);
   } catch (e) {
