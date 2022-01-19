@@ -9,11 +9,11 @@ export default function errorHandler(
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   next: NextFunction
 ): void {
-  var theError: ErrorResponseInternal = err;
+  let theError: ErrorResponseInternal = err;
   if (!(typeof theError.message === 'string') && !(theError.message as any instanceof String)){
     theError.message = JSON.stringify(theError.message);
   }
-  var statusCode: number = theError.statusCode;
+  let statusCode: number = theError.statusCode;
   if (!statusCode){
     statusCode = err['status'];
   }

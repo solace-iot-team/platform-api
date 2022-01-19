@@ -12,7 +12,7 @@ export default function pagingHandler(
   next: NextFunction
 ): void {
   if (req.query.pageNumber != null && req.query.pageSize != null) {
-    var p: Paging = {
+    let p: Paging = {
       pageNumber: parseInt(req.query.pageNumber as string),
       pageSize: parseInt(req.query.pageSize as string)
     };

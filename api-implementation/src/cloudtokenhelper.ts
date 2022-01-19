@@ -6,7 +6,7 @@ import { ContextConstants } from '../server/common/constants';
 import { isString } from './typehelpers';
 
 export async function getCloudToken(): Promise<string> {
-  var token: any = null;
+  let token: any = null;
   token = ns.getStore().get(ContextConstants.CLOUD_TOKEN);
   if (token == null) {
     throw new ErrorResponseInternal(500, `Token is not defined for ${ns.getStore().get(ContextConstants.ORG_NAME)}`);
@@ -20,7 +20,7 @@ export async function getCloudToken(): Promise<string> {
 }
 
 export async function getEventPortalToken(): Promise<string> {
-  var token: any = null;
+  let token: any = null;
   token = ns.getStore().get(ContextConstants.CLOUD_TOKEN);
   if (token == null) {
     throw new ErrorResponseInternal(500, `Token is not defined for ${ns.getStore().get(ContextConstants.ORG_NAME)}`);
@@ -59,7 +59,7 @@ export async function validateToken(token: string, url: string): Promise<boolean
 }
 
 export async function getCloudBaseUrl(): Promise<string> {
-  var token: any = null;
+  let token: any = null;
   token = ns.getStore().get(ContextConstants.CLOUD_TOKEN);
 
   if (token == null || isString(token)) {
@@ -71,7 +71,7 @@ export async function getCloudBaseUrl(): Promise<string> {
 }
 
 export async function getEventPortalBaseUrl(): Promise<string> {
-  var token: any = null;
+  let token: any = null;
   token = ns.getStore().get(ContextConstants.CLOUD_TOKEN);
   if (token == null || isString(token)) {
     L.trace('using default event portal base url');

@@ -16,7 +16,7 @@ const SEMPV2_PASSWORD = 'sempv2Password';
 const SEMPV2_BASE = 'sempv2BaseUrl';
 export class SempV2MonitorFactory {
   getSEMPv2Client(service: Service): AllServiceDefault {
-    var sempProtocol = service.managementProtocols.find(i => i.name === "SEMP");
+    const sempProtocol = service.managementProtocols.find(i => i.name === "SEMP");
     ns.getStore().set(SEMPV2_BASE, sempProtocol.endPoints.find(j => j.name === "Secured SEMP Config").uris[0]);
     ns.getStore().set(SEMPV2_USER, sempProtocol.username);
     ns.getStore().set(SEMPV2_PASSWORD, sempProtocol.password);

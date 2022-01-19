@@ -9,7 +9,7 @@ export default function auditHandler(req, res, next) {
     if (auditableVerbs.includes(req.method)) {
       let user: User = req['user'] as User;
       const url: string = `${req.baseUrl}/${req.url}`.replace('//', '/');
-      var h: History = {
+      let h: History = {
         at: Date.now(),
         operation: req.method,
         requestBody: req.body,

@@ -16,7 +16,7 @@ const SEMPV2_PASSWORD = 'sempv2Password';
 const SEMPV2_BASE = 'sempv2BaseUrl';
 export class SempV2ClientFactory {
   getSEMPv2Client(service: Service): AllServiceDefault {
-    var sempProtocol = service.managementProtocols.find(i => i.name === "SEMP");
+    const sempProtocol = service.managementProtocols.find(i => i.name === "SEMP");
     if (!sempProtocol){
       L.error(`Could not locate mmanagement protocols in ${service.name} `);
       L.debug(service.managementProtocols);

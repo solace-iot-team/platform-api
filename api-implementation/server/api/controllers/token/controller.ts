@@ -8,7 +8,7 @@ export class Controller {
 
 
   private getOrg(): string {
-    var org: string = null;
+    let org: string = null;
     if (ns != null) {
       L.debug(`token controller: Found namespace ${JSON.stringify(ns)}`);
       org = ns.getStore().get(ContextConstants.ORG_NAME);
@@ -21,7 +21,7 @@ export class Controller {
   }
 
   get(req: Request, res: Response, next: NextFunction): void {
-    var orgName: string = this.getOrg();
+    let orgName: string = this.getOrg();
     ns.getStore().set(ContextConstants.ORG_NAME, null);
     OrganizationsService.byName(orgName)
       .then((org) => {
@@ -32,7 +32,7 @@ export class Controller {
   };
 
   create(req: Request, res: Response, next: NextFunction): void {
-    var orgName: string = this.getOrg();
+    let orgName: string = this.getOrg();
     L.debug(`token controller org is ${orgName} ${ns.getStore().get(ContextConstants.REQUEST_ID)} ${JSON.stringify(ns)}`);
     ns.getStore().set(ContextConstants.ORG_NAME, null);
     L.trace(`token controller run org is ${ns.getStore().get(ContextConstants.ORG_NAME)} ${ns.getStore().get(ContextConstants.REQUEST_ID)} ${JSON.stringify(ns)}`);

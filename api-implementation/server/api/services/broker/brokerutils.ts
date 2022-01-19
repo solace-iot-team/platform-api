@@ -12,8 +12,8 @@ import SolaceCloudFacade from '../../../../src/solacecloudfacade';
 
 class BrokerUtils {
 
-    async getEnvironments(app: App): Promise<string[]> {
-    var environmentNames: string[] = [];
+  async getEnvironments(app: App): Promise<string[]> {
+    let environmentNames: string[] = [];
     for (const productName of app.apiProducts) {
       let product = await ApiProductsService.byName(productName);
       environmentNames = environmentNames.concat(product.environments);
@@ -36,13 +36,13 @@ class BrokerUtils {
     return Array.from(new Set(environmentNames));
   }
 
-    async getEnvironmentObjects(app: App): Promise<EnvironmentResponse[]> {
+  async getEnvironmentObjects(app: App): Promise<EnvironmentResponse[]> {
     const environmentNames: string[] = await this.getEnvironments(app);
-    const environments: EnvironmentResponse[] = []; 
-    for (const envName of environmentNames){
-      environments.push (await EnvironmentsService.byName(envName));
+    const environments: EnvironmentResponse[] = [];
+    for (const envName of environmentNames) {
+      environments.push(await EnvironmentsService.byName(envName));
     }
-    
+
     return environments;
   }
 
@@ -69,7 +69,7 @@ class BrokerUtils {
     }
   }
 
-  async getServicesByApp(app: App): Promise<Service[]>{
+  async getServicesByApp(app: App): Promise<Service[]> {
     const envs: string[] = await this.getEnvironments(app);
     const services: Service[] = await this.getServices(envs);
     return services;

@@ -15,7 +15,7 @@ export default function sortHandler(
     const dirParam = req.query.sortDirection as string;
     let direction: SortDirection = (dirParam == 'desc')?SortDirection.desc:SortDirection.asc;
 
-    var p: SortInfo = {
+    let p: SortInfo = {
       direction: direction,
       fieldName: req.query.sortFieldName as string
     };
