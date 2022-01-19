@@ -93,17 +93,15 @@ class BrokerService {
         try {
           if (productResults && productResults.length > 0) {
             const products: APIProduct[] = [];
+            var environmentNames: string[] = [];
             for (var product of productResults) {
-              var environmentNames: string[] = [];
               product.environments.forEach((e: string) => {
                 environmentNames.push(e);
               })
-              L.info(`env: ${product.environments}`);
+              L.info(`env: ${JSON.stringify(product.environments)}`);
               products.push(product);
-
             }
             environmentNames = Array.from(new Set(environmentNames));
-            // L.info(`provisioning product ${product.name} to ${JSON.stringify(environmentNames)}`);
             await this.doProvision(app, environmentNames, products, ownerAttributes);
           }
           if ((!productResults || productResults.length == 0) && isUpdate) {
