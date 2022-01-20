@@ -1,6 +1,8 @@
 import L from '../../common/logger';
 import { ContextConstants, PlatformConstants } from '../../common/constants';
 import Organization = Components.Schemas.Organization;
+import OrganizationResponse = Components.Schemas.OrganizationResponse;
+import OrganizationStatus = Components.Schemas.OrganizationStatus;
 import { PersistenceService } from './persistence.service';
 import { ErrorResponseInternal } from '../middlewares/error.handler';
 import { databaseaccess } from '../../../src/databaseaccess';
@@ -10,6 +12,11 @@ import SolaceCloudFacade from '../../../src/solacecloudfacade';
 import EventPortalFacade from '../../../src/eventportalfacade';
 import { ns } from '../middlewares/context.handler';
 import { isString } from '../../../src/typehelpers';
+
+import { Cache, CacheContainer } from 'node-ts-cache'
+import { MemoryStorage } from 'node-ts-cache-storage-memory'
+
+const statusCache = new CacheContainer(new MemoryStorage());
 
 export class OrganizationsService {
   private persistenceService: PersistenceService;
@@ -21,12 +28,14 @@ export class OrganizationsService {
     return this.persistenceService.all(query);
   }
 
-  byName(name: string): Promise<Organization> {
+  async byName(name: string): Promise<Organization> {
     L.debug(`Organization.byName ${name}`);
     if (name == null) {
       throw new ErrorResponseInternal(500, `no name parameter provided`);
     }
-    return this.persistenceService.byName(name);
+    const org: OrganizationResponse = await this.persistenceService.byName(name);
+    org.status = await this.getOrganizationStatusCached(org['cloud-token']);
+    return org;
   }
 
   async delete(name: string): Promise<number> {
@@ -81,58 +90,47 @@ export class OrganizationsService {
     return p;
   }
 
-  create(body: Organization): Promise<Organization> {
-    return new Promise<Organization>(async (resolve, reject) => {
-      if (body.name == PlatformConstants.PLATFORM_DB) {
-        reject(new ErrorResponseInternal(401, `Access denied, PlatformConstants.PLATFORM_DB name`));
+  async create(body: Organization): Promise<OrganizationResponse> {
+    if (body.name == PlatformConstants.PLATFORM_DB) {
+      throw (new ErrorResponseInternal(401, `Access denied, PlatformConstants.PLATFORM_DB name`));
+    } else {
+      if (
+        body[ContextConstants.CLOUD_TOKEN] === undefined ||
+        body[ContextConstants.CLOUD_TOKEN] === null ||
+        (await this.validateCloudToken(body[ContextConstants.CLOUD_TOKEN]))
+      ) {
+        const org: OrganizationResponse = await this.persistenceService
+          .create(body.name, body) as OrganizationResponse;
+        org.status = await this.getOrganizationStatus(org['cloud-token']);
+        return org;
       } else {
-        if (
-          body[ContextConstants.CLOUD_TOKEN] === undefined ||
-          body[ContextConstants.CLOUD_TOKEN] === null ||
-          (await this.validateCloudToken(body[ContextConstants.CLOUD_TOKEN]))
-        ) {
-          this.persistenceService
-            .create(body.name, body)
-            .then((p) => {
-              resolve(p);
-            })
-            .catch((e) => {
-              reject(e);
-            });
-        } else {
-          reject(
-            new ErrorResponseInternal(400, `Invalid cloud token provided`)
-          );
-        }
+        throw (
+          new ErrorResponseInternal(400, `Invalid cloud token provided`)
+        );
       }
-    });
+    }
+
   }
 
-  update(name: string, body: Organization): Promise<Organization> {
-    return new Promise<Organization>(async (resolve, reject) => {
-      if (body.name == PlatformConstants.PLATFORM_DB) {
-        reject(new ErrorResponseInternal(401, `Access denied, PlatformConstants.PLATFORM_DB name`));
+  async update(name: string, body: Organization): Promise<OrganizationResponse> {
+    if (body.name == PlatformConstants.PLATFORM_DB) {
+      throw(new ErrorResponseInternal(401, `Access denied, PlatformConstants.PLATFORM_DB name`));
+    } else {
+      if (
+        body[ContextConstants.CLOUD_TOKEN] === undefined ||
+        body[ContextConstants.CLOUD_TOKEN] === null ||
+        (await this.validateCloudToken(body[ContextConstants.CLOUD_TOKEN]))
+      ) {
+        const org: OrganizationResponse = await this.persistenceService
+          .update(name, body) as OrganizationResponse;
+        org.status = await this.getOrganizationStatus(org['cloud-token']);
+        return org;
       } else {
-        if (
-          body[ContextConstants.CLOUD_TOKEN] === undefined ||
-          body[ContextConstants.CLOUD_TOKEN] === null ||
-          (await this.validateCloudToken(body[ContextConstants.CLOUD_TOKEN]))
-        ) {
-          this.persistenceService
-            .update(name, body)
-            .then((p) => {
-              resolve(p);
-            })
-            .catch((e) => {
-              reject(e);
-            });
-        } else {
-          reject(
-            new ErrorResponseInternal(400, `Invalid cloud token provided`)
-          );
-        }
+        throw(
+          new ErrorResponseInternal(400, `Invalid cloud token provided`)
+        );
       }
-    });
+    }
   }
 
   async validateCloudToken(token: any): Promise<boolean> {
@@ -140,18 +138,47 @@ export class OrganizationsService {
 
       if (isString(token)) {
         const isServiceToken: boolean = await SolaceCloudFacade.validate(token);
-        const isPortalToken: boolean = await EventPortalFacade.validate(token);
-        return isServiceToken && isPortalToken;
+        const useProxyModeStr = process.env.APIS_PROXY_MODE || 'false';
+        const useProxyMode = (useProxyModeStr.toLowerCase() == 'true') || (useProxyModeStr.toLowerCase() == '1');
+        if (!useProxyMode) {
+          return isServiceToken;
+        } else {
+          return isServiceToken && (await EventPortalFacade.validate(token));
+        }
       } else {
         const isServiceToken: boolean = await SolaceCloudFacade.validate(token.cloud.token, token.cloud.baseUrl);
         const isPortalToken: boolean = await EventPortalFacade.validate(token.eventPortal.token, token.eventPortal.baseUrl);
         return isServiceToken && isPortalToken;
       }
-      
+
     } catch (e) {
       L.warn(e);
       return false;
     }
+  }
+
+  @Cache(statusCache, {ttl: 240})
+  async getOrganizationStatusCached(token: any): Promise<OrganizationStatus> {
+    return this.getOrganizationStatus(token);
+  }
+  
+  async getOrganizationStatus(token: any): Promise<OrganizationStatus> {
+    const status: OrganizationStatus = {
+
+    };
+    if (!token){
+      return status;
+    }
+
+    if (isString(token)) {
+      status.cloudConnectivity = await SolaceCloudFacade.validate(token);
+      status.eventPortalConnectivity = await EventPortalFacade.validate(token);
+    } else {
+      status.cloudConnectivity = await SolaceCloudFacade.validate(token.cloud.token, token.cloud.baseUrl);
+      status.eventPortalConnectivity = await EventPortalFacade.validate(token.eventPortal.token, token.eventPortal.baseUrl);
+    }
+
+    return status;
   }
 }
 
