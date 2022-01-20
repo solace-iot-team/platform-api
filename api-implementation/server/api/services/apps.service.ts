@@ -142,7 +142,7 @@ export class AppsService {
   }
 
   async create(name: string, newApp: App, ownerAttributes: Attributes): Promise<App> {
-    L.info(`App create request ${JSON.stringify(newApp)}`);
+    L.debug(`App create request ${JSON.stringify(newApp)}`);
     let appExists = null;
     try {
       appExists = await this.persistenceService.byName(name);

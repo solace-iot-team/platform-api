@@ -2,7 +2,7 @@ openapi: 3.0.0
 info:
   title: Solace API Management Connector
   description: 'Solace API Management Connector API. Note: basic authentication security mechanism is deprecated.'
-  version: 0.6.1
+  version: 0.6.2
 servers:
   - url: /v1
 
@@ -1513,6 +1513,26 @@ components:
             example: eyXhbGciOiJSUzI1NiIsImtpZCI6Im1hYXNfcHJvZF8yMDIwMDMyNiIsInR5cCI6IkpXVCJ9.eyJvcmcifiJzb2xhY2Vpb3R0ZWFtIiwib3JnVHlwZSI6IkVOVEVSUFJJU0UiLCJzdWIiOiIzZTJvY214MTA1IiwicGVybWlzc2lvbnMiOiJBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQXdBQU09IiwiYXBpVG9rZW5JZCI6Inlhb2wzc2ZveG03IiwiaXNzIjoiU29sYWNlIENvcnBvcmF0aW9uIiwiaWF0IjoxNjAzODA3NzQ1fQ.QIBpi5_U6b1DnAwbDbJiFIT0pomqa4AyOLtmSOEF6zhoxKMm4Y27WbILZnxnh_gpdX-tvt18Ycuck4xs3T5JjFfU3qrczRHSuj2vEdsCpDQWdyZTPV4NQ-zPxRvigTjaTlcdXin8XwMGh8nZdylgRMlRQjvotomnXQxgbUol0Kl1ziFFMybqeD10qCDsUW6Jv-PKibBN3cnCsWwPZX6d_XYUECs1AHjgs5pk-A8v3DHcnvbXiAP4XXrry6ztopAWKMc5rVFoB_WFY4yi0reuTYjn6Sf0g7vZxFifRZZHZmqZtNQUiX6S80eQG4kF3YDKlr5PfLDNp4iRfe0-3svIPw
           - "$ref": "#/components/schemas/CloudToken"
 
+    OrganizationResponse:
+      type: object
+      allOf: 
+        - $ref: "#/components/schemas/Organization"
+      required:
+      - name
+      additionalProperties: false
+      properties:
+        status: 
+          $ref: "#/components/schemas/OrganizationStatus"
+
+    OrganizationStatus:
+      type: object
+      additionalProperties: false
+      properties:
+        cloudConnectivity: 
+          type: boolean
+        eventPortalConnectivity: 
+          type: boolean
+      
     SempV2Authentication:
       description: Specifies how requests to the SEMPv2 Management API are authenticated, defaults to BasicAuth. If APIKey is specified the username returned in the Services/Environments response is used as API Key.
       type: object
@@ -2006,7 +2026,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Organization'
+                $ref: '#/components/schemas/OrganizationResponse'
         '400':
           description: "Bad request. Likely an invalid auth token provided."
           content:
@@ -2045,7 +2065,7 @@ paths:
           content:
             application/json:
               schema:
-                "$ref": "#/components/schemas/Organization"
+                "$ref": "#/components/schemas/OrganizationResponse"
         '400':
            $ref: '#/components/responses/BadRequest'
         '401':
@@ -2080,7 +2100,7 @@ paths:
           content:
             "application/json":
               schema:
-                $ref: '#/components/schemas/Organization'
+                $ref: '#/components/schemas/OrganizationResponse'
         '400':
           description: "Bad request. Likely an invalid auth token provided."
           content:

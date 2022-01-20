@@ -730,6 +730,16 @@ declare namespace Components {
             sempV2Authentication?: SempV2Authentication;
             "cloud-token"?: string /* ^[A-Za-z0-9-_=]+\.[A-Za-z0-9-_=]+\.?[A-Za-z0-9-_.+/=]*$ */  | CloudToken;
         }
+        export interface OrganizationResponse {
+            status?: OrganizationStatus;
+            name: CommonName; // [a-zA-Z0-9_-]*
+            sempV2Authentication?: SempV2Authentication;
+            "cloud-token"?: string /* ^[A-Za-z0-9-_=]+\.[A-Za-z0-9-_=]+\.?[A-Za-z0-9-_.+/=]*$ */  | CloudToken;
+        }
+        export interface OrganizationStatus {
+            cloudConnectivity?: boolean;
+            eventPortalConnectivity?: boolean;
+        }
         /**
          * lists all the publish and subscribe topics an app has access to. Restrictions on   topic elements are taken into account.
          */
@@ -1494,7 +1504,7 @@ declare namespace Paths {
     }
     namespace GetOrganization {
         namespace Responses {
-            export type $200 = Components.Schemas.Organization;
+            export type $200 = Components.Schemas.OrganizationResponse;
             export type $400 = Components.Responses.BadRequest;
             export type $401 = Components.Responses.Unauthorized;
             export type $403 = Components.Responses.Forbidden;

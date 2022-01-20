@@ -121,12 +121,11 @@ export class TeamsService {
         name: team,
         displayName: team,
       };
+      L.info(`Auto creating team object ${team}`);
       this.create(teamObj);
     }
-    L.debug(teamObj);
     const app: TeamApp = AppFactory.createTeamApp(team, body);
 
-    L.debug(`App create request ${JSON.stringify(app)}`);
     try {
       const newApp: TeamApp = await AppsService.create(
         app.name,
