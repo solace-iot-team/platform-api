@@ -70,7 +70,7 @@ class BrokerService {
     const deProvisionServices = oldServices.filter(s => !newServices.includes(s));
     L.info(`updated app references less environments, deprovision from services ${JSON.stringify(deProvisionServices)}`)
     L.info(`provisioning app ${appPatch.name}`);
-    if (deProvisionServices && deProvisionServices.length>0){
+    if (deProvisionServices && deProvisionServices.length > 0) {
       await this.doDeprovisionAppByEnvironments(appUnmodified, appUnmodified.internalName, deProvisionServices);
     }
     // try to provision the modified app, if it fails roll back to previous version and provision the previous version
@@ -189,7 +189,7 @@ class BrokerService {
       throw new ErrorResponseInternal(500, err.message);
     }
   }
-  private async doDeprovisionAppByEnvironments(app: App, objectName: string, services: Service[]){
+  private async doDeprovisionAppByEnvironments(app: App, objectName: string, services: Service[]) {
     try {
       await this.deleteClientUsernames(app, services);
       await ACLManager.deleteAuthorizationGroups(app, services, objectName);
@@ -282,9 +282,8 @@ class BrokerService {
   private async createRDP(app: App, services: Service[], apiProducts: APIProduct[]): Promise<void> {
     // delete any existing RDPs - this should lead to short service interruption but no message loss 
     // as the underlying queue is not affected
-    this.deleteRDPs(app, services, app.internalName);
+    await this.deleteRDPs(app, services, app.internalName);
 
-    L.info(`createRDP services: ${services}`);
     const subscribeExceptions: string[] = [];
     let useTls: boolean = false;
     for (const product of apiProducts) {
@@ -299,6 +298,7 @@ class BrokerService {
     const objectName: string = app.internalName;
     // loop over services
     for (const service of services) {
+      L.info(`createRDP for service: ${service.serviceId}`);
       const restConsumerName = `Consumer`;
       let rdpUrl: URL;
       let webHooks: WebHook[] = [];
@@ -309,164 +309,165 @@ class BrokerService {
         throw new ErrorResponseInternal(400, msg);
       } else if (webHooks.length == 0) {
         L.info(`no webhook to provision for service ${service.name} (${service['environment']})`);
-        return;
-      }
-      let webHook = webHooks[0];
-      try {
-        L.debug(`webhook.uri ${webHook.uri}`);
-        rdpUrl = new URL(webHook.uri);
-      } catch (e) {
-        L.error(e);
-        throw new ErrorResponseInternal(400, `webhook URL not provided or invalid ${JSON.stringify(webHook)}`);
-      }
-      L.info(`webhook ${webHook.uri} provision for service ${service.name} (${service['environment']})`);
-
-      const protocol = rdpUrl.protocol.toUpperCase();
-      let port = rdpUrl.port;
-      if (protocol == "HTTPS:") {
-        useTls = true;
-      }
-      L.debug(`protocol is ${protocol}`);
-      if (port == "") {
-        if (useTls) {
-          port = '443';
-        } else {
-          port = '80';
-        }
-      }
-      //create RDPs
-      const apiClient: AllService = SempV2ClientFactory.getSEMPv2Client(service);
-      const newRDP: MsgVpnRestDeliveryPoint = {
-        clientProfileName: "default",
-        msgVpnName: service.msgVpnName,
-        restDeliveryPointName: objectName,
-        enabled: false
-      };
-      try {
-        const q = await apiClient.getMsgVpnRestDeliveryPoint(service.msgVpnName, objectName);
-        const updateResponse = await apiClient.updateMsgVpnRestDeliveryPoint(service.msgVpnName,
-          objectName, newRDP);
-        L.debug(`createRDP updated ${objectName}`);
-      } catch (e) {
-        L.debug(`createRDP lookup  failed ${JSON.stringify(e)}`);
+      } else {
+        let webHook = webHooks[0];
+        L.info(`createRDP provisioning to service: ${service.serviceId}`);
         try {
-          const q = await apiClient.createMsgVpnRestDeliveryPoint(service.msgVpnName, newRDP);
+          L.debug(`webhook.uri ${webHook.uri}`);
+          rdpUrl = new URL(webHook.uri);
         } catch (e) {
-          L.warn(`createRDP creation  failed ${JSON.stringify(e)}`);
-          throw new ErrorResponseInternal(500, e);
+          L.error(e);
+          throw new ErrorResponseInternal(400, `webhook URL not provided or invalid ${JSON.stringify(webHook)}`);
         }
-      }
-      let authScheme = webHook.authentication && webHook.authentication['username'] ? MsgVpnRestDeliveryPointRestConsumer.authenticationScheme.HTTP_BASIC : MsgVpnRestDeliveryPointRestConsumer.authenticationScheme.NONE;
-      if (authScheme == MsgVpnRestDeliveryPointRestConsumer.authenticationScheme.NONE) {
-        authScheme = webHook.authentication && webHook.authentication['headerName'] ? MsgVpnRestDeliveryPointRestConsumer.authenticationScheme.HTTP_HEADER : MsgVpnRestDeliveryPointRestConsumer.authenticationScheme.NONE;
-      }
-      const method = webHook.method == 'PUT' ? MsgVpnRestDeliveryPointRestConsumer.httpMethod.PUT : MsgVpnRestDeliveryPointRestConsumer.httpMethod.POST;
+        L.info(`webhook ${webHook.uri} provision for service ${service.name} (${service['environment']})`);
 
-      let connectionCount: number = 3;
-      if (webHook.mode == 'serial') {
-        connectionCount = 1;
-      }
-      const newRDPConsumer: MsgVpnRestDeliveryPointRestConsumer = {
-        msgVpnName: service.msgVpnName,
-        restDeliveryPointName: objectName,
-        restConsumerName: restConsumerName,
-        remotePort: parseInt(port),
-        remoteHost: rdpUrl.hostname,
-        tlsEnabled: useTls,
-        enabled: false,
-        authenticationScheme: authScheme,
-        httpMethod: method,
-        maxPostWaitTime: 90,
-        outgoingConnectionCount: connectionCount,
-        retryDelay: 10
-      };
-
-      MsgVpnRestDeliveryPointRestConsumer.httpMethod.POST
-      if (authScheme == MsgVpnRestDeliveryPointRestConsumer.authenticationScheme.HTTP_BASIC) {
-        newRDPConsumer.authenticationHttpBasicUsername = webHook.authentication['username'];
-        newRDPConsumer.authenticationHttpBasicPassword = webHook.authentication['password'];
-      }
-      if (authScheme == MsgVpnRestDeliveryPointRestConsumer.authenticationScheme.HTTP_HEADER) {
-        newRDPConsumer.authenticationHttpHeaderName = webHook.authentication['headerName'];
-        newRDPConsumer.authenticationHttpHeaderValue = webHook.authentication['headerValue'];
-      }
-
-      try {
-        const r = await apiClient.getMsgVpnRestDeliveryPointRestConsumer(service.msgVpnName, objectName, restConsumerName);
-        const updateResponseRDPConsumer = await apiClient.updateMsgVpnRestDeliveryPointRestConsumer(service.msgVpnName, objectName, restConsumerName, newRDPConsumer);
-        L.debug(`createRDP consumer updated ${app.internalName}`);
-      } catch (e) {
-        L.debug(`createRDP consumer lookup  failed ${JSON.stringify(e)}`);
+        const protocol = rdpUrl.protocol.toUpperCase();
+        let port = rdpUrl.port;
+        if (protocol == "HTTPS:") {
+          useTls = true;
+        }
+        L.debug(`protocol is ${protocol}`);
+        if (port == "") {
+          if (useTls) {
+            port = '443';
+          } else {
+            port = '80';
+          }
+        }
+        //create RDPs
+        const apiClient: AllService = SempV2ClientFactory.getSEMPv2Client(service);
+        const newRDP: MsgVpnRestDeliveryPoint = {
+          clientProfileName: "default",
+          msgVpnName: service.msgVpnName,
+          restDeliveryPointName: objectName,
+          enabled: false
+        };
         try {
-          const r = await apiClient.createMsgVpnRestDeliveryPointRestConsumer(service.msgVpnName, objectName, newRDPConsumer);
+          const q = await apiClient.getMsgVpnRestDeliveryPoint(service.msgVpnName, objectName);
+          const updateResponse = await apiClient.updateMsgVpnRestDeliveryPoint(service.msgVpnName,
+            objectName, newRDP);
+          L.debug(`createRDP updated ${objectName}`);
         } catch (e) {
-          L.warn(`createRDP consumer creation  failed ${JSON.stringify(e)}`);
-          throw new ErrorResponseInternal(500, e);
-        }
-      }
-      const newRDPQueueBinding: MsgVpnRestDeliveryPointQueueBinding = {
-        msgVpnName: service.msgVpnName,
-        restDeliveryPointName: objectName,
-        postRequestTarget: `${rdpUrl.pathname}${rdpUrl.search}`,
-        queueBindingName: objectName
-      };
-      try {
-        const b = await apiClient.getMsgVpnRestDeliveryPointQueueBinding(service.msgVpnName, objectName, objectName);
-
-        const updateResponseQueueBinding = await apiClient.updateMsgVpnRestDeliveryPointQueueBinding(service.msgVpnName, objectName, objectName, newRDPQueueBinding);
-        L.debug(`createRDP queue binding updated ${app.internalName}`);
-      } catch (e) {
-        L.debug(`createRDP queue binding lookup  failed ${JSON.stringify(e)}`);
-        try {
-          const b = await apiClient.createMsgVpnRestDeliveryPointQueueBinding(service.msgVpnName, objectName, newRDPQueueBinding);
-        } catch (e) {
-          L.warn(`createRDP queue binding creation  failed ${JSON.stringify(e)}`);
-          throw new ErrorResponseInternal(500, e);
-        }
-      }
-
-
-      // add the trusted common names
-      if (webHook.tlsOptions && webHook.tlsOptions.tlsTrustedCommonNames && webHook.tlsOptions.tlsTrustedCommonNames.length > 0) {
-        for (const trustedCN of webHook.tlsOptions.tlsTrustedCommonNames) {
-          const msgVpnRestDeliveryPointRestConsumerTlsTrustedCommonName: MsgVpnRestDeliveryPointRestConsumerTlsTrustedCommonName = {
-            msgVpnName: service.msgVpnName,
-            restConsumerName: restConsumerName,
-            restDeliveryPointName: objectName,
-            tlsTrustedCommonName: trustedCN,
-          };
+          L.debug(`createRDP lookup  failed ${JSON.stringify(e)}`);
           try {
-            await apiClient.createMsgVpnRestDeliveryPointRestConsumerTlsTrustedCommonName(service.msgVpnName, objectName, restConsumerName, msgVpnRestDeliveryPointRestConsumerTlsTrustedCommonName);
+            const q = await apiClient.createMsgVpnRestDeliveryPoint(service.msgVpnName, newRDP);
           } catch (e) {
-            L.warn(`add TLS Trusted CN failed ${JSON.stringify(e)}`);
+            L.warn(`createRDP creation  failed ${JSON.stringify(e)}`);
             throw new ErrorResponseInternal(500, e);
           }
         }
-      }
+        let authScheme = webHook.authentication && webHook.authentication['username'] ? MsgVpnRestDeliveryPointRestConsumer.authenticationScheme.HTTP_BASIC : MsgVpnRestDeliveryPointRestConsumer.authenticationScheme.NONE;
+        if (authScheme == MsgVpnRestDeliveryPointRestConsumer.authenticationScheme.NONE) {
+          authScheme = webHook.authentication && webHook.authentication['headerName'] ? MsgVpnRestDeliveryPointRestConsumer.authenticationScheme.HTTP_HEADER : MsgVpnRestDeliveryPointRestConsumer.authenticationScheme.NONE;
+        }
+        const method = webHook.method == 'PUT' ? MsgVpnRestDeliveryPointRestConsumer.httpMethod.PUT : MsgVpnRestDeliveryPointRestConsumer.httpMethod.POST;
 
-      // enable the RDP
-      try {
-        const enableRDP: MsgVpnRestDeliveryPoint = {
-          enabled: true
-        }; 
-        const enableRDPResponse = await apiClient.updateMsgVpnRestDeliveryPoint(service.msgVpnName, objectName, enableRDP);
-        L.debug(`createRDP enabled ${objectName}`);
-      } catch (e) {
-        L.error(`createRDP enable failed ${JSON.stringify(e)}`);
-        throw new ErrorResponseInternal(500, e);
-      }
-
-      // enable the RDP consumer
-
-      try {
-        const enableRDPConsumer: MsgVpnRestDeliveryPointRestConsumer = {
-          enabled: true
+        let connectionCount: number = 3;
+        if (webHook.mode == 'serial') {
+          connectionCount = 1;
+        }
+        const newRDPConsumer: MsgVpnRestDeliveryPointRestConsumer = {
+          msgVpnName: service.msgVpnName,
+          restDeliveryPointName: objectName,
+          restConsumerName: restConsumerName,
+          remotePort: parseInt(port),
+          remoteHost: rdpUrl.hostname,
+          tlsEnabled: useTls,
+          enabled: false,
+          authenticationScheme: authScheme,
+          httpMethod: method,
+          maxPostWaitTime: 90,
+          outgoingConnectionCount: connectionCount,
+          retryDelay: 10
         };
-        const updateResponseRDPConsumer = await apiClient.updateMsgVpnRestDeliveryPointRestConsumer(service.msgVpnName, objectName, restConsumerName, enableRDPConsumer);
-        L.debug(`createRDP consumer enabled ${objectName}`);
-      } catch (e) {
-        L.debug(`createRDP consumer enablement  failed ${JSON.stringify(e)}`);
-        throw new ErrorResponseInternal(500, e);
+
+        MsgVpnRestDeliveryPointRestConsumer.httpMethod.POST
+        if (authScheme == MsgVpnRestDeliveryPointRestConsumer.authenticationScheme.HTTP_BASIC) {
+          newRDPConsumer.authenticationHttpBasicUsername = webHook.authentication['username'];
+          newRDPConsumer.authenticationHttpBasicPassword = webHook.authentication['password'];
+        }
+        if (authScheme == MsgVpnRestDeliveryPointRestConsumer.authenticationScheme.HTTP_HEADER) {
+          newRDPConsumer.authenticationHttpHeaderName = webHook.authentication['headerName'];
+          newRDPConsumer.authenticationHttpHeaderValue = webHook.authentication['headerValue'];
+        }
+
+        try {
+          const r = await apiClient.getMsgVpnRestDeliveryPointRestConsumer(service.msgVpnName, objectName, restConsumerName);
+          const updateResponseRDPConsumer = await apiClient.updateMsgVpnRestDeliveryPointRestConsumer(service.msgVpnName, objectName, restConsumerName, newRDPConsumer);
+          L.debug(`createRDP consumer updated ${app.internalName}`);
+        } catch (e) {
+          L.debug(`createRDP consumer lookup  failed ${JSON.stringify(e)}`);
+          try {
+            const r = await apiClient.createMsgVpnRestDeliveryPointRestConsumer(service.msgVpnName, objectName, newRDPConsumer);
+          } catch (e) {
+            L.warn(`createRDP consumer creation  failed ${JSON.stringify(e)}`);
+            throw new ErrorResponseInternal(500, e);
+          }
+        }
+        const newRDPQueueBinding: MsgVpnRestDeliveryPointQueueBinding = {
+          msgVpnName: service.msgVpnName,
+          restDeliveryPointName: objectName,
+          postRequestTarget: `${rdpUrl.pathname}${rdpUrl.search}`,
+          queueBindingName: objectName
+        };
+        try {
+          const b = await apiClient.getMsgVpnRestDeliveryPointQueueBinding(service.msgVpnName, objectName, objectName);
+
+          const updateResponseQueueBinding = await apiClient.updateMsgVpnRestDeliveryPointQueueBinding(service.msgVpnName, objectName, objectName, newRDPQueueBinding);
+          L.debug(`createRDP queue binding updated ${app.internalName}`);
+        } catch (e) {
+          L.debug(`createRDP queue binding lookup  failed ${JSON.stringify(e)}`);
+          try {
+            const b = await apiClient.createMsgVpnRestDeliveryPointQueueBinding(service.msgVpnName, objectName, newRDPQueueBinding);
+          } catch (e) {
+            L.warn(`createRDP queue binding creation  failed ${JSON.stringify(e)}`);
+            throw new ErrorResponseInternal(500, e);
+          }
+        }
+
+
+        // add the trusted common names
+        if (webHook.tlsOptions && webHook.tlsOptions.tlsTrustedCommonNames && webHook.tlsOptions.tlsTrustedCommonNames.length > 0) {
+          for (const trustedCN of webHook.tlsOptions.tlsTrustedCommonNames) {
+            const msgVpnRestDeliveryPointRestConsumerTlsTrustedCommonName: MsgVpnRestDeliveryPointRestConsumerTlsTrustedCommonName = {
+              msgVpnName: service.msgVpnName,
+              restConsumerName: restConsumerName,
+              restDeliveryPointName: objectName,
+              tlsTrustedCommonName: trustedCN,
+            };
+            try {
+              await apiClient.createMsgVpnRestDeliveryPointRestConsumerTlsTrustedCommonName(service.msgVpnName, objectName, restConsumerName, msgVpnRestDeliveryPointRestConsumerTlsTrustedCommonName);
+            } catch (e) {
+              L.warn(`add TLS Trusted CN failed ${JSON.stringify(e)}`);
+              throw new ErrorResponseInternal(500, e);
+            }
+          }
+        }
+
+        // enable the RDP
+        try {
+          const enableRDP: MsgVpnRestDeliveryPoint = {
+            enabled: true
+          };
+          const enableRDPResponse = await apiClient.updateMsgVpnRestDeliveryPoint(service.msgVpnName, objectName, enableRDP);
+          L.debug(`createRDP enabled ${objectName}`);
+        } catch (e) {
+          L.error(`createRDP enable failed ${JSON.stringify(e)}`);
+          throw new ErrorResponseInternal(500, e);
+        }
+
+        // enable the RDP consumer
+
+        try {
+          const enableRDPConsumer: MsgVpnRestDeliveryPointRestConsumer = {
+            enabled: true
+          };
+          const updateResponseRDPConsumer = await apiClient.updateMsgVpnRestDeliveryPointRestConsumer(service.msgVpnName, objectName, restConsumerName, enableRDPConsumer);
+          L.debug(`createRDP consumer enabled ${objectName}`);
+        } catch (e) {
+          L.debug(`createRDP consumer enablement  failed ${JSON.stringify(e)}`);
+          throw new ErrorResponseInternal(500, e);
+        }
       }
     }
   }
