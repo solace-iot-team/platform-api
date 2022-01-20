@@ -16,6 +16,7 @@ import APIParameter = Components.Schemas.APIParameter;
 import CommonEntityNameList = Components.Schemas.CommonEntityNameList;
 import CommonEntityNames = Components.Schemas.CommonEntityNames;
 import APIProduct = Components.Schemas.APIProduct;
+import EventAPIProduct = Components.Schemas.EventAPIProduct;
 export interface APISpecification {
   name: string;
   specification: string;
@@ -97,8 +98,14 @@ export class ApisService {
 
   async import(body: Components.Schemas.APIImport): Promise<string> {
 
-    const apiSpec = await EventPortalFacade.getEventApiProductAsyncApi(body.id);
-    const api = await EventPortalFacade.getEventApiProduct(body.id);
+    let apiSpec;
+    let api: EventAPIProduct;
+    try {
+      apiSpec = await EventPortalFacade.getEventApiProductAsyncApi(body.id)
+      api = await EventPortalFacade.getEventApiProduct(body.id) ;
+    } catch (e){
+      throw new ErrorResponseInternal(500, `No Event POrtal Connectivity, Entity ${api.name} can not be imported`)
+    }
     const canImport = await this.readStrategy.canImport(api.name);
     if (!canImport) {
       throw new ErrorResponseInternal(422, `Entity ${api.name} can not be imported`)
