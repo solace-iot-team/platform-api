@@ -524,7 +524,7 @@ class BrokerService {
             .find((mp) => mp.endPoints.find((ep) => ep.transport == keys.protocol && ep.name == keys.name));
           const endpoint = tmp ? tmp.endPoints.find((ep) => ep.transport == keys.protocol) : null;
           let newEndpoint: Endpoint = endpoints.find(
-            (ep) => ep.uri == endpoint.uris[0]
+            (ep) => (ep.uri == endpoint.uris[0]  && ep.protocol.name == keys.name)
           );
           if (newEndpoint === undefined && endpoint) {
             newEndpoint = {
