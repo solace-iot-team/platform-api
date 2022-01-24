@@ -19,6 +19,7 @@
     "server:dev": "nodemon server/index.ts | pino-pretty",
     "gen:server:apitypes": "dtsgen --out ./src/model/@types/api-model/index.d.ts ./server/common/api.yml",
     "dev:debug": "nodemon --exec \"node -r ts-node/register --inspect-brk\" server/index.ts | pino-pretty",
+    "test:integ": "DOTENV_CONFIG_PATH=test/integ/.env mocha --config test/integ/.mocharc.yml test/integ/**/**.spec.ts",
     "test:integration": "mocha --config test/integration/.mocharc.yml test/integration/**/**.spec.ts",
     "test:concurrency": "mocha --config test/integration/.mocharc.yml test/integration/**/*.concurrency.spec.ts --exit",
     "test:dev": "mocha --config test/integration/.mocharc.yml -b test/integration/**/operations.spec.ts --exit",
@@ -33,6 +34,10 @@
     {
       "name": "Ricardo Gomez-Ulmke",
       "email": "ricardo.gomez-ulmke@solace.com"
+    },
+    {
+      "name": "Nils Eckert",
+      "email": "nils.eckert@solace.com"
     }
   ],
   "license": "MIT",
@@ -87,6 +92,7 @@
     "@types/pino": "^6.3.2",
     "@types/sinon": "^9.0.11",
     "@types/sinon-chai": "^3.2.5",
+    "@types/supertest": "^2.0.11",
     "@typescript-eslint/eslint-plugin": "^4.4.0",
     "@typescript-eslint/parser": "^4.4.0",
     "chai": "^4.2.0",
@@ -104,6 +110,7 @@
     "shelljs": "^0.8.4",
     "sinon": "^9.2.4",
     "sinon-chai": "^3.5.0",
+    "supertest": "^6.1.6",
     "ts-node": "^9.1.1",
     "typescript": "^4.0.5",
     "util": "^0.12.3"

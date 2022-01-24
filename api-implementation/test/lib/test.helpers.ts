@@ -73,7 +73,7 @@ export class TestLogger {
     }
     public static getLoggingApiRequestOptions = (options: ApiRequestOptions): string => {
         let logOptions:any = TestLogger.cloneWithHidenSecrets(options);
-        if(logOptions.path.includes('token')) {
+        if(logOptions && logOptions.path && logOptions.path.includes('token')) {
             logOptions.body = "***";
         }
         return JSON.stringify(logOptions, null, 2);

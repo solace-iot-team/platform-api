@@ -1,0 +1,12 @@
+bail: true
+diff: true
+exit: true
+extension:
+  - 'ts'
+full-trace: true
+parallel: false
+require:
+ - 'ts-node/register'
+ - 'dotenv/config'
+ - 'test/integ/setup.ts' 
+timeout: 120000

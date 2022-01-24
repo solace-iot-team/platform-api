@@ -13,3 +13,4 @@ simple-docker-compose/traxens_ppd_users.json
 *.prod
 simple-docker-compose/traxens_prod_users.json
 gh-pages
+.vscode

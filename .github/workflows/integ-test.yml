@@ -1,0 +1,74 @@
+# ---------------------------------------------------------------------------------------------
+# MIT License
+# Copyright (c) 2022, Solace Corporation, Nils Eckert (nils.eckert@solace.com)
+# ---------------------------------------------------------------------------------------------
+
+name: integration-test
+on:
+  # for testing
+  workflow_dispatch:
+  # production
+  schedule:
+    - cron: '0 7 * * *'
+  pull_request:
+    branches:
+      - main
+
+env:
+  PLATFORM_API_HOME: "api-implementation/"
+
+jobs:
+
+  execute-integration-tests:
+    runs-on: ubuntu-18.04
+    strategy:
+      max-parallel: 1
+      matrix:
+        node-version: [ '14.x', '16.x' ]
+    env:
+      TEST_DIRECTORY: "test/integ/"
+    defaults:
+      run:
+        working-directory: ${{ env.PLATFORM_API_HOME }}
+
+    steps:
+
+      - name: Cancel job if user has insufficient permissions
+        if: github.event_name == 'workflow_dispatch' && github.actor != 'NilsEckertSolace'
+        uses: andymckay/cancel-action@0.2
+
+      - name: Checkout repository code
+        uses: actions/checkout@v2
+
+      - name: Setup Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v2
+        with:
+          node-version: ${{ matrix.node-version }}
+  
+      - run: npm ci
+
+      - name: Generate OpenAPI client
+        run: |
+          $TEST_DIRECTORY/generate.openapi-client.sh
+
+      - name: Execute tests
+        run: |
+          export PLATFORM_API_TEST_SOLACE_CLOUD_URL=${{ secrets.SOLACE_CLOUD_URL }}
+          export PLATFORM_API_TEST_SOLACE_CLOUD_TOKEN=${{ secrets.SOLACE_CLOUD_TOKEN }}
+          export PLATFORM_API_TEST_SOLACE_EVENT_PORTAL_URL=${{ secrets.SOLACE_EVENT_PORTAL_URL }}
+          export PLATFORM_API_TEST_SOLACE_EVENT_PORTAL_TOKEN=${{ secrets.SOLACE_EVENT_PORTAL_TOKEN }}
+          export PLATFORM_API_TEST_PLATFORM_ADMIN_USER=${{ secrets.PLATFORM_ADMIN_USER }}
+          export PLATFORM_API_TEST_PLATFORM_ADMIN_PASSWORD=${{ secrets.PLATFORM_ADMIN_PASSWORD }}
+          export PLATFORM_API_PROJECT_HOME="$GITHUB_WORKSPACE"
+          $TEST_DIRECTORY/run.sh
+
+      - name: Archive logs
+        if: ${{ (failure() && !cancelled()) || (always() && github.event_name == 'workflow_dispatch') }}
+        uses: actions/upload-artifact@v2
+        with:
+          name: integration-test-logs
+          path: ${{ github.workspace }}/${{ env.PLATFORM_API_HOME }}/${{ env.TEST_DIRECTORY }}/tmp
+          if-no-files-found: error
+
+###
+# The end
