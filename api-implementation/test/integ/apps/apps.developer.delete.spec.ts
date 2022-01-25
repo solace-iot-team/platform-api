@@ -4,12 +4,12 @@ import path from 'path';
 import { PlatformAPIClient } from '../../lib/api.helpers';
 import type { App } from "../../lib/generated/openapi";
 import { ApiError, AppsService } from "../../lib/generated/openapi";
-import * as setup from './setup';
+import * as setup from './apps.setup';
 import {
   verifyAclProfile,
   verifyMessageQueue,
   verifyRestDeliveryPoint
-} from './test.helpers';
+} from './apps.test.helpers';
 
 const scriptName: string = path.basename(__filename);
 

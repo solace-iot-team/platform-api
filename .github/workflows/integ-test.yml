@@ -3,7 +3,7 @@
 # Copyright (c) 2022, Solace Corporation, Nils Eckert (nils.eckert@solace.com)
 # ---------------------------------------------------------------------------------------------
 
-name: integration-test
+name: integ-test
 on:
   # for testing
   workflow_dispatch:
@@ -19,7 +19,7 @@ env:
 
 jobs:
 
-  execute-integration-tests:
+  run-tests:
     runs-on: ubuntu-18.04
     strategy:
       max-parallel: 1
@@ -66,7 +66,7 @@ jobs:
         if: ${{ (failure() && !cancelled()) || (always() && github.event_name == 'workflow_dispatch') }}
         uses: actions/upload-artifact@v2
         with:
-          name: integration-test-logs
+          name: integ-test-logs
           path: ${{ github.workspace }}/${{ env.PLATFORM_API_HOME }}/${{ env.TEST_DIRECTORY }}/tmp
           if-no-files-found: error
 

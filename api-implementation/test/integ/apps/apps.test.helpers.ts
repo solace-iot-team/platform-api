@@ -11,7 +11,7 @@ import {
   MsgVpnRestDeliveryPointQueueBindingsResponse,
   MsgVpnRestDeliveryPointRestConsumersResponse
 } from "../../../src/clients/sempv2";
-import { msgVpnNamePerEnvironment } from './setup';
+import { msgVpnNamePerEnvironment } from './apps.setup';
 
 /**
  * Event broker ACL profile.
