@@ -36,18 +36,28 @@ if [[ "$FAILED" -eq 0 ]]; then
   touch "$LOG_DIR/$scriptName.SUCCESS.out"
 else
   echo ">>> FINISHED:FAILED";
-  echo "Scanning logs for ERROR & failed tests ..."
+  echo "Scanning logs for errors & failed tests ..."
   filePattern="$LOG_FILE_SCRIPT"
-  IFS=$'\n' errors=($(grep -n -r -e "ERROR" $filePattern))
+  IFS=$'\n' typescript_errors=($(grep -n -r -e "TSError:" $filePattern))
+  IFS=$'\n' runtime_errors=($(grep -n -r -e "ERROR " $filePattern))
   IFS=$'\n' failed_tests=($(grep -n -r -e "failing" $filePattern))
-  if [ ! -z "$errors" ]; then
-    echo " .. found ${#errors[@]} ERRORs"
-    for item in ${errors[*]}
+  if [ ! -z "$typescript_errors" ]; then
+    echo " .. found ${#typescript_errors[@]} typescript errors"
+    for item in ${typescript_errors[*]}
     do
       echo $item >> "$LOG_DIR/$scriptName.ERROR.out"
     done
   else
-    echo " .. no ERROR found"
+    echo " .. no typescript errors found"
+  fi
+  if [ ! -z "$runtime_errors" ]; then
+    echo " .. found ${#runtime_errors[@]} runtime errors"
+    for item in ${runtime_errors[*]}
+    do
+      echo $item >> "$LOG_DIR/$scriptName.ERROR.out"
+    done
+  else
+    echo " .. no runtime errors found"
   fi
   if [ ! -z "$failed_tests" ]; then
     echo " .. found ${#failed_tests[@]} failed tests"
