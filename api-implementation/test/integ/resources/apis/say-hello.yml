@@ -1,0 +1,64 @@
+---
+components:
+  schemas:
+    HelloWorldSayHello:
+      default: {}
+      $schema: "http://json-schema.org/draft-07/schema"
+      examples:
+      - greeting: "hello"
+        name: "solace"
+      description: "A simple hello world schema"
+      additionalProperties: false
+      type: "object"
+      title: "The root schema"
+      required:
+      - "greeting"
+      - "name"
+      properties:
+        greeting:
+          default: ""
+          examples:
+          - "hello"
+          description: "The greeting"
+          type: "string"
+          title: "The greeting schema"
+          $id: "#/properties/greeting"
+        name:
+          default: ""
+          examples:
+          - "solace"
+          description: "The name."
+          type: "string"
+          title: "The name schema"
+          $id: "#/properties/name"
+      $id: "http://example.com/example.json"
+  messages:
+    SayHello:
+      payload:
+        $ref: "#/components/schemas/HelloWorldSayHello"
+      description: ""
+      schemaFormat: "application/vnd.aai.asyncapi+json;version=2.0.0"
+      contentType: "application/json"
+servers: {}
+channels:
+  say/hello/{language}:
+    subscribe:
+      message:
+        $ref: "#/components/messages/SayHello"
+    publish:
+      message:
+        $ref: "#/components/messages/SayHello"
+    parameters:
+      language:
+        schema:
+          type: "string"
+          enum:
+          - "EN"
+          - "DE"
+asyncapi: "2.0.0"
+info:
+  x-generated-time: "2021-06-18 21:26 UTC"
+  description: "This API says hello and sometimes goodbye"
+  title: "SayHello"
+  x-view: "provider"
+  version: "v1"

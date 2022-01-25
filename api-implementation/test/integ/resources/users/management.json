@@ -1,0 +1,14 @@
+{
+	"admin": {
+    "password": "p3zvZFF7ka4Wrj4p",
+    "roles": [
+      "platform-admin"
+    ]
+  },
+	"org_admin_user": {
+    "password": "org_admin_user_password",
+    "roles": [
+      "org-admin"
+    ]
+  }
+}
