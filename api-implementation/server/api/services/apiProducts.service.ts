@@ -11,7 +11,7 @@ import AppsService from './apps.service';
 import ApisService from './apis.service';
 import { ErrorResponseInternal } from '../middlewares/error.handler';
 import asyncapigenerator from './asyncapi/asyncapigenerator';
-
+import preconditionCheck from './persistence/preconditionhelper';
 
 export class ApiProductsService {
 
@@ -64,6 +64,7 @@ export class ApiProductsService {
   }
 
   async update(name: string, body: APIProduct): Promise<APIProduct> {
+    preconditionCheck(this, name);
     try {
       // we need ot load the environment list so we can validate a new protocol that may be added
       if (body.environments == null) {

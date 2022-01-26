@@ -2,7 +2,7 @@ openapi: 3.0.0
 info:
   title: Solace API Management Connector
   description: 'Solace API Management Connector API. Note: basic authentication security mechanism is deprecated.'
-  version: 0.6.2
+  version: 0.6.3
 servers:
   - url: /v1
 
@@ -157,7 +157,19 @@ components:
         - compact
         - summary
         - extended
+    ifMatchHeader:
+      name: If-Match
+      in: header
+      description: Provide the etag value for a previous GET request of a resource on update (PATCH) in order to avoid "lost updates"
+      schema:
+        type: string
   responses:
+    PreconditionFailed:
+      description: PreConditon Failed, likely a mismatch between current etag and if-match header
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'    
     BadRequest:
       description: Bad Request.
       content:
@@ -2088,6 +2100,8 @@ paths:
      operationId: updateOrganization
      tags:
      - administration
+     parameters:
+     - $ref: '#/components/parameters/ifMatchHeader'
      requestBody:
        description: "Organization"
        content:
@@ -2115,6 +2129,8 @@ paths:
           $ref: '#/components/responses/NotFound'
         '406':
           $ref: '#/components/responses/NotAcceptable'
+        '412':
+          $ref: '#/components/responses/PreconditionFailed'
         '429':
           $ref: '#/components/responses/TooManyRequests'
         '500':
@@ -2567,6 +2583,8 @@ paths:
      operationId: updateApi
      tags:
      - apis
+     parameters:
+     - $ref: '#/components/parameters/ifMatchHeader'
      requestBody:
        description: "async api specification"
        content:
@@ -2598,6 +2616,8 @@ paths:
           $ref: '#/components/responses/NotFound'
         '406':
           $ref: '#/components/responses/NotAcceptable'
+        '412':
+          $ref: '#/components/responses/PreconditionFailed'
         '415':
           $ref: '#/components/responses/UnsupportedMediaType'
         '429':
@@ -2822,6 +2842,8 @@ paths:
      operationId: updateApiProduct
      tags:
      - apiProducts
+     parameters:
+     - $ref: '#/components/parameters/ifMatchHeader'
      requestBody:
        description: "Application domains have a name and topic domain."
        content:
@@ -2851,6 +2873,8 @@ paths:
           $ref: '#/components/responses/NotFound'
         '406':
           $ref: '#/components/responses/NotAcceptable'
+        '412':
+          $ref: '#/components/responses/PreconditionFailed'
         '415':
           $ref: '#/components/responses/UnsupportedMediaType'
         '429':
@@ -3138,6 +3162,8 @@ paths:
      operationId: updateDeveloper
      tags:
      - developers
+     parameters:
+     - $ref: '#/components/parameters/ifMatchHeader'
      requestBody:
        description: "Application domains have a name and topic domain."
        content:
@@ -3161,6 +3187,8 @@ paths:
           $ref: '#/components/responses/NotFound'
         '406':
           $ref: '#/components/responses/NotAcceptable'
+        '412':
+          $ref: '#/components/responses/PreconditionFailed'
         '415':
           $ref: '#/components/responses/UnsupportedMediaType'
         '429':
@@ -3343,6 +3371,8 @@ paths:
      tags:
      - apps
      - developers
+     parameters:
+     - $ref: '#/components/parameters/ifMatchHeader'
      requestBody:
        description: ""
        content:
@@ -3362,6 +3392,8 @@ paths:
            "application/json":
             schema:
              "$ref": "#/components/schemas/ErrorResponse"
+        '412':
+          $ref: '#/components/responses/PreconditionFailed'
         '422':
           description: "Duplicate app or invalid object reference e.g. invalid API product name"
           content:
@@ -3531,6 +3563,8 @@ paths:
      operationId: updateTeam
      tags:
      - teams
+     parameters:
+     - $ref: '#/components/parameters/ifMatchHeader'
      requestBody:
        description: "An updated team object."
        content:
@@ -3554,6 +3588,8 @@ paths:
           $ref: '#/components/responses/NotFound'
         '406':
           $ref: '#/components/responses/NotAcceptable'
+        '412':
+          $ref: '#/components/responses/PreconditionFailed'
         '415':
           $ref: '#/components/responses/UnsupportedMediaType'
         '429':
@@ -3737,6 +3773,8 @@ paths:
      tags:
      - apps
      - teams
+     parameters:
+     - $ref: '#/components/parameters/ifMatchHeader'
      requestBody:
        description: ""
        content:
@@ -3756,6 +3794,8 @@ paths:
            "application/json":
             schema:
              "$ref": "#/components/schemas/ErrorResponse"
+        '412':
+          $ref: '#/components/responses/PreconditionFailed'
         '422':
           description: "Duplicate app or invalid object reference e.g. invalid API product name"
           content:
@@ -4153,6 +4193,8 @@ paths:
      operationId: updateEnvironment
      tags:
      - environments
+     parameters:
+     - $ref: '#/components/parameters/ifMatchHeader'
      requestBody:
        description: "Application domains have a name and topic domain."
        content:
@@ -4182,6 +4224,8 @@ paths:
           $ref: '#/components/responses/NotFound'
         '406':
           $ref: '#/components/responses/NotAcceptable'
+        '412':
+          $ref: '#/components/responses/PreconditionFailed'
         '415':
           $ref: '#/components/responses/UnsupportedMediaType'
         '429':

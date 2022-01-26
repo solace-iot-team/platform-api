@@ -11,6 +11,8 @@ import APIProductsService from './apiProducts.service';
 import CommonEntityNameList = Components.Schemas.CommonEntityNameList;
 import CommonEntityNames = Components.Schemas.CommonEntityNames;
 import APIProduct = Components.Schemas.APIProduct;
+import {updateProtectionByObject} from './persistence/preconditionhelper';
+
 
 export class EnvironmentsService {
   private persistenceService: PersistenceService;
@@ -115,6 +117,7 @@ export class EnvironmentsService {
   update(name: string, body: EnvironmentPatch): Promise<Environment> {
     return new Promise<Environment>(async (resolve, reject) => {
       const envOriginal: Environment = (await this.byName(name) as Environment);
+      await updateProtectionByObject(envOriginal);
       if (body.description) {
         envOriginal.description = body.description;
       }

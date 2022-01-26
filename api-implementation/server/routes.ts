@@ -24,6 +24,10 @@ import PassportFactory from './api/middlewares/passport.authentication';
 import authorizedRoles from './api/middlewares/role.authorizer';
 import authorizedOrgs from './api/middlewares/orgs.authorizer';
 import auditHandler from './api/middlewares/audit.handler';
+import ifMatchHandler from './api/middlewares/ifmatch.handler';
+import etagHash from './common/etag';
+
+
 
 export default function routes(app: Application): void {
   const router = Router();
@@ -33,6 +37,8 @@ export default function routes(app: Application): void {
   router.use(pagingHandler);
   router.use(searchHandler);
   router.use(sortHandler);
+  router.use(ifMatchHandler);
+  router.set('etag', etagHash);
   router.use('/*', passport.authenticate(['provider', 'basic'], PassportFactory.getAuthenticationOptions()));
   router.get('/', (req: Request, res: Response) => {
     L.info('Request to root emit 404');

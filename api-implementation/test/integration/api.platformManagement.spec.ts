@@ -133,7 +133,7 @@ describe(`${scriptName}`, () => {
         }
       }
       try {
-        response = await AdministrationService.updateOrganization(orgName, request);
+        response = await AdministrationService.updateOrganization(orgName, undefined, request);
       } catch (e) {
         expect(isInstanceOfApiError(e), `${TestLogger.createNotApiErrorMesssage(e.message)}`).to.be.true;
         let message = `creating org=${orgName}`;

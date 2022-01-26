@@ -290,7 +290,7 @@ describe(`${scriptName}`, () => {
       }
       let expectedResponsePatch: APIProduct = _.merge({}, responseGet, requestPatch);
       try {
-        responsePatch = await ApiProductsService.updateApiProduct(orgName, apiProductNameMaintenanceDevelopment, requestPatch);
+        responsePatch = await ApiProductsService.updateApiProduct(orgName, apiProductNameMaintenanceDevelopment, undefined, requestPatch);
       } catch (e) {
         expect(isInstanceOfApiError(e), `${TestLogger.createNotApiErrorMesssage(e.message)}`).to.be.true;
         let message = `update apiProduct=${apiProductNameMaintenanceDevelopment}`;
@@ -425,7 +425,7 @@ describe(`${scriptName}`, () => {
         // warning: overrides arrays
         let expectedResponsePatch: AppResponse = _.merge({}, responseGet, requestPatch);
         try {
-          responsePatch = await AppsService.updateDeveloperApp(orgName, developer.userName, appName, requestPatch);
+          responsePatch = await AppsService.updateDeveloperApp(orgName, developer.userName, appName, undefined, requestPatch);
         } catch (e) {
           expect(isInstanceOfApiError(e), `${TestLogger.createNotApiErrorMesssage(e.message)}`).to.be.true;
           let message = `updateDeveloperApp=${appName}`;
@@ -494,7 +494,7 @@ describe(`${scriptName}`, () => {
           status: AppStatus.APPROVED
         };
         try {
-          responsePatch = await AppsService.updateDeveloperApp(orgName, app.ownerId, app.name, requestPatch);
+          responsePatch = await AppsService.updateDeveloperApp(orgName, app.ownerId, app.name, undefined, requestPatch);
         } catch (e) {
           expect(isInstanceOfApiError(e), `${TestLogger.createNotApiErrorMesssage(e.message)}`).to.be.true;
           message = `update (approve) app=${app.name}`;

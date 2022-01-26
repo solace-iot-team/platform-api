@@ -12,6 +12,7 @@ import SolaceCloudFacade from '../../../src/solacecloudfacade';
 import EventPortalFacade from '../../../src/eventportalfacade';
 import { ns } from '../middlewares/context.handler';
 import { isString } from '../../../src/typehelpers';
+import preconditionCheck from './persistence/preconditionhelper';
 
 import { Cache, CacheContainer } from 'node-ts-cache'
 import { MemoryStorage } from 'node-ts-cache-storage-memory'
@@ -114,8 +115,10 @@ export class OrganizationsService {
 
   async update(name: string, body: Organization): Promise<OrganizationResponse> {
     if (body.name == PlatformConstants.PLATFORM_DB) {
-      throw(new ErrorResponseInternal(401, `Access denied, PlatformConstants.PLATFORM_DB name`));
+      throw (new ErrorResponseInternal(401, `Access denied, PlatformConstants.PLATFORM_DB name`));
     } else {
+      // update protection
+      await preconditionCheck(this, name);
       if (
         body[ContextConstants.CLOUD_TOKEN] === undefined ||
         body[ContextConstants.CLOUD_TOKEN] === null ||
@@ -126,7 +129,7 @@ export class OrganizationsService {
         org.status = await this.getOrganizationStatus(org['cloud-token']);
         return org;
       } else {
-        throw(
+        throw (
           new ErrorResponseInternal(400, `Invalid cloud token provided`)
         );
       }
@@ -157,16 +160,16 @@ export class OrganizationsService {
     }
   }
 
-  @Cache(statusCache, {ttl: 240})
+  @Cache(statusCache, { ttl: 240 })
   async getOrganizationStatusCached(token: any): Promise<OrganizationStatus> {
     return this.getOrganizationStatus(token);
   }
-  
+
   async getOrganizationStatus(token: any): Promise<OrganizationStatus> {
     const status: OrganizationStatus = {
 
     };
-    if (!token){
+    if (!token) {
       return status;
     }
 
