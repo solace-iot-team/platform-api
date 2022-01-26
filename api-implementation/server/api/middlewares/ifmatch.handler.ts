@@ -12,7 +12,7 @@ export default function ifMatchHandler(
 ): void {
   const ifMatch = req.headers['if-match'] ? req.headers['if-match'] : req.headers['If-Match'];
   L.info(`Found if-match header ${ifMatch}`);
-  if (ifMatch) {
+  if (ifMatch && ifMatch.length>0 && ifMatch!= 'undefined') {
 
     L.info(`Found if-match header ${ifMatch}`);
     if (ns != null) {
