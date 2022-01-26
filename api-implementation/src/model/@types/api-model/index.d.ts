@@ -161,7 +161,9 @@ declare namespace Components {
             subResources: CommonTopic /* ^[a-zA-Z0-9][\S]*[^\/]$ */ [];
             protocols?: Protocol[];
             clientOptions?: ClientOptions;
+            accessLevel?: APIProductAccessLevel;
         }
+        export type APIProductAccessLevel = "internal" | "private" | "public";
         /**
          * Used for PATCH operation, An API product consists of a list of API resources (URIs) and custom metadata required by the API provider. API products enable you to bundle and distribute your APIs to multiple developer groups simultaneously
          */
@@ -196,6 +198,7 @@ declare namespace Components {
             subResources?: CommonTopic /* ^[a-zA-Z0-9][\S]*[^\/]$ */ [];
             protocols?: Protocol[];
             clientOptions?: ClientOptions;
+            accessLevel?: APIProductAccessLevel;
         }
         export interface APISummary {
             name?: CommonName; // [a-zA-Z0-9_-]*
