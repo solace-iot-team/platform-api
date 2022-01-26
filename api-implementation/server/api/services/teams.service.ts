@@ -11,7 +11,7 @@ import AppFactory from './apps/appfactory';
 import { PersistenceService } from './persistence.service';
 import { ErrorResponseInternal } from '../middlewares/error.handler';
 import preconditionCheck from './persistence/preconditionhelper';
-import {updateProtectionByObject} from './persistence/preconditionhelper';
+import { updateProtectionByObject } from './persistence/preconditionhelper';
 
 export interface TeamApp extends App {
   appType?: string;
@@ -165,7 +165,11 @@ export class TeamsService {
       );
     }
     L.debug(teamObj);
-    await updateProtectionByObject(await this.appByName(team, name, 'smf'));
+    try {
+      await updateProtectionByObject(await this.appByName(team, name, 'smf'));
+    } catch (e) {
+      await updateProtectionByObject(await this.appByName(team, name, 'mqtt'));
+    }
     const app: TeamAppPatch = AppFactory.createTeamAppPatch(team, body);
 
     const appPatch: AppPatch = await AppsService.update(

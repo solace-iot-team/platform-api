@@ -153,7 +153,11 @@ export class DevelopersService {
     name: string,
     body: AppPatch
   ): Promise<AppPatch> {
-    await updateProtectionByObject(await this.appByName(developer, name, 'smf'));
+    try {
+      await updateProtectionByObject(await this.appByName(developer, name, 'smf'));
+    } catch (e){
+      await updateProtectionByObject(await this.appByName(developer, name, 'mqtt'));
+    }
     let dev = null;
     try {
       dev = await this.persistenceService.byName(developer);
