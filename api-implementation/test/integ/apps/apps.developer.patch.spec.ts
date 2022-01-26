@@ -34,7 +34,7 @@ describe("apps", function () {
         displayName: "updated display name for app",
       }
 
-      const response = await AppsService.updateDeveloperApp(setup.organizationName, developerName, application.name, null, applicationPatch).catch((reason) => {
+      const response = await AppsService.updateDeveloperApp(setup.organizationName, developerName, application.name, undefined, applicationPatch).catch((reason) => {
         expect(reason, `error=${reason.message}`).is.instanceof(ApiError);
         expect.fail(`failed to update developer application; error="${reason.body.message}"`);
       });
@@ -63,7 +63,7 @@ describe("apps", function () {
         apiProducts: [setup.apiProduct1.name, setup.apiProduct2.name],
       }
 
-      await AppsService.updateDeveloperApp(setup.organizationName, developerName, application.name, null, applicationPatch).catch((reason) => {
+      await AppsService.updateDeveloperApp(setup.organizationName, developerName, application.name, undefined, applicationPatch).catch((reason) => {
         expect(reason, `error=${reason.message}`).is.instanceof(ApiError);
         expect.fail(`failed to update developer application; error="${reason.body.message}"`);
       });
@@ -95,7 +95,7 @@ describe("apps", function () {
         apiProducts: [setup.apiProduct2.name],
       }
 
-      await AppsService.updateDeveloperApp(setup.organizationName, developerName, application.name, null, applicationPatch).catch((reason) => {
+      await AppsService.updateDeveloperApp(setup.organizationName, developerName, application.name, undefined, applicationPatch).catch((reason) => {
         expect(reason, `error=${reason.message}`).is.instanceof(ApiError);
         expect.fail(`failed to update developer application; error="${reason.body.message}"`);
       });
@@ -125,7 +125,7 @@ describe("apps", function () {
         attributes: [{ name: "language", value: "EN" }],
       }
 
-      await AppsService.updateDeveloperApp(setup.organizationName, developerName, application.name, null, applicationPatch1).catch((reason) => {
+      await AppsService.updateDeveloperApp(setup.organizationName, developerName, application.name, undefined, applicationPatch1).catch((reason) => {
         expect(reason, `error=${reason.message}`).is.instanceof(ApiError);
         expect.fail(`failed to update developer application; error="${reason.body.message}"`);
       });
@@ -142,7 +142,7 @@ describe("apps", function () {
         attributes: [{ name: "language", value: "DE" }],
       }
 
-      await AppsService.updateDeveloperApp(setup.organizationName, developerName, application.name, null, applicationPatch2).catch((reason) => {
+      await AppsService.updateDeveloperApp(setup.organizationName, developerName, application.name, undefined, applicationPatch2).catch((reason) => {
         expect(reason, `error=${reason.message}`).is.instanceof(ApiError);
         expect.fail(`failed to update developer application; error="${reason.body.message}"`);
       });
@@ -173,7 +173,7 @@ describe("apps", function () {
         webHooks: [setup.webHook1, setup.webHook2],
       }
 
-      await AppsService.updateDeveloperApp(setup.organizationName, developerName, application.name, null, applicationPatch).catch((reason) => {
+      await AppsService.updateDeveloperApp(setup.organizationName, developerName, application.name, undefined, applicationPatch).catch((reason) => {
         expect(reason, `error=${reason.message}`).is.instanceof(ApiError);
         expect.fail(`failed to update developer application; error="${reason.body.message}"`);
       });
@@ -210,7 +210,7 @@ describe("apps", function () {
         webHooks: [setup.webHook2],
       }
 
-      await AppsService.updateDeveloperApp(setup.organizationName, developerName, application.name, null, applicationPatch).catch((reason) => {
+      await AppsService.updateDeveloperApp(setup.organizationName, developerName, application.name, undefined, applicationPatch).catch((reason) => {
         expect(reason, `error=${reason.message}`).is.instanceof(ApiError);
         expect.fail(`failed to update developer application; error="${reason.body.message}"`);
       });
@@ -246,7 +246,7 @@ describe("apps", function () {
         webHooks: [setup.webHook2],
       }
 
-      await AppsService.updateDeveloperApp(setup.organizationName, developerName, application.name, null, applicationPatch).catch((reason) => {
+      await AppsService.updateDeveloperApp(setup.organizationName, developerName, application.name, undefined, applicationPatch).catch((reason) => {
         expect(reason, `error=${reason.message}`).is.instanceof(ApiError);
         expect.fail(`failed to update developer application; error="${reason.body.message}"`);
       });
