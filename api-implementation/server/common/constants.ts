@@ -10,9 +10,12 @@ export class ContextConstants {
   public static CLOUD_TOKEN = 'cloud-token';
   public static PAGING = 'paging';
   public static SORT = 'sort';
+  public static IF_MATCH_ETAG = 'if-match';
   public static FILTER = 'filter';
   public static REQUEST_ID = 'requestId';
   public static AUTHENTICATED_USER = 'user';
+  public static RESPONSE_OBJECT = 'responseObject';
+  
 }
 
 export class TopicWildcards {

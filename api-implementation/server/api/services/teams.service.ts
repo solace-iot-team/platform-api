@@ -10,6 +10,8 @@ import AppFactory from './apps/appfactory';
 
 import { PersistenceService } from './persistence.service';
 import { ErrorResponseInternal } from '../middlewares/error.handler';
+import preconditionCheck from './persistence/preconditionhelper';
+import {updateProtectionByObject} from './persistence/preconditionhelper';
 
 export interface TeamApp extends App {
   appType?: string;
@@ -127,14 +129,13 @@ export class TeamsService {
     const app: TeamApp = AppFactory.createTeamApp(team, body);
 
     try {
-      const newApp: TeamApp = await AppsService.create(
+      let newApp: TeamApp = await AppsService.create(
         app.name,
         app,
         teamObj.attributes
       );
-      AppFactory.transformToExternalAppRepresentation(newApp);
 
-      return newApp;
+      return await this.appByName(team, app.name, 'smf');
     } catch (e) {
       L.error(e);
       throw e;
@@ -142,6 +143,7 @@ export class TeamsService {
   }
 
   update(name: string, body: Team): Promise<Team> {
+    preconditionCheck(this, name);
     return this.persistenceService.update(name, body);
   }
 
@@ -163,6 +165,7 @@ export class TeamsService {
       );
     }
     L.debug(teamObj);
+    await updateProtectionByObject(await this.appByName(team, name, 'smf'));
     const app: TeamAppPatch = AppFactory.createTeamAppPatch(team, body);
 
     const appPatch: AppPatch = await AppsService.update(

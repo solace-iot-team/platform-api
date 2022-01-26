@@ -10,7 +10,8 @@ import BrokerService from './broker.service';
 
 import { PersistenceService } from './persistence.service';
 import { ErrorResponseInternal } from '../middlewares/error.handler';
-
+import preconditionCheck from './persistence/preconditionhelper';
+import {updateProtectionByObject} from './persistence/preconditionhelper';
 
 export interface DeveloperApp extends App {
   appType?: string;
@@ -135,8 +136,7 @@ export class DevelopersService {
         app,
         dev.attributes
       );
-      AppFactory.transformToExternalAppRepresentation(newApp);
-      return newApp;
+      return this.appByName(developer, app.name, 'smf');
     } catch (e) {
       L.error(e);
       throw e;
@@ -144,6 +144,7 @@ export class DevelopersService {
   }
 
   update(name: string, body: Developer): Promise<Developer> {
+    preconditionCheck(this, name);
     return this.persistenceService.update(name, body);
   }
 
@@ -152,7 +153,7 @@ export class DevelopersService {
     name: string,
     body: AppPatch
   ): Promise<AppPatch> {
-
+    await updateProtectionByObject(await this.appByName(developer, name, 'smf'));
     let dev = null;
     try {
       dev = await this.persistenceService.byName(developer);

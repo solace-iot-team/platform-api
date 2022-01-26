@@ -17,6 +17,8 @@ import CommonEntityNameList = Components.Schemas.CommonEntityNameList;
 import CommonEntityNames = Components.Schemas.CommonEntityNames;
 import APIProduct = Components.Schemas.APIProduct;
 import EventAPIProduct = Components.Schemas.EventAPIProduct;
+import {updateProtectionByObject} from './persistence/preconditionhelper';
+
 export interface APISpecification {
   name: string;
   specification: string;
@@ -164,6 +166,7 @@ export class ApisService {
 
   async update(name: string, body: string): Promise<string> {
     const r = await this.apiInfoPersistenceService.byName(name);
+    await updateProtectionByObject(r);
     if (r.source == 'Upload') {
       // for internal APIs increase the version number
       r.version = (Number(r.version) + 1).toString();
