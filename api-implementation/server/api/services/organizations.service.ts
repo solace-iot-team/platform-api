@@ -14,8 +14,8 @@ import { ns } from '../middlewares/context.handler';
 import { isString } from '../../../src/typehelpers';
 import preconditionCheck from './persistence/preconditionhelper';
 
-import { Cache, CacheContainer } from 'node-ts-cache'
-import { MemoryStorage } from 'node-ts-cache-storage-memory'
+import { Cache, CacheContainer } from 'node-ts-cache';
+import { MemoryStorage } from 'node-ts-cache-storage-memory';
 
 const statusCache = new CacheContainer(new MemoryStorage());
 
