@@ -216,15 +216,15 @@ export class ProtocolMapper {
     const endpoints: Endpoint[] = [];
     const mappings = ProtocolMapper.getProtocolMappings();
     for (const protocol of serverProtocols) {
-      L.debug(`mapMessagingProtocols ${protocol.name}`);
+      L.trace(`mapMessagingProtocols ${protocol.name}`);
       for (const serverEndpoint of protocol.endPoints) {
         const mapping = mappings.find(element => element.protocolKeys.name == serverEndpoint.name && element.protocolKeys.protocol == serverEndpoint.transport);
         if (mapping != null) {
           const keys = mapping.protocolKeys;
-          L.debug(`mapMessagingProtocols ${keys.name} ${keys.protocol}`);
+          L.trace(`mapMessagingProtocols ${keys.name} ${keys.protocol}`);
           const endpoint = protocol.endPoints.find(ep => ep.name == serverEndpoint.name && ep.transport == serverEndpoint.transport);
           let newEndpoint: Endpoint = endpoints.find(ep => (ep.uri == endpoint.uris[0] && ep.protocol.name == mapping.name));
-          L.debug(endpoint);
+          L.trace(endpoint);
           if (newEndpoint === undefined) {
             newEndpoint = {
               compressed: endpoint.compressed == 'yes' ? 'yes' : 'no',
