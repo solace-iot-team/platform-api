@@ -1,16 +1,42 @@
 import L from '../../common/logger';
 import { PlatformConstants, ContextConstants } from '../../common/constants';
 import { databaseaccess } from '../../../src/databaseaccess';
-import mongodb, { DeleteWriteOpResultObject, MongoError, CollectionInsertOneOptions, UpdateOneOptions } from 'mongodb';
+import mongodb, { DeleteWriteOpResultObject, MongoError, CollectionInsertOneOptions, UpdateOneOptions, Collection } from 'mongodb';
 
 import { ErrorResponseInternal } from '../middlewares/error.handler';
 import { ns } from '../middlewares/context.handler';
 import { Paging } from '../../../src/model/paging';
 import { SortInfo } from '../../../src/model/sortinfo';
+import { SearchInfo } from '../../../src/model/searchinfo';
+
+import { CacheContainer } from 'node-ts-cache';
+import { MemoryStorage } from 'node-ts-cache-storage-memory';
+
+const indexCache = new CacheContainer(new MemoryStorage());
 
 export class PersistenceService {
   private collection: string;
-  private getCollection() {
+  private async createIndex(mongoCollection: Collection): Promise<void> {
+    const cachedCollection = await indexCache.getItem<string>(mongoCollection.collectionName);
+    if (cachedCollection) {
+      return;
+    }
+    try {
+      const b: boolean = await mongoCollection.indexExists('fulltext');
+      if (!b) {
+        L.info(`creating full text index ${mongoCollection.collectionName}`);
+        mongoCollection.createIndex(
+          { '$**': 'text' },
+          { name: 'fulltext' }
+        );
+        await indexCache.setItem(mongoCollection.collectionName, mongoCollection.collectionName, { ttl: 600 });
+      }
+    } catch (e) {
+      L.debug(`error checking for full text index`);
+      L.debug(e);
+    };
+  }
+  private async getCollection() {
     let db: string = PlatformConstants.PLATFORM_DB;
     let org: string = null;
     if (ns != null && ns.getStore()) {
@@ -24,7 +50,11 @@ export class PersistenceService {
     }
 
     L.info(`db is ${db}`);
-    return databaseaccess.client.db(db).collection(this.collection);
+    const mongoCollection: Collection = databaseaccess.client.db(db).collection(this.collection);
+    await this.createIndex(mongoCollection);
+
+
+    return mongoCollection;
   }
   constructor(collection: string) {
     this.collection = collection;
@@ -33,6 +63,10 @@ export class PersistenceService {
   all(query?: object, sort?: object, paging?: Paging): Promise<any[]> {
     if (query == null) {
       query = {};
+    }
+    if (ns != null && ns.getStore() && ns.getStore().get(ContextConstants.FILTER)) {
+      const searchInfo: SearchInfo = ns.getStore().get(ContextConstants.FILTER);
+      query['$text']= { '$search': searchInfo.searchWordList } 
     }
     if (sort == null) {
       sort = {};
@@ -52,8 +86,8 @@ export class PersistenceService {
         L.debug(`paging ${paging}`);
       }
     }
-    return new Promise<any[]>((resolve, reject) => {
-      const collection: mongodb.Collection = this.getCollection();
+    return new Promise<any[]>(async (resolve, reject) => {
+      const collection: mongodb.Collection = await this.getCollection();
       let x: mongodb.Cursor<any> = null;
       if (paging !== null && paging !== undefined) {
         x = collection.find(query).sort(sort).skip((paging.pageNumber - 1) * paging.pageSize).limit(paging.pageSize);
@@ -76,7 +110,7 @@ export class PersistenceService {
   }
 
   async byName(name: string, query?: any): Promise<any> {
-    const collection: mongodb.Collection = this.getCollection();
+    const collection: mongodb.Collection = await this.getCollection();
     let q = query;
     if (q != null) {
       q._id = name;
@@ -101,92 +135,86 @@ export class PersistenceService {
 
   }
 
-  delete(name: string, query?: any): Promise<number> {
-    return new Promise<number>((resolve, reject) => {
-      const collection: mongodb.Collection = this.getCollection();
-      let q = query;
-      if (q) {
-        q._id = name;
+  async delete(name: string, query?: any): Promise<number> {
+    let retVal: number = 0;
+    const collection: mongodb.Collection = await this.getCollection();
+    let q = query;
+    if (q) {
+      q._id = name;
+    } else {
+      q = { _id: name };
+    }
+    L.info(q);
+    try {
+      const item: DeleteWriteOpResultObject = await collection.deleteOne(q);
+      L.debug(` deleted count: ${item.deletedCount}`);
+      if (item.deletedCount == 1) {
+        retVal = 204;
       } else {
-        q = { _id: name };
+        throw (new ErrorResponseInternal(404, `No entity ${name} found `));
       }
-      L.info(q);
-      collection.deleteOne(q).then(
-        (item: DeleteWriteOpResultObject) => {
-          L.debug(` deleted count: ${item.deletedCount}`);
-          if (item.deletedCount == 1) {
-            resolve(204)
-          } else {
-            reject(new ErrorResponseInternal(404, `No entity ${name} found `));
-          }
-        }
 
-      ).catch((e: MongoError) => {
-        reject(this.createPublicErrorMessage(e));
-      });
-    });
+    } catch (e) {
+      throw this.createPublicErrorMessage(e);
+    };
+    return retVal;
   }
 
-  create(_id: string, body: any): Promise<any> {
-    return new Promise<any>((resolve, reject) => {
-      L.info(`adding ${this.collection} with _id ${_id}`);
-      const collection: mongodb.Collection = this.getCollection();
-      body._id = _id;
-      let opts: CollectionInsertOneOptions = {
-        w: 1,
-        j: true
-      };
-      collection.insertOne(body, opts).then((v: mongodb.InsertOneWriteOpResult<any>) => {
-        delete body._id;
-        resolve(body);
-      }).catch((e: MongoError) => {
-        reject(this.createPublicErrorMessage(e));
-      });
-    });
+  async create(_id: string, body: any): Promise<any> {
+    L.info(`adding ${this.collection} with _id ${_id}`);
+    const collection: mongodb.Collection = await this.getCollection();
+    body._id = _id;
+    let opts: CollectionInsertOneOptions = {
+      w: 1,
+      j: true
+    };
+    try {
+      const y: mongodb.InsertOneWriteOpResult<any> = await collection.insertOne(body, opts);
+      // need to make sure we have an index - it seems sometimes collections are only created on first write
+      await this.createIndex(collection);
+      delete body._id;
+      return body;
+    } catch (e) {
+      throw (this.createPublicErrorMessage(e));
+    };
   }
 
-  update(_id: string, body: any, query?: any): Promise<any> {
-    return new Promise<any>((resolve, reject) => {
-      L.info(`patching ${this.collection} with _id ${_id}`);
-      let id = body.name;
-      if (id == null) {
-        id = body.id;
-      }
-      if (id == null) {
-        id = body._id;
-      }
-      if (id != null && id != _id) {
-        reject(new ErrorResponseInternal(400, `Can not change entity identifier `));
-        return;
-      }
+  async update(_id: string, body: any, query?: any): Promise<any> {
 
-      const collection: mongodb.Collection = this.getCollection();
-      let q = query;
-      if (q) {
-        q._id = _id;
-      } else {
-        q = { _id: _id };
-      }
-      const opts: UpdateOneOptions = {
-        w: 1,
-        j: true
-      };
-      collection.updateOne(q, { $set: body }, opts).then((v: mongodb.UpdateWriteOpResult) => {
-        if (v.matchedCount == 0) {
-          reject(new ErrorResponseInternal(404, `No entity ${_id} found `));
-        }
-        this.byName(_id).then((p) => {
-          delete p._id;
-          resolve(p);
-        }).catch((e) => {
-          L.info(e);
-          reject(e);
-        });
+    L.info(`patching ${this.collection} with _id ${_id}`);
+    let id = body.name;
+    if (id == null) {
+      id = body.id;
+    }
+    if (id == null) {
+      id = body._id;
+    }
+    if (id != null && id != _id) {
+      throw (new ErrorResponseInternal(400, `Can not change entity identifier `));
+    }
 
-      }).catch((e: MongoError) => {
-        reject(this.createPublicErrorMessage(e));
-      });
-    });
+    const collection: mongodb.Collection = await this.getCollection();
+    let q = query;
+    if (q) {
+      q._id = _id;
+    } else {
+      q = { _id: _id };
+    }
+    const opts: UpdateOneOptions = {
+      w: 1,
+      j: true
+    };
+    try {
+      const v: mongodb.UpdateWriteOpResult = await collection.updateOne(q, { $set: body }, opts);
+      if (v.matchedCount == 0) {
+        throw new ErrorResponseInternal(404, `No entity ${_id} found `);
+      }
+      const p: any = await this.byName(_id);
+      return (p);
+
+    } catch (e) {
+      throw (this.createPublicErrorMessage(e));
+    }
   }
 
   validateReferences(names: string[]): Promise<boolean> {
