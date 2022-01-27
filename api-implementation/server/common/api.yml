@@ -2,7 +2,7 @@ openapi: 3.0.0
 info:
   title: Solace API Management Connector
   description: 'Solace API Management Connector API. Note: basic authentication security mechanism is deprecated.'
-  version: 0.6.4
+  version: 0.6.5
 servers:
   - url: /v1
 
@@ -163,6 +163,12 @@ components:
       description: Provide the etag value for a previous GET request of a resource on update (PATCH) in order to avoid "lost updates"
       schema:
         type: string
+    filter:
+      name: filter
+      in: query
+      schema:
+        type: string
+      description: specify search terms to filter results on, multiple search terms can be supplied. Search will return results matching any of the terms (OR). Enclose search terms in quotes to limit results to recoirds matching ALL terms (AND).)  
   responses:
     PreconditionFailed:
       description: PreConditon Failed, likely a mismatch between current etag and if-match header
@@ -2426,6 +2432,7 @@ paths:
      - $ref: '#/components/parameters/sort_field_name'
      - $ref: '#/components/parameters/sort_direction'
      - $ref: '#/components/parameters/api_list_format'
+     - $ref: '#/components/parameters/filter'
      responses:
         '200':
           description: list of APIs
@@ -2744,6 +2751,7 @@ paths:
      - $ref: '#/components/parameters/page_number'
      - $ref: '#/components/parameters/sort_field_name'
      - $ref: '#/components/parameters/sort_direction'
+     - $ref: '#/components/parameters/filter'
      responses:
         '200':
           description: list of API Products
@@ -3879,6 +3887,7 @@ paths:
      - $ref: '#/components/parameters/page_number'
      - $ref: '#/components/parameters/sort_field_name'
      - $ref: '#/components/parameters/sort_direction'
+     - $ref: '#/components/parameters/filter'
      responses:
         '200':
           description: list of apps

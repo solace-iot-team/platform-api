@@ -21,6 +21,9 @@ declare namespace Components {
         namespace EventApiProductId {
             export type EventApiProductId = string; // [a-z0-9]*
         }
+        namespace Filter {
+            export type Filter = string;
+        }
         namespace IfMatchHeader {
             export type IfMatch = string;
         }
