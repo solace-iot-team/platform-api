@@ -16,24 +16,26 @@ const indexCache = new CacheContainer(new MemoryStorage());
 
 export class PersistenceService {
   private collection: string;
-  private async createIndex(mongoCollection: Collection): Promise<void> {
+  private async createIndex(mongoCollection: Collection, db: string): Promise<void> {
     const cachedCollection = await indexCache.getItem<string>(mongoCollection.collectionName);
+    const idxName: string = `idx_text_${db}_${mongoCollection.collectionName}`;
     if (cachedCollection) {
+      L.debug(`already in cache  - fulltext index ${mongoCollection.collectionName}`);
       return;
     }
     try {
-      const b: boolean = await mongoCollection.indexExists('fulltext');
+      const b: boolean = await mongoCollection.indexExists(idxName);
       if (!b) {
         L.info(`creating full text index ${mongoCollection.collectionName}`);
-        mongoCollection.createIndex(
+        await mongoCollection.createIndex(
           { '$**': 'text' },
-          { name: 'fulltext' }
+          { name: idxName }
         );
-        await indexCache.setItem(mongoCollection.collectionName, mongoCollection.collectionName, { ttl: 600 });
+        await mongoCollection.indexExists(idxName);
+        //await indexCache.setItem(mongoCollection.collectionName, mongoCollection.collectionName, { ttl: 600 });
       }
     } catch (e) {
-      L.debug(`error checking for full text index`);
-      L.debug(e);
+      throw e;
     };
   }
   private async getCollection() {
@@ -50,9 +52,31 @@ export class PersistenceService {
     }
 
     L.info(`db is ${db}`);
-    const mongoCollection: Collection = databaseaccess.client.db(db).collection(this.collection);
-    await this.createIndex(mongoCollection);
-
+    const collNames = await databaseaccess.client.db(db).listCollections({ name: this.collection }).toArray();
+    let exists: boolean = false;
+    collNames.forEach(c => {
+      if (c.name == this.collection) {
+        exists = true;
+      }
+    });
+    let mongoCollection: Collection;
+    if (exists){
+      L.debug(`Collection already exists ${this.collection}`);
+      mongoCollection = databaseaccess.client.db(db).collection(this.collection);
+    } else {
+      L.debug(`Collection required ${this.collection}`);
+      mongoCollection = await databaseaccess.client.db(db).createCollection(this.collection);
+      
+    }
+    await this.createIndex(mongoCollection, db);
+    // try {
+    //   await this.createIndex(mongoCollection);
+    // } catch (e) {
+    //   L.info(`explicitly creating collection ${this.collection}`);
+    //   // this may fail if the collection is not created yet, it seems these are only created on write
+    //   mongoCollection = await databaseaccess.client.db(db).createCollection(this.collection);
+    //   await this.createIndex(mongoCollection);
+    // }
 
     return mongoCollection;
   }
@@ -61,12 +85,13 @@ export class PersistenceService {
   }
 
   all(query?: object, sort?: object, paging?: Paging): Promise<any[]> {
+    
     if (query == null) {
       query = {};
     }
     if (ns != null && ns.getStore() && ns.getStore().get(ContextConstants.FILTER)) {
       const searchInfo: SearchInfo = ns.getStore().get(ContextConstants.FILTER);
-      query['$text']= { '$search': searchInfo.searchWordList } 
+      query['$text'] = { '$search': searchInfo.searchWordList }
     }
     if (sort == null) {
       sort = {};
@@ -170,8 +195,6 @@ export class PersistenceService {
     };
     try {
       const y: mongodb.InsertOneWriteOpResult<any> = await collection.insertOne(body, opts);
-      // need to make sure we have an index - it seems sometimes collections are only created on first write
-      await this.createIndex(collection);
       delete body._id;
       return body;
     } catch (e) {
@@ -256,6 +279,7 @@ export class PersistenceService {
         msg = error.message;
         statusCode = 500;
       }
+      L.info(error);
       L.debug(`public error message ${msg}`);
       return new ErrorResponseInternal(statusCode, msg);
     } else {
