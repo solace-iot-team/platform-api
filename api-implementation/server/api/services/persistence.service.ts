@@ -12,6 +12,8 @@ import { SearchInfo } from '../../../src/model/searchinfo';
 import { CacheContainer } from 'node-ts-cache';
 import { MemoryStorage } from 'node-ts-cache-storage-memory';
 
+import DatabaseBootstrapper from './persistence/databasebootstrapper';
+
 const indexCache = new CacheContainer(new MemoryStorage());
 
 export class PersistenceService {
@@ -38,6 +40,25 @@ export class PersistenceService {
       throw e;
     };
   }
+
+  private async createCollection(db: string) {
+    if (!PlatformConstants.PLATFORM_COLLECTIONS.includes(this.collection) && PlatformConstants.PLATFORM_DB == db) {
+      L.warn('Attempt to create platform collections');
+      //throw new ErrorResponseInternal(500, `Can't write to  ${this.collection} in tenant ${db}`);
+      return;
+    }
+
+
+    L.debug(`db is ${db}, creating collection ${this.collection}`);
+    try {
+      const mongoCollection = await databaseaccess.client.db(db).createCollection(this.collection);
+      await this.createIndex(mongoCollection, db);
+    } catch (e) {
+      //L.error(e);
+      //throw new ErrorResponseInternal(500, `Can't write to  ${this.collection} in tenant ${db}`);
+    }
+  }
+
   private async getCollection() {
     let db: string = PlatformConstants.PLATFORM_DB;
     let org: string = null;
@@ -52,40 +73,16 @@ export class PersistenceService {
     }
 
     L.info(`db is ${db}`);
-    const collNames = await databaseaccess.client.db(db).listCollections({ name: this.collection }).toArray();
-    let exists: boolean = false;
-    collNames.forEach(c => {
-      if (c.name == this.collection) {
-        exists = true;
-      }
-    });
-    let mongoCollection: Collection;
-    if (exists){
-      L.debug(`Collection already exists ${this.collection}`);
-      mongoCollection = databaseaccess.client.db(db).collection(this.collection);
-    } else {
-      L.debug(`Collection required ${this.collection}`);
-      mongoCollection = await databaseaccess.client.db(db).createCollection(this.collection);
-      
-    }
-    await this.createIndex(mongoCollection, db);
-    // try {
-    //   await this.createIndex(mongoCollection);
-    // } catch (e) {
-    //   L.info(`explicitly creating collection ${this.collection}`);
-    //   // this may fail if the collection is not created yet, it seems these are only created on write
-    //   mongoCollection = await databaseaccess.client.db(db).createCollection(this.collection);
-    //   await this.createIndex(mongoCollection);
-    // }
-
+    const mongoCollection: Collection = databaseaccess.client.db(db).collection(this.collection);
     return mongoCollection;
   }
   constructor(collection: string) {
     this.collection = collection;
+    DatabaseBootstrapper.on('added', this.createCollection.bind(this));
   }
 
   all(query?: object, sort?: object, paging?: Paging): Promise<any[]> {
-    
+
     if (query == null) {
       query = {};
     }
