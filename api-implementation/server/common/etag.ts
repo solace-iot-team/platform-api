@@ -9,7 +9,6 @@ export default function(body, encoding){
     str = JSON.stringify(body);
   }
   
-  L.info(str);
   const seed = 2;
   let h1 = 0xdeadbeef ^ seed, h2 = 0x41c6ce57 ^ seed;
     for (let i = 0, ch; i < str.length; i++) {
