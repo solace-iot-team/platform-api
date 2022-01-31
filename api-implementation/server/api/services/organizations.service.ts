@@ -13,9 +13,10 @@ import EventPortalFacade from '../../../src/eventportalfacade';
 import { ns } from '../middlewares/context.handler';
 import { isString } from '../../../src/typehelpers';
 import preconditionCheck from './persistence/preconditionhelper';
+import DatabaseBootstrapper from './persistence/databasebootstrapper'; 
 
-import { Cache, CacheContainer } from 'node-ts-cache'
-import { MemoryStorage } from 'node-ts-cache-storage-memory'
+import { Cache, CacheContainer } from 'node-ts-cache';
+import { MemoryStorage } from 'node-ts-cache-storage-memory';
 
 const statusCache = new CacheContainer(new MemoryStorage());
 
@@ -103,6 +104,7 @@ export class OrganizationsService {
         const org: OrganizationResponse = await this.persistenceService
           .create(body.name, body) as OrganizationResponse;
         org.status = await this.getOrganizationStatus(org['cloud-token']);
+        DatabaseBootstrapper.emit('added', org.name);
         return org;
       } else {
         throw (
