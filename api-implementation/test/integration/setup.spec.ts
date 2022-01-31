@@ -1,3 +1,4 @@
+import 'mocha';
 import path from 'path';
 import { getBaseUrl, getMandatoryEnvVarValue, getOptionalEnvVarValue, TestLogger } from "../lib/test.helpers";
 import { PlatformAPIClient } from '../lib/api.helpers';

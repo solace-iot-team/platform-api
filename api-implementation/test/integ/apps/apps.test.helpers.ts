@@ -11,7 +11,8 @@ import {
   MsgVpnRestDeliveryPointQueueBindingsResponse,
   MsgVpnRestDeliveryPointRestConsumersResponse
 } from "../../../src/clients/sempv2";
-import { msgVpnNamePerEnvironment } from './apps.setup';
+
+import { environmentDetails } from './apps.test.setup';
 
 /**
  * Event broker ACL profile.
@@ -101,17 +102,16 @@ export function createRestDeliveryPointFromWebHook(webHook: WebHook): RestDelive
  */
 export async function verifyAclProfile(environment: Environment, aclProfileName: string, aclProfile: AclProfile): Promise<void> {
 
-  const msgVpnName: string = msgVpnNamePerEnvironment.get(environment.name);
+  const msgVpnName: string = environmentDetails.get(environment.name).msgVpnName;
   let apiClient = await SolaceCloudClientFactory.createSempV2Client(environment.serviceId);
 
   if (!aclProfile) {
 
-    let isFound = true;
-    await apiClient.getMsgVpnAclProfile(msgVpnName, aclProfileName).catch((reason) => {
+    await apiClient.getMsgVpnAclProfile(msgVpnName, aclProfileName).then(() => {
+      expect.fail(`${environment.name}: ACL profile ${aclProfileName} is unexpected`);
+    }, (reason) => {
       expect(reason.status, `${environment.name}: status code is not correct`).to.be.greaterThanOrEqual(400);
-      isFound = false;
     });
-    expect(isFound, `${environment.name}: unexpected ACL profile found`).to.be.false;
 
   } else {
 
@@ -168,17 +168,16 @@ export async function verifyAclProfile(environment: Environment, aclProfileName:
  */
 export async function verifyMessageQueue(environment: Environment, queueName: string, queue: Queue): Promise<void> {
 
-  const msgVpnName: string = msgVpnNamePerEnvironment.get(environment.name);
+  const msgVpnName: string = environmentDetails.get(environment.name).msgVpnName;
   let apiClient = await SolaceCloudClientFactory.createSempV2Client(environment.serviceId);
 
   if (!queue) {
 
-    let isFound = true;
-    await apiClient.getMsgVpnQueue(msgVpnName, queueName).catch((reason) => {
+    await apiClient.getMsgVpnQueue(msgVpnName, queueName).then(() => {
+      expect.fail(`${environment.name}: queue ${queueName} is unexpected`);
+    }, (reason) => {
       expect(reason.status, `${environment.name}: status code is not correct`).to.be.greaterThanOrEqual(400);
-      isFound = false;
     });
-    expect(isFound, `${environment.name}: unexpected queue found`).to.be.false;
 
   } else {
 
@@ -200,17 +199,16 @@ export async function verifyMessageQueue(environment: Environment, queueName: st
  */
 export async function verifyRestDeliveryPoint(environment: Environment, restDeliveryPointName: string, restDeliveryPoint: RestDeliveryPoint): Promise<void> {
 
-  const msgVpnName: string = msgVpnNamePerEnvironment.get(environment.name);
+  const msgVpnName: string = environmentDetails.get(environment.name).msgVpnName;
   let apiClient = await SolaceCloudClientFactory.createSempV2Client(environment.serviceId);
 
   if (!restDeliveryPoint) {
 
-    let isFound = true;
-    await apiClient.getMsgVpnRestDeliveryPoint(msgVpnName, restDeliveryPointName).catch((reason) => {
+    await apiClient.getMsgVpnRestDeliveryPoint(msgVpnName, restDeliveryPointName).then(() => {
+      expect.fail(`${environment.name}: REST delivery point ${restDeliveryPointName} is unexpected`);
+    }, (reason) => {
       expect(reason.status, `${environment.name}: status code is not correct`).to.be.greaterThanOrEqual(400);
-      isFound = false;
     });
-    expect(isFound, `${environment.name}: unexpected REST delivery point found`).to.be.false;
 
   } else {
 

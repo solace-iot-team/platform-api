@@ -1,4 +1,4 @@
-import 'mocha';
+import { Suite } from 'mocha';
 import path from 'path';
 import {
   getMandatoryEnvVarValue,
@@ -28,7 +28,7 @@ import {
 const scriptName: string = path.basename(__filename);
 const scriptDir: string = path.dirname(__filename);
 
-export const env = {
+const env = {
   solaceCloudBaseUrl: getMandatoryEnvVarValue(scriptName, 'PLATFORM_API_TEST_SOLACE_CLOUD_URL'),
   solaceCloudToken: getMandatoryEnvVarValue(scriptName, 'PLATFORM_API_TEST_SOLACE_CLOUD_TOKEN'),
   solaceEventPortalBaseUrl: getMandatoryEnvVarValue(scriptName, 'PLATFORM_API_TEST_SOLACE_EVENT_PORTAL_URL'),
@@ -37,14 +37,10 @@ export const env = {
   solaceCloudServiceId2: getMandatoryEnvVarValue(scriptName, 'PLATFORM_API_TEST_SOLACE_CLOUD_SERVICE_ID_PROD'),
 }
 
-/**
- * The name of the organization.
- */
+/** The name of the test organization. */
 export const organizationName: string = "TestOrganization";
 
-/**
- * The organization.
- */
+/** The test organization. */
 export const organization: Organization = {
   name: organizationName,
   'cloud-token': {
@@ -53,19 +49,15 @@ export const organization: Organization = {
   }
 }
 
-/**
- * The 1st developer.
- */
- export const developer1: Developer = {
+/** The 1st developer. */
+export const developer1: Developer = {
   email: "developer1@mycompany.com",
   firstName: "firstName1",
   lastName: "lastname1",
   userName: `developer1@${organizationName}`,
 }
 
-/**
- * The 2nd developer.
- */
+/** The 2nd developer. */
 export const developer2: Developer = {
   email: "developer2@mycompany.com",
   firstName: "firstName2",
@@ -74,7 +66,7 @@ export const developer2: Developer = {
 }
 
 /**
- * The 1st environment.
+ * The 1st test environment.
  * - Protocols: MQTT 3.1.1 and HTTP 1.1
  */
 export const environment1: Environment = {
@@ -94,7 +86,7 @@ export const environment1: Environment = {
 }
 
 /**
- * The 2nd environment.
+ * The 2nd test environment.
  * - Protocols: MQTT 3.1.1 and HTTP 1.1
  */
 export const environment2: Environment = {
@@ -120,6 +112,12 @@ const apiSpec1: string = AsyncAPIHelper.loadYamlFileAsJsonString(`${scriptDir}/.
 
 /**
  * API product for the SayHello API.
+ *
+ * Operations:
+ * - [PUB] `say/hello/{language}`
+ * - [SUB] `say/hello/{language}`
+ * 
+ * Product details:
  * - Environment: {@link environment1}
  * - Protocols: MQTT 3.1.1 and HTTP 1.1
  * - Approval type: auto
@@ -144,6 +142,11 @@ const apiSpec2: string = AsyncAPIHelper.loadYamlFileAsJsonString(`${scriptDir}/.
 
 /**
  * API product for the AccountService API.
+ * 
+ * Operations:
+ * - [SUB] `user/signedup`
+ * 
+ * Product details:
  * - Environment: {@link environment2}
  * - Protocols: MQTT 3.1.1 and HTTP 1.1
  * - Approval type: auto
@@ -168,6 +171,11 @@ const apiSpec3: string = AsyncAPIHelper.loadYamlFileAsJsonString(`${scriptDir}/.
 
 /**
  * API product for the EmailService API.
+ * 
+ * Operations:
+ * - [PUB] `user/signedup`
+ * 
+ * Product details:
  * - Environment: {@link environment2}
  * - Protocols: MQTT 3.1.1 and HTTP 1.1
  * - Approval type: auto
@@ -213,15 +221,38 @@ export const webHook2: WebHook = {
   mode: WebHook.mode.SERIAL,
 }
 
+/** The details for all test environments. */
+export let environmentDetails: Map<string, EnvironmentResponse> = new Map<string, EnvironmentResponse>();
+
 /**
- * The msgVpnName for each environment.
+ * Setup a test suite for application service tests.
+ * 
+ * This method adds `before()`, `beforeEach()`, `afterEach()` and `after()` hooks.
+ * 
+ * The `before()` hook creates:
+ * - The {@link organization}
+ * - The developers {@link developer1} and {@link developer2}
+ * - The environments {@link environment1} and {@link environment2}
+ * - The API products {@link apiProduct1}, {@link apiProduct2} and {@link apiProductSub3}
+ * 
+ * The `beforeEach()` hook generates a new identifier for the {@link TestContext} and
+ * configures the {@link PlatformAPIClient} to use the API user.
+ * 
+ * The `afterEach()` hook configures the {@link PlatformAPIClient} to use the API user.
+ * 
+ * The `after()` hook deletes the {@link organization} (and all artifacts that are part of).
+ * 
+ * @param suite The test suite.
  */
-export let msgVpnNamePerEnvironment: Map<string, string> = new Map<string, string>();
+ export function setupSuite(suite: Suite) {
+  suite.beforeAll(before);
+  suite.beforeEach(beforeEach);
+  suite.afterEach(afterEach);
+  suite.afterAll(after);
+}
 
-// Mocha hooks to setup and teardown the test environment for all application service tests
-//
-
-before(async function () {
+/** before hook for a test suite */
+async function before() {
 
   TestContext.newItId();
 
@@ -229,52 +260,60 @@ before(async function () {
   TestLogger.logTestEnv(scriptName, env);
 
   PlatformAPIClient.setManagementUser();
-  await AdministrationService.createOrganization(organization);
+  await AdministrationService.createOrganization({ requestBody: organization });
 
   PlatformAPIClient.setApiUser();
 
   await Promise.all([
-    DevelopersService.createDeveloper(organizationName, developer1),
-    DevelopersService.createDeveloper(organizationName, developer2),
+    DevelopersService.createDeveloper({ organizationName: organizationName, requestBody: developer1 }),
+    DevelopersService.createDeveloper({ organizationName: organizationName, requestBody: developer2 }),
   ]);
 
   await Promise.all([
-    EnvironmentsService.createEnvironment(organizationName, environment1),
-    EnvironmentsService.createEnvironment(organizationName, environment2),
+    EnvironmentsService.createEnvironment({ organizationName: organizationName, requestBody: environment1 }),
+    EnvironmentsService.createEnvironment({ organizationName: organizationName, requestBody: environment2 }),
   ]);
 
-  let updateMsgVpnNamePerEnv = (response: EnvironmentResponse): void => {
-    msgVpnNamePerEnvironment.set(response.name, response.msgVpnName)
+  let updateEnvironmentDetails = (response: EnvironmentResponse): void => {
+    environmentDetails.set(response.name, response)
   }
 
   await Promise.all([
-    EnvironmentsService.getEnvironment(organizationName, environment1.name).then(updateMsgVpnNamePerEnv),
-    EnvironmentsService.getEnvironment(organizationName, environment2.name).then(updateMsgVpnNamePerEnv),
+    EnvironmentsService.getEnvironment({ organizationName: organizationName, envName: environment1.name }).then(updateEnvironmentDetails),
+    EnvironmentsService.getEnvironment({ organizationName: organizationName, envName: environment2.name }).then(updateEnvironmentDetails),
   ]);
 
   await Promise.all([
-    ApisService.createApi(organizationName, apiName1, apiSpec1),
-    ApisService.createApi(organizationName, apiName2, apiSpec2),
-    ApisService.createApi(organizationName, apiName3, apiSpec3),
+    ApisService.createApi({ organizationName: organizationName, apiName: apiName1, requestBody: apiSpec1 }),
+    ApisService.createApi({ organizationName: organizationName, apiName: apiName2, requestBody: apiSpec2 }),
+    ApisService.createApi({ organizationName: organizationName, apiName: apiName3, requestBody: apiSpec3 }),
   ]);
 
   await Promise.all([
-    ApiProductsService.createApiProduct(organizationName, apiProduct1),
-    ApiProductsService.createApiProduct(organizationName, apiProduct2),
-    ApiProductsService.createApiProduct(organizationName, apiProduct3),
+    ApiProductsService.createApiProduct({ organizationName: organizationName, requestBody: apiProduct1 }),
+    ApiProductsService.createApiProduct({ organizationName: organizationName, requestBody: apiProduct2 }),
+    ApiProductsService.createApiProduct({ organizationName: organizationName, requestBody: apiProduct3 }),
   ]);
 
   SolaceCloudClientFactory.initialize(env.solaceCloudBaseUrl, env.solaceCloudToken);
-});
+}
 
-beforeEach(function () {
+/** beforeEach hook for a test suite */
+function beforeEach() {
   TestContext.newItId();
-});
+  PlatformAPIClient.setApiUser();
+};
 
-after(async function () {
+/** afterEach hook for a test suite */
+function afterEach() {
+  PlatformAPIClient.setApiUser();
+};
+
+/** after hook for a test suite */
+async function after() {
   PlatformAPIClient.setManagementUser();
-  await AdministrationService.deleteOrganization(organizationName).catch(() => {
+  await AdministrationService.deleteOrganization({ organizationName: organizationName }).catch(() => {
     // ignore
   });
   TestLogger.logMessage(scriptName, ">>> Finished");
-});
+};

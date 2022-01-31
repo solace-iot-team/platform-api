@@ -34,7 +34,7 @@ describe(`${scriptName}`, () => {
       TestContext.newItId();
       try {
         PlatformAPIClient.setManagementUser();
-        await AdministrationService.deleteOrganization(orgName);
+        await AdministrationService.deleteOrganization({ organizationName: orgName });
       } catch (e) {
         expect(isInstanceOfApiError(e), `${TestLogger.createNotApiErrorMesssage(e.message)}`).to.be.true;
         let message = `deleting org=${orgName}`;
@@ -46,7 +46,7 @@ describe(`${scriptName}`, () => {
       TestContext.newItId();
       try {
         PlatformAPIClient.setManagementUser();
-        await AdministrationService.deleteOrganization(orgName);
+        await AdministrationService.deleteOrganization({ organizationName: orgName });
       } catch (e) {
         expect(isInstanceOfApiError(e), `${TestLogger.createNotApiErrorMesssage(e.message)}`).to.be.true;
         let message = `deleting org=${orgName}`;
@@ -65,7 +65,7 @@ describe(`${scriptName}`, () => {
       }
       try {
         PlatformAPIClient.setManagementUser();
-        response = await AdministrationService.createOrganization(request);
+        response = await AdministrationService.createOrganization({ requestBody: request });
         expect(response.name).to.equal(orgName);
       } catch (e) {
         expect(isInstanceOfApiError(e), `${TestLogger.createNotApiErrorMesssage(e.message)}`).to.be.true;
@@ -83,7 +83,7 @@ describe(`${scriptName}`, () => {
       }
       try {
         PlatformAPIClient.setManagementUser();
-        response = await AdministrationService.createOrganization(request);
+        response = await AdministrationService.createOrganization({ requestBody: request });
         expect(response.name).to.equal(orgName);
       } catch (e) {
         expect(isInstanceOfApiError(e), `${TestLogger.createNotApiErrorMesssage(e.message)}`).to.be.true;

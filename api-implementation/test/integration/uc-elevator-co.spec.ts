@@ -102,7 +102,7 @@ describe(`${scriptName}`, () => {
       TestContext.newItId();
       try {
         PlatformAPIClient.setManagementUser();
-        await AdministrationService.deleteOrganization(orgName);
+        await AdministrationService.deleteOrganization({ organizationName: orgName });
       } catch (e) {
         expect(isInstanceOfApiError(e), `${TestLogger.createNotApiErrorMesssage(e.message)}`).to.be.true;
         let message = `deleting org=${orgName}`;
@@ -116,7 +116,7 @@ describe(`${scriptName}`, () => {
       TestContext.newItId();
       try {
         PlatformAPIClient.setManagementUser();
-        await AdministrationService.deleteOrganization(orgName);
+        await AdministrationService.deleteOrganization({ organizationName: orgName });
       } catch (e) {
         expect(isInstanceOfApiError(e), `${TestLogger.createNotApiErrorMesssage(e.message)}`).to.be.true;
         let message = `deleting org=${orgName}`;
@@ -135,7 +135,7 @@ describe(`${scriptName}`, () => {
         name: orgName
       }
       try {
-        response = await AdministrationService.createOrganization(request);
+        response = await AdministrationService.createOrganization({ requestBody: request });
       } catch (e) {
         expect(isInstanceOfApiError(e), `${TestLogger.createNotApiErrorMesssage(e.message)}`).to.be.true;
         let message = `creating org=${orgName}`;
@@ -149,7 +149,7 @@ describe(`${scriptName}`, () => {
       let response: string;
       let request: string = testEnv.SOLACE_CLOUD_TOKEN;
       try {
-        response = await ManagementService.updateToken(orgName, request);
+        response = await ManagementService.updateToken({ organizationName: orgName, requestBody: request });
       } catch (e) {
         expect(isInstanceOfApiError(e), `${TestLogger.createNotApiErrorMesssage(e.message)}`).to.be.true;
         let message = `update token for org=${orgName}`;
@@ -162,7 +162,7 @@ describe(`${scriptName}`, () => {
       let response: Environment;
       let request: Environment = devEnv;
       try {
-        response = await EnvironmentsService.createEnvironment(orgName, request);
+        response = await EnvironmentsService.createEnvironment({ organizationName: orgName, requestBody: request });
       } catch (e) {
         expect(isInstanceOfApiError(e), `${TestLogger.createNotApiErrorMesssage(e.message)}`).to.be.true;
         let message = `register dev service=${devEnvName} with org=${orgName}`;
@@ -175,7 +175,7 @@ describe(`${scriptName}`, () => {
       let response: Environment;
       let request: Environment = prodEnv;
       try {
-        response = await EnvironmentsService.createEnvironment(orgName, request);
+        response = await EnvironmentsService.createEnvironment({ organizationName: orgName, requestBody: request });
       } catch (e) {
         expect(isInstanceOfApiError(e), `${TestLogger.createNotApiErrorMesssage(e.message)}`).to.be.true;
         let message = `register prod service=${prodEnvName} with org=${orgName}`;
@@ -187,7 +187,7 @@ describe(`${scriptName}`, () => {
     it(`${scriptName}: should get environments`, async () => {
       let response: Array<Environment>;
       try {
-        response = await EnvironmentsService.listEnvironments(orgName);
+        response = await EnvironmentsService.listEnvironments({ organizationName: orgName });
       } catch (e) {
         expect(isInstanceOfApiError(e), `${TestLogger.createNotApiErrorMesssage(e.message)}`).to.be.true;
         let message = `get envs for org='${orgName}`;
@@ -201,7 +201,7 @@ describe(`${scriptName}`, () => {
     it(`${scriptName}: should get audit history`, async () => {
       let response: Array<History>;
       try {
-        response = await ManagementService.listHistory(orgName);
+        response = await ManagementService.listHistory({ organizationName: orgName });
       } catch (e) {
         expect(isInstanceOfApiError(e), `${TestLogger.createNotApiErrorMesssage(e.message)}`).to.be.true;
         let message = `get audit history for org='${orgName}`;
@@ -215,7 +215,7 @@ describe(`${scriptName}`, () => {
     it(`${scriptName}: should get dev environment`, async () => {
       let response: EnvironmentResponse;
       try {
-        response = await EnvironmentsService.getEnvironment(orgName, devEnv.name);
+        response = await EnvironmentsService.getEnvironment({ organizationName: orgName, envName: devEnv.name });
       } catch (e) {
         expect(isInstanceOfApiError(e), `${TestLogger.createNotApiErrorMesssage(e.message)}`).to.be.true;
         let message = `get dev env='${devEnv}`;
@@ -227,7 +227,7 @@ describe(`${scriptName}`, () => {
     it(`${scriptName}: should get prod environment`, async () => {
       let response: EnvironmentResponse;
       try {
-        response = await EnvironmentsService.getEnvironment(orgName, prodEnv.name);
+        response = await EnvironmentsService.getEnvironment({ organizationName: orgName, envName: prodEnv.name });
       } catch (e) {
         expect(isInstanceOfApiError(e), `${TestLogger.createNotApiErrorMesssage(e.message)}`).to.be.true;
         let message = `get prod env='${prodEnv}`;
@@ -239,7 +239,7 @@ describe(`${scriptName}`, () => {
     it(`${scriptName}: should create api`, async () => {
       let response: string;
       try {
-        response = await ApisService.createApi(orgName, apiNameMaintenance, apiSpecMaintenance);
+        response = await ApisService.createApi({ organizationName: orgName, apiName: apiNameMaintenance, requestBody: apiSpecMaintenance });
       } catch (e) {
         expect(isInstanceOfApiError(e), `${TestLogger.createNotApiErrorMesssage(e.message)}`).to.be.true;
         let message = `create api='${apiNameMaintenance}`;
@@ -265,7 +265,7 @@ describe(`${scriptName}`, () => {
         subResources: []
       };
       try {
-        response = await ApiProductsService.createApiProduct(orgName, request);
+        response = await ApiProductsService.createApiProduct({ organizationName: orgName, requestBody: request });
       } catch (e) {
         expect(isInstanceOfApiError(e), `${TestLogger.createNotApiErrorMesssage(e.message)}`).to.be.true;
         let message = `org=${orgName}, create apiProduct='${apiProductNameMaintenanceDevelopment}`;
@@ -278,7 +278,7 @@ describe(`${scriptName}`, () => {
       // get current APIProduct
       let responseGet: APIProduct;
       try {
-        responseGet = await ApiProductsService.getApiProduct(orgName, apiProductNameMaintenanceDevelopment);
+        responseGet = await ApiProductsService.getApiProduct({ organizationName: orgName, apiProductName: apiProductNameMaintenanceDevelopment });
       } catch (e) {
         expect(isInstanceOfApiError(e), `${TestLogger.createNotApiErrorMesssage(e.message)}`).to.be.true;
         let message = `get apiProduct=${apiProductNameMaintenanceDevelopment}`;
@@ -290,7 +290,7 @@ describe(`${scriptName}`, () => {
       }
       let expectedResponsePatch: APIProduct = _.merge({}, responseGet, requestPatch);
       try {
-        responsePatch = await ApiProductsService.updateApiProduct(orgName, apiProductNameMaintenanceDevelopment, undefined, requestPatch);
+        responsePatch = await ApiProductsService.updateApiProduct({ organizationName: orgName, apiProductName: apiProductNameMaintenanceDevelopment, requestBody: requestPatch });
       } catch (e) {
         expect(isInstanceOfApiError(e), `${TestLogger.createNotApiErrorMesssage(e.message)}`).to.be.true;
         let message = `update apiProduct=${apiProductNameMaintenanceDevelopment}`;
@@ -316,7 +316,7 @@ describe(`${scriptName}`, () => {
         subResources: []
       };
       try {
-        response = await ApiProductsService.createApiProduct(orgName, request);
+        response = await ApiProductsService.createApiProduct({ organizationName: orgName, requestBody: request });
       } catch (e) {
         expect(isInstanceOfApiError(e), `${TestLogger.createNotApiErrorMesssage(e.message)}`).to.be.true;
         let message = `create apiProduct='${apiProductNameMaintenanceProduction}`;
@@ -330,7 +330,7 @@ describe(`${scriptName}`, () => {
       for (let developer of developers) {
         let request = developer;
         try {
-          response = await DevelopersService.createDeveloper(orgName, request);
+          response = await DevelopersService.createDeveloper({ organizationName: orgName, requestBody: request });
         } catch (e) {
           expect(isInstanceOfApiError(e), `${TestLogger.createNotApiErrorMesssage(e.message)}`).to.be.true;
           let message = `create developer`;
@@ -357,7 +357,7 @@ describe(`${scriptName}`, () => {
         request.credentials = createDefaultCredentials();
         request.name = `${developerAppNameMaintenanceDevelopment}-${developer.userName}`
         try {
-          response = await AppsService.createDeveloperApp(orgName, developer.userName, request);
+          response = await AppsService.createDeveloperApp({ organizationName: orgName, developerUsername: developer.userName, requestBody: request });
         } catch (e) {
           expect(isInstanceOfApiError(e), `${TestLogger.createNotApiErrorMesssage(e.message)}`).to.be.true;
           let message = `create developer app`;
@@ -378,7 +378,7 @@ describe(`${scriptName}`, () => {
         let appName = `${developerAppNameMaintenanceDevelopment}-${developer.userName}`
         let responseGet: AppResponse;
         try {
-          responseGet = await AppsService.getDeveloperApp(orgName, developer.userName, appName);
+          responseGet = await AppsService.getDeveloperApp({ organizationName: orgName, developerUsername: developer.userName, appName: appName });
         } catch (e) {
           expect(isInstanceOfApiError(e), `${TestLogger.createNotApiErrorMesssage(e.message)}`).to.be.true;
           let message = `getDeveloperApp=${appName}`;
@@ -406,7 +406,7 @@ describe(`${scriptName}`, () => {
         // get current DeveloperApp
         let responseGet: AppResponse;
         try {
-          responseGet = await AppsService.getDeveloperApp(orgName, developer.userName, appName);
+          responseGet = await AppsService.getDeveloperApp({ organizationName: orgName, developerUsername: developer.userName, appName: appName });
         } catch (e) {
           expect(isInstanceOfApiError(e), `${TestLogger.createNotApiErrorMesssage(e.message)}`).to.be.true;
           let message = `getDeveloperApp=${appName}`;
@@ -425,7 +425,7 @@ describe(`${scriptName}`, () => {
         // warning: overrides arrays
         let expectedResponsePatch: AppResponse = _.merge({}, responseGet, requestPatch);
         try {
-          responsePatch = await AppsService.updateDeveloperApp(orgName, developer.userName, appName, undefined, requestPatch);
+          responsePatch = await AppsService.updateDeveloperApp({ organizationName: orgName, developerUsername: developer.userName, appName: appName, requestBody: requestPatch });
         } catch (e) {
           expect(isInstanceOfApiError(e), `${TestLogger.createNotApiErrorMesssage(e.message)}`).to.be.true;
           let message = `updateDeveloperApp=${appName}`;
@@ -457,7 +457,7 @@ describe(`${scriptName}`, () => {
         request.credentials = createDefaultCredentials();
         request.name = appName;
         try {
-          response = await AppsService.createDeveloperApp(orgName, developer.userName, request);
+          response = await AppsService.createDeveloperApp({ organizationName: orgName, developerUsername: developer.userName, requestBody: request });
         } catch (e) {
           expect(isInstanceOfApiError(e), `${TestLogger.createNotApiErrorMesssage(e.message)}`).to.be.true;
           let message = `create app=${appName}`;
@@ -477,7 +477,7 @@ describe(`${scriptName}`, () => {
       // get a list of all apps that require approval
       let responseList: Array<AppListItem>;
       try {
-        responseList = await AppsService.listApps(orgName, AppStatus.PENDING, 100, 1);
+        responseList = await AppsService.listApps({ organizationName: orgName, status: AppStatus.PENDING, pageSize: 100, pageNumber: 1 });
       } catch (e) {
         expect(isInstanceOfApiError(e), `${TestLogger.createNotApiErrorMesssage(e.message)}`).to.be.true;
         let message = `get all pending apps for org=${orgName}`;
@@ -494,7 +494,7 @@ describe(`${scriptName}`, () => {
           status: AppStatus.APPROVED
         };
         try {
-          responsePatch = await AppsService.updateDeveloperApp(orgName, app.ownerId, app.name, undefined, requestPatch);
+          responsePatch = await AppsService.updateDeveloperApp({ organizationName: orgName, developerUsername: app.ownerId, appName: app.name, requestBody: requestPatch });
         } catch (e) {
           expect(isInstanceOfApiError(e), `${TestLogger.createNotApiErrorMesssage(e.message)}`).to.be.true;
           message = `update (approve) app=${app.name}`;

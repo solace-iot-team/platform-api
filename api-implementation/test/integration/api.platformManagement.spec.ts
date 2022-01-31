@@ -46,7 +46,7 @@ describe(`${scriptName}`, () => {
       TestContext.newItId();
       try {
         PlatformAPIClient.setManagementUser();
-        await AdministrationService.deleteOrganization(orgName);
+        await AdministrationService.deleteOrganization({organizationName: orgName });
       } catch (e) {
         expect(isInstanceOfApiError(e), `${TestLogger.createNotApiErrorMesssage(e.message)}`).to.be.true;
         let message = `deleting org=${orgName}`;
@@ -59,7 +59,7 @@ describe(`${scriptName}`, () => {
       TestContext.newItId();
       try {
         PlatformAPIClient.setManagementUser();
-        await AdministrationService.deleteOrganization(orgName);
+        await AdministrationService.deleteOrganization({organizationName: orgName });
       } catch (e) {
         expect(isInstanceOfApiError(e), `${TestLogger.createNotApiErrorMesssage(e.message)}`).to.be.true;
         let message = `deleting org=${orgName}`;
@@ -90,7 +90,7 @@ describe(`${scriptName}`, () => {
         }
       }
       try {
-        response = await AdministrationService.createOrganization(request);
+        response = await AdministrationService.createOrganization({ requestBody: request });
       } catch (e) {
         expect(isInstanceOfApiError(e), `${TestLogger.createNotApiErrorMesssage(e.message)}`).to.be.true;
         let message = `creating org=${orgName}`;
@@ -106,7 +106,7 @@ describe(`${scriptName}`, () => {
         name: orgName
       }
       try {
-        response = await AdministrationService.createOrganization(request);
+        response = await AdministrationService.createOrganization({ requestBody: request });
       } catch (e) {
         expect(isInstanceOfApiError(e), `${TestLogger.createNotApiErrorMesssage(e.message)}`).to.be.true;
         let message = `creating org=${orgName}`;
@@ -133,7 +133,7 @@ describe(`${scriptName}`, () => {
         }
       }
       try {
-        response = await AdministrationService.updateOrganization(orgName, undefined, request);
+        response = await AdministrationService.updateOrganization({ organizationName: orgName, requestBody: request });
       } catch (e) {
         expect(isInstanceOfApiError(e), `${TestLogger.createNotApiErrorMesssage(e.message)}`).to.be.true;
         let message = `creating org=${orgName}`;
