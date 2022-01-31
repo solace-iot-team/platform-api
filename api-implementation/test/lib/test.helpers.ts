@@ -10,7 +10,7 @@ import * as __requestLib from '../lib/generated/openapi/core/request';
 import { ApiRequestOptions } from "./generated/openapi/core/ApiRequestOptions";
 import { v4 } from "uuid";
 import { ApiResult } from "./generated/openapi/core/ApiResult";
-import { ApiError } from "./generated/openapi";
+import { ApiError, CancelablePromise, OpenAPIConfig } from "./generated/openapi";
 
 export type Developer = {
     userName: string,
@@ -73,16 +73,10 @@ export class TestLogger {
     }
     public static getLoggingApiRequestOptions = (options: ApiRequestOptions): string => {
         let logOptions:any = TestLogger.cloneWithHidenSecrets(options);
-        if(logOptions && logOptions.path && logOptions.path.includes('token')) {
-            logOptions.body = "***";
-        }
         return JSON.stringify(logOptions, null, 2);
     }
     public static getLoggingApiResult = (result: ApiResult): string => {
         let logResult:any = TestLogger.cloneWithHidenSecrets(result);
-        if(logResult && logResult.url && logResult.url.includes('token')) {
-            logResult.body = "***";
-        }
         return JSON.stringify(logResult, null, 2);
     }
     public static logApiRequestOptions = (id: string, options: ApiRequestOptions) => {
@@ -268,21 +262,23 @@ export class TestContext {
 
 // +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 // Stubbing global request from openapi
-let requestStub = sinon.stub(__requestLib, 'request')
-.callsFake(
-  async(options: ApiRequestOptions): Promise<ApiResult> => {
+const stub = sinon.stub(__requestLib, 'request');
+stub.callsFake((config: OpenAPIConfig, options: ApiRequestOptions): CancelablePromise<unknown> => {
+
     TestContext.setApiRequestOptions(options);
+    TestLogger.logApiRequestOptions(TestContext.getItId(), options);
+
     TestContext.setApiResult(undefined);
     TestContext.setApiError(undefined);
-    TestLogger.logApiRequestOptions(TestContext.getItId(), TestContext.getApiRequestOptions());    
-    try {
-      TestContext.setApiResult(await (__requestLib.request as any).wrappedMethod(options));
-      TestLogger.logApiResult(TestContext.getItId(), TestContext.getApiResult());
-    } catch(e) {
-      TestContext.setApiError(e);
-      TestLogger.logApiError(TestContext.getItId(), TestContext.getApiError());
-      throw e;
-    }
-    return TestContext.getApiResult();  
-});
 
+    const cancelablePromise = stub.wrappedMethod(config, options);
+    cancelablePromise.then((result) => {
+        TestContext.setApiResult(result as ApiResult);
+        TestLogger.logApiResult(TestContext.getItId(), TestContext.getApiResult());
+    }, (reason) => {
+        TestContext.setApiError(reason);
+        TestLogger.logApiError(TestContext.getItId(), TestContext.getApiError());
+    });
+
+    return cancelablePromise;
+});
