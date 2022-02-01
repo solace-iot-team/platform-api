@@ -67,12 +67,17 @@ jobs:
           cd "${TEST_PLATFORM_DIR}"
           npm install
 
+      - name: Create newman folder
+        run: |
+          mkdir -p /home/runner/work/newman
+        working-directory: newman
+ 
       - name: Install newman
         run: |
           npm install -g newman
           npm install -g newman-reporter-htmlextra
           npm install -g newman-reporter-cli-response
-        working-directory: newman
+        working-directory: /home/runner/work/newman
 
       - name: Create Directory for test results
         run: mkdir -p ${{ github.workspace }}/${{ env.TEST_TEST_RUNNER_OUTPUT_DIR }}
@@ -94,7 +99,7 @@ jobs:
       - name: Run POSTMAN collection
         run: |
           newman run https://api.getpostman.com/collections/27d6a9b3-d711-47cf-9137-e2a2a44b724d?apikey=${{ secrets.POSTMAN_APIKEY }} -e https://api.getpostman.com/environments/527b7560-d632-482a-a56e-b09c79299db1?apikey=${{ secrets.POSTMAN_APIKEY }} -r htmlextra,cli-response --reporter-htmlextra-export ${{ github.workspace }}/${{ env.TEST_TEST_RUNNER_OUTPUT_DIR }}/regression-report.html --reporter-htmlextra-darkTheme --verbose --delay-request 200 > ${{ github.workspace }}/${{ env.TEST_TEST_RUNNER_OUTPUT_DIR }}/regression-report-stdout.html   
-        working-directory: newman
+        working-directory: /home/runner/work/newman
       - name: Stop Server
         run: |
           export APIM_SOLACE_PLATFORM_API_PROJECT_HOME="$GITHUB_WORKSPACE"
