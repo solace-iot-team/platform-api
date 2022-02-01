@@ -70,7 +70,6 @@ jobs:
       - name: Create newman folder
         run: |
           mkdir -p /home/runner/work/newman
-        working-directory: newman
  
       - name: Install newman
         run: |
