@@ -13,7 +13,7 @@ import EventPortalFacade from '../../../src/eventportalfacade';
 import { ns } from '../middlewares/context.handler';
 import { isString } from '../../../src/typehelpers';
 import preconditionCheck from './persistence/preconditionhelper';
-import DatabaseBootstrapper from './persistence/databasebootstrapper'; 
+import DatabaseBootstrapper from './persistence/databasebootstrapper';
 
 import { Cache, CacheContainer } from 'node-ts-cache';
 import { MemoryStorage } from 'node-ts-cache-storage-memory';
@@ -121,6 +121,17 @@ export class OrganizationsService {
     } else {
       // update protection
       await preconditionCheck(this, name);
+      // handle case when complex clud token only contains URLs but not tokens/credentials
+      if (body[ContextConstants.CLOUD_TOKEN] && !isString(body[ContextConstants.CLOUD_TOKEN])
+        && (!body[ContextConstants.CLOUD_TOKEN].cloud.token || !body[ContextConstants.CLOUD_TOKEN].eventPortal.token)) {
+        const orgInDb: Organization = await this.persistenceService.byName(name);
+        if (!body[ContextConstants.CLOUD_TOKEN].cloud.token) {
+          body[ContextConstants.CLOUD_TOKEN].cloud.token = orgInDb[ContextConstants.CLOUD_TOKEN].cloud.token;
+        }
+        if (!body[ContextConstants.CLOUD_TOKEN].eventPortal.token) {
+          body[ContextConstants.CLOUD_TOKEN].eventPortal.token = orgInDb[ContextConstants.CLOUD_TOKEN].eventPortal.token;
+        }
+      }
       if (
         body[ContextConstants.CLOUD_TOKEN] === undefined ||
         body[ContextConstants.CLOUD_TOKEN] === null ||
