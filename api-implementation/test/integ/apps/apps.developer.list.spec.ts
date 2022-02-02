@@ -5,7 +5,7 @@ import { TestContext } from "../../lib/test.helpers";
 import type { App } from "../../lib/generated/openapi";
 import { ApiError, AppsService } from "../../lib/generated/openapi";
 
-import * as setup from './apps.test.setup';
+import * as setup from './common/test.setup';
 
 const scriptName: string = path.basename(__filename);
 

@@ -10,14 +10,14 @@ import {
   WebHook,
 } from "../../lib/generated/openapi";
 
-import * as setup from './apps.test.setup';
-import { AclProfile, Queue } from './apps.test.helpers';
+import * as setup from './common/test.setup';
+import { AclProfile, Queue } from './common/test.helpers';
 import {
   createRestDeliveryPointFromWebHook,
   verifyAclProfile,
   verifyMessageQueue,
   verifyRestDeliveryPoint
-} from './apps.test.helpers';
+} from './common/test.helpers';
 
 const scriptName: string = path.basename(__filename);
 

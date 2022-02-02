@@ -1,7 +1,7 @@
 import { expect } from 'chai';
-import { SolaceCloudClientFactory } from '../../lib/broker.helpers';
-import type { Developer, Environment } from "../../lib/generated/openapi";
-import { WebHook } from "../../lib/generated/openapi";
+import { SolaceCloudClientFactory } from '../../../lib/broker.helpers';
+import type { Developer, Environment } from "../../../lib/generated/openapi";
+import { WebHook } from "../../../lib/generated/openapi";
 import {
   MsgVpnAclProfile,
   MsgVpnAclProfilePublishExceptionsResponse,
@@ -10,9 +10,9 @@ import {
   MsgVpnQueueResponse,
   MsgVpnRestDeliveryPointQueueBindingsResponse,
   MsgVpnRestDeliveryPointRestConsumersResponse
-} from "../../../src/clients/sempv2";
+} from "../../../../src/clients/sempv2";
 
-import { environmentDetails } from './apps.test.setup';
+import { environmentDetails } from './test.setup';
 
 /**
  * Event broker ACL profile.
