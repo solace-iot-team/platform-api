@@ -9,54 +9,40 @@ import { Paging } from '../../../src/model/paging';
 import { SortInfo } from '../../../src/model/sortinfo';
 import { SearchInfo } from '../../../src/model/searchinfo';
 
-import { CacheContainer } from 'node-ts-cache';
-import { MemoryStorage } from 'node-ts-cache-storage-memory';
-
 import DatabaseBootstrapper from './persistence/databasebootstrapper';
-
-const indexCache = new CacheContainer(new MemoryStorage());
 
 export class PersistenceService {
   private collection: string;
-  private async createIndex(mongoCollection: Collection, db: string): Promise<void> {
-    const cachedCollection = await indexCache.getItem<string>(mongoCollection.collectionName);
-    const idxName: string = `idx_text_${db}_${mongoCollection.collectionName}`;
-    if (cachedCollection) {
-      L.debug(`already in cache  - fulltext index ${mongoCollection.collectionName}`);
-      return;
-    }
-    try {
-      const b: boolean = await mongoCollection.indexExists(idxName);
-      if (!b) {
-        L.info(`creating full text index ${mongoCollection.collectionName}`);
-        await mongoCollection.createIndex(
-          { '$**': 'text' },
-          { name: idxName }
-        );
-        await mongoCollection.indexExists(idxName);
-        //await indexCache.setItem(mongoCollection.collectionName, mongoCollection.collectionName, { ttl: 600 });
-      }
-    } catch (e) {
-      throw e;
-    };
-  }
 
-  private async createCollection(db: string) {
+  private createCollection(db: string) {
     if (!PlatformConstants.PLATFORM_COLLECTIONS.includes(this.collection) && PlatformConstants.PLATFORM_DB == db) {
       L.warn('Attempt to create platform collections');
       //throw new ErrorResponseInternal(500, `Can't write to  ${this.collection} in tenant ${db}`);
       return;
     }
 
-
     L.debug(`db is ${db}, creating collection ${this.collection}`);
-    try {
-      const mongoCollection = await databaseaccess.client.db(db).createCollection(this.collection);
-      await this.createIndex(mongoCollection, db);
-    } catch (e) {
-      //L.error(e);
-      //throw new ErrorResponseInternal(500, `Can't write to  ${this.collection} in tenant ${db}`);
-    }
+
+    databaseaccess.client.db(db).createCollection(this.collection, function (err, collection: Collection) {
+      if (err) {
+        // sometimes the colleciton already exists. it's due to the fact that multipe instances of a persistence service for a specific collection may  exist
+        L.trace(err);
+      } else {
+        const idxName: string = `idx_text_${db}_${collection.collectionName}`;
+        L.info(`creating full text index ${collection.collectionName}`);
+        collection.createIndex(
+          { '$**': 'text' },
+          { name: idxName },
+          function(err, s){
+            L.trace(s);
+            L.trace(err);
+            L.info(`Created index ${idxName}`);
+          }
+        );
+      }
+
+    }.bind(this));
+
   }
 
   private async getCollection() {
