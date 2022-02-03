@@ -18,4 +18,4 @@ jobs:
         username: ${{ secrets.AWS_DEV_USERNAME }}
         key: ${{ secrets.AWS_DEV_KEY }}
         port: ${{ secrets.AWS_DEV_PORT }}
-        script: ~/update_env.sh
+        script: /home/ec2-user/update_env.sh
