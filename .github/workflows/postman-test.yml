@@ -98,10 +98,18 @@ jobs:
           source test/integration/source.env.sh
           test/integration/start.server.background.sh
         
-      - name: Run POSTMAN collection
+      - name: Run POSTMAN collection (PR)
         run: |
           newman run https://raw.githubusercontent.com/solace-iot-team/platform-api/${{ env.GITHUB_HEAD_REF_SLUG }}/api-test/APIMConnectorRegressionTests.postman_collection.json -e https://api.getpostman.com/environments/527b7560-d632-482a-a56e-b09c79299db1?apikey=${{ secrets.POSTMAN_APIKEY }} -r htmlextra,cli-response --reporter-htmlextra-export ${{ github.workspace }}/${{ env.TEST_TEST_RUNNER_OUTPUT_DIR }}/regression-report.html --reporter-htmlextra-darkTheme --verbose --delay-request 200 > ${{ github.workspace }}/${{ env.TEST_TEST_RUNNER_OUTPUT_DIR }}/regression-report-stdout.html   
         working-directory: /home/runner/work/newman
+        if: ${{ env.GITHUB_HEAD_REF_SLUG != '' }}
+
+      - name: Run POSTMAN collection (Manual)
+        run: |
+          newman run https://raw.githubusercontent.com/solace-iot-team/platform-api/${{ env.GITHUB_REF_SLUG }}/api-test/APIMConnectorRegressionTests.postman_collection.json -e https://api.getpostman.com/environments/527b7560-d632-482a-a56e-b09c79299db1?apikey=${{ secrets.POSTMAN_APIKEY }} -r htmlextra,cli-response --reporter-htmlextra-export ${{ github.workspace }}/${{ env.TEST_TEST_RUNNER_OUTPUT_DIR }}/regression-report.html --reporter-htmlextra-darkTheme --verbose --delay-request 200 > ${{ github.workspace }}/${{ env.TEST_TEST_RUNNER_OUTPUT_DIR }}/regression-report-stdout.html   
+        working-directory: /home/runner/work/newman
+        if: ${{ env.GITHUB_HEAD_REF_SLUG == '' }}
+
       - name: Stop Server
         run: |
           export APIM_SOLACE_PLATFORM_API_PROJECT_HOME="$GITHUB_WORKSPACE"
