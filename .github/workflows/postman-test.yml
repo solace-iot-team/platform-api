@@ -35,6 +35,9 @@ jobs:
         if: ${{ always() && steps.auth.outputs.IS_AUTHORIZED == 'false' }}
         uses: andymckay/cancel-action@0.2
 
+      - name: github-slug-action
+        uses: rlespinasse/github-slug-action@v4
+
       - name: Checkout Current Branch
         uses: actions/checkout@master
         with:
@@ -97,7 +100,7 @@ jobs:
         
       - name: Run POSTMAN collection
         run: |
-          newman run https://api.getpostman.com/collections/27d6a9b3-d711-47cf-9137-e2a2a44b724d?apikey=${{ secrets.POSTMAN_APIKEY }} -e https://api.getpostman.com/environments/527b7560-d632-482a-a56e-b09c79299db1?apikey=${{ secrets.POSTMAN_APIKEY }} -r htmlextra,cli-response --reporter-htmlextra-export ${{ github.workspace }}/${{ env.TEST_TEST_RUNNER_OUTPUT_DIR }}/regression-report.html --reporter-htmlextra-darkTheme --verbose --delay-request 200 > ${{ github.workspace }}/${{ env.TEST_TEST_RUNNER_OUTPUT_DIR }}/regression-report-stdout.html   
+          newman run https://raw.githubusercontent.com/solace-iot-team/platform-api/${{ env.GITHUB_REF_SLUG }}/api-test/APIMConnectorRegressionTests.postman_collection.json -e https://api.getpostman.com/environments/527b7560-d632-482a-a56e-b09c79299db1?apikey=${{ secrets.POSTMAN_APIKEY }} -r htmlextra,cli-response --reporter-htmlextra-export ${{ github.workspace }}/${{ env.TEST_TEST_RUNNER_OUTPUT_DIR }}/regression-report.html --reporter-htmlextra-darkTheme --verbose --delay-request 200 > ${{ github.workspace }}/${{ env.TEST_TEST_RUNNER_OUTPUT_DIR }}/regression-report-stdout.html   
         working-directory: /home/runner/work/newman
       - name: Stop Server
         run: |
