@@ -1,0 +1,21 @@
+name: deployment
+on:
+  # for testing
+  workflow_dispatch:
+  # production
+  push:
+    branches:
+      - main
+jobs:
+  dev_deployment:
+    runs-on: ubuntu-latest
+    name: Deploy to AWS Dev Environment
+    steps:
+    - name: executing remote ssh commands using ssh key
+      uses: appleboy/ssh-action@master
+      with:
+        host: ${{ secrets.HOST }}
+        username: ${{ secrets.USERNAME }}
+        key: ${{ secrets.KEY }}
+        port: ${{ secrets.PORT }}
+        script: ~/update_env.sh
