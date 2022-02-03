@@ -14,8 +14,8 @@ jobs:
     - name: executing remote ssh commands using ssh key
       uses: appleboy/ssh-action@master
       with:
-        host: ${{ secrets.HOST }}
-        username: ${{ secrets.USERNAME }}
-        key: ${{ secrets.KEY }}
-        port: ${{ secrets.PORT }}
+        host: ${{ secrets.AWS_DEV_HOST }}
+        username: ${{ secrets.AWS_DEV_USERNAME }}
+        key: ${{ secrets.AWS_DEV_KEY }}
+        port: ${{ secrets.AWS_DEV_PORT }}
         script: ~/update_env.sh
