@@ -16,4 +16,5 @@ describe("apps", function() {
   require('./apps/apps.developer.get.spec.ts')
   require('./apps/apps.developer.list.spec.ts')
   require('./apps/apps.developer.update.spec.ts')
+  require('./apps/apps.all.list.spec.ts')
 });
