@@ -20,4 +20,5 @@ jobs:
         port: ${{ secrets.AWS_DEV_PORT }}
         script: |
           cd /home/ec2-user
+          ls -la
           ./update_env.sh
