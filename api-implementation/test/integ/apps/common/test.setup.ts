@@ -5,16 +5,16 @@ import {
   AsyncAPIHelper,
   TestContext,
   TestLogger,
-} from "../../lib/test.helpers";
-import { PlatformAPIClient } from '../../lib/api.helpers';
-import { SolaceCloudClientFactory } from '../../lib/broker.helpers';
+} from "../../../lib/test.helpers";
+import { PlatformAPIClient } from '../../../lib/api.helpers';
+import { SolaceCloudClientFactory } from '../../../lib/broker.helpers';
 import {
   Developer,
   DevelopersService,
   Environment,
   EnvironmentResponse,
   Organization,
-} from "../../lib/generated/openapi";
+} from "../../../lib/generated/openapi";
 import {
   AdministrationService,
   APIProduct,
@@ -23,7 +23,7 @@ import {
   EnvironmentsService,
   Protocol,
   WebHook,
-} from "../../lib/generated/openapi";
+} from "../../../lib/generated/openapi";
 
 const scriptName: string = path.basename(__filename);
 const scriptDir: string = path.dirname(__filename);
@@ -36,6 +36,9 @@ const env = {
   solaceCloudServiceId1: getMandatoryEnvVarValue(scriptName, 'PLATFORM_API_TEST_SOLACE_CLOUD_SERVICE_ID_DEV'),
   solaceCloudServiceId2: getMandatoryEnvVarValue(scriptName, 'PLATFORM_API_TEST_SOLACE_CLOUD_SERVICE_ID_PROD'),
 }
+
+/** The resources directory. */
+const resourcesDirectory: string = `${scriptDir}/../../resources`;
 
 /** The name of the test organization. */
 export const organizationName: string = "TestOrganization";
@@ -108,7 +111,7 @@ export const environment2: Environment = {
 // The SayHello API can be used to consume or publish SayHello events 
 
 const apiName1: string = "SayHelloApi";
-const apiSpec1: string = AsyncAPIHelper.loadYamlFileAsJsonString(`${scriptDir}/../resources/apis/say-hello.yml`);
+const apiSpec1: string = AsyncAPIHelper.loadYamlFileAsJsonString(`${resourcesDirectory}/apis/say-hello.yml`);
 
 /**
  * API product for the SayHello API.
@@ -138,7 +141,7 @@ export const apiProduct1: APIProduct = {
 // The Account service API can be used to consume UserSignedUp events
 
 const apiName2: string = "AccountServiceApi";
-const apiSpec2: string = AsyncAPIHelper.loadYamlFileAsJsonString(`${scriptDir}/../resources/apis/account-service.yml`);
+const apiSpec2: string = AsyncAPIHelper.loadYamlFileAsJsonString(`${resourcesDirectory}/apis/account-service.yml`);
 
 /**
  * API product for the AccountService API.
@@ -167,7 +170,7 @@ export const apiProduct2: APIProduct = {
 // The Email service API can be used to publish UserSignedUp events
 
 const apiName3: string = "EmailServiceApi";
-const apiSpec3: string = AsyncAPIHelper.loadYamlFileAsJsonString(`${scriptDir}/../resources/apis/email-service.yml`);
+const apiSpec3: string = AsyncAPIHelper.loadYamlFileAsJsonString(`${resourcesDirectory}/apis/email-service.yml`);
 
 /**
  * API product for the EmailService API.

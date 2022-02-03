@@ -5,12 +5,12 @@ import { PlatformAPIClient } from '../../lib/api.helpers';
 import type { App } from "../../lib/generated/openapi";
 import { ApiError, AppsService } from "../../lib/generated/openapi";
 
-import * as setup from './apps.test.setup';
+import * as setup from './common/test.setup';
 import {
   verifyAclProfile,
   verifyMessageQueue,
   verifyRestDeliveryPoint
-} from './apps.test.helpers';
+} from './common/test.helpers';
 
 const scriptName: string = path.basename(__filename);
 
