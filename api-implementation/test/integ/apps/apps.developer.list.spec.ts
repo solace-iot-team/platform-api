@@ -6,6 +6,7 @@ import type { App } from "../../lib/generated/openapi";
 import { ApiError, AppsService } from "../../lib/generated/openapi";
 
 import * as setup from './common/test.setup';
+import { PlatformAPIClient } from '../../lib/api.helpers';
 
 const scriptName: string = path.basename(__filename);
 
@@ -41,27 +42,29 @@ describe(scriptName, function () {
   const application2: App = {
     name: `${developerName1}-app2`,
     apiProducts: [setup.apiProduct1.name],
+    attributes: [{ name: "language", value: "EN" }],
     credentials: { expiresAt: -1 },
   }
 
   /** An application owned by developer #2. */
   const application3: App = {
     name: `${developerName2}-app3`,
-    apiProducts: [],
+    apiProducts: [setup.apiProduct1.name],
+    attributes: [{ name: "language", value: "EN,DE" }],
     credentials: { expiresAt: -1 },
   }
 
   /** An application owned by developer #2. */
   const application4: App = {
     name: `${developerName2}-app4`,
-    apiProducts: [setup.apiProduct2.name],
+    apiProducts: [setup.apiProduct2.name, setup.apiProduct3.name],
     credentials: { expiresAt: -1 },
   }
 
   /** An application owned by developer #2. */
   const application5: App = {
     name: `${developerName2}-app5`,
-    apiProducts: [setup.apiProduct2.name],
+    apiProducts: [setup.apiProduct1.name, setup.apiProduct2.name, setup.apiProduct3.name],
     credentials: { expiresAt: -1 },
   }
 
@@ -164,15 +167,15 @@ describe(scriptName, function () {
     );
   });
 
-  // after(async function () {
-  //   TestContext.newItId();
-  //   await Promise.all([
-  //     AppsService.deleteDeveloperApp({ ...appctx1, appName: application1.name }),
-  //     AppsService.deleteDeveloperApp({ ...appctx1, appName: application2.name }),
-  //     AppsService.deleteDeveloperApp({ ...appctx2, appName: application3.name }),
-  //     AppsService.deleteDeveloperApp({ ...appctx2, appName: application4.name }),
-  //     AppsService.deleteDeveloperApp({ ...appctx2, appName: application5.name }),
-  //   ]);
-  // });
+  it("should not return applications if the user is not authorized", async function () {
 
+    PlatformAPIClient.setManagementUser();
+
+    await AppsService.listDeveloperApps({ ...appctx1 }).then(() => {
+      expect.fail("unauthorized request was not rejected");
+    }, (reason) => {
+      expect(reason, `error=${reason.message}`).is.instanceof(ApiError);
+      expect(reason.status, `status is not correct`).to.be.oneOf([401]);
+    });
+  });
 });
