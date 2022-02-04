@@ -1,5 +1,40 @@
 # Release Notes
 
+## Version 0.3.4
+* OpenAPI: 0.6.5
+* API Management Connector Server: 0.3.4
+
+### Features
+* **Developer Apps Resource**
+  - Upon creating the app a developer object is auto created if it does not exist. Behaviour is now consistent with the `teams` resource
+* **API Products Resource**
+  - Added accessLevel property to API Product (enum one of internal, private, public). This is provided as a hint to Developer Portals if and to whom an API Product should be available.
+* **Lost Update Protection**
+  - All PATCH operations now return a 412 error if the `etag` presented in the `if-match` http header does not match the etag of the current state of the entity.
+  - The client is supposed to retrieve the current state of the entity, keep track of the `etag` HTTTP Header returned form the Connector and submit this `etag` when attempting to update (`PATCH`) the resource.
+  - Usage of this mechanism is optional to allow for backwards compatibility.
+* **Filter Parameter for GET resources**
+  - Added filtering mechanism to GET resources allowing for full text search of the resource's objects
+  - Applies to `GET` on `/{organization_name}/apis`, `/{organization_name}/apiProducts` and `/{organization_name}/apps` 
+  - Specify search terms to filter results, multiple search terms can be supplied. Search will return results matching any of the terms (OR). Enclose search terms in quotes to limit results to records matching ALL terms (AND).
+* **Operations**
+  - Allow for cloud tokens that do not provide access to Event Portal in case it is not licensed. Behaviou is as follows - if a specific token for Event Portal is provided it MUST be valid. If a single token is provided it MUST be valid for Solace Cloud Service API but is NOT validated against Event Portal UNLESS the connector is running in Event Portal Proxy Mode.
+  - The `organizations` resource now includes a status indicating the validity of the token for the back end Solace APIs.
+  - Logging includes the calling function and current request id (for HTTP request processing) when `NODE_ENV` environment variable is set to `development`.
+
+### Fixes
+* **App Resources**
+  - Swapped the permissions (publish/subscribe) in AppResponse(s) to be consistent with the associated AsyncAPI(s)
+  - Reject app POST or PATCH requests that contain duplicate entries in the apiProducts attribute
+* **App Provisioning**
+  - When webhooks were deleted the associated queue(s) in the PS+ brokers were not deleted
+  - Fixed app deletion errors that occurred if API Prtducts reference protocols not present in a specific environment
+  - In certain circumstances the resulting ACL on the broker was not a combination of all the app apis' topics. Now the ACL is generated is cumulative.
+  - Fixed issue which led to permissions (ACL exceptions) being applied to wrong environments
+  - Fixed issue when broker objects were not removed when a modified app resulted in environments being removed
+  - The connection URLs for JMS returned by Solace use `smf/smfs://` prefixes. These are now replaced with `tcp/tcps` as is the case for other protocols
+  - Fixed issue which led to removal of webhooks from all environments if a webhook for a specific environment was removed.
+  - Fixed validation when parts of the cloud token are missing (no tokens provided for either cloud or event portal) in a `PATCH` request to the `/organizations` resource
 
 ## Version 0.3.3
 * OpenAPI: 0.6.1
