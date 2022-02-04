@@ -17,8 +17,6 @@ const scriptName: string = path.basename(__filename);
 
 describe(scriptName, function () {
 
-  setup.setupSuite(this);
-
   const organizationName: string = setup.organizationName;
   const developerName: string = setup.developer1.userName;
 
@@ -29,6 +27,18 @@ describe(scriptName, function () {
     organizationName: organizationName,
     developerUsername: developerName,
   }
+
+  // HOOKS
+
+  setup.addBeforeHooks(this);
+
+  afterEach(async function () {
+    await AppsService.deleteDeveloperApp({ ...appctx, appName: applicationName });
+  });
+
+  setup.addAfterHooks(this);
+
+  // TESTS
 
   it("should update the display name", async function () {
 
@@ -273,10 +283,6 @@ describe(scriptName, function () {
 
     await verifyRestDeliveryPoint(setup.environment1, restDeliveryPointName, null);
     await verifyRestDeliveryPoint(setup.environment2, restDeliveryPointName, restDeliveryPoint);
-  });
-
-  afterEach(async function () {
-    await AppsService.deleteDeveloperApp({ ...appctx, appName: applicationName });
   });
 
 });

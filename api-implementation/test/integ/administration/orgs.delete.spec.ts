@@ -14,9 +14,19 @@ const scriptName: string = path.basename(__filename);
 
 describe(scriptName, function () {
 
-  setup.setupSuite(this);
-
   const organizationName: string = "organization";
+
+  // HOOKS
+
+  setup.addBeforeHooks(this);
+
+  afterEach(async function () {
+    await AdministrationService.deleteOrganization({ organizationName: organizationName }).catch(() => { });
+  });
+
+  setup.addAfterHooks(this);
+
+  // TESTS
 
   it("should delete an organization", async function () {
 
@@ -58,10 +68,6 @@ describe(scriptName, function () {
       expect(reason, `error=${reason.message}`).is.instanceof(ApiError);
       expect(reason.status, `status is not correct`).to.be.oneOf([404]);
     });
-  });
-
-  afterEach(async function () {
-    await AdministrationService.deleteOrganization({ organizationName: organizationName }).catch(() => { });
   });
 
 });

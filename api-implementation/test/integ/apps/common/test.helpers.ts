@@ -45,7 +45,7 @@ export type RestDeliveryPoint = {
 }
 
 /**
- * Create a developer profile with test values.
+ * Creates a developer profile with test values.
  * 
  * @param organizationName The organization name.
  * @param developerName The developer name.
@@ -65,7 +65,7 @@ export type RestDeliveryPoint = {
 }
 
 /**
- * Create a {@link RestDeliveryPoint} from a {@link WebHook}.
+ * Creates a {@link RestDeliveryPoint} from a {@link WebHook}.
  * 
  * @param webHook The web hook.
  * @return The expected REST delivery point configuration.
@@ -94,7 +94,7 @@ export function createRestDeliveryPointFromWebHook(webHook: WebHook): RestDelive
 }
 
 /**
- * Verify the event broker configuration for an ACL profile.
+ * Verifies the event broker configuration for an ACL profile.
  * 
  * @param environmentName The name of the environment.
  * @param aclProfileName The name of the ACL profile.
@@ -160,7 +160,7 @@ export async function verifyAclProfile(environment: Environment, aclProfileName:
 }
 
 /**
- * Verify the event broker configuration for a message queue.
+ * Verifies the event broker configuration for a message queue.
  * 
  * @param environmentName The name of the environment.
  * @param queueName The name of the message queue.
@@ -191,7 +191,7 @@ export async function verifyMessageQueue(environment: Environment, queueName: st
 }
 
 /**
- * Verify the event broker configuration for a REST delivery point.
+ * Verifies the event broker configuration for a REST delivery point.
  * 
  * @param environmentName The name of the environment.
  * @param restDeliveryPointName The name of the REST delivery point.

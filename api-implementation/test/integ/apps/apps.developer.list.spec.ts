@@ -12,8 +12,6 @@ const scriptName: string = path.basename(__filename);
 
 describe(scriptName, function () {
 
-  setup.setupSuite(this);
-
   const organizationName: string = setup.organizationName;
 
   const developerName1: string = setup.developer1.userName;
@@ -68,6 +66,10 @@ describe(scriptName, function () {
     credentials: { expiresAt: -1 },
   }
 
+  // HOOKS
+
+  setup.addBeforeHooks(this);
+
   before(async function () {
     TestContext.newItId();
     await Promise.all([
@@ -78,6 +80,21 @@ describe(scriptName, function () {
       AppsService.createDeveloperApp({ ...appctx2, requestBody: application5 }),
     ]);
   });
+
+  after(async function () {
+    TestContext.newItId();
+    await Promise.all([
+      AppsService.deleteDeveloperApp({ ...appctx1, appName: application1.name }),
+      AppsService.deleteDeveloperApp({ ...appctx1, appName: application2.name }),
+      AppsService.deleteDeveloperApp({ ...appctx2, appName: application3.name }),
+      AppsService.deleteDeveloperApp({ ...appctx2, appName: application4.name }),
+      AppsService.deleteDeveloperApp({ ...appctx2, appName: application5.name }),
+    ]);
+  });
+
+  setup.addAfterHooks(this);
+
+  // TESTS
 
   it("should return applications", async function () {
 
@@ -178,4 +195,5 @@ describe(scriptName, function () {
       expect(reason.status, `status is not correct`).to.be.oneOf([401]);
     });
   });
+
 });
