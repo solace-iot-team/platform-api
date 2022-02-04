@@ -10365,7 +10365,7 @@
 									"});",
 									"",
 									"pm.test(\"Body matches string\", function () {",
-									"    pm.expect(pm.response.text()).to.include(\"kermit\");",
+									"    pm.expect(pm.response.text()).to.include(\"viewer\");",
 									"});"
 								],
 								"type": "text/javascript"
@@ -10377,7 +10377,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n  \"name\": \"{{APP_NAME}}\",\n  \"internalName\": \"{{APP_NAME_INTERNAL}}\",    \n  \"displayName\": \"{{APP_NAME}}\",\n  \"expiresIn\": 0,\n  \"apiProducts\": [\n    \"{{API_NAME}}_PRODUCT2\",     \n    \"SayHelloSub_PRODUCTA\",\n    \"SayHelloPub_PRODUCTB\"\n  ],\n  \"credentials\": {\n    \"expiresAt\": -1,\n    \"issuedAt\": 0,\n    \"secret\": {\n      \"consumerKey\": \"{{CONSUMER_KEY}}\",\n      \"consumerSecret\": \"{{CONSUMER_SECRET}}\"\n    }\n  },\n  \"attributes\": [\n     {\n          \"name\": \"PORTAL.RBAC.ROLE\",\n          \"value\": \"kermit\"\n    }\n  ]\n}",
+							"raw": "{\n  \"name\": \"{{APP_NAME}}\",\n  \"internalName\": \"{{APP_NAME_INTERNAL}}\",    \n  \"displayName\": \"{{APP_NAME}}\",\n  \"expiresIn\": 0,\n  \"apiProducts\": [\n    \"{{API_NAME}}_PRODUCT2\",     \n    \"SayHelloSub_PRODUCTA\",\n    \"SayHelloPub_PRODUCTB\"\n  ],\n  \"credentials\": {\n    \"expiresAt\": -1,\n    \"issuedAt\": 0,\n    \"secret\": {\n      \"consumerKey\": \"{{CONSUMER_KEY}}\",\n      \"consumerSecret\": \"{{CONSUMER_SECRET}}\"\n    }\n  },\n  \"attributes\": [\n     {\n          \"name\": \"PORTAL.RBAC.ROLE\",\n          \"value\": \"viewer\"\n    }\n  ]\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -10414,6 +10414,7 @@
 									"    var jsonData = pm.response.json();",
 									"    pm.expect(jsonData.length).to.eql(1);",
 									"});",
+									"",
 									""
 								],
 								"type": "text/javascript"
@@ -10424,7 +10425,7 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{CONNECTOR_BASEURL}}/{{TENANT}}/apps?filter=\"PORTAL.RBAC.ROLE\" \"kerm\"",
+							"raw": "{{CONNECTOR_BASEURL}}/{{TENANT}}/apps?filter=\"PORTAL.RBAC.ROLE\" \"viewer\"",
 							"host": [
 								"{{CONNECTOR_BASEURL}}"
 							],
@@ -10435,7 +10436,50 @@
 							"query": [
 								{
 									"key": "filter",
-									"value": "\"PORTAL.RBAC.ROLE\" \"kerm\""
+									"value": "\"PORTAL.RBAC.ROLE\" \"viewer\""
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "No app with custom attribute admin",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status OK\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Check number of results\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.length).to.eql(0);",
+									"});",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{CONNECTOR_BASEURL}}/{{TENANT}}/apps?filter=\"PORTAL.RBAC.ROLE\" \"admin\"",
+							"host": [
+								"{{CONNECTOR_BASEURL}}"
+							],
+							"path": [
+								"{{TENANT}}",
+								"apps"
+							],
+							"query": [
+								{
+									"key": "filter",
+									"value": "\"PORTAL.RBAC.ROLE\" \"admin\""
 								}
 							]
 						}
