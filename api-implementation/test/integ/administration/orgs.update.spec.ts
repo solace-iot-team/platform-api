@@ -15,9 +15,19 @@ const scriptName: string = path.basename(__filename);
 
 describe(scriptName, function () {
 
-  setup.setupSuite(this);
-
   const organizationName: string = "organization";
+
+  // HOOKS
+
+  setup.addBeforeHooks(this);
+
+  afterEach(async function () {
+    await AdministrationService.deleteOrganization({ organizationName: organizationName }).catch(() => { });
+  });
+
+  setup.addAfterHooks(this);
+
+  // TESTS
 
   it("should update the cloud token for an organization", async function () {
 
@@ -40,7 +50,7 @@ describe(scriptName, function () {
       expect(reason, `error=${reason.message}`).is.instanceof(ApiError);
       expect.fail(`failed to update organization; error="${reason.body.message}"`);
     });
-  
+
     expect(response, "cloud-token is not set").to.have.property("cloud-token").that.is.a("string").that.is.not.empty;
   });
 
@@ -102,10 +112,6 @@ describe(scriptName, function () {
       expect(reason, `error=${reason.message}`).is.instanceof(ApiError);
       expect(reason.status, `status is not correct`).to.be.oneOf([400]);
     });
-  });
-
-  afterEach(async function () {
-    await AdministrationService.deleteOrganization({ organizationName: organizationName }).catch(() => { });
   });
 
 });

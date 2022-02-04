@@ -4,6 +4,7 @@ import { PlatformAPIClient } from '../../../lib/api.helpers';
 import {
   getMandatoryEnvVarValue,
   TestContext,
+  TestLogger,
 } from "../../../lib/test.helpers";
 
 const scriptName: string = path.basename(__filename);
@@ -28,20 +29,40 @@ export const solaceEventPortalBaseUrl: string = env.solaceEventPortalBaseUrl;
 export const solaceEventPortalToken: string = env.solaceEventPortalToken;
 
 /**
- * Setup a test suite for administration service tests.
+ * Registers `before()` and `beforeEach()` hooks for an administration service test suite.
  * 
- * This method adds `beforeEach()` and `afterEach()` hooks.
+ * The `before()` hook logs a ">>> Start to execute test cases" message and all environment
+ * variables that are used.
  * 
  * The `beforeEach()` hook generates a new identifier for the {@link TestContext} and
- * configures the {@link PlatformAPIClient} to use the management user.
+ * configures the {@link PlatformAPIClient} to use the API user.
  * 
- * The `afterEach()` hook configures the {@link PlatformAPIClient} to use the management user.
+ * **Important:**
  * 
- * @param suite The test suite.
+ * If the title of the parent test suite matches the start of the title of the administration
+ * service test suite, the hooks will be registered for the parent test suite instead.
+ * 
+ * This improves the test execution time when administration service tests from multiple test
+ * suites are executed.
+ * 
+ * @param suite The administration service test suite.
  */
- export function setupSuite(suite: Suite) {
+ export function addBeforeHooks(suite: Suite) {
+
+  const parent = suite.parent;
+
+  if (parent.title && suite.title.startsWith(parent.title)) {
+    if (parent.ctx["BeforeHooks"]) { return; }
+    suite = parent;
+    parent.ctx["BeforeHooks"] = true;
+  }
+
+  suite.beforeAll(async () => {
+    TestLogger.logMessage(suite.title, ">>> Start to execute test cases ...");
+    TestLogger.logTestEnv(suite.title, env);
+  });
+
   suite.beforeEach(beforeEach);
-  suite.afterEach(afterEach);
 }
 
 /** beforeEach hook for a test suite */
@@ -49,6 +70,40 @@ function beforeEach() {
   TestContext.newItId();
   PlatformAPIClient.setManagementUser();
 };
+
+/**
+ * Registers `afterEach()` and `after()` hooks for an application service test suite.
+ * 
+ * The `afterEach()` hook configures the {@link PlatformAPIClient} to use the API user.
+ * 
+ * The `after()` hook logs a ">>> Finished" message.
+ * 
+ * **Important:**
+ * 
+ * If the title of the parent test suite matches the start of the title of the application
+ * service test suite, the hooks will be registered for the parent test suite instead.
+ * 
+ * This improves the test execution time when application service tests from multiple test
+ * suites are executed.
+ * 
+ * @param suite The application service test suite.
+ */
+ export function addAfterHooks(suite: Suite) {
+
+  const parent = suite.parent;
+
+  if (parent.title && suite.title.startsWith(parent.title)) {
+    if (parent.ctx["AfterHooks"]) { return; }
+    suite = parent;
+    parent.ctx["AfterHooks"] = true;
+  }
+
+  suite.afterEach(afterEach);
+
+  suite.afterAll(async () => {
+    TestLogger.logMessage(suite.title, ">>> Finished");
+  });
+}
 
 /** afterEach hook for a test suite */
 function afterEach() {
