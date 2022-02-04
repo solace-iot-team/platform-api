@@ -228,11 +228,11 @@ export const webHook2: WebHook = {
 export let environmentDetails: Map<string, EnvironmentResponse> = new Map<string, EnvironmentResponse>();
 
 /**
- * Setup a test suite for application service tests.
+ * Registers `before()` and `beforeEach()` hooks for an application service test suite.
  * 
- * This method adds `before()`, `beforeEach()`, `afterEach()` and `after()` hooks.
+ * The `before()` hook logs a ">>> Start to execute test cases" message and all environment
+ * variables that are used, and creates the following resources:
  * 
- * The `before()` hook creates:
  * - The {@link organization}
  * - The developers {@link developer1} and {@link developer2}
  * - The environments {@link environment1} and {@link environment2}
@@ -241,26 +241,39 @@ export let environmentDetails: Map<string, EnvironmentResponse> = new Map<string
  * The `beforeEach()` hook generates a new identifier for the {@link TestContext} and
  * configures the {@link PlatformAPIClient} to use the API user.
  * 
- * The `afterEach()` hook configures the {@link PlatformAPIClient} to use the API user.
+ * **Important:**
  * 
- * The `after()` hook deletes the {@link organization} (and all artifacts that are part of).
+ * If the title of the parent test suite matches the start of the title of the application
+ * service test suite, the hooks will be registered for the parent test suite instead.
  * 
- * @param suite The test suite.
+ * This improves the test execution time when application service tests from multiple test
+ * suites are executed.
+ * 
+ * @param suite The application service test suite.
  */
- export function setupSuite(suite: Suite) {
-  suite.beforeAll(before);
+ export function addBeforeHooks(suite: Suite) {
+
+  const parent = suite.parent;
+
+  if (parent.title && suite.title.startsWith(parent.title)) {
+    if (parent.ctx["BeforeHooks"]) { return; }
+    suite = parent;
+    parent.ctx["BeforeHooks"] = true;
+  }
+
+  suite.beforeAll(async () => {
+    TestLogger.logMessage(suite.title, ">>> Start to execute test cases ...");
+    TestLogger.logTestEnv(suite.title, env);
+    await before();
+  });
+
   suite.beforeEach(beforeEach);
-  suite.afterEach(afterEach);
-  suite.afterAll(after);
 }
 
 /** before hook for a test suite */
 async function before() {
 
   TestContext.newItId();
-
-  TestLogger.logMessage(scriptName, ">>> Start to execute test cases ...");
-  TestLogger.logTestEnv(scriptName, env);
 
   PlatformAPIClient.setManagementUser();
   await AdministrationService.createOrganization({ requestBody: organization });
@@ -307,6 +320,42 @@ function beforeEach() {
   PlatformAPIClient.setApiUser();
 };
 
+/**
+ * Registers `afterEach()` and `after()` hooks for an application service test suite.
+ * 
+ * The `afterEach()` hook configures the {@link PlatformAPIClient} to use the API user.
+ * 
+ * The `after()` hook deletes the {@link organization} (and all resources that are part of
+ * it) and logs a ">>> Finished" message.
+ * 
+ * **Important:**
+ * 
+ * If the title of the parent test suite matches the start of the title of the application
+ * service test suite, the hooks will be registered for the parent test suite instead.
+ * 
+ * This improves the test execution time when application service tests from multiple test
+ * suites are executed.
+ * 
+ * @param suite The application service test suite.
+ */
+ export function addAfterHooks(suite: Suite) {
+
+  const parent = suite.parent;
+
+  if (parent.title && suite.title.startsWith(parent.title)) {
+    if (parent.ctx["AfterHooks"]) { return; }
+    suite = parent;
+    parent.ctx["AfterHooks"] = true;
+  }
+
+  suite.afterEach(afterEach);
+
+  suite.afterAll(async () => {
+    await after();
+    TestLogger.logMessage(suite.title, ">>> Finished");
+  });
+}
+
 /** afterEach hook for a test suite */
 function afterEach() {
   PlatformAPIClient.setApiUser();
@@ -318,5 +367,4 @@ async function after() {
   await AdministrationService.deleteOrganization({ organizationName: organizationName }).catch(() => {
     // ignore
   });
-  TestLogger.logMessage(scriptName, ">>> Finished");
 };

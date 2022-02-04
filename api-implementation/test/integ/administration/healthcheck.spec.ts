@@ -16,6 +16,8 @@ describe(scriptName, function () {
   let databaseIsHealthyStub: sinon.SinonStub;
   let fetchStub: sinon.SinonStub;
 
+  // HOOKS
+
   before(function () {
     databaseIsHealthyStub = sinon.stub(databaseaccess, "isHealthy");
     fetchStub = sinon.stub(fetch, "default");
@@ -27,6 +29,13 @@ describe(scriptName, function () {
     fetchStub.reset();
     fetchStub.callThrough();
   });
+
+  after(function () {
+    databaseIsHealthyStub.restore();
+    fetchStub.restore();
+  });
+
+  // TESTS
 
   it("should return 'ok' if the server is healthy", async function () {
 
@@ -60,11 +69,6 @@ describe(scriptName, function () {
       expect(reason, `error=${reason.message}`).is.instanceof(ApiError);
       expect(reason.status, `status is not correct`).to.be.oneOf([503]);
     });
-  });
-
-  after(function () {
-    databaseIsHealthyStub.restore();
-    fetchStub.restore();
   });
 
 });

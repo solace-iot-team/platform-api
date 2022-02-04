@@ -15,8 +15,6 @@ const scriptName: string = path.basename(__filename);
 
 describe(scriptName, function () {
 
-  setup.setupSuite(this);
-
   const organization1: Organization = {
     name: "organization1",
   }
@@ -34,6 +32,10 @@ describe(scriptName, function () {
     },
   }
 
+  // HOOKS
+
+  setup.addBeforeHooks(this);
+
   before(async function () {
     TestContext.newItId();
     PlatformAPIClient.setManagementUser();
@@ -43,6 +45,19 @@ describe(scriptName, function () {
       AdministrationService.createOrganization({ requestBody: organization3 }),
     ]);
   });
+
+  after(async function () {
+    TestContext.newItId();
+    await Promise.all([
+      AdministrationService.deleteOrganization({ organizationName: organization1.name }),
+      AdministrationService.deleteOrganization({ organizationName: organization2.name }),
+      AdministrationService.deleteOrganization({ organizationName: organization3.name }),
+    ]);
+  });
+
+  setup.addAfterHooks(this);
+
+  // TESTS
 
   it("should return an organization with name only", async function () {
 
@@ -106,15 +121,6 @@ describe(scriptName, function () {
       expect(reason, `error=${reason.message}`).is.instanceof(ApiError);
       expect(reason.status, `status is not correct`).to.be.oneOf([404]);
     });
-  });
-
-  after(async function() {
-    TestContext.newItId();
-    await Promise.all([
-      AdministrationService.deleteOrganization({ organizationName: organization1.name }),
-      AdministrationService.deleteOrganization({ organizationName: organization2.name }),
-      AdministrationService.deleteOrganization({ organizationName: organization3.name }),
-    ]);
   });
 
 });

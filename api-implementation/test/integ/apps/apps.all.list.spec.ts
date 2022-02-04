@@ -12,8 +12,6 @@ const scriptName: string = path.basename(__filename);
 
 describe(scriptName, function () {
 
-  setup.setupSuite(this);
-
   const organizationName: string = setup.organizationName;
   const developerName: string = setup.developer1.userName;
 
@@ -24,11 +22,11 @@ describe(scriptName, function () {
   }
 
   /**
-   * An application owned by {@link setup.developer1}.
+   * An application owned by {@link setup.developer1 developer1}.
    * 
    * Application details:
    * - Name: <{@link developerName}>-app1
-   * - API Products: {@link setup.apiProduct1}
+   * - API Products: {@link setup.apiProduct1 apiProduct1}
    * - Attibutes:
    *   + language: DE,EN
    */
@@ -40,11 +38,11 @@ describe(scriptName, function () {
   }
 
   /**
-   * An application owned by {@link setup.developer1}.
+   * An application owned by {@link setup.developer1 developer1}.
    * 
    * Application details:
    * - Name: <{@link developerName}>-app2
-   * - API Products: {@link setup.apiProduct2} and {@link setup.apiProduct3}
+   * - API Products: {@link setup.apiProduct2 apiProduct2} and {@link setup.apiProduct3 apiProduct3}
    * - Attibutes: none
    */
   const application2: App = {
@@ -54,11 +52,11 @@ describe(scriptName, function () {
   }
 
   /**
-   * An application owned by {@link setup.developer1}.
+   * An application owned by {@link setup.developer1 developer1}.
    * 
    * Application details:
    * - Name: <{@link developerName}>-app3
-   * - API Products: {@link setup.apiProduct1}, {@link setup.apiProduct2} and {@link setup.apiProduct3}
+   * - API Products: {@link setup.apiProduct1 apiProduct1}, {@link setup.apiProduct2 apiProduct2} and {@link setup.apiProduct3 apiProduct3}
    * - Attibutes:
    *   + language: EN
    */
@@ -69,6 +67,10 @@ describe(scriptName, function () {
     credentials: { expiresAt: -1 },
   }
 
+  // HOOKS
+
+  setup.addBeforeHooks(this);
+
   before(async function () {
     TestContext.newItId();
     await Promise.all([
@@ -77,6 +79,19 @@ describe(scriptName, function () {
       AppsService.createDeveloperApp({ ...appctx1, requestBody: application3 }),
     ]);
   });
+
+  after(async function () {
+    TestContext.newItId();
+    await Promise.all([
+      AppsService.deleteDeveloperApp({ ...appctx1, appName: application1.name }),
+      AppsService.deleteDeveloperApp({ ...appctx1, appName: application2.name }),
+      AppsService.deleteDeveloperApp({ ...appctx1, appName: application3.name }),
+    ]);
+  })
+
+  setup.addAfterHooks(this);
+
+  // TESTS
 
   it("should return applications", async function () {
 
@@ -90,7 +105,7 @@ describe(scriptName, function () {
     expect(apps.length, "number of returned applications is incorrect").to.be.equals(applicationList.length);
 
     applicationList.forEach(application => {
-  
+
       const app = apps.find(app => app.name == application.name);
 
       expect(app, `application '${application.name}' is missing`).is.not.undefined;
@@ -168,19 +183,22 @@ describe(scriptName, function () {
       expect(reason.status, `status is not correct`).to.be.oneOf([401]);
     });
   });
+
+  // HELPER
+
+  const checkAppListWithFilter = async (organizationName: string, filter: string, applicationNames: Array<string>): Promise<void> => {
+
+    const response = await AppsService.listApps({ organizationName: organizationName, filter: filter }).catch((reason) => {
+      expect(reason, `error=${reason.message}`).is.instanceof(ApiError);
+      expect.fail(`failed to list applications; error="${reason.body.message}"`);
+    });
+
+    expect(response.length, "number of returned applications is incorrect").to.be.equals(applicationNames.length);
+
+    let appNames: Array<string> = []
+    response.forEach(app => appNames.push(app.name));
+
+    expect(appNames, "list of applications is incorrect").to.have.members(applicationNames);
+  }
+
 });
-
-const checkAppListWithFilter = async (organizationName: string, filter: string, applicationNames: Array<string>): Promise<void> => {
-
-  const response = await AppsService.listApps({ organizationName: organizationName, filter: filter }).catch((reason) => {
-    expect(reason, `error=${reason.message}`).is.instanceof(ApiError);
-    expect.fail(`failed to list applications; error="${reason.body.message}"`);
-  });
-
-  expect(response.length, "number of returned applications is incorrect").to.be.equals(applicationNames.length);
-
-  let appNames: Array<string> = []
-  response.forEach(app => appNames.push(app.name));
-
-  expect(appNames, "list of applications is incorrect").to.have.members(applicationNames);
-}

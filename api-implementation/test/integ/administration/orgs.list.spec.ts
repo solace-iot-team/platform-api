@@ -15,8 +15,6 @@ const scriptName: string = path.basename(__filename);
 
 describe(scriptName, function () {
 
-  setup.setupSuite(this);
-
   const organization1: Organization = {
     name: "organization1",
   }
@@ -34,6 +32,10 @@ describe(scriptName, function () {
     },
   }
 
+  // HOOKS
+
+  setup.addBeforeHooks(this);
+
   before(async function () {
     TestContext.newItId();
     PlatformAPIClient.setManagementUser();
@@ -43,6 +45,19 @@ describe(scriptName, function () {
       AdministrationService.createOrganization({ requestBody: organization3 }),
     ]);
   });
+
+  after(async function () {
+    TestContext.newItId();
+    await Promise.all([
+      AdministrationService.deleteOrganization({ organizationName: organization1.name }),
+      AdministrationService.deleteOrganization({ organizationName: organization2.name }),
+      AdministrationService.deleteOrganization({ organizationName: organization3.name }),
+    ]);
+  });
+
+  setup.addAfterHooks(this);
+
+  // TESTS
 
   it("should return organizations", async function () {
 
@@ -61,7 +76,7 @@ describe(scriptName, function () {
       organization2.name,
       organization3.name,
     ]);
-  
+
     const org1 = response[orgNames.indexOf(organization1.name)];
     expect(org1, "1st organization is incorrect").to.not.have.property('cloud-token');
 
@@ -74,7 +89,7 @@ describe(scriptName, function () {
 
   it("should return organizations for page #1", async function () {
 
-    const response = await AdministrationService.listOrganizations({ pageSize: 2 , pageNumber: 1 }).catch((reason) => {
+    const response = await AdministrationService.listOrganizations({ pageSize: 2, pageNumber: 1 }).catch((reason) => {
       expect(reason, `error=${reason.message}`).is.instanceof(ApiError);
       expect.fail(`failed to list organizations; error="${reason.body.message}"`);
     });
@@ -84,7 +99,7 @@ describe(scriptName, function () {
 
   it("should return organizations for page #2", async function () {
 
-    const response = await AdministrationService.listOrganizations({ pageSize: 2 , pageNumber: 2 }).catch((reason) => {
+    const response = await AdministrationService.listOrganizations({ pageSize: 2, pageNumber: 2 }).catch((reason) => {
       expect(reason, `error=${reason.message}`).is.instanceof(ApiError);
       expect.fail(`failed to list organizations; error="${reason.body.message}"`);
     });
@@ -136,15 +151,6 @@ describe(scriptName, function () {
       expect(reason, `error=${reason.message}`).is.instanceof(ApiError);
       expect(reason.status, `status is not correct`).to.be.oneOf([401]);
     });
-  });
-
-  after(async function() {
-    TestContext.newItId();
-    await Promise.all([
-      AdministrationService.deleteOrganization({ organizationName: organization1.name }),
-      AdministrationService.deleteOrganization({ organizationName: organization2.name }),
-      AdministrationService.deleteOrganization({ organizationName: organization3.name }),
-    ]);
   });
 
 });
