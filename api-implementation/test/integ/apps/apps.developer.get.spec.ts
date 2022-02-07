@@ -1,9 +1,18 @@
 import 'mocha';
 import { expect } from 'chai';
 import path from 'path';
-import { TestContext } from "../../lib/test.helpers";
-import { App, AppStatus, WebHook } from "../../lib/generated/openapi";
-import { ApiError, AppsService } from "../../lib/generated/openapi";
+import type {
+  App,
+  AppEnvironment,
+  CommonName,
+  Endpoint
+} from "../../lib/generated/openapi";
+import {
+  ApiError,
+  AppStatus,
+  AppsService,
+  Protocol
+} from "../../lib/generated/openapi";
 
 import * as setup from './common/test.setup';
 import { PlatformAPIClient } from '../../lib/api.helpers';
@@ -70,7 +79,7 @@ describe(scriptName, function () {
 
     const application: App = {
       name: applicationName,
-      apiProducts: [setup.apiProduct1.name, setup.apiProduct2.name, setup.apiProduct3.name],
+      apiProducts: [setup.apiProduct1.name, setup.apiProduct2.name],
       credentials: { expiresAt: -1 },
     }
 
@@ -102,6 +111,48 @@ describe(scriptName, function () {
       setup.environment1.name,
       setup.environment2.name,
     ]);
+
+    let environment: AppEnvironment;
+
+    // Check messaging protocols and permissions for environment #1
+
+    environment = environments[envNames.indexOf(setup.environment1.name)];
+    expect(environment.messagingProtocols, `protocols are not correct for ${environment.name}`).to.have.deep.members([
+      getMessagingProtocol(environment.name, Protocol.name.MQTT, "3.1.1"),
+      getMessagingProtocol(environment.name, Protocol.name.HTTP, "1.1"),
+    ]);
+    expect(environment.permissions, `permissions are not correct for ${environment.name}`).to.deep.include({
+      subscribe: [{
+        "say/hello/{language}": {
+          isChannel: true,
+          permissions: ["say/hello/EN", "say/hello/DE"],
+        }
+      }],
+      publish: [{
+        "say/hello/{language}": {
+          isChannel: true,
+          permissions: ["say/hello/EN", "say/hello/DE"],
+        }
+      }],
+    });
+
+    // Check messaging protocols and permissions for environment #2
+
+    environment = environments[envNames.indexOf(setup.environment2.name)];
+    expect(environment.messagingProtocols, `protocols are not correct for ${environment.name}`).to.have.deep.members([
+      getMessagingProtocol(environment.name, Protocol.name.MQTT, "3.1.1"),
+      getMessagingProtocol(environment.name, Protocol.name.HTTP, "1.1"),
+    ]);
+    expect(environment.permissions, `permissions are not correct for ${environment.name}`).to.deep.include({
+      subscribe: [{
+        "user/signedup": {
+          isChannel: true,
+          permissions: ["user/signedup"],
+        }
+      }],
+      publish: [],
+    });
+
   });
 
   it("should return an application with API product and web hook", async function () {
@@ -141,6 +192,31 @@ describe(scriptName, function () {
     environments.forEach(env => envNames.push(env.name));
 
     expect(envNames, "list of environment names is incorrect").to.have.members([setup.environment1.name]);
+
+    let environment: AppEnvironment;
+
+    // Check messaging protocols and permissions for environment #1
+
+    environment = environments[envNames.indexOf(setup.environment1.name)];
+    expect(environment.messagingProtocols, `protocols are not correct for ${environment.name}`).to.have.deep.members([
+      getMessagingProtocol(environment.name, Protocol.name.MQTT, "3.1.1"),
+      getMessagingProtocol(environment.name, Protocol.name.HTTP, "1.1"),
+    ]);
+    expect(environment.permissions, `permissions are not correct for ${environment.name}`).to.deep.include({
+      subscribe: [{
+        "say/hello/{language}": {
+          isChannel: true,
+          permissions: ["say/hello/EN"],
+        }
+      }],
+      publish: [{
+        "say/hello/{language}": {
+          isChannel: true,
+          permissions: ["say/hello/EN"],
+        }
+      }],
+    });
+
   });
 
   it("should not return an application if the user is not authorized", async function () {
@@ -172,5 +248,15 @@ describe(scriptName, function () {
       expect(reason.status, `status is not correct`).to.be.oneOf([404]);
     });
   });
+
+  // HELPER
+
+  const getMessagingProtocol = (environmentName: string, name: Protocol.name, version: CommonName): Endpoint => {
+
+    const details = setup.environmentDetails.get(environmentName);
+    return details?.messagingProtocols.find(ep => {
+      return ep.protocol.name === name && ep.protocol.version === version
+    });
+  }
 
 });
