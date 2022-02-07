@@ -58,12 +58,12 @@ describe(scriptName, function () {
    * - Name: <{@link developerName}>-app3
    * - API Products: {@link setup.apiProduct1 apiProduct1}, {@link setup.apiProduct2 apiProduct2} and {@link setup.apiProduct3 apiProduct3}
    * - Attibutes:
-   *   + language: EN
+   *   + language: DE
    */
   const application3: App = {
     name: `${developerName}-app3`,
     apiProducts: [setup.apiProduct1.name, setup.apiProduct2.name, setup.apiProduct3.name],
-    attributes: [{ name: "language", value: "EN" }],
+    attributes: [{ name: "language", value: "DE" }],
     credentials: { expiresAt: -1 },
   }
 
@@ -147,8 +147,8 @@ describe(scriptName, function () {
 
   it("should return applications with filter: match a phrase", async function () {
 
-    // Search: applications that have an attribute with 'DE,EN' as values
-    // Result: application2
+    // Search: applications that have an attribute with 'DE,EN' as value
+    // Result: application1
 
     // Note: The comma is used as delimiter for tokenization. When searching for
     //       something like 'DE,EN', the phrase must be put in quotes. Otherwise,
@@ -167,6 +167,24 @@ describe(scriptName, function () {
     // Result: application1
 
     const filter = `${setup.apiProduct1.name} -${setup.apiProduct2.name}`;
+    const applicationNames = [application1.name];
+
+    await checkAppListWithFilter(organizationName, filter, applicationNames);
+  });
+
+  it("should return applications with filter: match all terms", async function () {
+
+    // Search: applications that have a 'language' attribute with 'EN' as value
+    // Result: application1
+
+    // Note: When using a filter with multiple terms in double quotes, the service
+    //       does NOT return all applications that contain both terms. Instead,
+    //       the service will return all applications that match at least one term
+    //       exactly and that match all other terms partially (e.g., the term "api"
+    //       or "prod" match the term "apiProduct" partially).
+    //       It is NOT possible to search for an exact match of two or more terms!
+
+    const filter = `"language" "EN"`;
     const applicationNames = [application1.name];
 
     await checkAppListWithFilter(organizationName, filter, applicationNames);
