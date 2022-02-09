@@ -138,9 +138,9 @@ export class ApisService {
 
   createInternal(info: APIInfo, asyncapi: string): Promise<string> {
     return new Promise<string>(async (resolve, reject) => {
-      const isValid = await this.isValidSpec(asyncapi);
-      if (!isValid) {
-        reject(new ErrorResponseInternal(400, `Entity ${info.name} is not valid`));
+      const validationMessage = await this.getAPIValidationError(asyncapi);
+      if (validationMessage) {
+        reject(new ErrorResponseInternal(400, `Entity ${info.name} is not valid, ${validationMessage}`));
       } else {
         const spec: APISpecification = {
           name: info.name,
@@ -177,10 +177,10 @@ export class ApisService {
   updateInternal(info: APIInfo, body: string): Promise<string> {
     return new Promise<string>(async (resolve, reject) => {
       try {
-        const isValid = await this.isValidSpec(body);
-        if (!isValid) {
+        const validationMessage = await this.getAPIValidationError(body);
+        if (validationMessage) {
           reject(
-            new ErrorResponseInternal(400, `AsyncAPI document is not valid`)
+            new ErrorResponseInternal(400, `AsyncAPI document is not valid, ${validationMessage}`)
           );
         } else {
           const spec: APISpecification = {
@@ -224,18 +224,18 @@ export class ApisService {
     }
   }
 
-  private async isValidSpec(spec: string): Promise<boolean> {
-    return new Promise<boolean>((resolve, reject) => {
+  private async getAPIValidationError(spec: string): Promise<String> {
+    return new Promise<String>((resolve, reject) => {
       L.debug(`validating spec`);
       parser
         .parse(spec)
         .then((d: AsyncAPIDocument) => {
           L.debug('valid spec');
-          resolve(true);
+          resolve(null);
         })
         .catch((e) => {
           L.debug(`invalid spec ${JSON.stringify(e)}`);
-          resolve(false);
+          resolve(`${e.title}, ${e.detail}`);
         });
     });
   }
