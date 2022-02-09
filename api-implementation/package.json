@@ -42,7 +42,7 @@
   ],
   "license": "MIT",
   "dependencies": {
-    "@asyncapi/parser": "^1.1.1",
+    "@asyncapi/parser": "^1.14.1",
     "@godaddy/terminus": "^4.9.0",
     "@types/jsonpath": "^0.2.0",
     "@types/passport": "^1.0.6",
