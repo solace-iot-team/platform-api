@@ -108,7 +108,7 @@ export class OrganizationsService {
         return org;
       } else {
         throw (
-          new ErrorResponseInternal(400, `Invalid cloud token provided`)
+          new ErrorResponseInternal(400, `Invalid cloud or event portal token provided`)
         );
       }
     }
@@ -128,7 +128,12 @@ export class OrganizationsService {
         if (!body[ContextConstants.CLOUD_TOKEN].cloud.token) {
           body[ContextConstants.CLOUD_TOKEN].cloud.token = orgInDb[ContextConstants.CLOUD_TOKEN].cloud.token;
         }
-        if (!body[ContextConstants.CLOUD_TOKEN].eventPortal.token) {
+        if (
+          body[ContextConstants.CLOUD_TOKEN].eventPortal
+          && !body[ContextConstants.CLOUD_TOKEN].eventPortal.token
+          && orgInDb[ContextConstants.CLOUD_TOKEN]
+          && orgInDb[ContextConstants.CLOUD_TOKEN].eventPortal
+          && orgInDb[ContextConstants.CLOUD_TOKEN].eventPortal.token) {
           body[ContextConstants.CLOUD_TOKEN].eventPortal.token = orgInDb[ContextConstants.CLOUD_TOKEN].eventPortal.token;
         }
       }
@@ -163,7 +168,11 @@ export class OrganizationsService {
         }
       } else {
         const isServiceToken: boolean = await SolaceCloudFacade.validate(token.cloud.token, token.cloud.baseUrl);
-        const isPortalToken: boolean = await EventPortalFacade.validate(token.eventPortal.token, token.eventPortal.baseUrl);
+        let isPortalToken: boolean = true;
+        if (token.eventPortal.token) {
+
+          isPortalToken = await EventPortalFacade.validate(token.eventPortal.token, token.eventPortal.baseUrl);
+        }
         return isServiceToken && isPortalToken;
       }
 
