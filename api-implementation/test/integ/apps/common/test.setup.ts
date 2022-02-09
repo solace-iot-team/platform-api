@@ -8,9 +8,8 @@ import {
 } from "../../../lib/test.helpers";
 import { PlatformAPIClient } from '../../../lib/api.helpers';
 import { SolaceCloudClientFactory } from '../../../lib/broker.helpers';
-import {
+import type {
   Developer,
-  DevelopersService,
   Environment,
   EnvironmentResponse,
   Organization,
@@ -20,6 +19,8 @@ import {
   APIProduct,
   ApiProductsService,
   ApisService,
+  ClientOptionsGuaranteedMessaging,
+  DevelopersService,
   EnvironmentsService,
   Protocol,
   WebHook,
@@ -70,7 +71,7 @@ export const developer2: Developer = {
 
 /**
  * The 1st test environment.
- * - Protocols: MQTT 3.1.1 and HTTP 1.1
+ * - Protocols: MQTT 3.1.1, HTTP 1.1 and JMS 1.1
  */
 export const environment1: Environment = {
   name: "TestEnvironment1",
@@ -84,13 +85,17 @@ export const environment1: Environment = {
     {
       name: Protocol.name.HTTP,
       version: "1.1"
+    },
+    {
+      name: Protocol.name.JMS,
+      version: "1.1"
     }
   ],
 }
 
 /**
  * The 2nd test environment.
- * - Protocols: MQTT 3.1.1 and HTTP 1.1
+ * - Protocols: MQTT 3.1.1, HTTP 1.1 and JMS 1.1
  */
 export const environment2: Environment = {
   name: "TestEnvironment2",
@@ -104,14 +109,19 @@ export const environment2: Environment = {
     {
       name: Protocol.name.HTTP,
       version: "1.1"
+    },
+    {
+      name: Protocol.name.JMS,
+      version: "1.1"
     }
   ],
 }
 
-// The SayHello API can be used to consume or publish SayHello events 
+/** API name for SayHello API. */
+export const apiName1: string = "SayHelloApi";
 
-const apiName1: string = "SayHelloApi";
-const apiSpec1: string = AsyncAPIHelper.loadYamlFileAsJsonString(`${resourcesDirectory}/apis/say-hello.yml`);
+/** API spec for SayHello API. */
+export const apiSpec1: string = AsyncAPIHelper.loadYamlFileAsJsonString(`${resourcesDirectory}/apis/say-hello.yml`);
 
 /**
  * API product for the SayHello API.
@@ -124,7 +134,8 @@ const apiSpec1: string = AsyncAPIHelper.loadYamlFileAsJsonString(`${resourcesDir
  * - Environment: {@link environment1}
  * - Protocols: MQTT 3.1.1 and HTTP 1.1
  * - Approval type: auto
- * - Attributes: (language: EN,DE)
+ * - Attributes:
+ *   + language: EN,DE
  */
 export const apiProduct1: APIProduct = {
   name: "ApiProduct1",
@@ -133,15 +144,20 @@ export const apiProduct1: APIProduct = {
   approvalType: APIProduct.approvalType.AUTO,
   attributes: [{ name: "language", value: "EN,DE" }],
   environments: [environment1.name],
-  protocols: [{ name: Protocol.name.MQTT, version: '3.1.1' }, { name: Protocol.name.HTTP, version: '1.1' }],
+  protocols: [{
+    name: Protocol.name.MQTT, version: '3.1.1'
+  }, {
+    name: Protocol.name.HTTP, version: '1.1'
+  }],
   pubResources: [],
   subResources: [],
 }
 
-// The Account service API can be used to consume UserSignedUp events
+/** API name for AccountService API. */
+export const apiName2: string = "AccountServiceApi";
 
-const apiName2: string = "AccountServiceApi";
-const apiSpec2: string = AsyncAPIHelper.loadYamlFileAsJsonString(`${resourcesDirectory}/apis/account-service.yml`);
+/** API spec for AccountService API. */
+export const apiSpec2: string = AsyncAPIHelper.loadYamlFileAsJsonString(`${resourcesDirectory}/apis/account-service.yml`);
 
 /**
  * API product for the AccountService API.
@@ -167,10 +183,11 @@ export const apiProduct2: APIProduct = {
   subResources: [],
 }
 
-// The Email service API can be used to publish UserSignedUp events
+/** API name for EmailService API. */
+export const apiName3: string = "EmailServiceApi";
 
-const apiName3: string = "EmailServiceApi";
-const apiSpec3: string = AsyncAPIHelper.loadYamlFileAsJsonString(`${resourcesDirectory}/apis/email-service.yml`);
+/** API spec for EmailService API. */
+export const apiSpec3: string = AsyncAPIHelper.loadYamlFileAsJsonString(`${resourcesDirectory}/apis/email-service.yml`);
 
 /**
  * API product for the EmailService API.
@@ -194,6 +211,52 @@ export const apiProduct3: APIProduct = {
   protocols: [{ name: Protocol.name.MQTT, version: '3.1.1' }, { name: Protocol.name.HTTP, version: '1.1' }],
   pubResources: [],
   subResources: [],
+}
+
+/**
+ * API product for the SayHello API with guaranteed delivery.
+ *
+ * Operations:
+ * - [PUB] `say/hello/{language}`
+ * - [SUB] `say/hello/{language}`
+ * 
+ * Product details:
+ * - Environment: {@link environment1} and {@link environment2}
+ * - Protocols: MQTT 3.1.1, HTTP 1.1 and JMS 1.1
+ * - Approval type: auto
+ * - Attributes:
+ *   + language: EN
+ * - Client Options:
+ *   + Guaranteed Messaging:
+ *     - Enabled: true
+ *     - Access Type: exclusive
+ *     - Max TTL: 10 minutes
+ *     - Max Spool Usage: 50 MB
+ */
+export const apiProduct4: APIProduct = {
+  name: "ApiProduct4",
+  displayName: "api product #4",
+  apis: [apiName1],
+  approvalType: APIProduct.approvalType.AUTO,
+  attributes: [{ name: "language", value: "EN" }],
+  environments: [environment1.name, environment2.name],
+  protocols: [{
+    name: Protocol.name.MQTT, version: '3.1.1'
+  }, {
+    name: Protocol.name.HTTP, version: '1.1'
+  }, {
+    name: Protocol.name.JMS, version: '1.1'
+  }],
+  pubResources: [],
+  subResources: [],
+  clientOptions: {
+    guaranteedMessaging: {
+      requireQueue: true,
+      accessType: ClientOptionsGuaranteedMessaging.accessType.EXCLUSIVE,
+      maxTtl: 600,
+      maxMsgSpoolUsage: 10,
+    },
+  },
 }
 
 /**
@@ -236,7 +299,7 @@ export let environmentDetails: Map<string, EnvironmentResponse> = new Map<string
  * - The {@link organization}
  * - The developers {@link developer1} and {@link developer2}
  * - The environments {@link environment1} and {@link environment2}
- * - The API products {@link apiProduct1}, {@link apiProduct2} and {@link apiProductSub3}
+ * - The API products {@link apiProduct1}, {@link apiProduct2}, {@link apiProduct3} and {@link apiProduct4}
  * 
  * The `beforeEach()` hook generates a new identifier for the {@link TestContext} and
  * configures the {@link PlatformAPIClient} to use the API user.
@@ -251,7 +314,7 @@ export let environmentDetails: Map<string, EnvironmentResponse> = new Map<string
  * 
  * @param suite The application service test suite.
  */
- export function addBeforeHooks(suite: Suite) {
+export function addBeforeHooks(suite: Suite) {
 
   const parent = suite.parent;
 
@@ -309,6 +372,7 @@ async function before() {
     ApiProductsService.createApiProduct({ organizationName: organizationName, requestBody: apiProduct1 }),
     ApiProductsService.createApiProduct({ organizationName: organizationName, requestBody: apiProduct2 }),
     ApiProductsService.createApiProduct({ organizationName: organizationName, requestBody: apiProduct3 }),
+    ApiProductsService.createApiProduct({ organizationName: organizationName, requestBody: apiProduct4 }),
   ]);
 
   SolaceCloudClientFactory.initialize(env.solaceCloudBaseUrl, env.solaceCloudToken);
@@ -338,7 +402,7 @@ function beforeEach() {
  * 
  * @param suite The application service test suite.
  */
- export function addAfterHooks(suite: Suite) {
+export function addAfterHooks(suite: Suite) {
 
   const parent = suite.parent;
 
