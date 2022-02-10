@@ -174,8 +174,8 @@ describe(scriptName, function () {
 
   it("should return applications with filter: match all terms", async function () {
 
-    // Search: applications that have a 'language' attribute with 'EN' as value
-    // Result: application1
+    // Search: applications that use API product #1 and API product #2
+    // Result: application3
 
     // Note: When using a filter with multiple terms in double quotes, the service
     //       does NOT return all applications that contain both terms. Instead,
@@ -184,8 +184,8 @@ describe(scriptName, function () {
     //       or "prod" match the term "apiProduct" partially).
     //       It is NOT possible to search for an exact match of two or more terms!
 
-    const filter = `"language" "EN"`;
-    const applicationNames = [application1.name];
+    const filter = `"apiProduct1" "apiProduct2"`;
+    const applicationNames = [application3.name];
 
     await checkAppListWithFilter(organizationName, filter, applicationNames);
   });
