@@ -19,6 +19,7 @@ import ApiProductsService from '../apiProducts.service';
 import SempV2ClientFactory from './sempv2clientfactory';
 import brokerutils from './brokerutils';
 import EnvironmentService from '../environments.service';
+import { AjvOptions } from 'express-openapi-validator/dist/framework/ajv/options';
 
 export enum Direction {
   Publish = 'Publish',
@@ -148,7 +149,7 @@ class ACLManager {
       const publishExceptions = this.getResources(product.pubResources);
       const subscribeExceptions = this.getResources(product.subResources);
       let strs: string[] = await this.getResourcesFromAsyncAPIs(product.apis, Direction.Subscribe);
-      
+
       for (const s of strs) {
         subscribeExceptions.push(s);
       }
@@ -470,12 +471,15 @@ class ACLManager {
     );
   }
 
-  public async getQueueSubscriptionsByApp(app: App): Promise<string[]>  {
-    const query = { $or: []};
-    app.apiProducts.forEach(a=>query['$or'].push({name: a}));
-    
+  public async getQueueSubscriptionsByApp(app: App): Promise<string[]> {
+    const query = {};
+    if (app.apiProducts.length == 0) {
+      return [];
+    } else if ((app.apiProducts.length >= 1)) {
+      query['$or'] = [];
+      app.apiProducts.forEach(a => query['$or'].push({ name: a }));
+    }
     const apiProducts = await ApiProductsService.all(query);
-    L.error(query);
     return this.getQueueSubscriptions(app, apiProducts, null);
   }
 
