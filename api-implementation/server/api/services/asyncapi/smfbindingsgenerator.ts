@@ -8,6 +8,7 @@ const DESTINATION_TYPE_TOPIC = 'topic';
 const DESTINATION_TYPE_QUEUE = 'queue';
 const DELIVERY_MODE_DIRECT = 'direct';
 const DELIVERY_MODE_PERSISTENT = 'persistent';
+const SMF_BINDING_VERSION = '0.1.0';
 
 export class SMFBindingsGenerator implements BindingsGenerator {
   PROTOCOL_BINDING = 'solace';
@@ -39,12 +40,15 @@ export class SMFBindingsGenerator implements BindingsGenerator {
       const smfBinding: any = {};
       smfBinding.destinationType = DESTINATION_TYPE_TOPIC;
       if (apiProduct.clientOptions && apiProduct.clientOptions.guaranteedMessaging) {
-        smfBinding.deliveryMode =  DELIVERY_MODE_PERSISTENT;
+        smfBinding.deliveryMode = DELIVERY_MODE_PERSISTENT;
       } else {
         smfBinding.deliveryMode = DELIVERY_MODE_DIRECT;
       }
       smfBindings.push(smfBinding);
-      publisherBindings[this.PROTOCOL_BINDING] = smfBindings;
+      publisherBindings[this.PROTOCOL_BINDING] = {
+        bindingVersion: SMF_BINDING_VERSION,
+        destinations: smfBindings
+      };
     }
     if (channel.publish) {
       let bindings: any = channel.publish.bindings;
@@ -64,7 +68,10 @@ export class SMFBindingsGenerator implements BindingsGenerator {
         smfBinding.destinationType = DESTINATION_TYPE_TOPIC;
       }
       smfBindings.push(smfBinding);
-      bindings[this.PROTOCOL_BINDING] = smfBindings;
+      bindings[this.PROTOCOL_BINDING] = {
+        bindingVersion: SMF_BINDING_VERSION,
+        destinations: smfBindings
+      };
     }
 
   }
