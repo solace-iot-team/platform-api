@@ -15,6 +15,7 @@ import { Service } from '../../../../src/clients/solacecloud';
 import { AllService, MsgVpnAclProfile, MsgVpnAclProfilePublishException, MsgVpnAclProfilePublishExceptionsResponse, MsgVpnAclProfileSubscribeException, MsgVpnAclProfileSubscribeExceptionsResponse, MsgVpnAuthorizationGroup } from "../../../../src/clients/sempv2";
 
 import ApisService from '../apis.service';
+import ApiProductsService from '../apiProducts.service';
 import SempV2ClientFactory from './sempv2clientfactory';
 import brokerutils from './brokerutils';
 import EnvironmentService from '../environments.service';
@@ -467,6 +468,15 @@ class ACLManager {
         });
       }
     );
+  }
+
+  public async getQueueSubscriptionsByApp(app: App): Promise<string[]>  {
+    const query = { $or: []};
+    app.apiProducts.forEach(a=>query['$or'].push({name: a}));
+    
+    const apiProducts = await ApiProductsService.all(query);
+    L.error(query);
+    return this.getQueueSubscriptions(app, apiProducts, null);
   }
 
   public async getQueueSubscriptions(app: App, apiProducts: APIProduct[], ownerAttributes: Attributes): Promise<string[]> {

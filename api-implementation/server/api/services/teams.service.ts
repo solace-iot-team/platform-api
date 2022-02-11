@@ -49,7 +49,11 @@ export class TeamsService {
       L.error(e);
       throw e;
     }
-    return AppsService.all(query);
+    const apps = await AppsService.all(query);
+    for (const app of apps){
+      await AppFactory.transformToExternalAppRepresentation(app);
+    } 
+    return apps;
   }
 
   byName(name: string): Promise<Team> {
@@ -84,7 +88,7 @@ export class TeamsService {
       } else {
         throw 404;
       }
-      AppFactory.transformToExternalAppRepresentation(app);
+      await AppFactory.transformToExternalAppRepresentation(app);
 
       return app;
     } catch (e) {
@@ -178,7 +182,7 @@ export class TeamsService {
       app,
       teamObj.attributes
     );
-    AppFactory.transformToExternalAppRepresentation(appPatch);
+    await AppFactory.transformToExternalAppRepresentation(appPatch);
     return appPatch;
   }
 
