@@ -47,8 +47,8 @@ export class QueueManager {
     apiProducts: APIProduct[], ownerAttributes: Attributes, queueName?: string, clientOptions?: ClientOptions): Promise<void> {
     L.info(`createQueueSubscriptions services: ${services}`);
     let subscribeExceptions: string[] = await ACLManager.getQueueSubscriptions(app, apiProducts, ownerAttributes);
-    if (subscribeExceptions === undefined) {
-      subscribeExceptions = [];
+    if (subscribeExceptions === undefined || subscribeExceptions.length==0) {
+      return;
     }
     let objectName: string = app.internalName;
     if (queueName) {
@@ -90,22 +90,6 @@ export class QueueManager {
           L.warn(`createQueues creation  failed ${JSON.stringify(e)}`);
           throw new ErrorResponseInternal(500, e.message);
         }
-      }
-
-      // timing problem - check queue is visible via SEMPv2
-      let isError: boolean = true;
-      for (let i = 0; i < 100; i++) {
-        try {
-          const q = await apiClient.getMsgVpnQueue(service.msgVpnName, objectName);
-          isError = false;
-          break;
-        } catch (e) {
-          L.debug(`createQueues lookup  failed ${JSON.stringify(e)}`);
-          isError = true;
-        }
-      }
-      if (isError) {
-        throw new ErrorResponseInternal(500, `Queue creation failed`);
       }
 
       for (const subscription of subscribeExceptions) {
