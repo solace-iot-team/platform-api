@@ -7,6 +7,7 @@ import App = Components.Schemas.App;
 const DESTINATION_TYPE_TOPIC = 'topic';
 const DESTINATION_TYPE_QUEUE = 'queue';
 const DELIVERY_MODE_DIRECT = 'direct';
+const DELIVERY_MODE_PERSISTENT = 'persistent';
 
 export class SMFBindingsGenerator implements BindingsGenerator {
   PROTOCOL_BINDING = 'solace';
@@ -37,7 +38,11 @@ export class SMFBindingsGenerator implements BindingsGenerator {
       const smfBindings: any[] = [];
       const smfBinding: any = {};
       smfBinding.destinationType = DESTINATION_TYPE_TOPIC;
-      smfBinding.deliveryMode = DELIVERY_MODE_DIRECT;
+      if (apiProduct.clientOptions && apiProduct.clientOptions.guaranteedMessaging) {
+        smfBinding.deliveryMode =  DELIVERY_MODE_PERSISTENT;
+      } else {
+        smfBinding.deliveryMode = DELIVERY_MODE_DIRECT;
+      }
       smfBindings.push(smfBinding);
       publisherBindings[this.PROTOCOL_BINDING] = smfBindings;
     }

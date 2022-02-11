@@ -7,6 +7,8 @@ import App = Components.Schemas.App;
 const DESTINATION_TYPE_TOPIC = 'topic';
 const DESTINATION_TYPE_QUEUE = 'queue';
 const DELIVERY_MODE_DIRECT = 'direct';
+const DELIVERY_MODE_PERSISTENT = 'persistent';
+
 
 export class JMSBindingsGenerator implements BindingsGenerator {
   PROTOCOL_BINDING = 'jms';
@@ -36,7 +38,11 @@ export class JMSBindingsGenerator implements BindingsGenerator {
       }
       const smfBinding: any = {};
       smfBinding.destinationType = DESTINATION_TYPE_TOPIC;
-      smfBinding.deliveryMode = DELIVERY_MODE_DIRECT;
+      if (apiProduct.clientOptions && apiProduct.clientOptions.guaranteedMessaging) {
+        smfBinding.deliveryMode = DELIVERY_MODE_PERSISTENT;
+      } else {
+        smfBinding.deliveryMode = DELIVERY_MODE_DIRECT;
+      }
       publisherBindings[this.PROTOCOL_BINDING] = smfBinding;
     }
     if (channel.publish) {
@@ -57,7 +63,7 @@ export class JMSBindingsGenerator implements BindingsGenerator {
       }
       bindings[this.PROTOCOL_BINDING] = smfBinding;
     }
-      
+
   }
 }
 export default new JMSBindingsGenerator();
