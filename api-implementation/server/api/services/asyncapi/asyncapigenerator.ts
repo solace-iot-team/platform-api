@@ -123,7 +123,7 @@ class AsyncApiGenerator {
   private async findAPIProductsByAPIName(apiName: string, app: App): Promise<APIProduct[]> {
     let apiProducts: APIProduct[] = [];
     for (const productName of app.apiProducts) {
-      const results = await ApiProductsService.all({ name: productName, apis: [apiName] });
+      const results = await ApiProductsService.all({ name: productName, apis: apiName });
       if (results.length > 1) {
         throw new ErrorResponseInternal(500, 'Find multiple matching documents for API Product Name');
       } else if (results.length == 1) {
