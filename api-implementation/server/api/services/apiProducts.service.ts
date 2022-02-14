@@ -92,8 +92,13 @@ export class ApiProductsService {
     return apiProduct.apis;
   }
   async apiByName(apiProductName: string, name: string): Promise<string> {
+    const apiList = await this.apiList(apiProductName);
+    if (apiList.find(n=>n==name)){
     const apiProduct = await this.byName(apiProductName);
     return asyncapigenerator.getSpecificationByApiProduct(name, apiProduct);
+    } else {
+      throw new ErrorResponseInternal(404, `API [${name}] is not associated with API Product [${apiProductName}]`);
+    }
   }
 
   async appsByName(name: string): Promise<CommonEntityNameList> {

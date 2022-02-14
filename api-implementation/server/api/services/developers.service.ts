@@ -11,7 +11,7 @@ import BrokerService from './broker.service';
 import { PersistenceService } from './persistence.service';
 import { ErrorResponseInternal } from '../middlewares/error.handler';
 import preconditionCheck from './persistence/preconditionhelper';
-import {updateProtectionByObject} from './persistence/preconditionhelper';
+import { updateProtectionByObject } from './persistence/preconditionhelper';
 
 export interface DeveloperApp extends App {
   appType?: string;
@@ -49,7 +49,11 @@ export class DevelopersService {
       L.error(e);
       throw e;
     }
-    return AppsService.all(query);
+    const apps = await AppsService.all(query);
+    for (const app of apps) {
+      await AppFactory.transformToExternalAppRepresentation(app);
+    }
+    return apps;
   }
 
   byName(name: string): Promise<Developer> {
@@ -84,7 +88,7 @@ export class DevelopersService {
       } else {
         throw 404;
       }
-      AppFactory.transformToExternalAppRepresentation(app);
+      await AppFactory.transformToExternalAppRepresentation(app);
       return app;
     } catch (e) {
       throw e;
@@ -155,7 +159,7 @@ export class DevelopersService {
   ): Promise<AppPatch> {
     try {
       await updateProtectionByObject(await this.appByName(developer, name, 'smf'));
-    } catch (e){
+    } catch (e) {
       await updateProtectionByObject(await this.appByName(developer, name, 'mqtt'));
     }
     let dev = null;
@@ -178,7 +182,7 @@ export class DevelopersService {
       app,
       dev.attributes
     );
-    AppFactory.transformToExternalAppRepresentation(appPatch);
+    await AppFactory.transformToExternalAppRepresentation(appPatch);
     return appPatch;
   }
 

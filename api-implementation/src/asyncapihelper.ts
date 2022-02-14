@@ -22,7 +22,7 @@ export class AsyncAPIHelper {
 
   YAMLtoJSON(apiSpec: string): string {
     if (this.getContentType(apiSpec) == "application/x-yaml") {
-      const o = YAML.load(apiSpec);
+      const o = YAML.load(apiSpec, {schema: YAML.DEFAULT_SCHEMA});
       return JSON.stringify(o);
     } else {
       throw new ErrorResponseInternal(500, "Invalid YAMl");

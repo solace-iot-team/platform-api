@@ -7,6 +7,7 @@ interface DatabaseBootstrapperEvents {
 class DatabaseBootstrapper extends TypedEmitter<DatabaseBootstrapperEvents> {
   constructor() {
     super();
+    this.setMaxListeners(100);
   }
 }
 export default new DatabaseBootstrapper();

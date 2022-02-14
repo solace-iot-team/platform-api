@@ -51,7 +51,7 @@ export class MQTTBindingsGenerator implements BindingsGenerator {
 
   private buildMQTTOperationBinding(apiProduct: APIProduct): any {
     const mqttBinding: any = {};
-    if (QueueHelper.isAPIProductQueueRequired(apiProduct)) {
+    if (apiProduct.clientOptions && apiProduct.clientOptions.guaranteedMessaging) {
       mqttBinding.qos = QOS_1;
     } else {
       mqttBinding.qos = QOS_0;

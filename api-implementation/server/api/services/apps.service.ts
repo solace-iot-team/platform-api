@@ -18,6 +18,7 @@ import TopicSyntax = Components.Parameters.TopicSyntax.TopicSyntax;
 import WebHook = Components.Schemas.WebHook;
 import AsyncApiGenerator from './asyncapi/asyncapigenerator';
 import QueueHelper from './broker/queuehelper';
+import ACLManager from './broker/aclmanager';
 
 export interface APISpecification {
   name: string;
@@ -108,30 +109,33 @@ export class AppsService {
           );
           appEnv.permissions = permissions;
         }
-
-        const clientInformation: ClientInformation[] = []
-        for (const productName of app.apiProducts) {
-          const apiProduct = await ApiProductsService.byName(productName);
-          const isSupportedProtocol: boolean = apiProduct.protocols.find(p => p.name.toString().indexOf('smf') > -1
-            || p.name.toString().indexOf('jms') > -1) != null;
-          if (isSupportedProtocol && apiProduct.clientOptions
-            && apiProduct.clientOptions.guaranteedMessaging
-            && apiProduct.clientOptions.guaranteedMessaging.requireQueue) {
-            clientInformation.push({
-              guaranteedMessaging: {
-                name: QueueHelper.getAPIProductQueueName(app, apiProduct),
-                accessType: apiProduct.clientOptions.guaranteedMessaging.accessType,
-                apiProduct: productName,
-                maxMsgSpoolUsage: apiProduct.clientOptions.guaranteedMessaging.maxMsgSpoolUsage,
-                maxTtl: apiProduct.clientOptions.guaranteedMessaging.maxTtl,
-              }
-            });
+        const subs = await ACLManager.getQueueSubscriptionsByApp(app);
+        const requireClientInformation:boolean = subs.length > 0;
+        L.error(subs);
+        if (requireClientInformation) {
+          const clientInformation: ClientInformation[] = []
+          for (const productName of app.apiProducts) {
+            const apiProduct = await ApiProductsService.byName(productName);
+            const isSupportedProtocol: boolean = apiProduct.protocols.find(p => p.name.toString().indexOf('smf') > -1
+              || p.name.toString().indexOf('jms') > -1) != null;
+            if (isSupportedProtocol && apiProduct.clientOptions
+              && apiProduct.clientOptions.guaranteedMessaging
+              && apiProduct.clientOptions.guaranteedMessaging.requireQueue) {
+              clientInformation.push({
+                guaranteedMessaging: {
+                  name: QueueHelper.getAPIProductQueueName(app, apiProduct),
+                  accessType: apiProduct.clientOptions.guaranteedMessaging.accessType,
+                  apiProduct: productName,
+                  maxMsgSpoolUsage: apiProduct.clientOptions.guaranteedMessaging.maxMsgSpoolUsage,
+                  maxTtl: apiProduct.clientOptions.guaranteedMessaging.maxTtl,
+                }
+              });
+            }
+          }
+          if (clientInformation.length > 0) {
+            app.clientInformation = clientInformation;
           }
         }
-        if (clientInformation.length > 0) {
-          app.clientInformation = clientInformation;
-        }
-
       } else {
         throw 404;
       }
@@ -200,8 +204,13 @@ export class AppsService {
 
 
   async apiByName(appName: string, name: string): Promise<string> {
-    const app = await this.persistenceService.byName(appName);
-    return AsyncApiGenerator.getSpecificationByApp(name, app);
+    const list = await this.apiList(appName);
+    if (list.find(n => n == name)) {
+      const app = await this.persistenceService.byName(appName);
+      return AsyncApiGenerator.getSpecificationByApp(name, app);
+    } else {
+      throw new ErrorResponseInternal(404, `API [${name}] is not associated with app [${appName}]`);
+    }
   }
 
   async update(

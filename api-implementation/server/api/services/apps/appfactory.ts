@@ -1,9 +1,11 @@
+import L from '../../../common/logger';
 import AppPatch = Components.Schemas.AppPatch;
 import App = Components.Schemas.App;
 import WebHook = Components.Schemas.WebHook;
 import { DeveloperAppPatch, DeveloperApp } from '../developers.service';
 import { TeamAppPatch, TeamApp } from '../teams.service';
 import { ErrorResponseInternal } from '../../middlewares/error.handler';
+import ACLManager from '../broker/aclmanager';
 import passwordGenerator from 'generate-password';
 
 const APP_TYPE_DEVELOPER: string = 'developer';
@@ -12,11 +14,18 @@ const APP_TYPE_TEAM: string = 'team';
 
 class AppFactory {
 
-  transformToExternalAppRepresentation(app){
+  async transformToExternalAppRepresentation(app) {
     delete app['ownerId'];
     delete app['appType'];
+    if (app['clientInformation']) {
+      const requiresClientInformation: boolean = (await ACLManager.getQueueSubscriptionsByApp(app)).length > 0;
+      if (!requiresClientInformation) {
+        delete app['clientInformation'];
+      }
+    }
+
   }
-  
+
   createDeveloperAppBatch(body: AppPatch, developer: string): DeveloperAppPatch {
     const app: DeveloperAppPatch = {
       ownerId: developer,
@@ -32,7 +41,7 @@ class AppFactory {
       ownerId: developer,
       appType: APP_TYPE_DEVELOPER,
       name: body.name,
-      displayName: body.displayName?body.displayName:body.name,
+      displayName: body.displayName ? body.displayName : body.name,
       apiProducts: body.apiProducts,
       credentials: body.credentials,
     };
@@ -54,7 +63,7 @@ class AppFactory {
       ownerId: team,
       appType: APP_TYPE_TEAM,
       name: body.name,
-      displayName: body.displayName?body.displayName:body.name,
+      displayName: body.displayName ? body.displayName : body.name,
       apiProducts: body.apiProducts,
       credentials: body.credentials,
     };
@@ -72,12 +81,12 @@ class AppFactory {
     }
     if (source.webHooks) {
       target.webHooks = source.webHooks;
-      for (const webhook of target.webHooks){
+      for (const webhook of target.webHooks) {
         const wh: WebHook = webhook as WebHook;
-        if (wh.authentication && wh.authentication.authMethod){
-          if (wh.authentication['username']){
+        if (wh.authentication && wh.authentication.authMethod) {
+          if (wh.authentication['username']) {
             wh.authentication.authMethod = 'Basic';
-          } else if (wh.authentication['headerName']){
+          } else if (wh.authentication['headerName']) {
             wh.authentication.authMethod = 'Header';
           }
         }
@@ -105,25 +114,25 @@ class AppFactory {
     this.mapInternalName(source, target);
     this.map(source, target);
   }
-  private mapInternalName(source: App, target: App){
-    if (source.internalName){
+  private mapInternalName(source: App, target: App) {
+    if (source.internalName) {
       target.internalName = source.internalName;
-    } else  {
+    } else {
       target.internalName = passwordGenerator.generate({
-            length: 32,
-            numbers: true,
-            strict: true,
-          })
+        length: 32,
+        numbers: true,
+        strict: true,
+      })
     }
   }
-  private validateInternal(app: App): ErrorResponseInternal{
-    if (app.apiProducts && (new Set(app.apiProducts).size !== app.apiProducts.length)){
+  private validateInternal(app: App): ErrorResponseInternal {
+    if (app.apiProducts && (new Set(app.apiProducts).size !== app.apiProducts.length)) {
       return new ErrorResponseInternal(400, 'Duplicate entries in apiProducts are not supported');
     } else {
       return null;
     }
-    
-  } 
+
+  }
 }
 
 export default new AppFactory();
