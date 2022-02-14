@@ -10682,7 +10682,7 @@
 									"",
 									"pm.test(\"Contains expected API name\", function () {",
 									"    var jsonData = pm.response.json();",
-									"    pm.expect(jsonData[0]).to.eql('Test-API');",
+									"    pm.expect(jsonData[0]).to.eql(pm.environment.get(\"API_NAME\"));",
 									"});"
 								],
 								"type": "text/javascript"
@@ -10943,7 +10943,7 @@
 									"",
 									"pm.test(\"Contains expected API names\", function () {",
 									"    var jsonData = pm.response.json();",
-									"    pm.expect(jsonData[0]).to.eql('Test-API');",
+									"    pm.expect(jsonData[0]).to.eql(pm.environment.get(\"API_NAME\"));",
 									"    pm.expect(jsonData[1]).to.eql('SayHelloPub');",
 									"});"
 								],
@@ -11019,7 +11019,7 @@
 									"",
 									"pm.test(\"Contains expected API names\", function () {",
 									"    var jsonData = pm.response.json();",
-									"    pm.expect(jsonData[0]).to.eql('Test-API');",
+									"    pm.expect(jsonData[0]).to.eql(pm.environment.get(\"API_NAME\"));",
 									"    pm.expect(jsonData[1]).to.eql('SayHelloPub');",
 									"});"
 								],
@@ -11235,7 +11235,7 @@
 									"",
 									"pm.test(\"Contains expected API names\", function () {",
 									"    var jsonData = pm.response.json();",
-									"    pm.expect(jsonData[0].name).to.eql('Test-API');",
+									"    pm.expect(jsonData[0].name).to.eql(pm.environment.get(\"API_NAME\"));",
 									"    pm.expect(jsonData[1].name).to.eql('SayHelloPub');",
 									"});"
 								],
@@ -11316,7 +11316,7 @@
 									"    var jsonData = pm.response.json();",
 									"    pm.expect(jsonData[0].name).to.eql('SayHello');",
 									"    pm.expect(jsonData[1].name).to.eql('SayHelloPub');",
-									"    pm.expect(jsonData[2].name).to.eql('Test-API');",
+									"    pm.expect(jsonData[2].name).to.eql(pm.environment.get(\"API_NAME\"));",
 									"});"
 								],
 								"type": "text/javascript"
@@ -11801,7 +11801,8 @@
 									"",
 									"pm.test(\"Contains queue info\", function () {",
 									"    pm.expect(pm.response.text()).to.include(\"queue:\");",
-									"    pm.expect(pm.response.text()).to.include(\"name: Test-API_PRODUCT2\");",
+									"    let qName = pm.environment.get(\"API_NAME\") + '_PRODUCT2';",
+									"    pm.expect(pm.response.text()).to.include(qName);",
 									"});",
 									""
 								],
@@ -12006,7 +12007,7 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "https://mr1i5g7tif6z9h.messaging.solace.cloud:943/SEMP/v2/config/msgVpns/apim-test/queues/myBrokerNamingConvention-Test-API_PRODUCT2/subscriptions",
+							"raw": "https://mr1i5g7tif6z9h.messaging.solace.cloud:943/SEMP/v2/config/msgVpns/apim-test/queues/{{APP_NAME_INTERNAL}}-{{API_NAME}}_PRODUCT2/subscriptions",
 							"protocol": "https",
 							"host": [
 								"mr1i5g7tif6z9h",
@@ -12022,7 +12023,7 @@
 								"msgVpns",
 								"apim-test",
 								"queues",
-								"myBrokerNamingConvention-Test-API_PRODUCT2",
+								"{{APP_NAME_INTERNAL}}-{{API_NAME}}_PRODUCT2",
 								"subscriptions"
 							]
 						}
@@ -12042,8 +12043,8 @@
 									"",
 									"pm.test(\"Contains queue info\", function () {",
 									"    pm.expect(pm.response.text()).to.include(\"queue:\");",
-									"    pm.expect(pm.response.text()).to.include(\"name: myBrokerNamingConvention-Test-API_PRODUCT2\");",
-									"    ",
+									"    let qName = pm.environment.get(\"APP_NAME_INTERNAL\") + '-' + pm.environment.get(\"API_NAME\") + '_PRODUCT2';",
+									"    pm.expect(pm.response.text()).to.include(qName);",
 									"});",
 									""
 								],
