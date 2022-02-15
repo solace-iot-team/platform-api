@@ -61,7 +61,7 @@ jobs:
           echo ">>> environment: TEST_* "
           env | grep TEST
 
-      - name: Setup Node.js ${{ matrix.node-version }}
+      - name: Setup Node.js ${{ matrix.node }}
         uses: actions/setup-node@v2
         with:
           node-version: ${{ matrix.node }}
