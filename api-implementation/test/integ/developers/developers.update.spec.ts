@@ -1,6 +1,7 @@
 import 'mocha';
 import { expect } from 'chai';
 import path from 'path';
+import { PlatformAPIClient } from '../../lib/api.helpers';
 import type {
   Developer,
   DeveloperPatch,
@@ -11,7 +12,6 @@ import {
 } from '../../lib/generated/openapi';
 
 import * as setup from './common/test.setup';
-import { PlatformAPIClient } from '../../lib/api.helpers';
 
 const scriptName: string = path.basename(__filename);
 
@@ -61,7 +61,7 @@ describe(scriptName, function () {
       email: developerPatch.email,
     }
 
-    expect(response, "response is not correct").to.be.eql(expected);
+    expect(response.body, "response is not correct").to.be.eql(expected);
   });
 
   it("should update the first and last name of a developer", async function () {
@@ -86,7 +86,7 @@ describe(scriptName, function () {
       lastName: developerPatch.lastName,
     }
 
-    expect(response, "response is not correct").to.be.eql(updatedDeveloper);
+    expect(response.body, "response is not correct").to.be.eql(updatedDeveloper);
   });
 
   it("should update attributes of a developer", async function () {
@@ -112,7 +112,7 @@ describe(scriptName, function () {
       attributes: developerPatch.attributes,
     }
 
-    expect(response, "response is not correct").to.be.eql(updatedDeveloper);
+    expect(response.body, "response is not correct").to.be.eql(updatedDeveloper);
   });
 
   it("should not update a developer if the user is not authorized", async function () {

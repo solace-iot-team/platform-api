@@ -1,12 +1,8 @@
 import 'mocha';
 import { expect } from 'chai';
 import path from 'path';
-import {
-  AdministrationService,
-  ApiError,
-  Organization,
-  OrganizationResponse,
-} from '../../lib/generated/openapi';
+import type { Organization } from '../../lib/generated/openapi';
+import { AdministrationService, ApiError } from '../../lib/generated/openapi';
 
 import * as setup from './common/test.setup';
 import { PlatformAPIClient } from '../../lib/api.helpers';
@@ -17,12 +13,16 @@ describe(scriptName, function () {
 
   const organizationName: string = "organization";
 
+  const orgctx = {
+    organizationName: organizationName,
+  }
+
   // HOOKS
 
   setup.addBeforeHooks(this);
 
   afterEach(async function () {
-    await AdministrationService.deleteOrganization({ organizationName: organizationName }).catch(() => { });
+    await AdministrationService.deleteOrganization({ ...orgctx }).catch(() => { });
   });
 
   setup.addAfterHooks(this);
@@ -46,12 +46,12 @@ describe(scriptName, function () {
       'cloud-token': setup.solaceCloudToken,
     }
 
-    const response = await AdministrationService.updateOrganization({ organizationName: organizationName, requestBody: organizationPatch }).catch((reason) => {
+    const response = await AdministrationService.updateOrganization({ ...orgctx, requestBody: organizationPatch }).catch((reason) => {
       expect(reason, `error=${reason.message}`).is.instanceof(ApiError);
       expect.fail(`failed to update organization; error="${reason.body.message}"`);
     });
 
-    expect(response, "cloud-token is not set").to.have.property("cloud-token").that.is.a("string").that.is.not.empty;
+    expect(response.body, "response is not correct").that.has.property("cloud-token").that.is.a("string").that.is.not.empty;
   });
 
   it("should not update an organization if the user is not authorized", async function () {
@@ -69,7 +69,7 @@ describe(scriptName, function () {
 
     PlatformAPIClient.setApiUser();
 
-    await AdministrationService.updateOrganization({ organizationName: organizationName, requestBody: organizationPatch }).then(() => {
+    await AdministrationService.updateOrganization({ ...orgctx, requestBody: organizationPatch }).then(() => {
       expect.fail("an unauthorized user updated an organization");
     }, (reason) => {
       expect(reason, `error=${reason.message}`).is.instanceof(ApiError);
@@ -106,7 +106,7 @@ describe(scriptName, function () {
       'cloud-token': "invalid",
     }
 
-    await AdministrationService.updateOrganization({ organizationName: organizationName, requestBody: organizationPatch }).then(() => {
+    await AdministrationService.updateOrganization({ ...orgctx, requestBody: organizationPatch }).then(() => {
       expect.fail("an organization was updated with an invalid token");
     }, (reason) => {
       expect(reason, `error=${reason.message}`).is.instanceof(ApiError);

@@ -1,12 +1,17 @@
 import 'mocha';
 import { expect } from 'chai';
 import path from 'path';
-import { TestContext } from "../../lib/test.helpers";
-import { App, AppStatus } from "../../lib/generated/openapi";
-import { ApiError, AppListItem, AppsService } from "../../lib/generated/openapi";
+import { PlatformAPIClient } from '../../lib/api.helpers';
+import { TestContext } from '../../lib/test.helpers';
+import type { App } from "../../lib/generated/openapi";
+import {
+  ApiError,
+  AppListItem,
+  AppStatus,
+  AppsService,
+} from "../../lib/generated/openapi";
 
 import * as setup from './common/test.setup';
-import { PlatformAPIClient } from '../../lib/api.helpers';
 
 const scriptName: string = path.basename(__filename);
 
@@ -15,8 +20,7 @@ describe(scriptName, function () {
   const organizationName: string = setup.organizationName;
   const developerName: string = setup.developer1.userName;
 
-  /** Base parameters to create, delete, get, list or update applications for a developer. */
-  const appctx1 = {
+  const devctx = {
     organizationName: organizationName,
     developerUsername: developerName,
   }
@@ -74,18 +78,18 @@ describe(scriptName, function () {
   before(async function () {
     TestContext.newItId();
     await Promise.all([
-      AppsService.createDeveloperApp({ ...appctx1, requestBody: application1 }),
-      AppsService.createDeveloperApp({ ...appctx1, requestBody: application2 }),
-      AppsService.createDeveloperApp({ ...appctx1, requestBody: application3 }),
+      AppsService.createDeveloperApp({ ...devctx, requestBody: application1 }),
+      AppsService.createDeveloperApp({ ...devctx, requestBody: application2 }),
+      AppsService.createDeveloperApp({ ...devctx, requestBody: application3 }),
     ]);
   });
 
   after(async function () {
     TestContext.newItId();
     await Promise.all([
-      AppsService.deleteDeveloperApp({ ...appctx1, appName: application1.name }),
-      AppsService.deleteDeveloperApp({ ...appctx1, appName: application2.name }),
-      AppsService.deleteDeveloperApp({ ...appctx1, appName: application3.name }),
+      AppsService.deleteDeveloperApp({ ...devctx, appName: application1.name }),
+      AppsService.deleteDeveloperApp({ ...devctx, appName: application2.name }),
+      AppsService.deleteDeveloperApp({ ...devctx, appName: application3.name }),
     ]);
   })
 
@@ -95,18 +99,17 @@ describe(scriptName, function () {
 
   it("should return applications", async function () {
 
-    const applicationList = [application1, application2, application3];
-
-    const apps = await AppsService.listApps({ organizationName: organizationName }).catch((reason) => {
+    const response = await AppsService.listApps({ organizationName: organizationName }).catch((reason) => {
       expect(reason, `error=${reason.message}`).is.instanceof(ApiError);
       expect.fail(`failed to list applications; error="${reason.body.message}"`);
     });
 
-    expect(apps.length, "number of returned applications is incorrect").to.be.equals(applicationList.length);
+    const applications: AppListItem[] = response.body;
+    expect(applications, "number of returned applications is incorrect").to.have.lengthOf(3);
 
-    applicationList.forEach(application => {
+    [application1, application2, application3].forEach(application => {
 
-      const app = apps.find(app => app.name == application.name);
+      const app = applications.find(app => app.name == application.name);
 
       expect(app, `application '${application.name}' is missing`).is.not.undefined;
       expect(app, `application '${application.name}' is not correct`).to.deep.include({
@@ -211,12 +214,11 @@ describe(scriptName, function () {
       expect.fail(`failed to list applications; error="${reason.body.message}"`);
     });
 
-    expect(response.length, "number of returned applications is incorrect").to.be.equals(applicationNames.length);
+    const applications: AppListItem[] = response.body;
+    expect(applications, "number of returned applications is incorrect").to.have.lengthOf(applicationNames.length);
 
-    let appNames: Array<string> = []
-    response.forEach(app => appNames.push(app.name));
-
-    expect(appNames, "list of applications is incorrect").to.have.members(applicationNames);
+    let names: Array<string> = applications.map(app => app.name);
+    expect(names, "list of applications is incorrect").to.have.members(applicationNames);
   }
 
 });

@@ -1,7 +1,8 @@
 import 'mocha';
 import { expect } from 'chai';
 import path from 'path';
-import type { App, AppPatch } from "../../lib/generated/openapi";
+import { PlatformAPIClient } from '../../lib/api.helpers';
+import type { App, AppPatch, AppResponse } from "../../lib/generated/openapi";
 import { ApiError, AppStatus, AppsService } from "../../lib/generated/openapi";
 
 import * as setup from './common/test.setup';
@@ -20,20 +21,20 @@ describe(scriptName, function () {
   const organizationName: string = setup.organizationName;
   const developerName: string = setup.developer1.userName;
 
-  const applicationName: string = `${developerName}-app`;
-
-  /** Base parameters to create, list, update or delete applications */
-  const appctx = {
+  const devctx = {
     organizationName: organizationName,
     developerUsername: developerName,
   }
+
+  const applicationName: string = `${developerName}-app`;
 
   // HOOKS
 
   setup.addBeforeHooks(this);
 
   afterEach(async function () {
-    await AppsService.deleteDeveloperApp({ ...appctx, appName: applicationName });
+    PlatformAPIClient.setApiUser();
+    await AppsService.deleteDeveloperApp({ ...devctx, appName: applicationName });
   });
 
   setup.addAfterHooks(this);
@@ -48,26 +49,28 @@ describe(scriptName, function () {
       apiProducts: [],
       credentials: { expiresAt: -1 },
     }
-    application = await AppsService.createDeveloperApp({ ...appctx, requestBody: application });
+    application = (await AppsService.createDeveloperApp({ ...devctx, requestBody: application })).body;
 
     const applicationPatch: AppPatch = {
       displayName: "updated display name for app",
     }
 
-    const response = await AppsService.updateDeveloperApp({ ...appctx, appName: applicationName, requestBody: applicationPatch }).catch((reason) => {
+    const response = await AppsService.updateDeveloperApp({ ...devctx, appName: applicationName, requestBody: applicationPatch }).catch((reason) => {
       expect(reason, `error=${reason.message}`).is.instanceof(ApiError);
       expect.fail(`failed to update developer application; error="${reason.body.message}"`);
     });
 
-    expect(response, "status is not correct").to.have.property('status', AppStatus.APPROVED);
-    expect(response, "name is not correct").to.have.property('name', application.name);
-    expect(response, "display name is not correct").to.have.property('displayName', applicationPatch.displayName);
-    expect(response, "internal name is not set").to.have.property('internalName', application.internalName);
+    const appResponse: AppResponse = response.body;
+
+    expect(appResponse, "status is not correct").to.have.property('status', AppStatus.APPROVED);
+    expect(appResponse, "name is not correct").to.have.property('name', application.name);
+    expect(appResponse, "display name is not correct").to.have.property('displayName', applicationPatch.displayName);
+    expect(appResponse, "internal name is not set").to.have.property('internalName', application.internalName);
 
     const secret = application.credentials.secret;
 
-    expect(response, "consumer key is not set").to.have.nested.property('credentials.secret.consumerKey', secret.consumerKey);
-    expect(response, "consumer secret is not set").to.have.nested.property('credentials.secret.consumerSecret', secret.consumerSecret);
+    expect(appResponse, "consumer key is not set").to.have.nested.property('credentials.secret.consumerKey', secret.consumerKey);
+    expect(appResponse, "consumer secret is not set").to.have.nested.property('credentials.secret.consumerSecret', secret.consumerSecret);
   });
 
   it("should update the ACL profile when API products are added", async function () {
@@ -77,13 +80,13 @@ describe(scriptName, function () {
       apiProducts: [setup.apiProduct1.name],
       credentials: { expiresAt: -1 },
     }
-    application = await AppsService.createDeveloperApp({ ...appctx, requestBody: application });
+    application = (await AppsService.createDeveloperApp({ ...devctx, requestBody: application })).body;
 
     const applicationPatch: AppPatch = {
       apiProducts: [setup.apiProduct1.name, setup.apiProduct2.name],
     }
 
-    await AppsService.updateDeveloperApp({ ...appctx, appName: applicationName, requestBody: applicationPatch }).catch((reason) => {
+    await AppsService.updateDeveloperApp({ ...devctx, appName: applicationName, requestBody: applicationPatch }).catch((reason) => {
       expect(reason, `error=${reason.message}`).is.instanceof(ApiError);
       expect.fail(`failed to update developer application; error="${reason.body.message}"`);
     });
@@ -109,13 +112,13 @@ describe(scriptName, function () {
       apiProducts: [setup.apiProduct1.name, setup.apiProduct2.name, setup.apiProduct3.name],
       credentials: { expiresAt: -1 },
     }
-    application = await AppsService.createDeveloperApp({ ...appctx, requestBody: application });
+    application = (await AppsService.createDeveloperApp({ ...devctx, requestBody: application })).body;
 
     const applicationPatch: AppPatch = {
       apiProducts: [setup.apiProduct2.name],
     }
 
-    await AppsService.updateDeveloperApp({ ...appctx, appName: applicationName, requestBody: applicationPatch }).catch((reason) => {
+    await AppsService.updateDeveloperApp({ ...devctx, appName: applicationName, requestBody: applicationPatch }).catch((reason) => {
       expect(reason, `error=${reason.message}`).is.instanceof(ApiError);
       expect.fail(`failed to update developer application; error="${reason.body.message}"`);
     });
@@ -137,7 +140,7 @@ describe(scriptName, function () {
       apiProducts: [setup.apiProduct1.name],
       credentials: { expiresAt: -1 },
     }
-    application = await AppsService.createDeveloperApp({ ...appctx, requestBody: application });
+    application = (await AppsService.createDeveloperApp({ ...devctx, requestBody: application })).body;
 
     const aclProfileName: string = application.internalName;
 
@@ -145,7 +148,7 @@ describe(scriptName, function () {
       attributes: [{ name: "language", value: "EN" }],
     }
 
-    await AppsService.updateDeveloperApp({ ...appctx, appName: applicationName, requestBody: applicationPatch1 }).catch((reason) => {
+    await AppsService.updateDeveloperApp({ ...devctx, appName: applicationName, requestBody: applicationPatch1 }).catch((reason) => {
       expect(reason, `error=${reason.message}`).is.instanceof(ApiError);
       expect.fail(`failed to update developer application; error="${reason.body.message}"`);
     });
@@ -162,7 +165,7 @@ describe(scriptName, function () {
       attributes: [{ name: "language", value: "DE" }],
     }
 
-    await AppsService.updateDeveloperApp({ ...appctx, appName: applicationName, requestBody: applicationPatch2 }).catch((reason) => {
+    await AppsService.updateDeveloperApp({ ...devctx, appName: applicationName, requestBody: applicationPatch2 }).catch((reason) => {
       expect(reason, `error=${reason.message}`).is.instanceof(ApiError);
       expect.fail(`failed to update developer application; error="${reason.body.message}"`);
     });
@@ -184,7 +187,7 @@ describe(scriptName, function () {
       webHooks: [setup.webHook1],
       credentials: { expiresAt: -1 },
     }
-    application = await AppsService.createDeveloperApp({ ...appctx, requestBody: application });
+    application = (await AppsService.createDeveloperApp({ ...devctx, requestBody: application })).body;
 
     const queueName: string = application.internalName;
     const restDeliveryPointName: string = application.internalName;
@@ -193,7 +196,7 @@ describe(scriptName, function () {
       webHooks: [setup.webHook1, setup.webHook2],
     }
 
-    await AppsService.updateDeveloperApp({ ...appctx, appName: applicationName, requestBody: applicationPatch }).catch((reason) => {
+    await AppsService.updateDeveloperApp({ ...devctx, appName: applicationName, requestBody: applicationPatch }).catch((reason) => {
       expect(reason, `error=${reason.message}`).is.instanceof(ApiError);
       expect.fail(`failed to update developer application; error="${reason.body.message}"`);
     });
@@ -221,7 +224,7 @@ describe(scriptName, function () {
       webHooks: [setup.webHook1, setup.webHook2],
       credentials: { expiresAt: -1 },
     }
-    application = await AppsService.createDeveloperApp({ ...appctx, requestBody: application });
+    application = (await AppsService.createDeveloperApp({ ...devctx, requestBody: application })).body;
 
     const queueName: string = application.internalName;
     const restDeliveryPointName: string = application.internalName;
@@ -230,7 +233,7 @@ describe(scriptName, function () {
       webHooks: [setup.webHook2],
     }
 
-    await AppsService.updateDeveloperApp({ ...appctx, appName: applicationName, requestBody: applicationPatch }).catch((reason) => {
+    await AppsService.updateDeveloperApp({ ...devctx, appName: applicationName, requestBody: applicationPatch }).catch((reason) => {
       expect(reason, `error=${reason.message}`).is.instanceof(ApiError);
       expect.fail(`failed to update developer application; error="${reason.body.message}"`);
     });
@@ -257,7 +260,7 @@ describe(scriptName, function () {
       webHooks: [setup.webHook1],
       credentials: { expiresAt: -1 },
     }
-    application = await AppsService.createDeveloperApp({ ...appctx, requestBody: application });
+    application = (await AppsService.createDeveloperApp({ ...devctx, requestBody: application })).body;
 
     const queueName: string = application.internalName;
     const restDeliveryPointName: string = application.internalName;
@@ -266,7 +269,7 @@ describe(scriptName, function () {
       webHooks: [setup.webHook2],
     }
 
-    await AppsService.updateDeveloperApp({ ...appctx, appName: applicationName, requestBody: applicationPatch }).catch((reason) => {
+    await AppsService.updateDeveloperApp({ ...devctx, appName: applicationName, requestBody: applicationPatch }).catch((reason) => {
       expect(reason, `error=${reason.message}`).is.instanceof(ApiError);
       expect.fail(`failed to update developer application; error="${reason.body.message}"`);
     });
@@ -285,4 +288,105 @@ describe(scriptName, function () {
     await verifyRestDeliveryPoint(setup.environment2, restDeliveryPointName, restDeliveryPoint);
   });
 
+  it("should not update an application if the user is not authorized", async function () {
+
+    let application: App = {
+      name: applicationName,
+      displayName: "display name for app",
+      apiProducts: [],
+      credentials: { expiresAt: -1 },
+    }
+
+    await AppsService.createDeveloperApp({ ...devctx, requestBody: application });
+
+    const applicationPatch: AppPatch = {
+      displayName: "updated display name for app",
+    }
+
+    PlatformAPIClient.setManagementUser();
+
+    await AppsService.updateDeveloperApp({ ...devctx, appName: applicationName, requestBody: applicationPatch }).then(() => {
+      expect.fail("unauthorized request was not rejected");
+    }, (reason) => {
+      expect(reason, `error=${reason.message}`).is.instanceof(ApiError);
+      expect(reason.status, `status is not correct`).to.be.oneOf([401]);
+    });
+  });
+
+  it("should not update an application if the If-Match header is incorrect", async function () {
+
+    let application: App = {
+      name: applicationName,
+      displayName: "display name for app",
+      apiProducts: [],
+      credentials: { expiresAt: -1 },
+    }
+
+    await AppsService.createDeveloperApp({ ...devctx, requestBody: application });
+
+    const applicationPatch = {
+      ...devctx,
+      appName: applicationName,
+      ifMatch: "1234",
+      requestBody: {
+        displayName: "updated display name for app",
+      }
+    }
+
+    await AppsService.updateDeveloperApp(applicationPatch).then(() => {
+      expect.fail("invalid request was not rejected");
+    }, (reason) => {
+      expect(reason, `error=${reason.message}`).is.instanceof(ApiError);
+      expect(reason.status, `status is not correct`).to.be.oneOf([412]);
+    });
+  });
+
+  it("should not update an application if another update is already in progress", async function () {
+
+    let application: App = {
+      name: applicationName,
+      apiProducts: [],
+      credentials: { expiresAt: -1 },
+    }
+
+    const response = await AppsService.createDeveloperApp({ ...devctx, requestBody: application });
+    const etag = response.headers['etag'];
+
+    const applicationPatch1 = {
+      ...devctx,
+      appName: applicationName,
+      ifMatch: etag,
+      requestBody: {
+        displayName: "updated display name for app",
+      }
+    }
+
+    const applicationPatch2 = {
+      ...devctx,
+      appName: applicationName,
+      ifMatch: etag,
+      requestBody: {
+        apiProducts: [setup.apiProduct1.name],
+      }
+    }
+
+    // NOTE: Promise.all() waits for all Promises to be resolved or one of them to be rejected.
+    //       To check whether the 1st update was successful and whether the 2nd update failed,
+    //       two promises are created that resolve with proper status information.
+
+    const onResponded = () => ({ status: "fulfilled" });
+    const onError = (reason: ApiError) => ({ status: "rejected", reason: reason });
+
+    const update1 = AppsService.updateDeveloperApp(applicationPatch1).then(onResponded, onError);
+    const update2 = new Promise((resolved, reject) => {
+      // execute the second update a tiny bit after the first update (to make sure that 1st wins)
+      setTimeout(() => { AppsService.updateDeveloperApp(applicationPatch2).then(resolved, reject); }, 100);
+    }).then(onResponded, onError);
+
+    await Promise.all([update1, update2]).then((result) => {
+      expect(result[0].status, "1st update request was rejected").to.be.equals("fulfilled");
+      expect(result[1].status, "2nd update request was not rejected").to.be.equals("rejected");
+      expect(result[1], "status is not correct").to.have.nested.property("reason.status", 412);
+    });
+  });
 });

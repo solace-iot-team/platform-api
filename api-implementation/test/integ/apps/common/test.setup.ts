@@ -353,8 +353,8 @@ async function before() {
     EnvironmentsService.createEnvironment({ organizationName: organizationName, requestBody: environment2 }),
   ]);
 
-  let updateEnvironmentDetails = (response: EnvironmentResponse): void => {
-    environmentDetails.set(response.name, response)
+  let updateEnvironmentDetails = (response: { headers: Record<string, string>; body: EnvironmentResponse; }): void => {
+    environmentDetails.set(response.body.name, response.body);
   }
 
   await Promise.all([

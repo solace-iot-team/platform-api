@@ -1,6 +1,7 @@
 import 'mocha';
 import { expect } from 'chai';
 import path from 'path';
+import { PlatformAPIClient } from '../../lib/api.helpers';
 import {
   ApiError,
   Developer,
@@ -8,7 +9,6 @@ import {
 } from '../../lib/generated/openapi';
 
 import * as setup from './common/test.setup';
-import { PlatformAPIClient } from '../../lib/api.helpers';
 
 const scriptName: string = path.basename(__filename);
 

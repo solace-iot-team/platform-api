@@ -90,7 +90,8 @@ describe(`${scriptName}`, () => {
         }
       }
       try {
-        response = await AdministrationService.createOrganization({ requestBody: request });
+        const rsp = await AdministrationService.createOrganization({ requestBody: request });
+        response = rsp.body;
       } catch (e) {
         expect(isInstanceOfApiError(e), `${TestLogger.createNotApiErrorMesssage(e.message)}`).to.be.true;
         let message = `creating org=${orgName}`;
@@ -106,7 +107,8 @@ describe(`${scriptName}`, () => {
         name: orgName
       }
       try {
-        response = await AdministrationService.createOrganization({ requestBody: request });
+        const rsp = await AdministrationService.createOrganization({ requestBody: request });
+        response = rsp.body;
       } catch (e) {
         expect(isInstanceOfApiError(e), `${TestLogger.createNotApiErrorMesssage(e.message)}`).to.be.true;
         let message = `creating org=${orgName}`;
@@ -133,7 +135,8 @@ describe(`${scriptName}`, () => {
         }
       }
       try {
-        response = await AdministrationService.updateOrganization({ organizationName: orgName, requestBody: request });
+        const rsp = await AdministrationService.updateOrganization({ organizationName: orgName, requestBody: request });
+        response = rsp.body;
       } catch (e) {
         expect(isInstanceOfApiError(e), `${TestLogger.createNotApiErrorMesssage(e.message)}`).to.be.true;
         let message = `creating org=${orgName}`;

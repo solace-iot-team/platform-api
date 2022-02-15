@@ -65,7 +65,8 @@ describe(`${scriptName}`, () => {
       }
       try {
         PlatformAPIClient.setManagementUser();
-        response = await AdministrationService.createOrganization({ requestBody: request });
+        const rsp = await AdministrationService.createOrganization({ requestBody: request });
+        response = rsp.body;
         expect(response.name).to.equal(orgName);
       } catch (e) {
         expect(isInstanceOfApiError(e), `${TestLogger.createNotApiErrorMesssage(e.message)}`).to.be.true;
@@ -83,7 +84,8 @@ describe(`${scriptName}`, () => {
       }
       try {
         PlatformAPIClient.setManagementUser();
-        response = await AdministrationService.createOrganization({ requestBody: request });
+        const rsp = await AdministrationService.createOrganization({ requestBody: request });
+        response = rsp.body;
         expect(response.name).to.equal(orgName);
       } catch (e) {
         expect(isInstanceOfApiError(e), `${TestLogger.createNotApiErrorMesssage(e.message)}`).to.be.true;

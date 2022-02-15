@@ -1,13 +1,13 @@
 import 'mocha';
 import { expect } from 'chai';
 import path from 'path';
-import yaml from "js-yaml";
-import { TestContext } from "../../lib/test.helpers";
+import yaml from 'js-yaml';
+import { PlatformAPIClient } from '../../lib/api.helpers';
+import { TestContext } from '../../lib/test.helpers';
 import type { App } from "../../lib/generated/openapi";
 import { ApiError, AppsService } from "../../lib/generated/openapi";
 
 import * as setup from './common/test.setup';
-import { PlatformAPIClient } from '../../lib/api.helpers';
 
 const scriptName: string = path.basename(__filename);
 
@@ -16,22 +16,19 @@ describe(scriptName, function () {
   const organizationName: string = setup.organizationName;
   const developerName: string = setup.developer1.userName;
 
-  const applicationName1: string = `${developerName}-app1`;
-  const applicationName2: string = `${developerName}-app2`;
-
-  /** Base parameters to create, get, update or delete a developer application. */
   const devctx = {
     organizationName: organizationName,
     developerUsername: developerName,
   }
 
-  /** Base parameters to get details for application #1. */
+  const applicationName1: string = `${developerName}-app1`;
+  const applicationName2: string = `${developerName}-app2`;
+
   const appctx1 = {
     organizationName: organizationName,
     appName: applicationName1,
   }
 
-  /** Base parameters to get details for application #2. */
   const appctx2 = {
     organizationName: organizationName,
     appName: applicationName2,
@@ -89,7 +86,7 @@ describe(scriptName, function () {
       expect.fail(`failed to get API spec; error="${reason.body.message}"`);
     });
 
-    let apiSpec = response;
+    let apiSpec = response.body;
     expect(apiSpec, `API spec is not correct`).to.be.a('object').that.is.not.empty;
 
     const baseApiSpec = JSON.parse(setup.apiSpec1);
@@ -140,7 +137,7 @@ describe(scriptName, function () {
 
     let apiSpec: any;
     try {
-      apiSpec = yaml.load(response);
+      apiSpec = yaml.load(response.body);
     } catch (e) {
       expect.fail(`failed to parse API spec as YAML; error=${e.message}`);
     }

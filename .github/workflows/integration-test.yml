@@ -17,8 +17,8 @@ on:
 env:
   DEBUG_FLAG: ${{ true }}
   # DEBUG_FLAG: ${{ false }}
-  TEST_PLATFORM_DIR: "api-implementation"
-  TEST_TEST_RUNNER_OUTPUT_DIR: "api-implementation/test/integration/tmp"
+  TEST_PLATFORM_DIR: "platform-api/api-implementation"
+  TEST_TEST_RUNNER_OUTPUT_DIR: "platform-api/api-implementation/test/integration/tmp"
   TEST_OUTPUT_NAME: "api-implementation-test-integration"
 jobs:
   integration_test:
@@ -27,9 +27,12 @@ jobs:
       max-parallel: 1
       matrix:
         node: [ '14', '16' ]
+    defaults:
+      run:
+        working-directory: ${{ env.TEST_PLATFORM_DIR }}
     steps:
       - name: Check Auth
-        if: github.event_name == 'workflow_dispatch' && github.actor != 'ricardojosegomezulmke' && github.actor != '195858'
+        if: github.event_name == 'workflow_dispatch' && github.actor != 'ricardojosegomezulmke' && github.actor != '195858' && github.actor != 'NilsEckertSolace'
         run: |
           echo "not authorized"
           echo '::set-output name=IS_AUTHORIZED::false'
@@ -38,10 +41,16 @@ jobs:
         if: ${{ always() && steps.auth.outputs.IS_AUTHORIZED == 'false' }}
         uses: andymckay/cancel-action@0.2
 
-      - name: Checkout Current Branch
-        uses: actions/checkout@master
+      - name: Checkout OpenAPI code generator
+        uses: actions/checkout@v2
         with:
-          ref: ${{ github.ref }}
+          repository: solace-iot-team/openapi-typescript-codegen
+          path: openapi-typescript-codegen
+
+      - name: Checkout Platform API code
+        uses: actions/checkout@v2
+        with:
+          path: platform-api
 
       - name: env before install
         if: env.DEBUG_FLAG == 'true'
@@ -52,7 +61,7 @@ jobs:
           echo ">>> environment: TEST_* "
           env | grep TEST
 
-      - name: setup node
+      - name: Setup Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v2
         with:
           node-version: ${{ matrix.node }}
@@ -65,10 +74,16 @@ jobs:
           echo "npm --version: "; npm --version
           echo "docker --version"; docker --version
 
-      - name: npm install
+      - name: Build OpenAPI code generator 
         run: |
-          cd "${TEST_PLATFORM_DIR}"
-          npm install
+          npm ci
+          npm run build
+        working-directory: openapi-typescript-codegen
+
+      - name: Install Platform API dependencies
+        run: |
+          npm ci
+          npm link ../../openapi-typescript-codegen
 
       - name: Run Tests
         run: |
@@ -78,8 +93,7 @@ jobs:
           export APIM_INTEGRATION_TEST_SOLACE_EVENT_PORTAL_TOKEN=${{ secrets.SOLACE_EVENT_PORTAL_TOKEN }}
           export APIM_INTEGRATION_TEST_PLATFORM_ADMIN_USER=${{ secrets.PLATFORM_ADMIN_USER }}
           export APIM_INTEGRATION_TEST_PLATFORM_ADMIN_PASSWORD=${{ secrets.PLATFORM_ADMIN_PASSWORD }}
-          export APIM_SOLACE_PLATFORM_API_PROJECT_HOME="$GITHUB_WORKSPACE"
-          cd "$APIM_SOLACE_PLATFORM_API_PROJECT_HOME/${TEST_PLATFORM_DIR}"
+          export APIM_SOLACE_PLATFORM_API_PROJECT_HOME="$GITHUB_WORKSPACE/platform-api"
           test/integration/run.sh
 
       - name: Archive logs

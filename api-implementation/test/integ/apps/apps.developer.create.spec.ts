@@ -2,7 +2,7 @@ import 'mocha';
 import { expect } from 'chai';
 import path from 'path';
 import { PlatformAPIClient } from '../../lib/api.helpers';
-import type { App } from "../../lib/generated/openapi";
+import type { App, AppResponse } from "../../lib/generated/openapi";
 import {
   ApiError,
   AppStatus,
@@ -26,20 +26,19 @@ describe(scriptName, function () {
   const organizationName: string = setup.organizationName;
   const developerName: string = setup.developer1.userName;
 
-  const applicationName: string = `${developerName}-app`;
-
-  /** Base parameters to create, list, update or delete applications */
-  const appctx = {
+  const devctx = {
     organizationName: organizationName,
     developerUsername: developerName,
   }
+
+  const applicationName: string = `${developerName}-app`;
 
   // HOOKS
 
   setup.addBeforeHooks(this);
 
   afterEach(async function () {
-    await AppsService.deleteDeveloperApp({ ...appctx, appName: applicationName }).catch(() => {});
+    await AppsService.deleteDeveloperApp({ ...devctx, appName: applicationName }).catch(() => { });
   });
 
   setup.addAfterHooks(this);
@@ -57,29 +56,32 @@ describe(scriptName, function () {
       credentials: { expiresAt: -1 },
     }
 
-    const response = await AppsService.createDeveloperApp({ ...appctx, requestBody: application }).catch((reason) => {
+    const response = await AppsService.createDeveloperApp({ ...devctx, requestBody: application }).catch((reason) => {
       expect(reason, `error=${reason.message}`).is.instanceof(ApiError);
       expect.fail(`failed to create developer application; error="${reason.body.message}"`);
     });
 
-    expect(response, "status is not correct").to.have.property('status', AppStatus.APPROVED);
-    expect(response, "name is not correct").to.have.property('name', application.name);
-    expect(response, "display name is not correct").to.have.property('displayName', application.displayName ?? application.name);
-    expect(response, "internal name is not set").to.have.property('internalName');
-    expect(response, "consumer key is not set").to.have.nested.property('credentials.secret.consumerKey');
-    expect(response, "consumer secret is not set").to.have.nested.property('credentials.secret.consumerSecret');
+    const appResponse: AppResponse = response.body;
+    const internalName: string = appResponse.internalName;
 
-    const aclProfileName: string = response.internalName;
+    expect(appResponse, "status is not correct").to.have.property('status', AppStatus.APPROVED);
+    expect(appResponse, "name is not correct").to.have.property('name', application.name);
+    expect(appResponse, "display name is not correct").to.have.property('displayName', application.displayName ?? application.name);
+    expect(appResponse, "internal name is not set").to.have.property('internalName');
+    expect(appResponse, "consumer key is not set").to.have.nested.property('credentials.secret.consumerKey');
+    expect(appResponse, "consumer secret is not set").to.have.nested.property('credentials.secret.consumerSecret');
+
+    const aclProfileName: string = internalName;
 
     await verifyAclProfile(setup.environment1, aclProfileName, null);
     await verifyAclProfile(setup.environment2, aclProfileName, null);
 
-    const queueName: string = response.internalName;
+    const queueName: string = internalName;
 
     await verifyMessageQueue(setup.environment1, queueName, null);
     await verifyMessageQueue(setup.environment2, queueName, null);
 
-    const restDeliveryPointName: string = response.internalName;
+    const restDeliveryPointName: string = internalName;
 
     await verifyRestDeliveryPoint(setup.environment1, restDeliveryPointName, null);
     await verifyRestDeliveryPoint(setup.environment2, restDeliveryPointName, null);
@@ -102,28 +104,31 @@ describe(scriptName, function () {
       },
     }
 
-    const response = await AppsService.createDeveloperApp({ ...appctx, requestBody: application }).catch((reason) => {
+    const response = await AppsService.createDeveloperApp({ ...devctx, requestBody: application }).catch((reason) => {
       expect(reason, `error=${reason.message}`).is.instanceof(ApiError);
       expect.fail(`failed to create developer application; error="${reason.body.message}"`);
     });
 
-    expect(response, "status is not correct").to.have.property('status', AppStatus.APPROVED);
-    expect(response, "name is not correct").to.have.property('name', application.name);
-    expect(response, "display name is not correct").to.have.property('displayName', application.displayName ?? application.name);
-    expect(response, "internal name is not set").to.have.property('internalName');
-    expect(response, "credentials are not correct").to.have.property('credentials').that.deep.includes(application.credentials);
+    const appResponse: AppResponse = response.body;
+    const internalName: string = appResponse.internalName;
 
-    const aclProfileName: string = response.internalName;
+    expect(appResponse, "status is not correct").to.have.property('status', AppStatus.APPROVED);
+    expect(appResponse, "name is not correct").to.have.property('name', application.name);
+    expect(appResponse, "display name is not correct").to.have.property('displayName', application.displayName ?? application.name);
+    expect(appResponse, "internal name is not set").to.have.property('internalName');
+    expect(appResponse, "credentials are not correct").to.have.property('credentials').that.deep.includes(application.credentials);
+
+    const aclProfileName: string = internalName;
 
     await verifyAclProfile(setup.environment1, aclProfileName, null);
     await verifyAclProfile(setup.environment2, aclProfileName, null);
 
-    const queueName: string = response.internalName;
+    const queueName: string = internalName;
 
     await verifyMessageQueue(setup.environment1, queueName, null);
     await verifyMessageQueue(setup.environment2, queueName, null);
 
-    const restDeliveryPointName: string = response.internalName;
+    const restDeliveryPointName: string = internalName;
 
     await verifyRestDeliveryPoint(setup.environment1, restDeliveryPointName, null);
     await verifyRestDeliveryPoint(setup.environment2, restDeliveryPointName, null);
@@ -140,19 +145,22 @@ describe(scriptName, function () {
       credentials: { expiresAt: -1 },
     }
 
-    const response = await AppsService.createDeveloperApp({ ...appctx, requestBody: application }).catch((reason) => {
+    const response = await AppsService.createDeveloperApp({ ...devctx, requestBody: application }).catch((reason) => {
       expect(reason, `error=${reason.message}`).is.instanceof(ApiError);
       expect.fail(`failed to create developer application; error="${reason.body.message}"`);
     });
 
-    expect(response, "status is not correct").to.have.property('status', AppStatus.APPROVED);
-    expect(response, "name is not correct").to.have.property('name', application.name);
-    expect(response, "display name is not correct").to.have.property('displayName', application.displayName ?? application.name);
-    expect(response, "internal name is not set").to.have.property('internalName');
-    expect(response, "consumer key is not set").to.have.nested.property('credentials.secret.consumerKey');
-    expect(response, "consumer secret is not set").to.have.nested.property('credentials.secret.consumerSecret');
+    const appResponse: AppResponse = response.body;
+    const internalName: string = appResponse.internalName;
 
-    const aclProfileName: string = response.internalName;
+    expect(appResponse, "status is not correct").to.have.property('status', AppStatus.APPROVED);
+    expect(appResponse, "name is not correct").to.have.property('name', application.name);
+    expect(appResponse, "display name is not correct").to.have.property('displayName', application.displayName ?? application.name);
+    expect(appResponse, "internal name is not set").to.have.property('internalName');
+    expect(appResponse, "consumer key is not set").to.have.nested.property('credentials.secret.consumerKey');
+    expect(appResponse, "consumer secret is not set").to.have.nested.property('credentials.secret.consumerSecret');
+
+    const aclProfileName: string = internalName;
     const aclProfile: AclProfile = {
       pubTopicExceptions: ["say/hello/EN", "say/hello/DE"],
       subTopicExceptions: ["say/hello/EN", "say/hello/DE"],
@@ -161,12 +169,12 @@ describe(scriptName, function () {
     await verifyAclProfile(setup.environment1, aclProfileName, aclProfile);
     await verifyAclProfile(setup.environment2, aclProfileName, null);
 
-    const queueName: string = response.internalName;
+    const queueName: string = internalName;
 
     await verifyMessageQueue(setup.environment1, queueName, null);
     await verifyMessageQueue(setup.environment2, queueName, null);
 
-    const restDeliveryPointName: string = response.internalName;
+    const restDeliveryPointName: string = internalName;
 
     await verifyRestDeliveryPoint(setup.environment1, restDeliveryPointName, null);
     await verifyRestDeliveryPoint(setup.environment2, restDeliveryPointName, null);
@@ -182,19 +190,22 @@ describe(scriptName, function () {
       credentials: { expiresAt: -1 },
     }
 
-    const response = await AppsService.createDeveloperApp({ ...appctx, requestBody: application }).catch((reason) => {
+    const response = await AppsService.createDeveloperApp({ ...devctx, requestBody: application }).catch((reason) => {
       expect(reason, `error=${reason.message}`).is.instanceof(ApiError);
       expect.fail(`failed to create developer application; error="${reason.body.message}"`);
     });
 
-    expect(response, "status is not correct").to.have.property('status', AppStatus.APPROVED);
-    expect(response, "name is not correct").to.have.property('name', application.name);
-    expect(response, "display name is not correct").to.have.property('displayName', application.displayName ?? application.name);
-    expect(response, "internal name is not set").to.have.property('internalName');
-    expect(response, "consumer key is not set").to.have.nested.property('credentials.secret.consumerKey');
-    expect(response, "consumer secret is not set").to.have.nested.property('credentials.secret.consumerSecret');
+    const appResponse: AppResponse = response.body;
+    const internalName: string = appResponse.internalName;
 
-    const aclProfileName: string = response.internalName;
+    expect(appResponse, "status is not correct").to.have.property('status', AppStatus.APPROVED);
+    expect(appResponse, "name is not correct").to.have.property('name', application.name);
+    expect(appResponse, "display name is not correct").to.have.property('displayName', application.displayName ?? application.name);
+    expect(appResponse, "internal name is not set").to.have.property('internalName');
+    expect(appResponse, "consumer key is not set").to.have.nested.property('credentials.secret.consumerKey');
+    expect(appResponse, "consumer secret is not set").to.have.nested.property('credentials.secret.consumerSecret');
+
+    const aclProfileName: string = internalName;
     const aclProfile1: AclProfile = {
       pubTopicExceptions: ["say/hello/DE", "say/hello/EN"],
       subTopicExceptions: ["say/hello/DE", "say/hello/EN"],
@@ -207,12 +218,12 @@ describe(scriptName, function () {
     await verifyAclProfile(setup.environment1, aclProfileName, aclProfile1);
     await verifyAclProfile(setup.environment2, aclProfileName, aclProfile2);
 
-    const queueName: string = response.internalName;
+    const queueName: string = internalName;
 
     await verifyMessageQueue(setup.environment1, queueName, null);
     await verifyMessageQueue(setup.environment2, queueName, null);
 
-    const restDeliveryPointName: string = response.internalName;
+    const restDeliveryPointName: string = internalName;
 
     await verifyRestDeliveryPoint(setup.environment1, restDeliveryPointName, null);
     await verifyRestDeliveryPoint(setup.environment2, restDeliveryPointName, null);
@@ -230,19 +241,22 @@ describe(scriptName, function () {
       credentials: { expiresAt: -1 },
     }
 
-    const response = await AppsService.createDeveloperApp({ ...appctx, requestBody: application }).catch((reason) => {
+    const response = await AppsService.createDeveloperApp({ ...devctx, requestBody: application }).catch((reason) => {
       expect(reason, `error=${reason.message}`).is.instanceof(ApiError);
       expect.fail(`failed to create developer application; error="${reason.body.message}"`);
     });
 
-    expect(response, "status is not correct").to.have.property('status', AppStatus.APPROVED);
-    expect(response, "name is not correct").to.have.property('name', application.name);
-    expect(response, "display name is not correct").to.have.property('displayName', application.displayName ?? application.name);
-    expect(response, "internal name is not set").to.have.property('internalName');
-    expect(response, "consumer key is not set").to.have.nested.property('credentials.secret.consumerKey');
-    expect(response, "consumer secret is not set").to.have.nested.property('credentials.secret.consumerSecret');
+    const appResponse: AppResponse = response.body;
+    const internalName: string = appResponse.internalName;
 
-    const aclProfileName: string = response.internalName;
+    expect(appResponse, "status is not correct").to.have.property('status', AppStatus.APPROVED);
+    expect(appResponse, "name is not correct").to.have.property('name', application.name);
+    expect(appResponse, "display name is not correct").to.have.property('displayName', application.displayName ?? application.name);
+    expect(appResponse, "internal name is not set").to.have.property('internalName');
+    expect(appResponse, "consumer key is not set").to.have.nested.property('credentials.secret.consumerKey');
+    expect(appResponse, "consumer secret is not set").to.have.nested.property('credentials.secret.consumerSecret');
+
+    const aclProfileName: string = internalName;
     const aclProfile: AclProfile = {
       pubTopicExceptions: ["say/hello/EN"],
       subTopicExceptions: ["say/hello/EN"],
@@ -251,7 +265,7 @@ describe(scriptName, function () {
     await verifyAclProfile(setup.environment1, aclProfileName, aclProfile);
     await verifyAclProfile(setup.environment2, aclProfileName, null);
 
-    const queueName: string = response.internalName;
+    const queueName: string = internalName;
     const queue: Queue = {
       accessType: Queue.accessType.EXCLUSIVE,
       maxTimeToLive: 86400,
@@ -260,7 +274,7 @@ describe(scriptName, function () {
     await verifyMessageQueue(setup.environment1, queueName, queue);
     await verifyMessageQueue(setup.environment2, queueName, null);
 
-    const restDeliveryPointName: string = response.internalName;
+    const restDeliveryPointName: string = internalName;
     const restDeliveryPoint = createRestDeliveryPointFromWebHook(setup.webHook1);
 
     await verifyRestDeliveryPoint(setup.environment1, restDeliveryPointName, restDeliveryPoint);
@@ -277,7 +291,7 @@ describe(scriptName, function () {
 
     PlatformAPIClient.setManagementUser();
 
-    await AppsService.createDeveloperApp({ ...appctx, requestBody: application }).then(() => {
+    await AppsService.createDeveloperApp({ ...devctx, requestBody: application }).then(() => {
       expect.fail("an unauthorized user created an application");
     }, (reason) => {
       expect(reason, `error=${reason.message}`).is.instanceof(ApiError);
@@ -293,9 +307,9 @@ describe(scriptName, function () {
       credentials: { expiresAt: -1 },
     }
 
-    await AppsService.createDeveloperApp({ ...appctx, requestBody: application });
+    await AppsService.createDeveloperApp({ ...devctx, requestBody: application });
 
-    await AppsService.createDeveloperApp({ ...appctx, requestBody: application }).then(() => {
+    await AppsService.createDeveloperApp({ ...devctx, requestBody: application }).then(() => {
       expect.fail("an application was created twice (duplicate)");
     }, (reason) => {
       expect(reason, `error=${reason.message}`).is.instanceof(ApiError);
@@ -311,7 +325,7 @@ describe(scriptName, function () {
       credentials: { expiresAt: -1 },
     }
 
-    await AppsService.createDeveloperApp({ ...appctx, requestBody: application }).then(() => {
+    await AppsService.createDeveloperApp({ ...devctx, requestBody: application }).then(() => {
       expect.fail("an application with unknown API product was created");
     }, (reason) => {
       expect(reason, `error=${reason.message}`).is.instanceof(ApiError);
@@ -335,7 +349,7 @@ describe(scriptName, function () {
       ],
     }
 
-    await AppsService.createDeveloperApp({ ...appctx, requestBody: application }).then(() => {
+    await AppsService.createDeveloperApp({ ...devctx, requestBody: application }).then(() => {
       expect.fail("an application with incorrect web hook environment was created");
     }, (reason) => {
       expect(reason, `error=${reason.message}`).is.instanceof(ApiError);

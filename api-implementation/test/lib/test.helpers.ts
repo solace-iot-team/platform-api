@@ -263,7 +263,7 @@ export class TestContext {
 // +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 // Stubbing global request from openapi
 const stub = sinon.stub(__requestLib, 'request');
-stub.callsFake((config: OpenAPIConfig, options: ApiRequestOptions): CancelablePromise<unknown> => {
+stub.callsFake((config: OpenAPIConfig, options: ApiRequestOptions): CancelablePromise<{headers: Record<string, string>, body: unknown}> => {
 
     TestContext.setApiRequestOptions(options);
     TestLogger.logApiRequestOptions(TestContext.getItId(), options);
@@ -272,8 +272,8 @@ stub.callsFake((config: OpenAPIConfig, options: ApiRequestOptions): CancelablePr
     TestContext.setApiError(undefined);
 
     const cancelablePromise = stub.wrappedMethod(config, options);
-    cancelablePromise.then((result) => {
-        TestContext.setApiResult(result as ApiResult);
+    cancelablePromise.then((value) => {
+        TestContext.setApiResult(value.body as ApiResult);
         TestLogger.logApiResult(TestContext.getItId(), TestContext.getApiResult());
     }, (reason) => {
         TestContext.setApiError(reason);
