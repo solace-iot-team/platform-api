@@ -135,7 +135,8 @@ describe(`${scriptName}`, () => {
         name: orgName
       }
       try {
-        response = await AdministrationService.createOrganization({ requestBody: request });
+        const rsp = await AdministrationService.createOrganization({ requestBody: request });
+        response = rsp.body;
       } catch (e) {
         expect(isInstanceOfApiError(e), `${TestLogger.createNotApiErrorMesssage(e.message)}`).to.be.true;
         let message = `creating org=${orgName}`;
@@ -149,7 +150,8 @@ describe(`${scriptName}`, () => {
       let response: string;
       let request: string = testEnv.SOLACE_CLOUD_TOKEN;
       try {
-        response = await ManagementService.updateToken({ organizationName: orgName, requestBody: request });
+        const rsp = await ManagementService.updateToken({ organizationName: orgName, requestBody: request });
+        response = rsp.body;
       } catch (e) {
         expect(isInstanceOfApiError(e), `${TestLogger.createNotApiErrorMesssage(e.message)}`).to.be.true;
         let message = `update token for org=${orgName}`;
@@ -162,7 +164,8 @@ describe(`${scriptName}`, () => {
       let response: Environment;
       let request: Environment = devEnv;
       try {
-        response = await EnvironmentsService.createEnvironment({ organizationName: orgName, requestBody: request });
+        const rsp = await EnvironmentsService.createEnvironment({ organizationName: orgName, requestBody: request });
+        response = rsp.body;
       } catch (e) {
         expect(isInstanceOfApiError(e), `${TestLogger.createNotApiErrorMesssage(e.message)}`).to.be.true;
         let message = `register dev service=${devEnvName} with org=${orgName}`;
@@ -175,7 +178,8 @@ describe(`${scriptName}`, () => {
       let response: Environment;
       let request: Environment = prodEnv;
       try {
-        response = await EnvironmentsService.createEnvironment({ organizationName: orgName, requestBody: request });
+        const rsp = await EnvironmentsService.createEnvironment({ organizationName: orgName, requestBody: request });
+        response = rsp.body;
       } catch (e) {
         expect(isInstanceOfApiError(e), `${TestLogger.createNotApiErrorMesssage(e.message)}`).to.be.true;
         let message = `register prod service=${prodEnvName} with org=${orgName}`;
@@ -187,7 +191,8 @@ describe(`${scriptName}`, () => {
     it(`${scriptName}: should get environments`, async () => {
       let response: Array<Environment>;
       try {
-        response = await EnvironmentsService.listEnvironments({ organizationName: orgName });
+        const rsp = await EnvironmentsService.listEnvironments({ organizationName: orgName });
+        response = rsp.body;
       } catch (e) {
         expect(isInstanceOfApiError(e), `${TestLogger.createNotApiErrorMesssage(e.message)}`).to.be.true;
         let message = `get envs for org='${orgName}`;
@@ -201,7 +206,8 @@ describe(`${scriptName}`, () => {
     it(`${scriptName}: should get audit history`, async () => {
       let response: Array<History>;
       try {
-        response = await ManagementService.listHistory({ organizationName: orgName });
+        const rsp = await ManagementService.listHistory({ organizationName: orgName });
+        response = rsp.body;
       } catch (e) {
         expect(isInstanceOfApiError(e), `${TestLogger.createNotApiErrorMesssage(e.message)}`).to.be.true;
         let message = `get audit history for org='${orgName}`;
@@ -215,7 +221,8 @@ describe(`${scriptName}`, () => {
     it(`${scriptName}: should get dev environment`, async () => {
       let response: EnvironmentResponse;
       try {
-        response = await EnvironmentsService.getEnvironment({ organizationName: orgName, envName: devEnv.name });
+        const rsp = await EnvironmentsService.getEnvironment({ organizationName: orgName, envName: devEnv.name });
+        response = rsp.body;
       } catch (e) {
         expect(isInstanceOfApiError(e), `${TestLogger.createNotApiErrorMesssage(e.message)}`).to.be.true;
         let message = `get dev env='${devEnv}`;
@@ -227,7 +234,8 @@ describe(`${scriptName}`, () => {
     it(`${scriptName}: should get prod environment`, async () => {
       let response: EnvironmentResponse;
       try {
-        response = await EnvironmentsService.getEnvironment({ organizationName: orgName, envName: prodEnv.name });
+        const rsp = await EnvironmentsService.getEnvironment({ organizationName: orgName, envName: prodEnv.name });
+        response = rsp.body;
       } catch (e) {
         expect(isInstanceOfApiError(e), `${TestLogger.createNotApiErrorMesssage(e.message)}`).to.be.true;
         let message = `get prod env='${prodEnv}`;
@@ -239,7 +247,8 @@ describe(`${scriptName}`, () => {
     it(`${scriptName}: should create api`, async () => {
       let response: string;
       try {
-        response = await ApisService.createApi({ organizationName: orgName, apiName: apiNameMaintenance, requestBody: apiSpecMaintenance });
+        const rsp = await ApisService.createApi({ organizationName: orgName, apiName: apiNameMaintenance, requestBody: apiSpecMaintenance });
+        response = rsp.body;
       } catch (e) {
         expect(isInstanceOfApiError(e), `${TestLogger.createNotApiErrorMesssage(e.message)}`).to.be.true;
         let message = `create api='${apiNameMaintenance}`;
@@ -265,7 +274,8 @@ describe(`${scriptName}`, () => {
         subResources: []
       };
       try {
-        response = await ApiProductsService.createApiProduct({ organizationName: orgName, requestBody: request });
+        const rsp = await ApiProductsService.createApiProduct({ organizationName: orgName, requestBody: request });
+        response = rsp.body;
       } catch (e) {
         expect(isInstanceOfApiError(e), `${TestLogger.createNotApiErrorMesssage(e.message)}`).to.be.true;
         let message = `org=${orgName}, create apiProduct='${apiProductNameMaintenanceDevelopment}`;
@@ -278,7 +288,8 @@ describe(`${scriptName}`, () => {
       // get current APIProduct
       let responseGet: APIProduct;
       try {
-        responseGet = await ApiProductsService.getApiProduct({ organizationName: orgName, apiProductName: apiProductNameMaintenanceDevelopment });
+        const rsp = await ApiProductsService.getApiProduct({ organizationName: orgName, apiProductName: apiProductNameMaintenanceDevelopment });
+        responseGet = rsp.body;
       } catch (e) {
         expect(isInstanceOfApiError(e), `${TestLogger.createNotApiErrorMesssage(e.message)}`).to.be.true;
         let message = `get apiProduct=${apiProductNameMaintenanceDevelopment}`;
@@ -290,7 +301,8 @@ describe(`${scriptName}`, () => {
       }
       let expectedResponsePatch: APIProduct = _.merge({}, responseGet, requestPatch);
       try {
-        responsePatch = await ApiProductsService.updateApiProduct({ organizationName: orgName, apiProductName: apiProductNameMaintenanceDevelopment, requestBody: requestPatch });
+        const rsp = await ApiProductsService.updateApiProduct({ organizationName: orgName, apiProductName: apiProductNameMaintenanceDevelopment, requestBody: requestPatch });
+        responsePatch = rsp.body;
       } catch (e) {
         expect(isInstanceOfApiError(e), `${TestLogger.createNotApiErrorMesssage(e.message)}`).to.be.true;
         let message = `update apiProduct=${apiProductNameMaintenanceDevelopment}`;
@@ -316,7 +328,8 @@ describe(`${scriptName}`, () => {
         subResources: []
       };
       try {
-        response = await ApiProductsService.createApiProduct({ organizationName: orgName, requestBody: request });
+        const rsp = await ApiProductsService.createApiProduct({ organizationName: orgName, requestBody: request });
+        response = rsp.body;
       } catch (e) {
         expect(isInstanceOfApiError(e), `${TestLogger.createNotApiErrorMesssage(e.message)}`).to.be.true;
         let message = `create apiProduct='${apiProductNameMaintenanceProduction}`;
@@ -330,7 +343,8 @@ describe(`${scriptName}`, () => {
       for (let developer of developers) {
         let request = developer;
         try {
-          response = await DevelopersService.createDeveloper({ organizationName: orgName, requestBody: request });
+          const rsp = await DevelopersService.createDeveloper({ organizationName: orgName, requestBody: request });
+          response = rsp.body;
         } catch (e) {
           expect(isInstanceOfApiError(e), `${TestLogger.createNotApiErrorMesssage(e.message)}`).to.be.true;
           let message = `create developer`;
@@ -357,7 +371,8 @@ describe(`${scriptName}`, () => {
         request.credentials = createDefaultCredentials();
         request.name = `${developerAppNameMaintenanceDevelopment}-${developer.userName}`
         try {
-          response = await AppsService.createDeveloperApp({ organizationName: orgName, developerUsername: developer.userName, requestBody: request });
+          const rsp = await AppsService.createDeveloperApp({ organizationName: orgName, developerUsername: developer.userName, requestBody: request });
+          response = rsp.body;
         } catch (e) {
           expect(isInstanceOfApiError(e), `${TestLogger.createNotApiErrorMesssage(e.message)}`).to.be.true;
           let message = `create developer app`;
@@ -378,7 +393,8 @@ describe(`${scriptName}`, () => {
         let appName = `${developerAppNameMaintenanceDevelopment}-${developer.userName}`
         let responseGet: AppResponse;
         try {
-          responseGet = await AppsService.getDeveloperApp({ organizationName: orgName, developerUsername: developer.userName, appName: appName });
+          const rsp = await AppsService.getDeveloperApp({ organizationName: orgName, developerUsername: developer.userName, appName: appName });
+          responseGet = rsp.body;
         } catch (e) {
           expect(isInstanceOfApiError(e), `${TestLogger.createNotApiErrorMesssage(e.message)}`).to.be.true;
           let message = `getDeveloperApp=${appName}`;
@@ -406,7 +422,8 @@ describe(`${scriptName}`, () => {
         // get current DeveloperApp
         let responseGet: AppResponse;
         try {
-          responseGet = await AppsService.getDeveloperApp({ organizationName: orgName, developerUsername: developer.userName, appName: appName });
+          const rsp = await AppsService.getDeveloperApp({ organizationName: orgName, developerUsername: developer.userName, appName: appName });
+          responseGet = rsp.body;
         } catch (e) {
           expect(isInstanceOfApiError(e), `${TestLogger.createNotApiErrorMesssage(e.message)}`).to.be.true;
           let message = `getDeveloperApp=${appName}`;
@@ -425,7 +442,8 @@ describe(`${scriptName}`, () => {
         // warning: overrides arrays
         let expectedResponsePatch: AppResponse = _.merge({}, responseGet, requestPatch);
         try {
-          responsePatch = await AppsService.updateDeveloperApp({ organizationName: orgName, developerUsername: developer.userName, appName: appName, requestBody: requestPatch });
+          const rsp = await AppsService.updateDeveloperApp({ organizationName: orgName, developerUsername: developer.userName, appName: appName, requestBody: requestPatch });
+          responsePatch = rsp.body;
         } catch (e) {
           expect(isInstanceOfApiError(e), `${TestLogger.createNotApiErrorMesssage(e.message)}`).to.be.true;
           let message = `updateDeveloperApp=${appName}`;
@@ -457,7 +475,8 @@ describe(`${scriptName}`, () => {
         request.credentials = createDefaultCredentials();
         request.name = appName;
         try {
-          response = await AppsService.createDeveloperApp({ organizationName: orgName, developerUsername: developer.userName, requestBody: request });
+          const rsp = await AppsService.createDeveloperApp({ organizationName: orgName, developerUsername: developer.userName, requestBody: request });
+          response = rsp.body;
         } catch (e) {
           expect(isInstanceOfApiError(e), `${TestLogger.createNotApiErrorMesssage(e.message)}`).to.be.true;
           let message = `create app=${appName}`;
@@ -477,7 +496,8 @@ describe(`${scriptName}`, () => {
       // get a list of all apps that require approval
       let responseList: Array<AppListItem>;
       try {
-        responseList = await AppsService.listApps({ organizationName: orgName, status: AppStatus.PENDING, pageSize: 100, pageNumber: 1 });
+        const rsp = await AppsService.listApps({ organizationName: orgName, status: AppStatus.PENDING, pageSize: 100, pageNumber: 1 });
+        responseList = rsp.body;
       } catch (e) {
         expect(isInstanceOfApiError(e), `${TestLogger.createNotApiErrorMesssage(e.message)}`).to.be.true;
         let message = `get all pending apps for org=${orgName}`;
@@ -494,7 +514,8 @@ describe(`${scriptName}`, () => {
           status: AppStatus.APPROVED
         };
         try {
-          responsePatch = await AppsService.updateDeveloperApp({ organizationName: orgName, developerUsername: app.ownerId, appName: app.name, requestBody: requestPatch });
+          const rsp = await AppsService.updateDeveloperApp({ organizationName: orgName, developerUsername: app.ownerId, appName: app.name, requestBody: requestPatch });
+          responsePatch = rsp.body;
         } catch (e) {
           expect(isInstanceOfApiError(e), `${TestLogger.createNotApiErrorMesssage(e.message)}`).to.be.true;
           message = `update (approve) app=${app.name}`;

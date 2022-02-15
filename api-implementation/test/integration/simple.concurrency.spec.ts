@@ -126,7 +126,8 @@ describe(`${scriptName}`, () => {
         name: orgName
       }
       try {
-        response = await AdministrationService.createOrganization({ requestBody: request });
+        const rsp = await AdministrationService.createOrganization({ requestBody: request });
+        response = rsp.body;
       } catch (e) {
         expect(isInstanceOfApiError(e), `${TestLogger.createNotApiErrorMesssage(e.message)}`).to.be.true;
         let message = `creating org=${orgName}`;
@@ -140,7 +141,8 @@ describe(`${scriptName}`, () => {
       let response: string;
       let request: string = testEnv.SOLACE_CLOUD_TOKEN;
       try {
-        response = await ManagementService.updateToken({ organizationName: orgName, requestBody: request });
+        const rsp = await ManagementService.updateToken({ organizationName: orgName, requestBody: request });
+        response = rsp.body;
       } catch (e) {
         expect(isInstanceOfApiError(e), `${TestLogger.createNotApiErrorMesssage(e.message)}`).to.be.true;
         let message = `update token for org=${orgName}`;
