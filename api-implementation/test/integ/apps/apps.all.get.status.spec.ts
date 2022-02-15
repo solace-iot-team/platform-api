@@ -1,12 +1,11 @@
 import 'mocha';
 import { expect } from 'chai';
 import path from 'path';
-import { TestContext } from "../../lib/test.helpers";
-import { APIProduct, App, AppEnvironmentStatus, AppStatus, WebHook } from "../../lib/generated/openapi";
-import { ApiError, AppListItem, AppsService } from "../../lib/generated/openapi";
+import { PlatformAPIClient } from '../../lib/api.helpers';
+import type { APIProduct, App, AppEnvironmentStatus } from "../../lib/generated/openapi";
+import { ApiError, AppsService, WebHook } from "../../lib/generated/openapi";
 
 import * as setup from './common/test.setup';
-import { PlatformAPIClient } from '../../lib/api.helpers';
 
 const scriptName: string = path.basename(__filename);
 
@@ -15,20 +14,19 @@ describe(scriptName, function () {
   const organizationName: string = setup.organizationName;
   const developerName: string = setup.developer1.userName;
 
-  const applicationName: string = `${developerName}-app`;
-
-  /** Base parameters to create, get, update or delete a developer application. */
-  const appctx = {
+  const devctx = {
     organizationName: organizationName,
     developerUsername: developerName,
   }
+
+  const applicationName: string = `${developerName}-app`;
 
   // HOOKS
 
   setup.addBeforeHooks(this);
 
   afterEach(async function () {
-    await AppsService.deleteDeveloperApp({ ...appctx, appName: applicationName }).catch(() => { });
+    await AppsService.deleteDeveloperApp({ ...devctx, appName: applicationName }).catch(() => { });
   });
 
   setup.addAfterHooks(this);
@@ -43,14 +41,14 @@ describe(scriptName, function () {
       credentials: { expiresAt: -1 },
     }
 
-    await AppsService.createDeveloperApp({ ...appctx, requestBody: application });
+    await AppsService.createDeveloperApp({ ...devctx, requestBody: application });
 
     const response = await AppsService.getAppStatus({ organizationName: organizationName, appName: applicationName }).catch((reason) => {
       expect(reason, `error=${reason.message}`).is.instanceof(ApiError);
       expect.fail(`failed to get application status; error="${reason.body.message}"`);
     });
 
-    expect(response, "connection status is incorrect").to.have.deep.include({
+    expect(response.body, "connection status is incorrect").to.have.deep.include({
       environments: [{ name: setup.environment1.name }],
     });
   });
@@ -64,15 +62,15 @@ describe(scriptName, function () {
       credentials: { expiresAt: -1 },
     }
 
-    await AppsService.createDeveloperApp({ ...appctx, requestBody: application });
+    await AppsService.createDeveloperApp({ ...devctx, requestBody: application });
 
     const response = await AppsService.getAppStatus({ organizationName: organizationName, appName: applicationName }).catch((reason) => {
       expect(reason, `error=${reason.message}`).is.instanceof(ApiError);
       expect.fail(`failed to get application status; error="${reason.body.message}"`);
     });
 
-    const environments = response.environments;
-    expect(environments.length, "number of returned environments is incorrect").to.be.equals(2);
+    const environments = response.body.environments;
+    expect(environments, "number of returned environments is incorrect").to.have.lengthOf(2);
 
     let environment: AppEnvironmentStatus;
 
@@ -99,15 +97,15 @@ describe(scriptName, function () {
       credentials: { expiresAt: -1 },
     }
 
-    await AppsService.createDeveloperApp({ ...appctx, requestBody: application });
+    await AppsService.createDeveloperApp({ ...devctx, requestBody: application });
 
     const response = await AppsService.getAppStatus({ organizationName: organizationName, appName: applicationName }).catch((reason) => {
       expect(reason, `error=${reason.message}`).is.instanceof(ApiError);
       expect.fail(`failed to get application status; error="${reason.body.message}"`);
     });
 
-    const environments = response.environments;
-    expect(environments.length, "number of returned environments is incorrect").to.be.equals(2);
+    const environments = response.body.environments;
+    expect(environments, "number of returned environments is incorrect").to.have.lengthOf(2);
 
     let environment: AppEnvironmentStatus;
 
@@ -134,7 +132,7 @@ describe(scriptName, function () {
       credentials: { expiresAt: -1 },
     }
 
-    await AppsService.createDeveloperApp({ ...appctx, requestBody: application });
+    await AppsService.createDeveloperApp({ ...devctx, requestBody: application });
 
     PlatformAPIClient.setManagementUser();
 

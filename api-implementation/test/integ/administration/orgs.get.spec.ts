@@ -1,11 +1,8 @@
 import 'mocha';
 import { expect } from 'chai';
 import path from 'path';
-import {
-  AdministrationService,
-  ApiError,
-  Organization,
-} from '../../lib/generated/openapi';
+import type { Organization } from '../../lib/generated/openapi';
+import { AdministrationService, ApiError } from '../../lib/generated/openapi';
 
 import * as setup from './common/test.setup';
 import { PlatformAPIClient } from '../../lib/api.helpers';
@@ -66,9 +63,11 @@ describe(scriptName, function () {
       expect.fail(`failed to get organization; error="${reason.body.message}"`);
     });
 
-    expect(response, "organization name is incorrect").to.have.property("name", organization1.name);
-    expect(response, "cloud-token is unexpected").to.not.have.property("cloud-token");
-    expect(response, "status is incorrect").to.have.property("status").that.is.an("object").that.is.empty;
+    expect(response.body, "response is not correct").to.deep.include({
+      name: organization1.name,
+      status: {},
+    });
+    expect(response.body, "response is not correct").to.not.have.property("cloud-token");
   });
 
   it("should return an organization with all-in-one token", async function () {
@@ -78,12 +77,14 @@ describe(scriptName, function () {
       expect.fail(`failed to get organization; error="${reason.body.message}"`);
     });
 
-    expect(response, "organization name is incorrect").to.have.property("name", organization2.name);
-    expect(response, "cloud-token is unexpected").to.have.property("cloud-token").that.is.a("string");
-    expect(response, "status is incorrect").to.have.property("status").that.includes({
-      "cloudConnectivity": true,
-      "eventPortalConnectivity": true,
+    expect(response.body, "response is not correct").to.deep.include({
+      name: organization2.name,
+      status: {
+        "cloudConnectivity": true,
+        "eventPortalConnectivity": true,
+      },
     });
+    expect(response.body, "response is not correct").to.have.property("cloud-token").that.is.a("string");
   });
 
   it("should return an organization with cloud and event portal tokens", async function () {
@@ -93,12 +94,14 @@ describe(scriptName, function () {
       expect.fail(`failed to get organization; error="${reason.body.message}"`);
     });
 
-    expect(response, "organization name is incorrect").to.have.property("name", organization3.name);
-    expect(response, "cloud-token is unexpected").to.have.property("cloud-token").that.is.an("object");
-    expect(response, "status is incorrect").to.have.property("status").that.includes({
-      "cloudConnectivity": true,
-      "eventPortalConnectivity": true,
+    expect(response.body, "response is not correct").to.deep.include({
+      name: organization3.name,
+      status: {
+        "cloudConnectivity": true,
+        "eventPortalConnectivity": true,
+      },
     });
+    expect(response.body, "response is not correct").to.have.property("cloud-token").that.is.an("object");
   });
 
   it("should not return an organization if the user is not authorized", async function () {

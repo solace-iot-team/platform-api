@@ -1,9 +1,11 @@
 import 'mocha';
 import { expect } from 'chai';
 import path from 'path';
+import { PlatformAPIClient } from '../../lib/api.helpers';
 import type {
   App,
   AppEnvironment,
+  AppResponse,
   CommonName,
   Endpoint
 } from "../../lib/generated/openapi";
@@ -15,7 +17,6 @@ import {
 } from "../../lib/generated/openapi";
 
 import * as setup from './common/test.setup';
-import { PlatformAPIClient } from '../../lib/api.helpers';
 
 const scriptName: string = path.basename(__filename);
 
@@ -24,20 +25,19 @@ describe(scriptName, function () {
   const organizationName: string = setup.organizationName;
   const developerName: string = setup.developer1.userName;
 
-  const applicationName: string = `${developerName}-app`;
-
-  /** Base parameters to create, list, update or delete developer applications. */
-  const appctx = {
+  const devctx = {
     organizationName: organizationName,
     developerUsername: developerName,
   }
+
+  const applicationName: string = `${developerName}-app`;
 
   // HOOKS
 
   setup.addBeforeHooks(this);
 
   afterEach(async function () {
-    await AppsService.deleteDeveloperApp({ ...appctx, appName: applicationName }).catch(() => { });
+    await AppsService.deleteDeveloperApp({ ...devctx, appName: applicationName }).catch(() => { });
   });
 
   setup.addAfterHooks(this);
@@ -54,23 +54,25 @@ describe(scriptName, function () {
       credentials: { expiresAt: -1 },
     }
 
-    await AppsService.createDeveloperApp({ ...appctx, requestBody: application });
+    await AppsService.createDeveloperApp({ ...devctx, requestBody: application });
 
-    const response = await AppsService.getApp({ ...appctx, appName: application.name }).catch((reason) => {
+    const response = await AppsService.getApp({ ...devctx, appName: application.name }).catch((reason) => {
       expect(reason, `error=${reason.message}`).is.instanceof(ApiError);
       expect.fail(`failed to get developer application; error="${reason.body.message}"`);
     });
 
-    expect(response, "name is not correct").to.have.property('name', application.name);
-    expect(response, "display name is not correct").to.have.property('displayName', application.displayName ?? application.name);
-    expect(response, "API products are not correct").to.have.property('apiProducts').that.is.empty;
-    expect(response, "consumer key is not set").to.have.nested.property('credentials.secret.consumerKey');
-    expect(response, "consumer secret is not set").to.have.nested.property('credentials.secret.consumerSecret');
-    expect(response, "internal name is not set").to.have.property('internalName');
-    expect(response, "attributes are unexpected").to.not.have.property('attributes');
-    expect(response, "web hooks are unexpected").to.not.have.property('webHooks');
-    expect(response, "status is not correct").to.have.property('status', AppStatus.APPROVED);
-    expect(response, "environments are not correct").to.have.property('environments').that.is.empty;
+    const appResponse: AppResponse = response.body;
+
+    expect(appResponse, "name is not correct").to.have.property('name', application.name);
+    expect(appResponse, "display name is not correct").to.have.property('displayName', application.displayName ?? application.name);
+    expect(appResponse, "API products are not correct").to.have.property('apiProducts').that.is.empty;
+    expect(appResponse, "consumer key is not set").to.have.nested.property('credentials.secret.consumerKey');
+    expect(appResponse, "consumer secret is not set").to.have.nested.property('credentials.secret.consumerSecret');
+    expect(appResponse, "internal name is not set").to.have.property('internalName');
+    expect(appResponse, "attributes are unexpected").to.not.have.property('attributes');
+    expect(appResponse, "web hooks are unexpected").to.not.have.property('webHooks');
+    expect(appResponse, "status is not correct").to.have.property('status', AppStatus.APPROVED);
+    expect(appResponse, "environments are not correct").to.have.property('environments').that.is.empty;
   });
 
   it("should return an application with API products", async function () {
@@ -83,30 +85,30 @@ describe(scriptName, function () {
       credentials: { expiresAt: -1 },
     }
 
-    await AppsService.createDeveloperApp({ ...appctx, requestBody: application });
+    await AppsService.createDeveloperApp({ ...devctx, requestBody: application });
 
-    const response = await AppsService.getApp({ ...appctx, appName: application.name }).catch((reason) => {
+    const response = await AppsService.getApp({ ...devctx, appName: application.name }).catch((reason) => {
       expect(reason, `error=${reason.message}`).is.instanceof(ApiError);
       expect.fail(`failed to get developer application; error="${reason.body.message}"`);
     });
 
-    expect(response, "name is not correct").to.have.property('name', application.name);
-    expect(response, "display name is not correct").to.have.property('displayName', application.displayName ?? application.name);
-    expect(response, "API products are not coorect").to.have.property('apiProducts').to.have.members(application.apiProducts);
-    expect(response, "consumer key is not set").to.have.nested.property('credentials.secret.consumerKey');
-    expect(response, "consumer secret is not set").to.have.nested.property('credentials.secret.consumerSecret');
-    expect(response, "internal name is not set").to.have.property('internalName');
-    expect(response, "attributes are unexpected").to.not.have.property('attributes');
-    expect(response, "web hooks are unexpected").to.not.have.property('webHooks');
-    expect(response, "status is not correct").to.have.property('status', AppStatus.APPROVED)
-    expect(response, "environments are not set").to.have.property('environments');
+    const appResponse: AppResponse = response.body;
 
-    const environments = response.environments;
+    expect(appResponse, "name is not correct").to.have.property('name', application.name);
+    expect(appResponse, "display name is not correct").to.have.property('displayName', application.displayName ?? application.name);
+    expect(appResponse, "API products are not coorect").to.have.property('apiProducts').to.have.members(application.apiProducts);
+    expect(appResponse, "consumer key is not set").to.have.nested.property('credentials.secret.consumerKey');
+    expect(appResponse, "consumer secret is not set").to.have.nested.property('credentials.secret.consumerSecret');
+    expect(appResponse, "internal name is not set").to.have.property('internalName');
+    expect(appResponse, "attributes are unexpected").to.not.have.property('attributes');
+    expect(appResponse, "web hooks are unexpected").to.not.have.property('webHooks');
+    expect(appResponse, "status is not correct").to.have.property('status', AppStatus.APPROVED)
+    expect(appResponse, "environments are not set").to.have.property('environments');
+
+    const environments = appResponse.environments;
     expect(environments.length, "number of environments is not correct").to.be.equals(2);
 
-    let envNames: Array<string> = [];
-    environments.forEach(env => envNames.push(env.name));
-
+    let envNames: Array<string> = environments.map(env => env.name);
     expect(envNames, "list of environment names is incorrect").to.have.members([
       setup.environment1.name,
       setup.environment2.name,
@@ -167,30 +169,30 @@ describe(scriptName, function () {
       credentials: { expiresAt: -1 },
     }
 
-    await AppsService.createDeveloperApp({ ...appctx, requestBody: application });
+    await AppsService.createDeveloperApp({ ...devctx, requestBody: application });
 
-    const response = await AppsService.getApp({ ...appctx, appName: application.name }).catch((reason) => {
+    const response = await AppsService.getApp({ ...devctx, appName: application.name }).catch((reason) => {
       expect(reason, `error=${reason.message}`).is.instanceof(ApiError);
       expect.fail(`failed to get developer application; error="${reason.body.message}"`);
     });
 
-    expect(response, "name is not correct").to.have.property('name', application.name);
-    expect(response, "display name is not correct").to.have.property('displayName', application.displayName ?? application.name);
-    expect(response, "API products are not correct").to.have.property('apiProducts').to.have.members(application.apiProducts);
-    expect(response, "consumer key is not set").to.have.nested.property('credentials.secret.consumerKey');
-    expect(response, "consumer secret is not set").to.have.nested.property('credentials.secret.consumerSecret');
-    expect(response, "internal name is not set").to.have.property('internalName');
-    expect(response, "attributes are not correct").to.have.property('attributes').to.have.deep.members(application.attributes);
-    expect(response, "web hooks are not set").to.have.property('webHooks');
-    expect(response, "status is not correct").to.have.property('status', AppStatus.APPROVED)
-    expect(response, "environments are not set").to.have.property('environments');
+    const appResponse: AppResponse = response.body;
 
-    const environments = response.environments;
-    expect(environments.length, "number of environments is not correct").to.be.equals(1);
+    expect(appResponse, "name is not correct").to.have.property('name', application.name);
+    expect(appResponse, "display name is not correct").to.have.property('displayName', application.displayName ?? application.name);
+    expect(appResponse, "API products are not correct").to.have.property('apiProducts').to.have.members(application.apiProducts);
+    expect(appResponse, "consumer key is not set").to.have.nested.property('credentials.secret.consumerKey');
+    expect(appResponse, "consumer secret is not set").to.have.nested.property('credentials.secret.consumerSecret');
+    expect(appResponse, "internal name is not set").to.have.property('internalName');
+    expect(appResponse, "attributes are not correct").to.have.property('attributes').to.have.deep.members(application.attributes);
+    expect(appResponse, "web hooks are not set").to.have.property('webHooks');
+    expect(appResponse, "status is not correct").to.have.property('status', AppStatus.APPROVED)
+    expect(appResponse, "environments are not set").to.have.property('environments');
 
-    let envNames: Array<string> = [];
-    environments.forEach(env => envNames.push(env.name));
+    const environments = appResponse.environments;
+    expect(environments, "number of environments is not correct").to.have.lengthOf(1);
 
+    let envNames: Array<string> = environments.map(env => env.name);
     expect(envNames, "list of environment names is incorrect").to.have.members([setup.environment1.name]);
 
     let environment: AppEnvironment;
@@ -227,11 +229,11 @@ describe(scriptName, function () {
       credentials: { expiresAt: -1 },
     }
 
-    await AppsService.createDeveloperApp({ ...appctx, requestBody: application });
+    await AppsService.createDeveloperApp({ ...devctx, requestBody: application });
 
     PlatformAPIClient.setManagementUser();
 
-    await AppsService.getApp({ ...appctx, appName: application.name }).then(() => {
+    await AppsService.getApp({ ...devctx, appName: application.name }).then(() => {
       expect.fail("unauthorized request was not rejected");
     }, (reason) => {
       expect(reason, `error=${reason.message}`).is.instanceof(ApiError);
@@ -241,7 +243,7 @@ describe(scriptName, function () {
 
   it("should not return an application if the application is unknown", async function () {
 
-    await AppsService.getApp({ ...appctx, appName: "unknown" }).then(() => {
+    await AppsService.getApp({ ...devctx, appName: "unknown" }).then(() => {
       expect.fail("invalid request was not rejected");
     }, (reason) => {
       expect(reason, `error=${reason.message}`).is.instanceof(ApiError);

@@ -19,20 +19,19 @@ describe(scriptName, function () {
   const organizationName: string = setup.organizationName;
   const developerName: string = setup.developer1.userName;
 
-  const applicationName: string = `${developerName}-app`;
-
-  /** Base parameters to create, list, update or delete applications */
-  const appctx = {
+  const devctx = {
     organizationName: organizationName,
     developerUsername: developerName,
   }
+
+  const applicationName: string = `${developerName}-app`;
 
   // HOOKS
 
   setup.addBeforeHooks(this);
 
   afterEach(async function () {
-    await AppsService.deleteDeveloperApp({ ...appctx, appName: applicationName }).catch(() => { });
+    await AppsService.deleteDeveloperApp({ ...devctx, appName: applicationName }).catch(() => { });
   });
 
   setup.addAfterHooks(this);
@@ -49,9 +48,9 @@ describe(scriptName, function () {
       apiProducts: [],
       credentials: { expiresAt: -1 },
     }
-    application = await AppsService.createDeveloperApp({ ...appctx, requestBody: application });
+    application = (await AppsService.createDeveloperApp({ ...devctx, requestBody: application })).body;
 
-    await AppsService.deleteDeveloperApp({ ...appctx, appName: applicationName }).catch((reason) => {
+    await AppsService.deleteDeveloperApp({ ...devctx, appName: applicationName }).catch((reason) => {
       expect(reason, `error=${reason.message}`).is.instanceof(ApiError);
       expect.fail(`failed to delete developer application; error="${reason.body.message}"`);
     });
@@ -68,9 +67,9 @@ describe(scriptName, function () {
       credentials: { expiresAt: -1 },
     }
 
-    application = await AppsService.createDeveloperApp({ ...appctx, requestBody: application });
+    application = (await AppsService.createDeveloperApp({ ...devctx, requestBody: application })).body;
 
-    await AppsService.deleteDeveloperApp({ ...appctx, appName: applicationName }).catch((reason) => {
+    await AppsService.deleteDeveloperApp({ ...devctx, appName: applicationName }).catch((reason) => {
       expect(reason, `error=${reason.message}`).is.instanceof(ApiError);
       expect.fail(`failed to delete developer application; error="${reason.body.message}"`);
     });
@@ -93,9 +92,9 @@ describe(scriptName, function () {
       webHooks: [setup.webHook1, setup.webHook2],
       credentials: { expiresAt: -1 },
     }
-    application = await AppsService.createDeveloperApp({ ...appctx, requestBody: application });
+    application = (await AppsService.createDeveloperApp({ ...devctx, requestBody: application })).body;
 
-    await AppsService.deleteDeveloperApp({ ...appctx, appName: applicationName }).catch((reason) => {
+    await AppsService.deleteDeveloperApp({ ...devctx, appName: applicationName }).catch((reason) => {
       expect(reason, `error=${reason.message}`).is.instanceof(ApiError);
       expect.fail(`failed to delete developer application; error="${reason.body.message}"`);
     });
@@ -124,11 +123,11 @@ describe(scriptName, function () {
       apiProducts: [],
       credentials: { expiresAt: -1 },
     }
-    application = await AppsService.createDeveloperApp({ ...appctx, requestBody: application });
+    application = (await AppsService.createDeveloperApp({ ...devctx, requestBody: application })).body;
 
     PlatformAPIClient.setManagementUser();
 
-    await AppsService.deleteDeveloperApp({ ...appctx, appName: applicationName }).then(() => {
+    await AppsService.deleteDeveloperApp({ ...devctx, appName: applicationName }).then(() => {
       expect.fail("unauthorized user deleted an application");
     }, (reason) => {
       expect(reason, `error=${reason.message}`).is.instanceof(ApiError);
@@ -138,7 +137,7 @@ describe(scriptName, function () {
 
   it("should not delete an application that does not exist", async function () {
 
-    await AppsService.deleteDeveloperApp({ ...appctx, appName: "unknown" }).then(() => {
+    await AppsService.deleteDeveloperApp({ ...devctx, appName: "unknown" }).then(() => {
       expect.fail("an unknown application was deleted");
     }, (reason) => {
       expect(reason, `error=${reason.message}`).is.instanceof(ApiError);

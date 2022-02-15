@@ -1,17 +1,15 @@
 import 'mocha';
 import { expect } from 'chai';
 import path from 'path';
-import type {
-  Developer,
-} from '../../lib/generated/openapi';
+import { PlatformAPIClient } from '../../lib/api.helpers';
+import { TestContext } from '../../lib/test.helpers';
+import type { Developer } from '../../lib/generated/openapi';
 import {
   ApiError,
   DevelopersService,
 } from '../../lib/generated/openapi';
 
 import * as setup from './common/test.setup';
-import { PlatformAPIClient } from '../../lib/api.helpers';
-import { TestContext } from '../../lib/test.helpers';
 
 const scriptName: string = path.basename(__filename);
 
@@ -84,8 +82,10 @@ describe(scriptName, function () {
       expect.fail(`failed to list developers; error="${reason.body.message}"`);
     });
 
-    expect(response.length, "number of developers is not correct").to.be.equals(3);
-    expect(response, "list of developers is not correct").to.have.deep.members([developer1, developer2, developer3]);
+    const developers: Developer[] = response.body;
+
+    expect(developers, "number of developers is not correct").to.have.lengthOf(3);
+    expect(developers, "list of developers is not correct").to.have.deep.members([developer1, developer2, developer3]);
   });
 
   it("should return all developers for page #1", async function () {
@@ -95,7 +95,7 @@ describe(scriptName, function () {
       expect.fail(`failed to list developers; error="${reason.body.message}"`);
     });
 
-    expect(response.length, "number of developers is not correct").to.be.equals(2);
+    expect(response.body, "number of developers is not correct").to.have.lengthOf(2);
   });
 
   it("should return all developers for page #2", async function () {
@@ -105,7 +105,7 @@ describe(scriptName, function () {
       expect.fail(`failed to list developers; error="${reason.body.message}"`);
     });
 
-    expect(response.length, "number of developers is not correct").to.be.equals(1);
+    expect(response.body, "number of developers is not correct").to.have.lengthOf(1);
   });
 
   it("should return all developers sorted in ascending order", async function () {
@@ -115,7 +115,8 @@ describe(scriptName, function () {
       expect.fail(`failed to list developers; error="${reason.body.message}"`);
     });
 
-    expect(response, "list of developers is not correct").to.have.deep.ordered.members(
+    const developers: Developer[] = response.body;
+    expect(developers, "list of developers is not correct").to.have.deep.ordered.members(
       [developer1, developer2, developer3].sort((a, b) => (a.userName > b.userName ? 1 : -1))
     );
   });
@@ -127,7 +128,8 @@ describe(scriptName, function () {
       expect.fail(`failed to list developers; error="${reason.body.message}"`);
     });
 
-    expect(response, "list of developers is not correct").to.have.deep.ordered.members(
+    const developers: Developer[] = response.body;
+    expect(developers, "list of developers is not correct").to.have.deep.ordered.members(
       [developer1, developer2, developer3].sort((a, b) => (a.userName > b.userName ? -1 : 1))
     );
   });

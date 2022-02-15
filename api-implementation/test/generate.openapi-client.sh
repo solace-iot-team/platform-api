@@ -14,7 +14,7 @@ outputDir="$scriptDir/lib/generated/openapi"
 
 echo ">>> Generating platform openapi client ..."
 
-runScript="npx openapi --input $apiYamlFile --output $outputDir --client node --useOptions --exportSchemas true"
+runScript="npx openapi --input $apiYamlFile --output $outputDir --client node --useOptions --exposeHeadersAndBody --exportSchemas true"
 $runScript
 code=$?; if [[ $code != 0 ]]; then echo " >>> ERROR - code=$code - runScript='$runScript' - $scriptName"; exit 1; fi
 

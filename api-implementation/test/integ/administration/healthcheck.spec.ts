@@ -44,7 +44,7 @@ describe(scriptName, function () {
       expect.fail(`health check returned an unexpected error; error="${reason.statusText}"`);
     });
 
-    expect(response, "status is incorrect").to.have.property("status", "ok");
+    expect(response.body, "status is incorrect").to.have.property("status", "ok");
   });
 
   it("should return 'failure' if the database is unhealthy", async function () {

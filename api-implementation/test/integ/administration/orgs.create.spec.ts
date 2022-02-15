@@ -1,16 +1,11 @@
 import 'mocha';
 import { expect } from 'chai';
 import path from 'path';
-import {
-  AdministrationService,
-  ApiError,
-  Organization,
-  OrganizationStatus,
-} from '../../lib/generated/openapi';
+import type { Organization } from '../../lib/generated/openapi';
+import { AdministrationService, ApiError } from '../../lib/generated/openapi';
 
 import * as setup from './common/test.setup';
 import { PlatformAPIClient } from '../../lib/api.helpers';
-import { setPriority } from 'os';
 
 const scriptName: string = path.basename(__filename);
 
@@ -45,14 +40,14 @@ describe(scriptName, function () {
       expect.fail(`failed to create organization; error="${reason.body.message}"`);
     });
 
-    expect(response.name, "name is not correct").to.be.eql(organizationName);
-    expect(response['cloud-token'], "cloud-token is not set").to.be.not.empty;
-
-    const status: OrganizationStatus = {
-      cloudConnectivity: true,
-      eventPortalConnectivity: true,
-    }
-    expect(response.status, "status is not correct").to.deep.includes(status);
+    expect(response.body, "response is not correct").to.deep.include({
+      name: organizationName,
+      status: {
+        cloudConnectivity: true,
+        eventPortalConnectivity: true,
+      },
+    });
+    expect(response.body, "response is not correct").to.have.property("cloud-token").that.is.an("object");
   });
 
   it("should create an organization with cloud token only", async function () {
@@ -67,14 +62,14 @@ describe(scriptName, function () {
       expect.fail(`failed to create organization; error="${reason.body.message}"`);
     });
 
-    expect(response.name, "name is not correct").to.be.eql(organizationName);
-    expect(response['cloud-token'], "cloud-token is not set").to.be.not.empty;
-
-    const status: OrganizationStatus = {
-      cloudConnectivity: true,
-      eventPortalConnectivity: true,
-    }
-    expect(response.status, "status is not correct").to.deep.includes(status);
+    expect(response.body, "response is not correct").to.deep.include({
+      name: organizationName,
+      status: {
+        cloudConnectivity: true,
+        eventPortalConnectivity: true,
+      },
+    });
+    expect(response.body, "response is not correct").to.have.property("cloud-token").that.is.a("string");
   });
 
   it("should create an organization without a cloud token", async function () {
@@ -88,8 +83,11 @@ describe(scriptName, function () {
       expect.fail(`failed to create organization; error="${reason.body.message}"`);
     });
 
-    expect(response.name, "name is not correct").to.be.eql(organizationName);
-    expect(response.status, "status is not correct").to.be.empty;
+    expect(response.body, "response is not correct").to.deep.include({
+      name: organizationName,
+      status: {},
+    });
+    expect(response.body, "response is not correct").to.not.have.property("cloud-token");
   });
 
   it("should not create an organization if the user is not authorized", async function () {

@@ -1,11 +1,8 @@
 import 'mocha';
 import { expect } from 'chai';
 import path from 'path';
-import {
-  AdministrationService,
-  ApiError,
-  Organization,
-} from '../../lib/generated/openapi';
+import type { Organization } from '../../lib/generated/openapi';
+import { AdministrationService, ApiError } from '../../lib/generated/openapi';
 
 import * as setup from './common/test.setup';
 import { PlatformAPIClient } from '../../lib/api.helpers';

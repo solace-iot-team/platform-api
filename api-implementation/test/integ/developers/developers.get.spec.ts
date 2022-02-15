@@ -1,14 +1,14 @@
 import 'mocha';
 import { expect } from 'chai';
 import path from 'path';
+import { PlatformAPIClient } from '../../lib/api.helpers';
+import type { Developer } from '../../lib/generated/openapi';
 import {
   ApiError,
-  Developer,
   DevelopersService,
 } from '../../lib/generated/openapi';
 
 import * as setup from './common/test.setup';
-import { PlatformAPIClient } from '../../lib/api.helpers';
 
 const scriptName: string = path.basename(__filename);
 
@@ -47,7 +47,7 @@ describe(scriptName, function () {
       expect.fail(`failed to get developer; error="${reason.body.message}"`);
     });
 
-    expect(response, "response is not correct").to.be.eql(developer);
+    expect(response.body, "response is not correct").to.be.eql(developer);
   });
 
   it("should return a developer with additional attributes", async function () {
@@ -67,7 +67,7 @@ describe(scriptName, function () {
       expect.fail(`failed to get developer; error="${reason.body.message}"`);
     });
 
-    expect(response, "response is not correct").to.be.eql(anotherDeveloper);
+    expect(response.body, "response is not correct").to.be.eql(anotherDeveloper);
   });
 
   it("should not return a developer if the user is not authorized", async function () {

@@ -15,7 +15,7 @@ on:
       - main
 
 env:
-  PLATFORM_API_HOME: "api-implementation/"
+  PLATFORM_API_HOME: "platform-api/api-implementation/"
 
 jobs:
 
@@ -37,21 +37,38 @@ jobs:
         if: github.event_name == 'workflow_dispatch' && github.actor != 'NilsEckertSolace' && github.actor != 'ricardojosegomezulmke' && github.actor != '195858'
         uses: andymckay/cancel-action@0.2
 
-      - name: Checkout repository code
+      - name: Checkout OpenAPI code generator
         uses: actions/checkout@v2
+        with:
+          repository: solace-iot-team/openapi-typescript-codegen
+          path: openapi-typescript-codegen
+
+      - name: Checkout Platform API code
+        uses: actions/checkout@v2
+        with:
+          path: platform-api
 
       - name: Setup Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v2
         with:
           node-version: ${{ matrix.node-version }}
-  
-      - run: npm ci
+
+      - name: Build OpenAPI code generator 
+        run: |
+          npm ci
+          npm run build
+        working-directory: openapi-typescript-codegen
+ 
+      - name: Install Platform API dependencies
+        run: |
+          npm ci
+          npm link ../../openapi-typescript-codegen
 
       - name: Generate OpenAPI client
         run: |
           $TEST_DIRECTORY/generate.openapi-client.sh
 
-      - name: Execute tests
+      - name: Execute Platform API tests
         run: |
           export PLATFORM_API_TEST_SOLACE_CLOUD_URL=${{ secrets.SOLACE_CLOUD_URL }}
           export PLATFORM_API_TEST_SOLACE_CLOUD_TOKEN=${{ secrets.SOLACE_CLOUD_TOKEN }}
@@ -59,7 +76,7 @@ jobs:
           export PLATFORM_API_TEST_SOLACE_EVENT_PORTAL_TOKEN=${{ secrets.SOLACE_EVENT_PORTAL_TOKEN }}
           export PLATFORM_API_TEST_PLATFORM_ADMIN_USER=${{ secrets.PLATFORM_ADMIN_USER }}
           export PLATFORM_API_TEST_PLATFORM_ADMIN_PASSWORD=${{ secrets.PLATFORM_ADMIN_PASSWORD }}
-          export PLATFORM_API_PROJECT_HOME="$GITHUB_WORKSPACE"
+          export PLATFORM_API_PROJECT_HOME="${{ github.workspace }}/platform-api"
           $TEST_DIRECTORY/integ/run.sh
 
       - name: Archive logs

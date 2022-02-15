@@ -1,11 +1,8 @@
 import 'mocha';
 import { expect } from 'chai';
 import path from 'path';
-import {
-  AdministrationService,
-  ApiError,
-  Organization,
-} from '../../lib/generated/openapi';
+import type { Organization } from '../../lib/generated/openapi';
+import { AdministrationService, ApiError } from '../../lib/generated/openapi';
 
 import * as setup from './common/test.setup';
 import { PlatformAPIClient } from '../../lib/api.helpers';
@@ -66,25 +63,24 @@ describe(scriptName, function () {
       expect.fail(`failed to list organizations; error="${reason.body.message}"`);
     });
 
-    expect(response.length, "number of returned organizations is incorrect").to.be.equals(3);
+    const organizations: Organization[] = response.body;
+    expect(organizations, "number of returned organizations is incorrect").to.have.lengthOf(3);
 
-    let orgNames: Array<string> = [];
-    response.forEach(org => orgNames.push(org.name));
-
+    const orgNames: Array<string> = organizations.map(org => org.name);
     expect(orgNames, "list of organization names is incorrect").to.have.members([
       organization1.name,
       organization2.name,
       organization3.name,
     ]);
 
-    const org1 = response[orgNames.indexOf(organization1.name)];
+    const org1 = organizations[orgNames.indexOf(organization1.name)];
     expect(org1, "1st organization is incorrect").to.not.have.property('cloud-token');
 
-    const org2 = response[orgNames.indexOf(organization2.name)];
+    const org2 = organizations[orgNames.indexOf(organization2.name)];
     expect(org2, "2nd organization is incorrect").to.have.property('cloud-token').that.is.a('string');
 
-    const org3 = response[orgNames.indexOf(organization3.name)];
-    expect(org3, "2nd organization is incorrect").to.have.property('cloud-token').that.is.an('object');
+    const org3 = organizations[orgNames.indexOf(organization3.name)];
+    expect(org3, "3rd organization is incorrect").to.have.property('cloud-token').that.is.an('object');
   });
 
   it("should return organizations for page #1", async function () {
@@ -94,7 +90,7 @@ describe(scriptName, function () {
       expect.fail(`failed to list organizations; error="${reason.body.message}"`);
     });
 
-    expect(response.length, "number of returned organizations is incorrect").to.be.equals(2);
+    expect(response.body, "number of returned organizations is incorrect").to.have.lengthOf(2);
   });
 
   it("should return organizations for page #2", async function () {
@@ -104,7 +100,7 @@ describe(scriptName, function () {
       expect.fail(`failed to list organizations; error="${reason.body.message}"`);
     });
 
-    expect(response.length, "number of returned organizations is incorrect").to.be.equals(1);
+    expect(response.body, "number of returned organizations is incorrect").to.have.lengthOf(1);
   });
 
   it("should return organizations sorted in ascending order", async function () {
@@ -114,12 +110,11 @@ describe(scriptName, function () {
       expect.fail(`failed to list organizations; error="${reason.body.message}"`);
     });
 
-    expect(response.length, "number of returned organizations is incorrect").to.be.equals(3);
+    const organizations: Organization[] = response.body;
+    expect(organizations, "number of returned organizations is incorrect").to.have.lengthOf(3);
 
-    let orgNames: Array<string> = [];
-    response.forEach(org => orgNames.push(org.name));
-
-    expect(orgNames, "order of organizations is incorrect").to.have.ordered.members(
+    const names: Array<string> = organizations.map(org => org.name);
+    expect(names, "order of organizations is incorrect").to.have.ordered.members(
       [organization1.name, organization2.name, organization3.name].sort((a, b) => (a > b ? 1 : -1))
     );
   });
@@ -131,12 +126,11 @@ describe(scriptName, function () {
       expect.fail(`failed to list organizations; error="${reason.body.message}"`);
     });
 
-    expect(response.length, "number of returned organizations is incorrect").to.be.equals(3);
+    const organizations: Organization[] = response.body;
+    expect(organizations, "number of returned organizations is incorrect").to.have.lengthOf(3);
 
-    let orgNames: Array<string> = [];
-    response.forEach(org => orgNames.push(org.name));
-
-    expect(orgNames, "order of organizations is incorrect").to.have.ordered.members(
+    const names: Array<string> = organizations.map(org => org.name);
+    expect(names, "order of organizations is incorrect").to.have.ordered.members(
       [organization1.name, organization2.name, organization3.name].sort((a, b) => (a > b ? -1 : 1))
     );
   });
