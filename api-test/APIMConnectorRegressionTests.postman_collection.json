@@ -12623,7 +12623,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n  \"name\": \"{{TENANT}}\",\n  \"cloud-token\":{\n\t\t\"eventPortal\": {\n\t\t\t\"baseUrl\": \"https://console.solace.cloud/api/v0/eventPortal\"\n\t\t},\n\t\t\"cloud\":{\n\t\t\t\"baseUrl\": \"https://api.solace.cloud/api/v0\"\n\t\t}\n  }\n}",
+							"raw": "{\n  \"name\": \"{{TENANT}}\",\n  \"cloud-token\":{\n\t\t\"eventPortal\": {\n\t\t\t\"baseUrl\": \"https://consolex.solace.cloud/api/v0/eventPortal\"\n\t\t},\n\t\t\"cloud\":{\n\t\t\t\"baseUrl\": \"https://api.solace.cloud/api/v0\"\n\t\t}\n  }\n}",
 							"options": {
 								"raw": {
 									"language": "json"
