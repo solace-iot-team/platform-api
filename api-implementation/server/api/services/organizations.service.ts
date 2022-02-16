@@ -119,13 +119,15 @@ export class OrganizationsService {
     if (body.name == PlatformConstants.PLATFORM_DB) {
       throw (new ErrorResponseInternal(401, `Access denied, PlatformConstants.PLATFORM_DB name`));
     } else {
-      // update protection
       await preconditionCheck(this, name);
-      // handle case when complex clud token only contains URLs but not tokens/credentials
+      // handle case when complex cloud token only contains URLs but not tokens/credentials
       if (body[ContextConstants.CLOUD_TOKEN] && !isString(body[ContextConstants.CLOUD_TOKEN])
         && (!body[ContextConstants.CLOUD_TOKEN].cloud.token || !body[ContextConstants.CLOUD_TOKEN].eventPortal.token)) {
         const orgInDb: Organization = await this.persistenceService.byName(name);
-        if (!body[ContextConstants.CLOUD_TOKEN].cloud.token) {
+        if (!body[ContextConstants.CLOUD_TOKEN].cloud.token
+          && orgInDb[ContextConstants.CLOUD_TOKEN]
+          && orgInDb[ContextConstants.CLOUD_TOKEN].cloud
+          && orgInDb[ContextConstants.CLOUD_TOKEN].cloud.token) {
           body[ContextConstants.CLOUD_TOKEN].cloud.token = orgInDb[ContextConstants.CLOUD_TOKEN].cloud.token;
         }
         if (
@@ -142,6 +144,8 @@ export class OrganizationsService {
         body[ContextConstants.CLOUD_TOKEN] === null ||
         (await this.validateCloudToken(body[ContextConstants.CLOUD_TOKEN]))
       ) {
+        // update protection
+        await preconditionCheck(this, name);
         const org: OrganizationResponse = await this.persistenceService
           .update(name, body) as OrganizationResponse;
         org.status = await this.getOrganizationStatus(org['cloud-token']);
