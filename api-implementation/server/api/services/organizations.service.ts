@@ -125,6 +125,7 @@ export class OrganizationsService {
         && (!body[ContextConstants.CLOUD_TOKEN].cloud.token || !body[ContextConstants.CLOUD_TOKEN].eventPortal.token)) {
         const orgInDb: Organization = await this.persistenceService.byName(name);
         if (!body[ContextConstants.CLOUD_TOKEN].cloud.token
+          && orgInDb[ContextConstants.CLOUD_TOKEN]
           && orgInDb[ContextConstants.CLOUD_TOKEN].cloud
           && orgInDb[ContextConstants.CLOUD_TOKEN].cloud.token) {
           body[ContextConstants.CLOUD_TOKEN].cloud.token = orgInDb[ContextConstants.CLOUD_TOKEN].cloud.token;
