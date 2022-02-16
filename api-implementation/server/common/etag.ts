@@ -1,14 +1,15 @@
 import L from './logger';
-
+import {isString} from '../../src/typehelpers';
 export default function(body, encoding){
   let str: string;
   L.info(body.constructor.name);
   if (body.constructor.name=="Buffer"){
     str = body.toString('utf-8');
-  } else {
+  } else if (isString(body)){
+    str = body;
+  }else {
     str = JSON.stringify(body);
   }
-  
   const seed = 2;
   let h1 = 0xdeadbeef ^ seed, h2 = 0x41c6ce57 ^ seed;
     for (let i = 0, ch; i < str.length; i++) {

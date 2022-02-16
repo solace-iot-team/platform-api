@@ -18,6 +18,7 @@ import CommonEntityNames = Components.Schemas.CommonEntityNames;
 import APIProduct = Components.Schemas.APIProduct;
 import EventAPIProduct = Components.Schemas.EventAPIProduct;
 import {updateProtectionByObject} from './persistence/preconditionhelper';
+import asyncapihelper from '../../../src/asyncapihelper';
 
 export interface APISpecification {
   name: string;
@@ -165,8 +166,14 @@ export class ApisService {
   }
 
   async update(name: string, body: string): Promise<string> {
-    const r = await this.apiInfoPersistenceService.byName(name);
-    await updateProtectionByObject(r);
+    const r: APIInfo = await this.apiInfoPersistenceService.byName(name);
+    const a: APISpecification = await this.persistenceService.byName(name);
+    try  {
+      await updateProtectionByObject(a.specification);
+    } catch (e){
+      // this will fail if the API was obtained in YAML format - let;s try again with "r" converted to YAML
+      await updateProtectionByObject(asyncapihelper.JSONtoYAML(a.specification));
+    }
     if (r.source == 'Upload') {
       // for internal APIs increase the version number
       r.version = (Number(r.version) + 1).toString();
