@@ -119,8 +119,8 @@ export class OrganizationsService {
     if (body.name == PlatformConstants.PLATFORM_DB) {
       throw (new ErrorResponseInternal(401, `Access denied, PlatformConstants.PLATFORM_DB name`));
     } else {
-
-      // handle case when complex clud token only contains URLs but not tokens/credentials
+      await preconditionCheck(this, name);
+      // handle case when complex cloud token only contains URLs but not tokens/credentials
       if (body[ContextConstants.CLOUD_TOKEN] && !isString(body[ContextConstants.CLOUD_TOKEN])
         && (!body[ContextConstants.CLOUD_TOKEN].cloud.token || !body[ContextConstants.CLOUD_TOKEN].eventPortal.token)) {
         const orgInDb: Organization = await this.persistenceService.byName(name);
