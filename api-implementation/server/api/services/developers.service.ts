@@ -147,8 +147,8 @@ export class DevelopersService {
     }
   }
 
-  update(name: string, body: Developer): Promise<Developer> {
-    preconditionCheck(this, name);
+  async update(name: string, body: Developer): Promise<Developer> {
+    await preconditionCheck(this, name);
     return this.persistenceService.update(name, body);
   }
 
