@@ -309,11 +309,11 @@ describe(scriptName, function () {
       expect.fail("unauthorized request was not rejected");
     }, (reason) => {
       expect(reason, `error=${reason.message}`).is.instanceof(ApiError);
-      expect(reason.status, `status is not correct`).to.be.oneOf([401]);
+      expect(reason.status, "status is not correct").to.be.oneOf([401]);
     });
   });
 
-  it("should not update an application if the If-Match header is incorrect", async function () {
+  it("should not update an application if the If-Match header is invalid", async function () {
 
     let application: App = {
       name: applicationName,
@@ -337,11 +337,11 @@ describe(scriptName, function () {
       expect.fail("invalid request was not rejected");
     }, (reason) => {
       expect(reason, `error=${reason.message}`).is.instanceof(ApiError);
-      expect(reason.status, `status is not correct`).to.be.oneOf([412]);
+      expect(reason.status, "status is not correct").to.be.oneOf([412]);
     });
   });
 
-  it("should not update an application if another update is already in progress", async function () {
+  it("should not update an application if the application has changed", async function () {
 
     let application: App = {
       name: applicationName,
@@ -370,23 +370,18 @@ describe(scriptName, function () {
       }
     }
 
-    // NOTE: Promise.all() waits for all Promises to be resolved or one of them to be rejected.
-    //       To check whether the 1st update was successful and whether the 2nd update failed,
-    //       two promises are created that resolve with proper status information.
+    // NOTE: The 2nd update must be submitted AFTER the 1st update has been processed, or
+    //       otherwise, both updates will get processed. This is because the ETag is
+    //       calculated based on the data in the database and as long as the data hasn't
+    //       been updated, the "old" ETag will still be valid.
 
-    const onResponded = () => ({ status: "fulfilled" });
-    const onError = (reason: ApiError) => ({ status: "rejected", reason: reason });
-
-    const update1 = AppsService.updateDeveloperApp(applicationPatch1).then(onResponded, onError);
-    const update2 = new Promise((resolved, reject) => {
-      // execute the second update a tiny bit after the first update (to make sure that 1st wins)
-      setTimeout(() => { AppsService.updateDeveloperApp(applicationPatch2).then(resolved, reject); }, 100);
-    }).then(onResponded, onError);
-
-    await Promise.all([update1, update2]).then((result) => {
-      expect(result[0].status, "1st update request was rejected").to.be.equals("fulfilled");
-      expect(result[1].status, "2nd update request was not rejected").to.be.equals("rejected");
-      expect(result[1], "status is not correct").to.have.nested.property("reason.status", 412);
+    await AppsService.updateDeveloperApp(applicationPatch1);
+    await AppsService.updateDeveloperApp(applicationPatch2).then(() => {
+      expect.fail("concurrent update request was not rejected");
+    }, (reason) => {
+      expect(reason, `error=${reason.message}`).is.instanceof(ApiError);
+      expect(reason.status, "status is not correct").to.be.oneOf([412]);
     });
   });
+
 });
