@@ -18,6 +18,17 @@ describe("developers", function () {
   require('./developers/developers.list.spec.ts');
 });
 
+describe("apis", function () {
+  require('./apis/apis.import.spec.ts');
+  require('./apis/apis.create.spec.ts');
+  require('./apis/apis.delete.spec.ts');
+  require('./apis/apis.get.spec.ts');
+  require('./apis/apis.update.spec.ts');
+  require('./apis/apis.list.spec.ts');
+  require('./apis/apis.get.info.spec.ts');
+  require('./apis/apis.list.products.spec.ts');
+});
+
 describe("apps", function () {
   require('./apps/apps.developer.create.spec.ts');
   require('./apps/apps.developer.delete.spec.ts');
