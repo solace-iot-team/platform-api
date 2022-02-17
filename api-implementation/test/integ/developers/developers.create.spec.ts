@@ -30,6 +30,7 @@ describe(scriptName, function () {
   setup.addBeforeHooks(this);
 
   afterEach(async function () {
+    PlatformAPIClient.setApiUser();
     await DevelopersService.deleteDeveloper({ ...orgctx, developerUsername: developer.userName }).catch(() => { });
   });
 
@@ -73,7 +74,7 @@ describe(scriptName, function () {
       expect.fail("unauthorized request was not rejected");
     }, (reason) => {
       expect(reason, `error=${reason.message}`).is.instanceof(ApiError);
-      expect(reason.status, `status is not correct`).to.be.oneOf([401]);
+      expect(reason.status, "status is not correct").to.be.oneOf([401]);
     });
   });
 
@@ -84,11 +85,11 @@ describe(scriptName, function () {
       expect.fail("invalid request was not rejected");
     }, (reason) => {
       expect(reason, `error=${reason.message}`).is.instanceof(ApiError);
-      expect(reason.status, `status is not correct`).to.be.oneOf([422]);
+      expect(reason.status, "status is not correct").to.be.oneOf([422]);
     });
   });
 
-  it("should not create a developer with an invalid email", async function () {
+  it("should not create a developer if the email is invalid", async function () {
 
     const anotherDeveloper: Developer = {
       ...developer,
@@ -99,11 +100,11 @@ describe(scriptName, function () {
       expect.fail("invalid request was not rejected");
     }, (reason) => {
       expect(reason, `error=${reason.message}`).is.instanceof(ApiError);
-      expect(reason.status, `status is not correct`).to.be.oneOf([400]);
+      expect(reason.status, "status is not correct").to.be.oneOf([400]);
     });
   });
 
-  it("should not create a developer with an invalid first name", async function () {
+  it("should not create a developer if the first name is invalid", async function () {
 
     const anotherDeveloper: Developer = {
       ...developer,
@@ -114,11 +115,11 @@ describe(scriptName, function () {
       expect.fail("invalid request was not rejected");
     }, (reason) => {
       expect(reason, `error=${reason.message}`).is.instanceof(ApiError);
-      expect(reason.status, `status is not correct`).to.be.oneOf([400]);
+      expect(reason.status, "status is not correct").to.be.oneOf([400]);
     });
   });
 
-  it("should not create a developer with an invalid last name", async function () {
+  it("should not create a developer if the last name is invalid", async function () {
 
     const anotherDeveloper: Developer = {
       ...developer,
@@ -129,11 +130,11 @@ describe(scriptName, function () {
       expect.fail("invalid request was not rejected");
     }, (reason) => {
       expect(reason, `error=${reason.message}`).is.instanceof(ApiError);
-      expect(reason.status, `status is not correct`).to.be.oneOf([400]);
+      expect(reason.status, "status is not correct").to.be.oneOf([400]);
     });
   });
 
-  it("should not create a developer with an invalid user name", async function () {
+  it("should not create a developer if the user name is invalid", async function () {
 
     const anotherDeveloper: Developer = {
       ...developer,
@@ -144,7 +145,7 @@ describe(scriptName, function () {
       expect.fail("invalid request was not rejected");
     }, (reason) => {
       expect(reason, `error=${reason.message}`).is.instanceof(ApiError);
-      expect(reason.status, `status is not correct`).to.be.oneOf([400]);
+      expect(reason.status, "status is not correct").to.be.oneOf([400]);
     });
   });
 
