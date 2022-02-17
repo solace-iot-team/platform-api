@@ -21,6 +21,7 @@ const app = express();
 
 const corsOptions: cors.CorsOptions = {
   origin: true,
+  exposedHeaders: ['ETag'],
 };
 
 import { databaseaccess } from '../../src/databaseaccess';
