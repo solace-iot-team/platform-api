@@ -29,6 +29,10 @@ describe(scriptName, function () {
 
   setup.addBeforeHooks(this);
 
+  beforeEach(async function () {
+    await DevelopersService.createDeveloper({ ...orgctx, requestBody: developer });
+  });
+
   afterEach(async function () {
     PlatformAPIClient.setApiUser();
     await DevelopersService.deleteDeveloper({ ...orgctx, developerUsername: developer.userName }).catch(() => { });
@@ -40,8 +44,6 @@ describe(scriptName, function () {
 
   it("should delete a developer", async function () {
 
-    await DevelopersService.createDeveloper({ ...orgctx, requestBody: developer });
-
     await DevelopersService.deleteDeveloper({ ...orgctx, developerUsername: developer.userName }).catch((reason) => {
       expect(reason, `error=${reason.message}`).is.instanceof(ApiError);
       expect.fail(`failed to delete developer; error="${reason.body.message}"`);
@@ -50,15 +52,12 @@ describe(scriptName, function () {
 
   it("should not delete a developer if the user is not authorized", async function () {
 
-    await DevelopersService.createDeveloper({ ...orgctx, requestBody: developer });
-
     PlatformAPIClient.setManagementUser();
-
     await DevelopersService.deleteDeveloper({ ...orgctx, developerUsername: developer.userName }).then(() => {
       expect.fail("unauthorized request was not rejected");
     }, (reason) => {
       expect(reason, `error=${reason.message}`).is.instanceof(ApiError);
-      expect(reason.status, `status is not correct`).to.be.oneOf([401]);
+      expect(reason.status, "status is not correct").to.be.oneOf([401]);
     });
   });
 
@@ -68,7 +67,7 @@ describe(scriptName, function () {
       expect.fail("invalid request was not rejected");
     }, (reason) => {
       expect(reason, `error=${reason.message}`).is.instanceof(ApiError);
-      expect(reason.status, `status is not correct`).to.be.oneOf([404]);
+      expect(reason.status, "status is not correct").to.be.oneOf([404]);
     });
   });
 
