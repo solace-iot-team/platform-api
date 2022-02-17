@@ -1,0 +1,15 @@
+actor client
+participant connector
+participant mongodb
+
+client->connector: GET /app/{id}
+connector->mongodb: getDocument:document
+connector->connector: calculateEtag(document):etag
+connector->client: response[etag]
+note over client: client modifies the document
+client->connector: PATCH /app/{id} , if-match=etag, patchBody
+connector->mongodb: getDocument:document
+connector->connector: calculateEtag(document):etag
+connector->mongodb: if etag == if-match: saveDocument(patchBody)
+note over connector: in the case below some other request has modified the document \n in between the GET and PATCH request from this client
+connector->client: if etag != if-match: 412 (precondition failed)
