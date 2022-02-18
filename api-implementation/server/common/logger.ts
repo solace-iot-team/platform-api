@@ -16,5 +16,5 @@ const proxyLogger = new Proxy(logger, {
     return Reflect.get(target, property, receiver);
   },
 });
-export default process.env.NODE_ENV === 'development'?proxyLogger:logger;
+export default proxyLogger;
 
