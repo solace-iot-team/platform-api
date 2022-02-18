@@ -6,8 +6,12 @@ import {
   TestLogger,
 } from "../../../lib/test.helpers";
 import { PlatformAPIClient } from '../../../lib/api.helpers';
-import type { Organization } from "../../../lib/generated/openapi";
-import { AdministrationService } from "../../../lib/generated/openapi";
+import type { Environment, Organization } from "../../../lib/generated/openapi";
+import {
+  AdministrationService,
+  EnvironmentsService,
+  Protocol,
+} from "../../../lib/generated/openapi";
 
 const scriptName: string = path.basename(__filename);
 const scriptDir: string = path.dirname(__filename);
@@ -18,7 +22,6 @@ const env = {
   solaceEventPortalBaseUrl: getMandatoryEnvVarValue(scriptName, 'PLATFORM_API_TEST_SOLACE_EVENT_PORTAL_URL'),
   solaceEventPortalToken: getMandatoryEnvVarValue(scriptName, 'PLATFORM_API_TEST_SOLACE_EVENT_PORTAL_TOKEN'),
   solaceCloudServiceId1: getMandatoryEnvVarValue(scriptName, 'PLATFORM_API_TEST_SOLACE_CLOUD_SERVICE_ID_DEV'),
-  solaceCloudServiceId2: getMandatoryEnvVarValue(scriptName, 'PLATFORM_API_TEST_SOLACE_CLOUD_SERVICE_ID_PROD'),
 }
 
 /** The resources directory. */
@@ -37,10 +40,29 @@ export const organization: Organization = {
 }
 
 /**
+ * The test environment.
+ * - Protocols: MQTT 3.1.1 and HTTP 1.1
+ */
+export const environment: Environment = {
+  name: "TestEnvironment",
+  description: "test environment",
+  serviceId: env.solaceCloudServiceId1,
+  exposedProtocols: [
+    {
+      name: Protocol.name.MQTT,
+      version: "3.1.1"
+    },
+    {
+      name: Protocol.name.HTTP,
+      version: "1.1"
+    }
+  ],
+}
+/**
  * Registers `before()` and `beforeEach()` hooks for an API service test suite.
  * 
  * The `before()` hook logs a ">>> Start to execute test cases" message and all environment
- * variables that are used, and creates the {@link organization}.
+ * variables that are used, and creates the {@link organization} and the {@link environment}.
  * 
  * The `beforeEach()` hook generates a new identifier for the {@link TestContext} and
  * configures the {@link PlatformAPIClient} to use the API user.
@@ -79,6 +101,8 @@ async function before() {
   TestContext.newItId();
   PlatformAPIClient.setManagementUser();
   await AdministrationService.createOrganization({ requestBody: organization });
+  PlatformAPIClient.setApiUser();
+  await EnvironmentsService.createEnvironment({ organizationName: organizationName, requestBody: environment });
 }
 
 /** beforeEach hook for a test suite */
