@@ -3,7 +3,13 @@ import { expect } from 'chai';
 import path from 'path';
 import { PlatformAPIClient } from '../../lib/api.helpers';
 import { AsyncAPIHelper } from "../../lib/test.helpers";
-import { ApiError, APIImport, APIProduct, ApiProductsService, ApisService } from '../../lib/generated/openapi';
+import type { APIProduct } from '../../lib/generated/openapi';
+import {
+  ApiError,
+  ApiProductsService,
+  ApisService,
+  Protocol,
+} from '../../lib/generated/openapi';
 
 import * as setup from './common/test.setup';
 
@@ -30,7 +36,8 @@ describe(scriptName, function () {
     displayName: "API product #1",
     apis: [apiName1],
     attributes: [],
-    environments: [],
+    environments: [setup.environment.name],
+    protocols: [{ name: Protocol.name.MQTT, version: '3.1.1' }],
     pubResources: [],
     subResources: [],
   }
@@ -39,8 +46,9 @@ describe(scriptName, function () {
     name: "ApiProduct2",
     displayName: "API product #2",
     apis: [apiName1],
-    attributes: [],
-    environments: [],
+    attributes: [{ name: "language", value: "EN" }],
+    environments: [setup.environment.name],
+    protocols: [{ name: Protocol.name.HTTP, version: '1.1' }],
     pubResources: [],
     subResources: [],
   }
@@ -95,7 +103,7 @@ describe(scriptName, function () {
       name: product.name,
       displayName: product.displayName,
     }));
-    expect(response.body, "response is not correct").to.be.eql(apiProducts);
+    expect(response.body, "response is not correct").to.have.deep.members(apiProducts);
   });
 
   it("should return no API products for an API not used", async function () {
