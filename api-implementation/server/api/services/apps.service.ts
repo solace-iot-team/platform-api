@@ -111,7 +111,6 @@ export class AppsService {
         }
         const subs = await ACLManager.getQueueSubscriptionsByApp(app);
         const requireClientInformation:boolean = subs.length > 0;
-        L.error(subs);
         if (requireClientInformation) {
           const clientInformation: ClientInformation[] = []
           for (const productName of app.apiProducts) {
