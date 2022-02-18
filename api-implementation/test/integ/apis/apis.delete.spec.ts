@@ -3,7 +3,13 @@ import { expect } from 'chai';
 import path from 'path';
 import { PlatformAPIClient } from '../../lib/api.helpers';
 import { AsyncAPIHelper } from "../../lib/test.helpers";
-import { ApiError, APIProduct, ApiProductsService, ApisService } from '../../lib/generated/openapi';
+import type { APIProduct } from '../../lib/generated/openapi';
+import {
+  ApiError,
+  ApiProductsService,
+  ApisService,
+  Protocol,
+} from '../../lib/generated/openapi';
 
 import * as setup from './common/test.setup';
 
@@ -23,7 +29,8 @@ describe(scriptName, function () {
     displayName: "API product",
     apis: [apiName],
     attributes: [],
-    environments: [],
+    environments: [setup.environment.name],
+    protocols: [{ name: Protocol.name.MQTT, version: '3.1.1' }],
     pubResources: [],
     subResources: [],
   }
