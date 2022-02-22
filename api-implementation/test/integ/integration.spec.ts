@@ -1,13 +1,16 @@
 import 'mocha';
 
-describe("administration", function () {
-  require('./administration/orgs.create.spec.ts');
-  require('./administration/orgs.delete.spec.ts');
-  require('./administration/orgs.get.spec.ts');
-  require('./administration/orgs.update.spec.ts');
-  require('./administration/orgs.list.spec.ts');
-  require('./administration/healthcheck.spec.ts');
-  require('./administration/about.spec.ts');
+describe("server", function () {
+  require('./server/healthcheck.spec.ts');
+  require('./server/about.spec.ts');
+});
+
+describe("orgs", function () {
+  require('./orgs/orgs.create.spec.ts');
+  require('./orgs/orgs.delete.spec.ts');
+  require('./orgs/orgs.get.spec.ts');
+  require('./orgs/orgs.update.spec.ts');
+  require('./orgs/orgs.list.spec.ts');
 });
 
 describe("developers", function () {
