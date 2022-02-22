@@ -13,6 +13,8 @@ const scriptName: string = path.basename(__filename);
 
 describe(scriptName, function () {
 
+  type ApiSpecFormat = "application/json" | "application/x-yaml";
+
   const organizationName: string = setup.organizationName;
   const developerName: string = setup.developer1.userName;
 
@@ -79,9 +81,13 @@ describe(scriptName, function () {
 
   it("should return the API spec as JSON", async function () {
 
-    const apiName = setup.apiName1;
+    const options = {
+      ...appctx1,
+      apiName: setup.apiName1,
+      format: "application/json" as ApiSpecFormat,
+    }
 
-    const response = await AppsService.getAppApiSpecification({ ...appctx1, apiName: apiName, format: "application/json" }).catch((reason) => {
+    const response = await AppsService.getAppApiSpecification(options).catch((reason) => {
       expect(reason, `error=${reason.message}`).is.instanceof(ApiError);
       expect.fail(`failed to get API spec; error="${reason.body.message}"`);
     });
@@ -128,9 +134,13 @@ describe(scriptName, function () {
 
   it("should return the API spec as YAML", async function () {
 
-    const apiName = setup.apiName2;
+    const options = {
+      ...appctx1,
+      apiName: setup.apiName2,
+      format: "application/x-yaml" as ApiSpecFormat,
+    }
 
-    const response = await AppsService.getAppApiSpecification({ ...appctx1, apiName: apiName, format: "application/x-yaml" }).catch((reason) => {
+    const response = await AppsService.getAppApiSpecification(options).catch((reason) => {
       expect(reason, `error=${reason.message}`).is.instanceof(ApiError);
       expect.fail(`failed to get API spec; error="${reason.body.message}"`);
     });

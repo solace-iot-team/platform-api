@@ -3,13 +3,16 @@ import { expect } from 'chai';
 import path from 'path';
 import yaml from 'js-yaml';
 import { PlatformAPIClient } from '../../lib/api.helpers';
-import { AsyncAPIHelper } from "../../lib/test.helpers";
-import { ApiError, ApisService } from '../../lib/generated/openapi';
+import {
+  ApiError,
+  APIProduct,
+  ApiProductsService,
+  Protocol,
+} from '../../lib/generated/openapi';
 
 import * as setup from './common/test.setup';
 
 const scriptName: string = path.basename(__filename);
-const apisDirectory: string = `${setup.resourcesDirectory}/apis`;
 
 describe(scriptName, function () {
 
@@ -19,8 +22,28 @@ describe(scriptName, function () {
     organizationName: setup.organizationName,
   }
 
-  const apiName: string = "SayHelloApi";
-  const apiSpec: string = AsyncAPIHelper.loadYamlFileAsJsonString(`${apisDirectory}/say-hello.yml`);
+  const apiProductName: string = "apiProduct";
+  const apiProduct: APIProduct = {
+    name: apiProductName,
+    displayName: "API product",
+    apis: [setup.apiName1, setup.apiName2, setup.apiName3],
+    attributes: [],
+    environments: [setup.environment1.name, setup.environment2.name],
+    protocols: [{
+      name: Protocol.name.MQTT,
+      version: '3.1.1',
+    }, {
+      name: Protocol.name.HTTP,
+      version: '1.1',
+    }],
+    pubResources: [],
+    subResources: [],
+  }
+
+  const apiprodctx = {
+    ...orgctx,
+    apiProductName: apiProductName,
+  }
 
   // HOOKS
 
@@ -28,12 +51,12 @@ describe(scriptName, function () {
 
   before(async function () {
     PlatformAPIClient.setApiUser();
-    await ApisService.createApi({ ...orgctx, apiName: apiName, requestBody: apiSpec });
+    await ApiProductsService.createApiProduct({ ...orgctx, requestBody: apiProduct });
   });
 
   after(async function () {
     PlatformAPIClient.setApiUser();
-    await ApisService.deleteApi({ ...orgctx, apiName: apiName }).catch(() => { });
+    await ApiProductsService.deleteApiProduct({ ...orgctx, apiProductName: apiProductName });
   });
 
   setup.addAfterHooks(this);
@@ -43,33 +66,33 @@ describe(scriptName, function () {
   it("should return the API spec in JSON format", async function () {
 
     const options = {
-      ...orgctx,
-      apiName: apiName,
+      ...apiprodctx,
+      apiName: setup.apiName1,
       format: "application/json" as ApiSpecFormat,
     }
 
-    const response = await ApisService.getApi(options).catch((reason) => {
+    const response = await ApiProductsService.getApiProductApiSpecification(options).catch((reason) => {
       expect(reason, `error=${reason.message}`).is.instanceof(ApiError);
-      expect.fail(`failed to get API spec; error="${reason.body.message}"`);
+      expect.fail(`failed to return APIs; error="${reason.body.message}"`);
     });
 
-    const baseApiSpec = JSON.parse(apiSpec);
+    const baseApiSpec = JSON.parse(setup.apiSpec1);
     baseApiSpec.info['x-origin'] = { name: "apim-connector", vendor: "solace" };
 
     expect(response.body, "response is not correct").to.be.eql(baseApiSpec);
   });
 
-  it("should return the API spec in YAML format", async function () {
+  it("should return the API spec in JSON format", async function () {
 
     const options = {
-      ...orgctx,
-      apiName: apiName,
-      format: "application/x-yaml" as ApiSpecFormat,
+      ...apiprodctx,
+      apiName: setup.apiName1,
+      format: "application/json" as ApiSpecFormat,
     }
 
-    const response = await ApisService.getApi(options).catch((reason) => {
+    const response = await ApiProductsService.getApiProductApiSpecification(options).catch((reason) => {
       expect(reason, `error=${reason.message}`).is.instanceof(ApiError);
-      expect.fail(`failed to get API spec; error="${reason.body.message}"`);
+      expect.fail(`failed to return APIs; error="${reason.body.message}"`);
     });
 
     let apiSpecFromResponse: any;
@@ -79,7 +102,7 @@ describe(scriptName, function () {
       expect.fail(`failed to parse API spec from response; error=${e.message}`);
     }
 
-    const baseApiSpec = JSON.parse(apiSpec);
+    const baseApiSpec = JSON.parse(setup.apiSpec1);
     baseApiSpec.info['x-origin'] = { name: "apim-connector", vendor: "solace" };
 
     expect(apiSpecFromResponse, "response is not correct").to.be.eql(baseApiSpec);
@@ -87,8 +110,13 @@ describe(scriptName, function () {
 
   it("should not return the API spec if the user is not authorized", async function () {
 
+    const options = {
+      ...apiprodctx,
+      apiName: setup.apiName1,
+    }
+
     PlatformAPIClient.setManagementUser();
-    await ApisService.getApi({ ...orgctx, apiName: apiName }).then(() => {
+    await ApiProductsService.getApiProductApiSpecification(options).then(() => {
       expect.fail("unauthorized request was not rejected");
     }, (reason) => {
       expect(reason, `error=${reason.message}`).is.instanceof(ApiError);
@@ -98,7 +126,12 @@ describe(scriptName, function () {
 
   it("should not return the API spec if the API is unknown", async function () {
 
-    await ApisService.getApi({ ...orgctx, apiName: "unknown" }).then(() => {
+    const options = {
+      ...apiprodctx,
+      apiName: "unknown",
+    }
+
+    await ApiProductsService.getApiProductApiSpecification(options).then(() => {
       expect.fail("invalid request was not rejected");
     }, (reason) => {
       expect(reason, `error=${reason.message}`).is.instanceof(ApiError);
