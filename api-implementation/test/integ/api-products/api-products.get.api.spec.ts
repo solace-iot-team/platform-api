@@ -76,18 +76,15 @@ describe(scriptName, function () {
       expect.fail(`failed to return APIs; error="${reason.body.message}"`);
     });
 
-    const baseApiSpec = JSON.parse(setup.apiSpec1);
-    baseApiSpec.info['x-origin'] = { name: "apim-connector", vendor: "solace" };
-
-    expect(response.body, "response is not correct").to.be.eql(baseApiSpec);
+    verifyApiSpec(response.body, JSON.parse(setup.apiSpec1));
   });
 
-  it("should return the API spec in JSON format", async function () {
+  it("should return the API spec in YAML format", async function () {
 
     const options = {
       ...apiprodctx,
-      apiName: setup.apiName1,
-      format: "application/json" as ApiSpecFormat,
+      apiName: setup.apiName2,
+      format: "application/x-yaml" as ApiSpecFormat,
     }
 
     const response = await ApiProductsService.getApiProductApiSpecification(options).catch((reason) => {
@@ -102,10 +99,7 @@ describe(scriptName, function () {
       expect.fail(`failed to parse API spec from response; error=${e.message}`);
     }
 
-    const baseApiSpec = JSON.parse(setup.apiSpec1);
-    baseApiSpec.info['x-origin'] = { name: "apim-connector", vendor: "solace" };
-
-    expect(apiSpecFromResponse, "response is not correct").to.be.eql(baseApiSpec);
+    verifyApiSpec(apiSpecFromResponse, JSON.parse(setup.apiSpec2));
   });
 
   it("should not return the API spec if the user is not authorized", async function () {
@@ -138,5 +132,54 @@ describe(scriptName, function () {
       expect(reason.status, "status is not correct").to.be.oneOf([404]);
     });
   });
+
+  // HELPER
+
+  const verifyApiSpec = (apiSpec: any, baseApiSpec: any): void => {
+
+    // Note: When an API spec is used in an API product, it contains more information than the
+    //       API spec that was used to create the corresponding API.
+
+    // check 'info' section
+
+    expect(apiSpec.info, `info section is not correct`).to.deep.include(baseApiSpec.info);
+    expect(apiSpec.info, `info section is not correct`).to.have.property("x-origin").that.includes({
+      "name": "apim-connector",
+      "vendor": "solace",
+    });
+
+    // check 'channels' section
+
+    for (const topic in baseApiSpec.channels) {
+
+      // The 'channels' section of an API product API spec contains information about protocol
+      // bindings and the protocol bindings depend on the list of protocols of the API product.
+
+      const a = apiSpec.channels[topic];
+      const e = baseApiSpec.channels[topic];
+
+      if (e.publish) {
+        expect(a.publish, `channel section ${topic} is not correct`).to.deep.include(e.publish);
+        expect(a.publish, `channel section ${topic} is not correct`).to.have.nested.property(
+          "bindings.mqtt"
+        ).that.has.all.keys(["qos", "bindingVersion"]);
+      } else {
+        expect(a.publish, `channel section ${topic} is not correct`).is.undefined;
+      }
+
+      if (e.subscribe) {
+        expect(a.subscribe, `channel section ${topic} is not correct`).to.deep.include(e.subscribe);
+        expect(a.subscribe, `channel section ${topic} is not correct`).to.have.nested.property(
+          "bindings.mqtt"
+        ).that.has.all.keys(["qos", "bindingVersion"]);
+      } else {
+        expect(a.subscribe, `channel section ${topic} is not correct`).is.undefined;
+      }
+    }
+
+    // check 'components' section
+
+    expect(apiSpec.components, `components section is not correct`).to.deep.include(baseApiSpec.components);
+  }
 
 });
