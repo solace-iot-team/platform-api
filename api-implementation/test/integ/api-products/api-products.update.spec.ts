@@ -125,7 +125,7 @@ describe(scriptName, function () {
     });
   });
 
-  xit("should not update an API if an unknown environment is referenced", async function () {
+  it("should not update an API if an unknown environment is referenced", async function () {
 
     const apiProductPatch = {
       ...orgctx,
@@ -167,7 +167,7 @@ describe(scriptName, function () {
     });
   });
 
-  xit("should not update an API if a referenced protocol becomes invalid", async function () {
+  it("should not update an API if a referenced protocol becomes invalid", async function () {
 
     // NOTE: The update wants to change the environment from environment #1 to environment #2
     //       without changing the protocols. However, the configured protocols are not valid
