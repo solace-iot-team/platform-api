@@ -64,7 +64,7 @@ export class ApiProductsService {
   }
 
   async update(name: string, body: APIProduct): Promise<APIProduct> {
-    preconditionCheck(this, name);
+    await preconditionCheck(this, name);
     try {
       // if the environments are updated, the current protocols must be re-validated
       // if the protocols are updated, they must be validated against the current environments
