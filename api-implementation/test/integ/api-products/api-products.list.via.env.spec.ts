@@ -6,7 +6,7 @@ import type { APIProduct } from '../../lib/generated/openapi';
 import {
   ApiError,
   ApiProductsService,
-  ApisService,
+  EnvironmentsService,
   Protocol,
 } from '../../lib/generated/openapi';
 
@@ -16,9 +16,9 @@ const scriptName: string = path.basename(__filename);
 
 describe(scriptName, function () {
 
-  // Note: This test suite tests an API that is implemented in the ApisService (not the ApiProductsService).
-  //       However, the tested functionality is related to API products and therefore the tests are part of
-  //       an API product test suite.
+  // Note: This test suite tests an API that is implemented in the EnvironmentService (not the ApiProductsService).
+  //       However, the tested functionality is related to API products and therefore the tests are part of an API
+  //       product test suite.
 
   const orgctx = {
     organizationName: setup.organizationName,
@@ -110,14 +110,14 @@ describe(scriptName, function () {
 
   // TESTS
 
-  it("should return all API products for an API", async function () {
+  it("should return all API products for an environment", async function () {
 
     const options = {
       ...orgctx,
-      apiName: setup.apiName1,
+      envName: setup.environment1.name,
     }
 
-    const response = await ApisService.getApiReferencedByApiProducts(options).catch((reason) => {
+    const response = await EnvironmentsService.getEnvironmentReferencedByApiProducts(options).catch((reason) => {
       expect(reason, `error=${reason.message}`).is.instanceof(ApiError);
       expect.fail(`failed to list API products; error="${reason.body.message}"`);
     });
@@ -131,14 +131,14 @@ describe(scriptName, function () {
     expect(response.body, "response is not correct").to.have.deep.members(apiProducts);
   });
 
-  it("should return no API products for an unsed API", async function () {
+  it("should return no API products for an unsed environment", async function () {
 
     const options = {
       ...orgctx,
-      apiName: "unused",
+      envName: "unused",
     }
 
-    const response = await ApisService.getApiReferencedByApiProducts(options).catch((reason) => {
+    const response = await EnvironmentsService.getEnvironmentReferencedByApiProducts(options).catch((reason) => {
       expect(reason, `error=${reason.message}`).is.instanceof(ApiError);
       expect.fail(`failed to list API products; error="${reason.body.message}"`);
     });
@@ -148,8 +148,13 @@ describe(scriptName, function () {
 
   it("should not return any API products if the user is not authorized", async function () {
 
+    const options = {
+      ...orgctx,
+      envName: setup.environment2.name,
+    }
+
     PlatformAPIClient.setManagementUser();
-    await ApisService.getApiReferencedByApiProducts({ ...orgctx, apiName: setup.apiName1 }).then(() => {
+    await EnvironmentsService.getEnvironmentReferencedByApiProducts(options).then(() => {
       expect.fail("unauthorized request was not rejected");
     }, (reason) => {
       expect(reason, `error=${reason.message}`).is.instanceof(ApiError);
