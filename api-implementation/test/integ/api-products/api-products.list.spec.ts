@@ -25,7 +25,7 @@ describe(scriptName, function () {
   const apiProductName1: string = "apiProduct1";
   const apiProduct1: APIProduct = {
     name: apiProductName1,
-    displayName: "API product #1",
+    displayName: "API product 1",
     apis: [setup.apiName1],
     attributes: [{ name: "language", value: "DE,EN" }],
     environments: [setup.environment1.name],
@@ -43,7 +43,7 @@ describe(scriptName, function () {
   const apiProductName2: string = "apiProduct2";
   const apiProduct2: APIProduct = {
     name: apiProductName2,
-    displayName: "API product #2",
+    displayName: "API product 2",
     apis: [setup.apiName2, setup.apiName3],
     attributes: [],
     environments: [setup.environment2.name],
@@ -61,7 +61,7 @@ describe(scriptName, function () {
   const apiProductName3: string = "apiProduct3";
   const apiProduct3: APIProduct = {
     name: apiProductName3,
-    displayName: "API product #3",
+    displayName: "API product 3",
     apis: [setup.apiName1, setup.apiName2, setup.apiName3],
     attributes: [{ name: "language", value: "EN" }],
     environments: [setup.environment1.name, setup.environment2.name],

@@ -13,6 +13,14 @@ describe("orgs", function () {
   require('./orgs/orgs.list.spec.ts');
 });
 
+describe("environments", function () {
+  require('./environments/environments.create.spec.ts');
+  require('./environments/environments.delete.spec.ts');
+  require('./environments/environments.get.spec.ts');
+  require('./environments/environments.update.spec.ts');
+  require('./environments/environments.list.spec.ts');
+});
+
 describe("developers", function () {
   require('./developers/developers.create.spec.ts');
   require('./developers/developers.delete.spec.ts');
@@ -40,6 +48,7 @@ describe("api-products", function () {
   require('./api-products/api-products.update.spec.ts');
   require('./api-products/api-products.list.spec.ts');
   require('./api-products/api-products.list.via.api.spec.ts');
+  require('./api-products/api-products.list.via.env.spec.ts');
 });
 
 describe("apps", function () {

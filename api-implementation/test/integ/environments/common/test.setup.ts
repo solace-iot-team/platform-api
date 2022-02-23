@@ -10,13 +10,19 @@ import type { Organization } from "../../../lib/generated/openapi";
 import { AdministrationService } from "../../../lib/generated/openapi";
 
 const scriptName: string = path.basename(__filename);
+const scriptDir: string = path.dirname(__filename);
 
 const env = {
   solaceCloudBaseUrl: getMandatoryEnvVarValue(scriptName, 'PLATFORM_API_TEST_SOLACE_CLOUD_URL'),
   solaceCloudToken: getMandatoryEnvVarValue(scriptName, 'PLATFORM_API_TEST_SOLACE_CLOUD_TOKEN'),
   solaceEventPortalBaseUrl: getMandatoryEnvVarValue(scriptName, 'PLATFORM_API_TEST_SOLACE_EVENT_PORTAL_URL'),
   solaceEventPortalToken: getMandatoryEnvVarValue(scriptName, 'PLATFORM_API_TEST_SOLACE_EVENT_PORTAL_TOKEN'),
+  solaceCloudServiceId1: getMandatoryEnvVarValue(scriptName, 'PLATFORM_API_TEST_SOLACE_CLOUD_SERVICE_ID_DEV'),
+  solaceCloudServiceId2: getMandatoryEnvVarValue(scriptName, 'PLATFORM_API_TEST_SOLACE_CLOUD_SERVICE_ID_PROD'),
 }
+
+/** The resources directory. */
+export const resourcesDirectory: string = `${scriptDir}/../../resources`;
 
 /** The name of the test organization. */
 export const organizationName: string = "TestOrganization";
@@ -30,8 +36,14 @@ export const organization: Organization = {
   }
 }
 
+/** The service ID of a Solace Cloud service instance. */
+export const solaceCloudServiceId1: string = env.solaceCloudServiceId1;
+
+/** The service ID of a Solace Cloud service instance. */
+export const solaceCloudServiceId2: string = env.solaceCloudServiceId2;
+
 /**
- * Registers `before()` and `beforeEach()` hooks for a developer test suite.
+ * Registers `before()` and `beforeEach()` hooks for an environment test suite.
  * 
  * The `before()` hook logs a ">>> Start to execute test cases" message and all environment
  * variables that are used, and creates the {@link organization}.
@@ -41,13 +53,13 @@ export const organization: Organization = {
  * 
  * **Important:**
  * 
- * If the title of the parent test suite matches the start of the title of the developer
+ * If the title of the parent test suite matches the start of the title of the environment
  * test suite, the hooks will be registered for the parent test suite instead.
  * 
- * This improves the test execution time when developer tests from multiple test suites
+ * This improves the test execution time when environment tests from multiple test suites
  * are executed.
  * 
- * @param suite The developer test suite.
+ * @param suite The environment test suite.
  */
 export function addBeforeHooks(suite: Suite) {
 
@@ -82,20 +94,20 @@ function beforeEach() {
 }
 
 /**
- * Registers an `after()` hook for a developer test suite.
+ * Registers an `after()` hook for an environment test suite.
  * 
  * The `after()` hook deletes the {@link organization} (and all resources that are part of
  * it) and logs a ">>> Finished" message.
  * 
  * **Important:**
  * 
- * If the title of the parent test suite matches the start of the title of the developer
+ * If the title of the parent test suite matches the start of the title of the environment
  * test suite, the hooks will be registered for the parent test suite instead.
  * 
- * This improves the test execution time when developer tests from multiple test suites
+ * This improves the test execution time when environment tests from multiple test suites
  * are executed.
  * 
- * @param suite The developer test suite.
+ * @param suite The environment test suite.
  */
 export function addAfterHooks(suite: Suite) {
 
