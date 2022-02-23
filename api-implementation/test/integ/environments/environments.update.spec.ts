@@ -106,13 +106,33 @@ describe(scriptName, function () {
     await checkUpdate({ exposedProtocols: exposedProtocols });
   });
 
+  it("should update an environment when If-Match header is used", async function () {
+
+    const response = await EnvironmentsService.getEnvironment({ ...orgctx, envName: environmentName2 });
+    const etag = response.headers['etag'];
+
+    const environmentPatch = {
+      ...orgctx,
+      envName: environmentName2,
+      ifMatch: etag,
+      requestBody: {
+        displayName: "updated environment",
+      },
+    }
+
+    await EnvironmentsService.updateEnvironment(environmentPatch).catch((reason) => {
+      expect(reason, `error=${reason.message}`).is.instanceof(ApiError);
+      expect.fail(`failed to update environment; error="${reason.body.message}"`);
+    });
+  });
+
   it("should not update an environment if the user is not authorized", async function () {
 
     const environmentPatch = {
       ...orgctx,
       envName: environmentName2,
       requestBody: {
-        displayName: "updated environment"
+        displayName: "updated environment",
       },
     }
 
@@ -125,18 +145,37 @@ describe(scriptName, function () {
     });
   });
 
+  it("should not update an environment if the If-Match header is invalid", async function () {
+
+    const environmentPatch = {
+      ...orgctx,
+      envName: environmentName2,
+      ifMatch: "0815",
+      requestBody: {
+        displayName: "updated environment",
+      },
+    }
+
+    await EnvironmentsService.updateEnvironment(environmentPatch).then(() => {
+      expect.fail("invalid request was not rejected");
+    }, (reason) => {
+      expect(reason, `error=${reason.message}`).is.instanceof(ApiError);
+      expect(reason.status, "status is not correct").to.be.oneOf([412]);
+    });
+  });
+
   it("should not update an environment if the display name is invalid", async function () {
 
     const environmentPatch = {
       ...orgctx,
       envName: environmentName2,
       requestBody: {
-        displayName: ""
+        displayName: "",
       },
     }
 
     await EnvironmentsService.updateEnvironment(environmentPatch).then(() => {
-      expect.fail("unauthorized request was not rejected");
+      expect.fail("invalid request was not rejected");
     }, (reason) => {
       expect(reason, `error=${reason.message}`).is.instanceof(ApiError);
       expect(reason.status, "status is not correct").to.be.oneOf([400]);
@@ -154,7 +193,7 @@ describe(scriptName, function () {
     }
 
     await EnvironmentsService.updateEnvironment(environmentPatch).then(() => {
-      expect.fail("unauthorized request was not rejected");
+      expect.fail("invalid request was not rejected");
     }, (reason) => {
       expect(reason, `error=${reason.message}`).is.instanceof(ApiError);
       expect(reason.status, "status is not correct").to.be.oneOf([422]);
@@ -172,7 +211,7 @@ describe(scriptName, function () {
     }
 
     await EnvironmentsService.updateEnvironment(environmentPatch).then(() => {
-      expect.fail("unauthorized request was not rejected");
+      expect.fail("invalid request was not rejected");
     }, (reason) => {
       expect(reason, `error=${reason.message}`).is.instanceof(ApiError);
       expect(reason.status, "status is not correct").to.be.oneOf([422]);
@@ -190,7 +229,7 @@ describe(scriptName, function () {
     }
 
     await EnvironmentsService.updateEnvironment(environmentPatch).then(() => {
-      expect.fail("unauthorized request was not rejected");
+      expect.fail("invalid request was not rejected");
     }, (reason) => {
       expect(reason, `error=${reason.message}`).is.instanceof(ApiError);
       expect(reason.status, "status is not correct").to.be.oneOf([422]);
@@ -211,14 +250,51 @@ describe(scriptName, function () {
     }
 
     await EnvironmentsService.updateEnvironment(environmentPatch).then(() => {
-      expect.fail("unauthorized request was not rejected");
+      expect.fail("invalid request was not rejected");
     }, (reason) => {
       expect(reason, `error=${reason.message}`).is.instanceof(ApiError);
       expect(reason.status, "status is not correct").to.be.oneOf([422]);
     });
   });
 
-  xit("should not update an environment that does not exist", async function () {
+  it("should not update an environment if the environment has changed", async function () {
+
+    const response = await EnvironmentsService.getEnvironment({ ...orgctx, envName: environmentName2 });
+    const etag = response.headers['etag'];
+
+    const environmentPatch1 = {
+      ...orgctx,
+      envName: environmentName2,
+      ifMatch: etag,
+      requestBody: {
+        displayName: "updated environment",
+      },
+    }
+
+    const environmentPatch2 = {
+      ...orgctx,
+      envName: environmentName2,
+      ifMatch: etag,
+      requestBody: {
+        description: "updated description",
+      },
+    }
+
+    // NOTE: The 2nd update must be submitted AFTER the 1st update has been processed, or
+    //       otherwise, both updates will get processed. This is because the ETag is
+    //       calculated based on the data in the database and as long as the data hasn't
+    //       been updated, the "old" ETag will still be valid.
+
+    await EnvironmentsService.updateEnvironment(environmentPatch1);
+    await EnvironmentsService.updateEnvironment(environmentPatch2).then(() => {
+      expect.fail("concurrent update request was not rejected");
+    }, (reason) => {
+      expect(reason, `error=${reason.message}`).is.instanceof(ApiError);
+      expect(reason.status, "status is not correct").to.be.oneOf([412]);
+    });
+  });
+
+  it("should not update an environment that does not exist", async function () {
 
     const environmentPatch = {
       ...orgctx,
