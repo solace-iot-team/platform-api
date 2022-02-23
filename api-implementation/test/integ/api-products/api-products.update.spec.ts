@@ -88,13 +88,33 @@ describe(scriptName, function () {
     await checkUpdate({ clientOptions: clientOptions });
   });
 
+  it("should update an API product when If-Match header is used", async function () {
+
+    const response = await ApiProductsService.getApiProduct({ ...orgctx, apiProductName: apiProductName });
+    const etag = response.headers['etag'];
+
+    const apiProductPatch = {
+      ...orgctx,
+      apiProductName: apiProductName,
+      ifMatch: etag,
+      requestBody: {
+        displayName: "updated api product",
+      },
+    }
+
+    await ApiProductsService.updateApiProduct(apiProductPatch).catch((reason) => {
+      expect(reason, `error=${reason.message}`).is.instanceof(ApiError);
+      expect.fail(`failed to update API product; error="${reason.body.message}"`);
+    });
+  });
+
   it("should not update an API product if the user is not authorized", async function () {
 
     const apiProductPatch = {
       ...orgctx,
       apiProductName: apiProductName,
       requestBody: {
-        displayName: "updated api product"
+        displayName: "updated api product",
       },
     }
 
@@ -104,6 +124,25 @@ describe(scriptName, function () {
     }, (reason) => {
       expect(reason, `error=${reason.message}`).is.instanceof(ApiError);
       expect(reason.status, "status is not correct").to.be.oneOf([401]);
+    });
+  });
+
+  it("should not update an API product if the If-Match header is invalid", async function () {
+
+    const apiProductPatch = {
+      ...orgctx,
+      apiProductName: apiProductName,
+      ifMatch: "0815",
+      requestBody: {
+        displayName: "updated api product",
+      },
+    }
+
+    await ApiProductsService.updateApiProduct(apiProductPatch).then(() => {
+      expect.fail("invalid request was not rejected");
+    }, (reason) => {
+      expect(reason, `error=${reason.message}`).is.instanceof(ApiError);
+      expect(reason.status, "status is not correct").to.be.oneOf([412]);
     });
   });
 
@@ -186,6 +225,43 @@ describe(scriptName, function () {
     }, (reason) => {
       expect(reason, `error=${reason.message}`).is.instanceof(ApiError);
       expect(reason.status, "status is not correct").to.be.oneOf([422]);
+    });
+  });
+
+  it("should not update an API product if the API product has changed", async function () {
+
+    const response = await ApiProductsService.getApiProduct({ ...orgctx, apiProductName: apiProductName });
+    const etag = response.headers['etag'];
+
+    const apiProductPatch1 = {
+      ...orgctx,
+      apiProductName: apiProductName,
+      ifMatch: etag,
+      requestBody: {
+        displayName: "updated api product",
+      },
+    }
+
+    const apiProductPatch2 = {
+      ...orgctx,
+      apiProductName: apiProductName,
+      ifMatch: etag,
+      requestBody: {
+        apis: [setup.apiName2, setup.apiName3],
+      },
+    }
+
+    // NOTE: The 2nd update must be submitted AFTER the 1st update has been processed, or
+    //       otherwise, both updates will get processed. This is because the ETag is
+    //       calculated based on the data in the database and as long as the data hasn't
+    //       been updated, the "old" ETag will still be valid.
+
+    await ApiProductsService.updateApiProduct(apiProductPatch1);
+    await ApiProductsService.updateApiProduct(apiProductPatch2).then(() => {
+      expect.fail("concurrent update request was not rejected");
+    }, (reason) => {
+      expect(reason, `error=${reason.message}`).is.instanceof(ApiError);
+      expect(reason.status, "status is not correct").to.be.oneOf([412]);
     });
   });
 
