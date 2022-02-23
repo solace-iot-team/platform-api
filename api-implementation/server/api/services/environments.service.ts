@@ -114,35 +114,28 @@ export class EnvironmentsService {
     });
   }
 
-  update(name: string, body: EnvironmentPatch): Promise<Environment> {
-    return new Promise<Environment>(async (resolve, reject) => {
-      const envOriginal: Environment = (await this.byName(name) as Environment);
-      await updateProtectionByObject(envOriginal);
-      if (body.description) {
-        envOriginal.description = body.description;
-      }
-      if (body.exposedProtocols) {
-        envOriginal.exposedProtocols = body.exposedProtocols;
-      }
-      if (body.serviceId) {
-        envOriginal.serviceId = body.serviceId;
-      }
-      const envRefCheck: ErrorResponseInternal = await this.validateReferences(envOriginal);
-      if (envRefCheck == null) {
-        this.persistenceService
-          .update(name, body)
-          .then((p) => {
-            resolve(p);
-          })
-          .catch((e) => {
-            reject(e);
-          });
-      } else {
-        reject(
-          envRefCheck
-        );
-      }
-    });
+  async update(name: string, body: EnvironmentPatch): Promise<Environment> {
+    const envOriginal: Environment = (await this.byName(name) as Environment);
+    await updateProtectionByObject(envOriginal);
+    if (body.description) {
+      envOriginal.description = body.description;
+    }
+    if (body.exposedProtocols) {
+      envOriginal.exposedProtocols = body.exposedProtocols;
+    }
+    if (body.serviceId) {
+      envOriginal.serviceId = body.serviceId;
+    }
+    const envRefCheck: ErrorResponseInternal = await this.validateReferences(envOriginal);
+    if (envRefCheck != null) {
+      throw envRefCheck;
+    }
+    const p = await this.persistenceService.update(name, body);
+    if (p != null) {
+      return p;
+    } else {
+      throw new ErrorResponseInternal(500, `Could not update object`);
+    }
   }
 
   private async validateReferences(env: Environment): Promise<ErrorResponseInternal> {
