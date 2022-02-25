@@ -21,8 +21,12 @@ class SolaceCloudFacade {
     return this.getServiceById(e.serviceId);
   }
 
-  @Cache(serviceCache, {ttl: 3600})
   public async getServiceById(id: string): Promise<Service> {
+    const cacheKey: string = await this.calculateCacheKey(id);
+    const cachedService: Service = await serviceCache.getItem<Service>(cacheKey);
+    if (cachedService) {
+      return cachedService;
+    }
     try {
       const result: ServiceResponse = await ServicesService.getService(id);
       if (result == null || result.data == null) {
@@ -36,6 +40,7 @@ class SolaceCloudFacade {
             }
           }
         }
+        await serviceCache.setItem(cacheKey, result.data, { ttl: 3600 });
         return result.data;
       }
     }
@@ -45,8 +50,12 @@ class SolaceCloudFacade {
     }
   }
 
-  @Cache(servicesCache, {ttl: 3600}) 
   public async getServices(): Promise<Service[]> {
+    const cacheKey = await this.calculateCacheKey();
+    const cachedServices = await servicesCache.getItem<Service[]>(cacheKey);
+    if (cachedServices) {
+      return cachedServices;
+    }
     let services: Service[]  = [];
     try {
       const result: ServicesResponse = await ServicesService.listServices();
@@ -54,8 +63,9 @@ class SolaceCloudFacade {
         throw new ErrorResponseInternal(404, `No services found`);
       } else {
         for (const s of result.data){
-        services.push(await this.getServiceById(s.serviceId))
+          services.push(await this.getServiceById(s.serviceId))
         }
+        await servicesCache.setItem(cacheKey, services, { ttl: 3600 });
         return services;
       }
     }
@@ -71,6 +81,14 @@ class SolaceCloudFacade {
       url = `${baseUrl}/services`;
     }
     return validateToken(token, url);
+  }
+
+  private async calculateCacheKey(id?: string): Promise<string> {
+    let cacheKey: string = await getCloudToken();
+    if (id) {
+      cacheKey = `${cacheKey}:${id}`;
+    }
+    return cacheKey;
   }
 }
 

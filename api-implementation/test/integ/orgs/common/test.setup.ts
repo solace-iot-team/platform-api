@@ -14,6 +14,8 @@ const env = {
   solaceCloudToken: getMandatoryEnvVarValue(scriptName, 'PLATFORM_API_TEST_SOLACE_CLOUD_TOKEN'),
   solaceEventPortalBaseUrl: getMandatoryEnvVarValue(scriptName, 'PLATFORM_API_TEST_SOLACE_EVENT_PORTAL_URL'),
   solaceEventPortalToken: getMandatoryEnvVarValue(scriptName, 'PLATFORM_API_TEST_SOLACE_EVENT_PORTAL_TOKEN'),
+  solaceCloudServiceId1: getMandatoryEnvVarValue(scriptName, 'PLATFORM_API_TEST_SOLACE_CLOUD_SERVICE_ID_DEV'),
+  solaceCloudServiceId2: getMandatoryEnvVarValue(scriptName, 'PLATFORM_API_TEST_SOLACE_CLOUD_SERVICE_ID_PROD'),
 }
 
 /** The base URL for the Solace Cloud API. */
@@ -27,6 +29,12 @@ export const solaceEventPortalBaseUrl: string = env.solaceEventPortalBaseUrl;
 
 /** The token for the Solace Cloud Event Portal API. */
 export const solaceEventPortalToken: string = env.solaceEventPortalToken;
+
+/** The service ID of a Solace Cloud service instance. */
+export const solaceCloudServiceId1: string = env.solaceCloudServiceId1;
+
+/** The service ID of a Solace Cloud service instance. */
+export const solaceCloudServiceId2: string = env.solaceCloudServiceId2;
 
 /**
  * Registers `before()` and `beforeEach()` hooks for an administration service test suite.
