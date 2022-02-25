@@ -9,6 +9,7 @@ describe("orgs", function () {
   require('./orgs/orgs.create.spec.ts');
   require('./orgs/orgs.delete.spec.ts');
   require('./orgs/orgs.get.spec.ts');
+  require('./orgs/orgs.get.services.spec.ts');
   require('./orgs/orgs.update.spec.ts');
   require('./orgs/orgs.list.spec.ts');
 });
