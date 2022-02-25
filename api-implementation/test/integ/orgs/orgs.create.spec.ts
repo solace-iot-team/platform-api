@@ -97,9 +97,8 @@ describe(scriptName, function () {
     }
 
     PlatformAPIClient.setApiUser();
-
     await AdministrationService.createOrganization({ requestBody: organization }).then(() => {
-      expect.fail("an unauthorized user created an organization");
+      expect.fail("unauthorized request was not rejected");
     }, (reason) => {
       expect(reason, `error=${reason.message}`).is.instanceof(ApiError);
       expect(reason.status, `status is not correct`).to.be.oneOf([401]);
@@ -114,7 +113,7 @@ describe(scriptName, function () {
 
     await AdministrationService.createOrganization({ requestBody: organization });
     await AdministrationService.createOrganization({ requestBody: organization }).then(() => {
-      expect.fail("an organization was created twice (duplicate)");
+      expect.fail("invalid request was not rejected");
     }, (reason) => {
       expect(reason, `error=${reason.message}`).is.instanceof(ApiError);
       expect(reason.status, `status is not correct`).to.be.oneOf([422]);
@@ -129,7 +128,7 @@ describe(scriptName, function () {
     }
 
     await AdministrationService.createOrganization({ requestBody: organization }).then(() => {
-      expect.fail("an organization was created with an invalid all-in-one token");
+      expect.fail("invalid request was not rejected");
     }, (reason) => {
       expect(reason, `error=${reason.message}`).is.instanceof(ApiError);
       expect(reason.status, `status is not correct`).to.be.oneOf([400]);
@@ -147,7 +146,7 @@ describe(scriptName, function () {
     }
 
     await AdministrationService.createOrganization({ requestBody: organization }).then(() => {
-      expect.fail("an organization was created with an invalid cloud endpoint");
+      expect.fail("invalid request was not rejected");
     }, (reason) => {
       expect(reason, `error=${reason.message}`).is.instanceof(ApiError);
       expect(reason.status, `status is not correct`).to.be.oneOf([400]);
@@ -165,7 +164,7 @@ describe(scriptName, function () {
     }
 
     await AdministrationService.createOrganization({ requestBody: organization }).then(() => {
-      expect.fail("an organization was created with an invalid cloud endpoint");
+      expect.fail("invalid request was not rejected");
     }, (reason) => {
       expect(reason, `error=${reason.message}`).is.instanceof(ApiError);
       expect(reason.status, `status is not correct`).to.be.oneOf([400]);
@@ -183,7 +182,7 @@ describe(scriptName, function () {
     }
 
     await AdministrationService.createOrganization({ requestBody: organization }).then(() => {
-      expect.fail("an organization was created with an invalid event portal endpoint");
+      expect.fail("invalid request was not rejected");
     }, (reason) => {
       expect(reason, `error=${reason.message}`).is.instanceof(ApiError);
       expect(reason.status, `status is not correct`).to.be.oneOf([400]);
@@ -201,7 +200,7 @@ describe(scriptName, function () {
     }
 
     await AdministrationService.createOrganization({ requestBody: organization }).then(() => {
-      expect.fail("an organization was created with an invalid event portal endpoint");
+      expect.fail("invalid request was not rejected");
     }, (reason) => {
       expect(reason, `error=${reason.message}`).is.instanceof(ApiError);
       expect(reason.status, `status is not correct`).to.be.oneOf([400]);
