@@ -138,9 +138,8 @@ describe(scriptName, function () {
   it("should not return organizations if the user is not authorized", async function () {
 
     PlatformAPIClient.setApiUser();
-
     await AdministrationService.listOrganizations({}).then(() => {
-      expect.fail("an unauthorized user retrieved organizations");
+      expect.fail("unauthorized request was not rejected");
     }, (reason) => {
       expect(reason, `error=${reason.message}`).is.instanceof(ApiError);
       expect(reason.status, `status is not correct`).to.be.oneOf([401]);

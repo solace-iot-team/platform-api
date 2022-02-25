@@ -124,7 +124,7 @@ describe(scriptName, function () {
     PlatformAPIClient.setApiUser();
 
     await AdministrationService.updateOrganization({ ...orgctx, requestBody: organizationPatch }).then(() => {
-      expect.fail("an unauthorized user updated an organization");
+      expect.fail("unauthorized request was not rejected");
     }, (reason) => {
       expect(reason, `error=${reason.message}`).is.instanceof(ApiError);
       expect(reason.status, "status is not correct").to.be.oneOf([401]);
@@ -139,7 +139,7 @@ describe(scriptName, function () {
     }
 
     await AdministrationService.updateOrganization({ organizationName: "unknown", requestBody: organizationPatch }).then(() => {
-      expect.fail("an unknown organization was updated");
+      expect.fail("invalid request was not rejected");
     }, (reason) => {
       expect(reason, `error=${reason.message}`).is.instanceof(ApiError);
       expect(reason.status, "status is not correct").to.be.oneOf([404]);
@@ -161,7 +161,7 @@ describe(scriptName, function () {
     }
 
     await AdministrationService.updateOrganization({ ...orgctx, requestBody: organizationPatch }).then(() => {
-      expect.fail("an organization was updated with an invalid token");
+      expect.fail("invalid request was not rejected");
     }, (reason) => {
       expect(reason, `error=${reason.message}`).is.instanceof(ApiError);
       expect(reason.status, "status is not correct").to.be.oneOf([400]);
@@ -189,7 +189,7 @@ describe(scriptName, function () {
     }
 
     await AdministrationService.updateOrganization({ ...orgctx, requestBody: organizationPatch }).then(() => {
-      expect.fail("an organization was updated with an invalid event portal URL");
+      expect.fail("invalid request was not rejected");
     }, (reason) => {
       expect(reason, `error=${reason.message}`).is.instanceof(ApiError);
       expect(reason.status, "status is not correct").to.be.oneOf([400]);
