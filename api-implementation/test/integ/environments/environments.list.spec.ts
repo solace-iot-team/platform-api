@@ -94,24 +94,6 @@ describe(scriptName, function () {
 
     expect(response.body, "number of environments is not correct").to.have.lengthOf(2);
     expect(response.body, "response is not correct").to.have.deep.members([environment1, environment2]);
-    // expect(response.body, "response is not correct").to.deep.include(environment1);
-
-    // // check messaging protocols in response
-
-    // expect(response.body, "response is not correct").to.have.property("messagingProtocols");
-    // environment1.exposedProtocols.forEach((protocol) => {
-
-    //   const p = response.body.messagingProtocols.find(p => p.protocol.name == protocol.name);
-
-    //   expect(p, `protocol ${protocol.name} is missing`).to.be.not.undefined;
-    //   expect(p, `protocol ${protocol.name} is not correct`).to.have.property("uri").that.is.not.empty;
-    // });
-
-    // // check that serviceId, serviceName and msgVpnName have a value
-
-    // expect(response.body, "response is not correct").to.have.property("serviceId").that.is.not.empty;
-    // expect(response.body, "response is not correct").to.have.property("serviceName").that.is.not.empty;
-    // expect(response.body, "response is not correct").to.have.property("msgVpnName").that.is.not.empty;
   });
 
   it("should return all environments for page #1", async function () {
@@ -162,9 +144,11 @@ describe(scriptName, function () {
       expect.fail(`failed to list environments; error="${reason.body.message}"`);
     });
 
-    expect(response.body, "number of environments is not correct").to.have.lengthOf(2);
-    expect(response.body, "response is not correct").to.have.deep.members(
-      [environment1, environment2].sort((a, b) => (a.name > b.name ? 1 : -1))
+    const environments = response.body;
+
+    expect(environments, "number of environments is not correct").to.have.lengthOf(2);
+    expect(environments, "order of environments is not correct").to.have.ordered.members(
+      [ ...environments ].sort((a, b) => (a.name > b.name ? 1 : -1))
     );
   });
 
@@ -182,13 +166,15 @@ describe(scriptName, function () {
       expect.fail(`failed to list environments; error="${reason.body.message}"`);
     });
 
-    expect(response.body, "number of environments is not correct").to.have.lengthOf(2);
-    expect(response.body, "response is not correct").to.have.deep.members(
-      [environment1, environment2].sort((a, b) => (a.name > b.name ? -1 : 1))
+    const environments = response.body;
+
+    expect(environments, "number of environments is not correct").to.have.lengthOf(2);
+    expect(environments, "order of environments is not correct").to.have.ordered.members(
+      [ ...environments ].sort((a, b) => (a.name > b.name ? -1 : 1))
     );
   });
 
-  it("should return all environments in full format", async function () {
+  it("should return environments in full format", async function () {
 
     const options = {
       ...orgctx,
