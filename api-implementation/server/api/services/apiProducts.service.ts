@@ -64,12 +64,15 @@ export class ApiProductsService {
   }
 
   async update(name: string, body: APIProduct): Promise<APIProduct> {
-    preconditionCheck(this, name);
+    await preconditionCheck(this, name);
     try {
-      // we need ot load the environment list so we can validate a new protocol that may be added
-      if (body.environments == null) {
+      // if the environments are updated, the current protocols must be re-validated
+      // if the protocols are updated, they must be validated against the current environments
+      if (    (body.environments != null && body.protocols == null)
+           || (body.environments == null && body.protocols != null)) {
         const oldProduct = await this.persistenceService.byName(name);
-        body.environments = oldProduct.environments;
+        body.environments = body.environments ?? oldProduct.environments;
+        body.protocols = body.protocols ?? oldProduct.protocols;
       }
       const apiReferenceCheck = await this.validateReferences(body);
       L.info(` reference check result ${apiReferenceCheck}`);

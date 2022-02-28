@@ -1,7 +1,6 @@
 import 'mocha';
 import { expect } from 'chai';
 import path from 'path';
-import type { About } from '../../lib/generated/openapi';
 import {
   AdministrationService,
   ApiError,

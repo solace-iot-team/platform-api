@@ -21,15 +21,15 @@ describe(scriptName, function () {
 
   const developer1: Developer = {
     email: "developer1@mycompany.com",
-    firstName: "firstName1",
-    lastName: "lastName1",
+    firstName: "firstNameA",
+    lastName: "lastNameA",
     userName: `developer1@${setup.organizationName}`,
   }
 
   const developer2: Developer = {
     email: "developer2@mycompany.com",
-    firstName: "firstName2",
-    lastName: "lastName2",
+    firstName: "firstNameB",
+    lastName: "lastNameB",
     userName: `developer2@${setup.organizationName}`,
     attributes: [{
       name: "location",
@@ -39,8 +39,8 @@ describe(scriptName, function () {
 
   const developer3: Developer = {
     email: "developer3@mycompany.com",
-    firstName: "firstName3",
-    lastName: "lastName3",
+    firstName: "firstNameC",
+    lastName: "lastNameC",
     userName: `developer3@${setup.organizationName}`,
     attributes: [{
       name: "location",

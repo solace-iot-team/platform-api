@@ -13,7 +13,7 @@ const apisDirectory: string = `${setup.resourcesDirectory}/apis`;
 
 describe(scriptName, function () {
 
-  type ApiFormat = "application/json" | "application/x-yaml";
+  type ApiSpecFormat = "application/json" | "application/x-yaml";
 
   const orgctx = {
     organizationName: setup.organizationName,
@@ -45,7 +45,7 @@ describe(scriptName, function () {
     const options = {
       ...orgctx,
       apiName: apiName,
-      format: "application/json" as ApiFormat,
+      format: "application/json" as ApiSpecFormat,
     }
 
     const response = await ApisService.getApi(options).catch((reason) => {
@@ -64,7 +64,7 @@ describe(scriptName, function () {
     const options = {
       ...orgctx,
       apiName: apiName,
-      format: "application/x-yaml" as ApiFormat,
+      format: "application/x-yaml" as ApiSpecFormat,
     }
 
     const response = await ApisService.getApi(options).catch((reason) => {

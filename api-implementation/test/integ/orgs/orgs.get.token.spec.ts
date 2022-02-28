@@ -1,7 +1,7 @@
 import 'mocha';
 import { expect } from 'chai';
 import path from 'path';
-import type { Organization } from '../../lib/generated/openapi';
+import { ManagementService, Organization } from '../../lib/generated/openapi';
 import { AdministrationService, ApiError } from '../../lib/generated/openapi';
 
 import * as setup from './common/test.setup';
@@ -14,19 +14,19 @@ describe(scriptName, function () {
 
   const organization1: Organization = {
     name: "organization1",
+    'cloud-token': setup.solaceCloudToken,
   }
 
   const organization2: Organization = {
     name: "organization2",
-    'cloud-token': setup.solaceCloudToken,
-  }
-
-  const organization3: Organization = {
-    name: "organization3",
     'cloud-token': {
       cloud: { baseUrl: setup.solaceCloudBaseUrl, token: setup.solaceCloudToken },
       eventPortal: { baseUrl: setup.solaceEventPortalBaseUrl, token: setup.solaceEventPortalToken },
     },
+  }
+
+  const organization3: Organization = {
+    name: "organization3",
   }
 
   // HOOKS
@@ -43,8 +43,13 @@ describe(scriptName, function () {
     ]);
   });
 
+  beforeEach(function () {
+    PlatformAPIClient.setApiUser();
+  });
+
   after(async function () {
     TestContext.newItId();
+    PlatformAPIClient.setManagementUser();
     await Promise.all([
       AdministrationService.deleteOrganization({ organizationName: organization1.name }),
       AdministrationService.deleteOrganization({ organizationName: organization2.name }),
@@ -56,59 +61,47 @@ describe(scriptName, function () {
 
   // TESTS
 
-  it("should return an organization with name only", async function () {
+  it("should return the token for an organization", async function () {
 
-    const response = await AdministrationService.getOrganization({ organizationName: organization1.name }).catch((reason) => {
+    const response = await ManagementService.getToken({ organizationName: organization1.name }).catch((reason) => {
       expect(reason, `error=${reason.message}`).is.instanceof(ApiError);
-      expect.fail(`failed to get organization; error="${reason.body.message}"`);
+      expect.fail(`failed to get token; error="${reason.body.message}"`);
     });
 
-    expect(response.body, "response is not correct").to.deep.include({
-      name: organization1.name,
-      status: {},
-    });
-    expect(response.body, "response is not correct").to.not.have.property("cloud-token");
+    expect(response.body, "response is not correct").to.be.eql(organization1['cloud-token']);
   });
 
-  it("should return an organization with all-in-one token", async function () {
+  it("should return the token for an organization with cloud and event portal token", async function () {
 
-    const response = await AdministrationService.getOrganization({ organizationName: organization2.name }).catch((reason) => {
+    const response = await ManagementService.getToken({ organizationName: organization2.name }).catch((reason) => {
       expect(reason, `error=${reason.message}`).is.instanceof(ApiError);
-      expect.fail(`failed to get organization; error="${reason.body.message}"`);
+      expect.fail(`failed to get token; error="${reason.body.message}"`);
     });
 
-    expect(response.body, "response is not correct").to.deep.include({
-      name: organization2.name,
-      status: {
-        "cloudConnectivity": true,
-        "eventPortalConnectivity": true,
-      },
-    });
-    expect(response.body, "response is not correct").to.have.property("cloud-token").that.is.a("string");
+    let tokenFromResponse: any;
+    try {
+      tokenFromResponse = JSON.parse(response.body);
+    } catch (e) {
+      expect.fail(`failed to parse token from response; error=${e.message}`);
+    }
+
+    expect(tokenFromResponse, "response is not correct").to.deep.include(organization2['cloud-token']);
   });
 
-  it("should return an organization with cloud and event portal tokens", async function () {
+  it("should return no token for an organization without token", async function () {
 
-    const response = await AdministrationService.getOrganization({ organizationName: organization3.name }).catch((reason) => {
+    const response = await ManagementService.getToken({ organizationName: organization3.name }).catch((reason) => {
       expect(reason, `error=${reason.message}`).is.instanceof(ApiError);
-      expect.fail(`failed to get organization; error="${reason.body.message}"`);
+      expect.fail(`failed to get token; error="${reason.body.message}"`);
     });
 
-    expect(response.body, "response is not correct").to.deep.include({
-      name: organization3.name,
-      status: {
-        "cloudConnectivity": true,
-        "eventPortalConnectivity": true,
-      },
-    });
-    expect(response.body, "response is not correct").to.have.property("cloud-token").that.is.an("object");
+    expect(response.body, "response is not correct").to.be.empty;
   });
 
   it("should not return an organization if the user is not authorized", async function () {
 
-    PlatformAPIClient.setApiUser();
-
-    await AdministrationService.getOrganization({ organizationName: organization1.name }).then(() => {
+    PlatformAPIClient.setManagementUser();
+    await ManagementService.getToken({ organizationName: organization1.name }).then(() => {
       expect.fail("an unauthorized user retrieved an organization");
     }, (reason) => {
       expect(reason, `error=${reason.message}`).is.instanceof(ApiError);
@@ -116,9 +109,9 @@ describe(scriptName, function () {
     });
   });
 
-  it("should not return an organization if the organization is unknown", async function () {
+  it("should not return a token if the organization is unknown", async function () {
 
-    await AdministrationService.getOrganization({ organizationName: "unknown" }).then(() => {
+    await ManagementService.getToken({ organizationName: "unknown" }).then(() => {
       expect.fail("an unknown organization was returned");
     }, (reason) => {
       expect(reason, `error=${reason.message}`).is.instanceof(ApiError);
