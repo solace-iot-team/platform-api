@@ -24,14 +24,6 @@ describe("environments", function () {
   require('./environments/environments.list.spec.ts');
 });
 
-describe("developers", function () {
-  require('./developers/developers.create.spec.ts');
-  require('./developers/developers.delete.spec.ts');
-  require('./developers/developers.get.spec.ts');
-  require('./developers/developers.update.spec.ts');
-  require('./developers/developers.list.spec.ts');
-});
-
 describe("apis", function () {
   require('./apis/apis.import.spec.ts');
   require('./apis/apis.create.spec.ts');
@@ -52,6 +44,22 @@ describe("api-products", function () {
   require('./api-products/api-products.list.spec.ts');
   require('./api-products/api-products.list.via.api.spec.ts');
   require('./api-products/api-products.list.via.env.spec.ts');
+});
+
+describe("developers", function () {
+  require('./developers/developers.create.spec.ts');
+  require('./developers/developers.delete.spec.ts');
+  require('./developers/developers.get.spec.ts');
+  require('./developers/developers.update.spec.ts');
+  require('./developers/developers.list.spec.ts');
+});
+
+describe("teams", function () {
+  require('./teams/teams.create.spec.ts');
+  require('./teams/teams.delete.spec.ts');
+  require('./teams/teams.get.spec.ts');
+  require('./teams/teams.update.spec.ts');
+  require('./teams/teams.list.spec.ts');
 });
 
 describe("apps", function () {
