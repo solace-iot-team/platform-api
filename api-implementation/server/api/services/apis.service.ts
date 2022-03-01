@@ -107,17 +107,18 @@ export class ApisService {
       apiSpec = await EventPortalFacade.getEventApiProductAsyncApi(body.id)
       api = await EventPortalFacade.getEventApiProduct(body.id) ;
     } catch (e){
-      throw new ErrorResponseInternal(500, `No Event POrtal Connectivity, Entity ${api.name} can not be imported`)
+      throw new ErrorResponseInternal(500, `No Event Portal Connectivity, Entity ${api.name} can not be imported`)
     }
-    const canImport = await this.readStrategy.canImport(api.name);
+    const apiName = api.name.replace(/[^a-zA-Z0-9_-]+/g, '-');
+    const canImport = await this.readStrategy.canImport(apiName);
     if (!canImport) {
-      throw new ErrorResponseInternal(422, `Entity ${api.name} can not be imported`)
+      throw new ErrorResponseInternal(422, `Entity ${apiName} (${api.name}) can not be imported`)
     }
     const info: APIInfo = {
       createdBy: ns.getStore().get(ContextConstants.AUTHENTICATED_USER),
       createdTime: api.createdTime,
       description: api.description,
-      name: api.name,
+      name: apiName,
       source: 'EventAPIProduct',
       sourceId: api.id,
       sourceMetadata: api,

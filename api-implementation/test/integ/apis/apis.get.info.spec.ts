@@ -19,7 +19,7 @@ describe(scriptName, function () {
   const apiName1: string = "SayHelloApi";
   const apiSpec1: string = AsyncAPIHelper.loadYamlFileAsJsonString(`${apisDirectory}/say-hello.yml`);
 
-  const apiName2: string = "API-M Account Service"
+  const apiName2: string = "API-M-Account-Service"
   const apiSpec2: string = AsyncAPIHelper.loadYamlFileAsJsonString(`${apisDirectory}/account-service.yml`);
 
   const apiEventPortalId2: string = "30gb615l9re";
