@@ -79,6 +79,10 @@ describe(scriptName, function () {
     ]);
   });
 
+  afterEach(function () {
+    PlatformAPIClient.setApiUser();
+  });
+
   after(async function () {
     TestContext.newItId();
     await Promise.all([
