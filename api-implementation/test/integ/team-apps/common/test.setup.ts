@@ -9,7 +9,6 @@ import {
 import { PlatformAPIClient } from '../../../lib/api.helpers';
 import { SolaceCloudClientFactory } from '../../../lib/broker.helpers';
 import type {
-  Developer,
   Environment,
   EnvironmentResponse,
   Organization,
@@ -21,7 +20,6 @@ import {
   ApiProductsService,
   ApisService,
   ClientOptionsGuaranteedMessaging,
-  DevelopersService,
   EnvironmentsService,
   Protocol,
   TeamsService,
@@ -276,23 +274,20 @@ export const webHook2: WebHook = {
   mode: WebHook.mode.SERIAL,
 }
 
-/** A developer. */
-export const developer: Developer = {
-  email: "developer@mycompany.com",
-  firstName: "firstName",
-  lastName: "lastname",
-  userName: `developer@${organizationName}`,
+/** The 1st team. */
+export const team1: Team = {
+  name: "team1",
+  displayName: "Team1",
 }
 
-/** A team. */
-export const team: Team = {
-  name: "team",
-  displayName: "Team",
+/** The 2nd team. */
+export const team2: Team = {
+  name: "team2",
+  displayName: "Team2",
 }
-
 
 /**
- * Registers `before()` and `beforeEach()` hooks for an application test suite.
+ * Registers `before()` and `beforeEach()` hooks for a team-application test suite.
  * 
  * The `before()` hook logs a ">>> Start to execute test cases" message and all environment
  * variables that are used, and creates the following resources:
@@ -300,20 +295,19 @@ export const team: Team = {
  * - The {@link organization}
  * - The environments {@link environment1} and {@link environment2}
  * - The API products {@link apiProduct1}, {@link apiProduct2}, {@link apiProduct3} and {@link apiProduct4}
- * - The developer {@link developer}
- * - The team {@link team}
+ * - The teams {@link team1} and {@link team2}
  * 
  * The `beforeEach()` hook generates a new identifier for the {@link TestContext} and
  * configures the {@link PlatformAPIClient} to use the API user.
  * 
  * **Important:**
  * 
- * If the title of the parent test suite matches the start of the title of the specified
+ * If the title of the parent test suite matches the start of the title of the team-application
  * test suite, the hooks will be registered for the parent test suite instead.
  * 
  * This improves the test execution time when tests from multiple test suites are executed.
  * 
- * @param suite The application test suite.
+ * @param suite The team-application test suite.
  */
 export function addBeforeHooks(suite: Suite) {
 
@@ -342,11 +336,11 @@ async function before() {
   PlatformAPIClient.setManagementUser();
   await AdministrationService.createOrganization({ requestBody: organization });
 
-  PlatformAPIClient.setApiUser();
-
   const orgctx = {
     organizationName: organizationName,
   }
+
+  PlatformAPIClient.setApiUser();
 
   await Promise.all([
     EnvironmentsService.createEnvironment({ ...orgctx, requestBody: environment1 }),
@@ -375,8 +369,10 @@ async function before() {
     ApiProductsService.createApiProduct({ ...orgctx, requestBody: apiProduct4 }),
   ]);
 
-  await DevelopersService.createDeveloper({ ...orgctx, requestBody: developer });
-  await TeamsService.createTeam({ ...orgctx, requestBody: team });
+  await Promise.all([
+    TeamsService.createTeam({ ...orgctx, requestBody: team1 }),
+    TeamsService.createTeam({ ...orgctx, requestBody: team2 }),
+  ]);
 
   SolaceCloudClientFactory.initialize(env.solaceCloudBaseUrl, env.solaceCloudToken);
 }
@@ -388,19 +384,19 @@ function beforeEach() {
 };
 
 /**
- * Registers an `after()` hook for an application test suite.
+ * Registers an `after()` hook for a team-application test suite.
  * 
  * The `after()` hook deletes the {@link organization} (and all resources that are part of
  * it) and logs a ">>> Finished" message.
  * 
  * **Important:**
  * 
- * If the title of the parent test suite matches the start of the title of the specified
+ * If the title of the parent test suite matches the start of the title of the team-application
  * test suite, the hooks will be registered for the parent test suite instead.
  * 
- * This improves the test execution time when tests from multiple testå suites are executed.
+ * This improves the test execution time when tests from multiple test suites are executed.
  * 
- * @param suite The application test suite.
+ * @param suite The team-application test suite.
  */
 export function addAfterHooks(suite: Suite) {
 
@@ -421,7 +417,5 @@ export function addAfterHooks(suite: Suite) {
 /** after hook for a test suite */
 async function after() {
   PlatformAPIClient.setManagementUser();
-  await AdministrationService.deleteOrganization({ organizationName: organizationName }).catch(() => {
-    // ignore
-  });
+  await AdministrationService.deleteOrganization({ organizationName: organizationName }).catch(() => { });
 };
