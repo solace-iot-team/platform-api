@@ -86,3 +86,7 @@ describe("apps", function () {
   require('./apps/apps.list.spec.ts');
   require('./apps/apps.list.via.api-product.spec.ts');
 });
+
+describe("history", function () {
+  require('./history/history.list.spec.ts');
+});
