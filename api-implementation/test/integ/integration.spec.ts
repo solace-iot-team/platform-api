@@ -54,6 +54,14 @@ describe("developers", function () {
   require('./developers/developers.list.spec.ts');
 });
 
+describe("developer-apps", function() {
+  require('./developer-apps/developer-apps.create.spec.ts');
+  require('./developer-apps/developer-apps.delete.spec.ts');
+  require('./developer-apps/developer-apps.get.spec.ts');
+  require('./developer-apps/developer-apps.update.spec.ts');
+  require('./developer-apps/developer-apps.list.spec.ts');
+});
+
 describe("teams", function () {
   require('./teams/teams.create.spec.ts');
   require('./teams/teams.delete.spec.ts');
@@ -62,16 +70,19 @@ describe("teams", function () {
   require('./teams/teams.list.spec.ts');
 });
 
+describe("team-apps", function() {
+  require('./team-apps/team-apps.create.spec.ts');
+  require('./team-apps/team-apps.delete.spec.ts');
+  require('./team-apps/team-apps.get.spec.ts');
+  require('./team-apps/team-apps.update.spec.ts');
+  require('./team-apps/team-apps.list.spec.ts');
+});
+
 describe("apps", function () {
-  require('./apps/apps.developer.create.spec.ts');
-  require('./apps/apps.developer.delete.spec.ts');
-  require('./apps/apps.developer.get.spec.ts');
-  require('./apps/apps.developer.update.spec.ts');
-  require('./apps/apps.developer.list.spec.ts');
-  require('./apps/apps.all.get.spec.ts');
-  require('./apps/apps.all.get.api.spec.ts');
-  require('./apps/apps.all.get.apis.spec.ts');
-  require('./apps/apps.all.get.status.spec.ts');
-  require('./apps/apps.all.list.spec.ts');
-  require('./apps/apps.all.list.via.api-product.spec.ts');
+  require('./apps/apps.get.spec.ts');
+  require('./apps/apps.get.api.spec.ts');
+  require('./apps/apps.get.apis.spec.ts');
+  require('./apps/apps.get.status.spec.ts');
+  require('./apps/apps.list.spec.ts');
+  require('./apps/apps.list.via.api-product.spec.ts');
 });
