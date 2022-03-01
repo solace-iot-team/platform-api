@@ -12,7 +12,7 @@ const scriptName: string = path.basename(__filename);
 describe(scriptName, function () {
 
   const organizationName: string = setup.organizationName;
-  const developerName: string = setup.developer1.userName;
+  const developerName: string = setup.developer.userName;
 
   const devctx = {
     organizationName: organizationName,
@@ -48,7 +48,7 @@ describe(scriptName, function () {
       expect.fail(`failed to get application status; error="${reason.body.message}"`);
     });
 
-    expect(response.body, "connection status is incorrect").to.have.deep.include({
+    expect(response.body, "connection status is not correct").to.have.deep.include({
       environments: [{ name: setup.environment1.name }],
     });
   });
@@ -70,7 +70,7 @@ describe(scriptName, function () {
     });
 
     const environments = response.body.environments;
-    expect(environments, "number of returned environments is incorrect").to.have.lengthOf(2);
+    expect(environments, "number of environments is not correct").to.have.lengthOf(2);
 
     let environment: AppEnvironmentStatus;
 
@@ -105,7 +105,7 @@ describe(scriptName, function () {
     });
 
     const environments = response.body.environments;
-    expect(environments, "number of returned environments is incorrect").to.have.lengthOf(2);
+    expect(environments, "number of environments is not correct").to.have.lengthOf(2);
 
     let environment: AppEnvironmentStatus;
 
@@ -140,7 +140,7 @@ describe(scriptName, function () {
       expect.fail("unauthorized request was not rejected");
     }, (reason) => {
       expect(reason, `error=${reason.message}`).is.instanceof(ApiError);
-      expect(reason.status, `status is not correct`).to.be.oneOf([401]);
+      expect(reason.status, "status is not correct").to.be.oneOf([401]);
     });
   });
 
@@ -150,7 +150,7 @@ describe(scriptName, function () {
       expect.fail("invalid request was not rejected");
     }, (reason) => {
       expect(reason, `error=${reason.message}`).is.instanceof(ApiError);
-      expect(reason.status, `status is not correct`).to.be.oneOf([404]);
+      expect(reason.status, "status is not correct").to.be.oneOf([404]);
     });
   });
 

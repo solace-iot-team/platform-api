@@ -13,6 +13,7 @@ import type {
   Environment,
   EnvironmentResponse,
   Organization,
+  Team,
 } from "../../../lib/generated/openapi";
 import {
   AdministrationService,
@@ -23,6 +24,7 @@ import {
   DevelopersService,
   EnvironmentsService,
   Protocol,
+  TeamsService,
   WebHook,
 } from "../../../lib/generated/openapi";
 
@@ -51,22 +53,6 @@ export const organization: Organization = {
     cloud: { baseUrl: env.solaceCloudBaseUrl, token: env.solaceCloudToken },
     eventPortal: { baseUrl: env.solaceEventPortalBaseUrl, token: env.solaceEventPortalToken },
   }
-}
-
-/** The 1st developer. */
-export const developer1: Developer = {
-  email: "developer1@mycompany.com",
-  firstName: "firstName1",
-  lastName: "lastname1",
-  userName: `developer1@${organizationName}`,
-}
-
-/** The 2nd developer. */
-export const developer2: Developer = {
-  email: "developer2@mycompany.com",
-  firstName: "firstName2",
-  lastName: "lastname2",
-  userName: `developer2@${organizationName}`,
 }
 
 /**
@@ -116,6 +102,9 @@ export const environment2: Environment = {
     }
   ],
 }
+
+/** The details for all test environments. */
+export let environmentDetails: Map<string, EnvironmentResponse> = new Map<string, EnvironmentResponse>();
 
 /** API name for SayHello API. */
 export const apiName1: string = "SayHelloApi";
@@ -287,32 +276,44 @@ export const webHook2: WebHook = {
   mode: WebHook.mode.SERIAL,
 }
 
-/** The details for all test environments. */
-export let environmentDetails: Map<string, EnvironmentResponse> = new Map<string, EnvironmentResponse>();
+/** A developer. */
+export const developer: Developer = {
+  email: "developer@mycompany.com",
+  firstName: "firstName",
+  lastName: "lastname",
+  userName: `developer@${organizationName}`,
+}
+
+/** A team. */
+export const team: Team = {
+  name: "team",
+  displayName: "Team",
+}
+
 
 /**
- * Registers `before()` and `beforeEach()` hooks for an application service test suite.
+ * Registers `before()` and `beforeEach()` hooks for an application test suite.
  * 
  * The `before()` hook logs a ">>> Start to execute test cases" message and all environment
  * variables that are used, and creates the following resources:
  * 
  * - The {@link organization}
- * - The developers {@link developer1} and {@link developer2}
  * - The environments {@link environment1} and {@link environment2}
  * - The API products {@link apiProduct1}, {@link apiProduct2}, {@link apiProduct3} and {@link apiProduct4}
+ * - The developer {@link developer}
+ * - The team {@link team}
  * 
  * The `beforeEach()` hook generates a new identifier for the {@link TestContext} and
  * configures the {@link PlatformAPIClient} to use the API user.
  * 
  * **Important:**
  * 
- * If the title of the parent test suite matches the start of the title of the application
- * service test suite, the hooks will be registered for the parent test suite instead.
+ * If the title of the parent test suite matches the start of the title of the specified
+ * test suite, the hooks will be registered for the parent test suite instead.
  * 
- * This improves the test execution time when application service tests from multiple test
- * suites are executed.
+ * This improves the test execution time when tests from multiple test suites are executed.
  * 
- * @param suite The application service test suite.
+ * @param suite The application test suite.
  */
 export function addBeforeHooks(suite: Suite) {
 
@@ -343,37 +344,39 @@ async function before() {
 
   PlatformAPIClient.setApiUser();
 
-  await Promise.all([
-    DevelopersService.createDeveloper({ organizationName: organizationName, requestBody: developer1 }),
-    DevelopersService.createDeveloper({ organizationName: organizationName, requestBody: developer2 }),
-  ]);
+  const orgctx = {
+    organizationName: organizationName,
+  }
 
   await Promise.all([
-    EnvironmentsService.createEnvironment({ organizationName: organizationName, requestBody: environment1 }),
-    EnvironmentsService.createEnvironment({ organizationName: organizationName, requestBody: environment2 }),
+    EnvironmentsService.createEnvironment({ ...orgctx, requestBody: environment1 }),
+    EnvironmentsService.createEnvironment({ ...orgctx, requestBody: environment2 }),
   ]);
 
-  let updateEnvironmentDetails = (response: { headers: Record<string, string>; body: EnvironmentResponse; }): void => {
+  let updateEnvDetails = (response: { headers: Record<string, string>; body: EnvironmentResponse; }): void => {
     environmentDetails.set(response.body.name, response.body);
   }
 
   await Promise.all([
-    EnvironmentsService.getEnvironment({ organizationName: organizationName, envName: environment1.name }).then(updateEnvironmentDetails),
-    EnvironmentsService.getEnvironment({ organizationName: organizationName, envName: environment2.name }).then(updateEnvironmentDetails),
+    EnvironmentsService.getEnvironment({ ...orgctx, envName: environment1.name }).then(updateEnvDetails),
+    EnvironmentsService.getEnvironment({ ...orgctx, envName: environment2.name }).then(updateEnvDetails),
   ]);
 
   await Promise.all([
-    ApisService.createApi({ organizationName: organizationName, apiName: apiName1, requestBody: apiSpec1 }),
-    ApisService.createApi({ organizationName: organizationName, apiName: apiName2, requestBody: apiSpec2 }),
-    ApisService.createApi({ organizationName: organizationName, apiName: apiName3, requestBody: apiSpec3 }),
+    ApisService.createApi({ ...orgctx, apiName: apiName1, requestBody: apiSpec1 }),
+    ApisService.createApi({ ...orgctx, apiName: apiName2, requestBody: apiSpec2 }),
+    ApisService.createApi({ ...orgctx, apiName: apiName3, requestBody: apiSpec3 }),
   ]);
 
   await Promise.all([
-    ApiProductsService.createApiProduct({ organizationName: organizationName, requestBody: apiProduct1 }),
-    ApiProductsService.createApiProduct({ organizationName: organizationName, requestBody: apiProduct2 }),
-    ApiProductsService.createApiProduct({ organizationName: organizationName, requestBody: apiProduct3 }),
-    ApiProductsService.createApiProduct({ organizationName: organizationName, requestBody: apiProduct4 }),
+    ApiProductsService.createApiProduct({ ...orgctx, requestBody: apiProduct1 }),
+    ApiProductsService.createApiProduct({ ...orgctx, requestBody: apiProduct2 }),
+    ApiProductsService.createApiProduct({ ...orgctx, requestBody: apiProduct3 }),
+    ApiProductsService.createApiProduct({ ...orgctx, requestBody: apiProduct4 }),
   ]);
+
+  await DevelopersService.createDeveloper({ ...orgctx, requestBody: developer });
+  await TeamsService.createTeam({ ...orgctx, requestBody: team });
 
   SolaceCloudClientFactory.initialize(env.solaceCloudBaseUrl, env.solaceCloudToken);
 }
@@ -385,22 +388,19 @@ function beforeEach() {
 };
 
 /**
- * Registers `afterEach()` and `after()` hooks for an application service test suite.
- * 
- * The `afterEach()` hook configures the {@link PlatformAPIClient} to use the API user.
+ * Registers an `after()` hook for an application test suite.
  * 
  * The `after()` hook deletes the {@link organization} (and all resources that are part of
  * it) and logs a ">>> Finished" message.
  * 
  * **Important:**
  * 
- * If the title of the parent test suite matches the start of the title of the application
- * service test suite, the hooks will be registered for the parent test suite instead.
+ * If the title of the parent test suite matches the start of the title of the specified
+ * test suite, the hooks will be registered for the parent test suite instead.
  * 
- * This improves the test execution time when application service tests from multiple test
- * suites are executed.
+ * This improves the test execution time when tests from multiple testå suites are executed.
  * 
- * @param suite The application service test suite.
+ * @param suite The application test suite.
  */
 export function addAfterHooks(suite: Suite) {
 
@@ -412,18 +412,11 @@ export function addAfterHooks(suite: Suite) {
     parent.ctx["AfterHooks"] = true;
   }
 
-  suite.afterEach(afterEach);
-
   suite.afterAll(async () => {
     await after();
     TestLogger.logMessage(suite.title, ">>> Finished");
   });
 }
-
-/** afterEach hook for a test suite */
-function afterEach() {
-  PlatformAPIClient.setApiUser();
-};
 
 /** after hook for a test suite */
 async function after() {
