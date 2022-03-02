@@ -98,13 +98,13 @@ describe(scriptName, function () {
     });
   });
 
-  xit("should not create an environment if the display name is invalid", async function () {
+  it("should not create an environment if the display name is invalid", async function () {
 
     const request = {
       ...orgctx,
       requestBody: {
         ...environmentBase,
-        displayName: "$$ env $$",
+        displayName: "ENV#1",
       },
     }
 

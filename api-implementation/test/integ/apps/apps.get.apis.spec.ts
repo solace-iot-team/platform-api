@@ -31,13 +31,13 @@ describe(scriptName, function () {
     teamName: teamName,
   }
 
-  const applicationName1: string = `${developerName}-app1`;
+  const applicationName1: string = "test-app1";
   const appctx1 = {
     organizationName: organizationName,
     appName: applicationName1,
   }
 
-  const applicationName2: string = `${teamName}-app2`;
+  const applicationName2: string = "test-app2";
   const appctx2 = {
     organizationName: organizationName,
     appName: applicationName2,

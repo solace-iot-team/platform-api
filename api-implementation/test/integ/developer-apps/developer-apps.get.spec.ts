@@ -30,7 +30,7 @@ describe(scriptName, function () {
     developerUsername: developerName,
   }
 
-  const applicationName: string = `${developerName}-app`;
+  const applicationName: string = "test-app";
 
   // HOOKS
 
