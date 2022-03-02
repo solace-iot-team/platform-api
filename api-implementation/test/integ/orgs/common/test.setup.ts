@@ -65,6 +65,8 @@ export const solaceCloudServiceId2: string = env.solaceCloudServiceId2;
     parent.ctx["BeforeHooks"] = true;
   }
 
+  suite.retries(2);
+
   suite.beforeAll(async () => {
     TestLogger.logMessage(suite.title, ">>> Start to execute test cases ...");
     TestLogger.logTestEnv(suite.title, env);
