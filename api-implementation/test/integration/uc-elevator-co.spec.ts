@@ -89,12 +89,7 @@ describe(`${scriptName}`, () => {
     const apiProductNameMaintenanceProduction: string = "elevator-maintenance-production";
     const apiProductMaintenanceProductionApprovalType: APIProduct.approvalType = APIProduct.approvalType.MANUAL;
     // developers
-    const _developers: Array<Developer> = require(testEnv.DEVELOPERS_FILE);
-    let developers: Array<Developer> = [];
-    for (let developer of _developers) {
-      developer.userName = developer.userName + '@' + orgName;
-      developers.push(developer);
-    }
+    const developers: Array<Developer> = require(testEnv.DEVELOPERS_FILE);
     const developerAppNameMaintenanceDevelopment: string = "elevator-maintenance-development";
     const developerAppNameMaintenanceProduction: string = "elevator-maintenance-production";
 
