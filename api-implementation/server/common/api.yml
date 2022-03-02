@@ -1924,7 +1924,7 @@ components:
       type: string
       minLength: 1
       maxLength: 64
-      pattern: "^[.a-zA-Z0-9@-_]*$"
+      pattern: "^[.a-zA-Z0-9@_-]*$"
       example: tom
     CommonDescription:
       description: An overview of the object. Include key information about the object that is not captured by other fields..
