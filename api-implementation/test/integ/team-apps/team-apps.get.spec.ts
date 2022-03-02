@@ -12,8 +12,8 @@ import type {
 import {
   ApiError,
   AppStatus,
-  AppsService,
-  Protocol
+  Protocol,
+  TeamsService
 } from "../../lib/generated/openapi";
 
 import * as setup from './common/test.setup';
@@ -23,21 +23,22 @@ const scriptName: string = path.basename(__filename);
 describe(scriptName, function () {
 
   const organizationName: string = setup.organizationName;
-  const developerName: string = setup.developer1.userName;
+  const teamName: string = setup.team1.name;
 
-  const devctx = {
+  const teamctx = {
     organizationName: organizationName,
-    developerUsername: developerName,
+    teamName: teamName,
   }
 
-  const applicationName: string = `${developerName}-app`;
+  const applicationName: string = "test-app";
 
   // HOOKS
 
   setup.addBeforeHooks(this);
 
   afterEach(async function () {
-    await AppsService.deleteDeveloperApp({ ...devctx, appName: applicationName }).catch(() => { });
+    PlatformAPIClient.setApiUser();
+    await TeamsService.deleteTeamApp({ ...teamctx, appName: applicationName }).catch(() => { });
   });
 
   setup.addAfterHooks(this);
@@ -46,19 +47,17 @@ describe(scriptName, function () {
 
   it("should return an application", async function () {
 
-    this.slow(2000);
-
     const application: App = {
       name: applicationName,
       apiProducts: [],
       credentials: { expiresAt: -1 },
     }
 
-    await AppsService.createDeveloperApp({ ...devctx, requestBody: application });
+    await TeamsService.createTeamApp({ ...teamctx, requestBody: application });
 
-    const response = await AppsService.getDeveloperApp({ ...devctx, appName: application.name }).catch((reason) => {
+    const response = await TeamsService.getTeamApp({ ...teamctx, appName: application.name }).catch((reason) => {
       expect(reason, `error=${reason.message}`).is.instanceof(ApiError);
-      expect.fail(`failed to get developer application; error="${reason.body.message}"`);
+      expect.fail(`failed to get team application; error="${reason.body.message}"`);
     });
 
     const appResponse: AppResponse = response.body;
@@ -77,19 +76,17 @@ describe(scriptName, function () {
 
   it("should return an application with API products", async function () {
 
-    this.slow(5000);
-
     const application: App = {
       name: applicationName,
       apiProducts: [setup.apiProduct1.name, setup.apiProduct2.name],
       credentials: { expiresAt: -1 },
     }
 
-    await AppsService.createDeveloperApp({ ...devctx, requestBody: application });
+    await TeamsService.createTeamApp({ ...teamctx, requestBody: application });
 
-    const response = await AppsService.getDeveloperApp({ ...devctx, appName: application.name }).catch((reason) => {
+    const response = await TeamsService.getTeamApp({ ...teamctx, appName: application.name }).catch((reason) => {
       expect(reason, `error=${reason.message}`).is.instanceof(ApiError);
-      expect.fail(`failed to get developer application; error="${reason.body.message}"`);
+      expect.fail(`failed to get team application; error="${reason.body.message}"`);
     });
 
     const appResponse: AppResponse = response.body;
@@ -109,7 +106,7 @@ describe(scriptName, function () {
     expect(environments.length, "number of environments is not correct").to.be.equals(2);
 
     let names: Array<string> = environments.map(env => env.name);
-    expect(names, "list of environment names is incorrect").to.have.members([
+    expect(names, "environment names are not correct").to.have.members([
       setup.environment1.name,
       setup.environment2.name,
     ]);
@@ -159,8 +156,6 @@ describe(scriptName, function () {
 
   it("should return an application with API product and web hook", async function () {
 
-    this.slow(5000);
-
     const application: App = {
       name: applicationName,
       apiProducts: [setup.apiProduct1.name],
@@ -169,13 +164,13 @@ describe(scriptName, function () {
       credentials: { expiresAt: -1 },
     }
 
-    await AppsService.createDeveloperApp({ ...devctx, requestBody: application });
+    await TeamsService.createTeamApp({ ...teamctx, requestBody: application });
 
-    const response = await AppsService.getDeveloperApp({ ...devctx, appName: application.name }).catch((reason) => {
+    const response = await TeamsService.getTeamApp({ ...teamctx, appName: application.name }).catch((reason) => {
       expect(reason, `error=${reason.message}`).is.instanceof(ApiError);
-      expect.fail(`failed to get developer application; error="${reason.body.message}"`);
+      expect.fail(`failed to get team application; error="${reason.body.message}"`);
     });
-    
+
     const appResponse: AppResponse = response.body;
 
     expect(appResponse, "name is not correct").to.have.property('name', application.name);
@@ -193,7 +188,7 @@ describe(scriptName, function () {
     expect(environments.length, "number of environments is not correct").to.be.equals(1);
 
     let names: Array<string> = environments.map(env => env.name);
-    expect(names, "list of environment names is incorrect").to.have.members([setup.environment1.name]);
+    expect(names, "environment names are not correct").to.have.members([setup.environment1.name]);
 
     let environment: AppEnvironment;
 
@@ -229,25 +224,24 @@ describe(scriptName, function () {
       credentials: { expiresAt: -1 },
     }
 
-    await AppsService.createDeveloperApp({ ...devctx, requestBody: application });
+    await TeamsService.createTeamApp({ ...teamctx, requestBody: application });
 
     PlatformAPIClient.setManagementUser();
-
-    await AppsService.getDeveloperApp({ ...devctx, appName: application.name }).then(() => {
-      expect.fail("an unauthorized user retrieved an application");
+    await TeamsService.getTeamApp({ ...teamctx, appName: application.name }).then(() => {
+      expect.fail("unauthorized request was not rejected");
     }, (reason) => {
       expect(reason, `error=${reason.message}`).is.instanceof(ApiError);
-      expect(reason.status, `status is not correct`).to.be.oneOf([401]);
+      expect(reason.status, "status is not correct").to.be.oneOf([401]);
     });
   });
 
   it("should not return an application if the application is unknown", async function () {
 
-    await AppsService.getDeveloperApp({ ...devctx, appName: "unknown" }).then(() => {
-      expect.fail("an unknown application was returned");
+    await TeamsService.getTeamApp({ ...teamctx, appName: "unknown" }).then(() => {
+      expect.fail("invalid request was not rejected");
     }, (reason) => {
       expect(reason, `error=${reason.message}`).is.instanceof(ApiError);
-      expect(reason.status, `status is not correct`).to.be.oneOf([404]);
+      expect(reason.status, "status is not correct").to.be.oneOf([404]);
     });
   });
 

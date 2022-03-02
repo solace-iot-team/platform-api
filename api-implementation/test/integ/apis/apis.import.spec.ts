@@ -16,7 +16,7 @@ describe(scriptName, function () {
     organizationName: setup.organizationName,
   }
 
-  const apiName: string = "API-M Account Service";
+  const apiName: string = "API-M-Account-Service";
   const apiSpec: string = AsyncAPIHelper.loadYamlFileAsJsonString(`${apisDirectory}/account-service.yml`);
 
   const apiEventPortalId: string = "30gb615l9re";

@@ -1,11 +1,15 @@
 import 'mocha';
 import { expect } from 'chai';
 import path from 'path';
-import yaml from 'js-yaml';
 import { PlatformAPIClient } from '../../lib/api.helpers';
 import { TestContext } from '../../lib/test.helpers';
-import { ApiProductsService, App } from "../../lib/generated/openapi";
-import { ApiError, AppsService } from "../../lib/generated/openapi";
+import type { App } from "../../lib/generated/openapi";
+import {
+  ApiProductsService,
+  ApiError,
+  DevelopersService,
+  TeamsService,
+} from "../../lib/generated/openapi";
 
 import * as setup from './common/test.setup';
 
@@ -14,58 +18,63 @@ const scriptName: string = path.basename(__filename);
 describe(scriptName, function () {
 
   const organizationName: string = setup.organizationName;
-  const developerName: string = setup.developer1.userName;
-
   const orgctx = {
     organizationName: organizationName,
   }
 
+  const developerName: string = setup.developer.userName;
   const devctx = {
     organizationName: organizationName,
     developerUsername: developerName,
   }
 
+  const teamName: string = setup.team.name;
+  const teamctx = {
+    organizationName: organizationName,
+    teamName: teamName,
+  }
+
   /**
-   * An application owned by {@link setup.developer1 developer1}.
+   * A developer application.
    * 
    * Application details:
-   * - Name: <{@link developerName}>-app1
+   * - Name: test-app1
    * - API Products: {@link setup.apiProduct1 apiProduct1}
    * - Attibutes:
    *   + language: DE,EN
    */
   const application1: App = {
-    name: `${developerName}-app1`,
+    name: "test-app1",
     apiProducts: [setup.apiProduct1.name],
     attributes: [{ name: "language", value: "DE,EN" }],
     credentials: { expiresAt: -1 },
   }
 
   /**
-   * An application owned by {@link setup.developer1 developer1}.
+   * A developer application.
    * 
    * Application details:
-   * - Name: <{@link developerName}>-app2
+   * - Name: test-app2
    * - API Products: {@link setup.apiProduct2 apiProduct2} and {@link setup.apiProduct3 apiProduct3}
    * - Attibutes: none
    */
   const application2: App = {
-    name: `${developerName}-app2`,
+    name: "test-app2",
     apiProducts: [setup.apiProduct2.name, setup.apiProduct3.name],
     credentials: { expiresAt: -1 },
   }
 
   /**
-   * An application owned by {@link setup.developer1 developer1}.
+   * A team application.
    * 
    * Application details:
-   * - Name: <{@link developerName}>-app3
+   * - Name: test-app3
    * - API Products: {@link setup.apiProduct1 apiProduct1}, {@link setup.apiProduct2 apiProduct2} and {@link setup.apiProduct3 apiProduct3}
    * - Attibutes:
    *   + language: DE
    */
   const application3: App = {
-    name: `${developerName}-app3`,
+    name: "test-app3",
     apiProducts: [setup.apiProduct1.name, setup.apiProduct2.name, setup.apiProduct3.name],
     attributes: [{ name: "language", value: "DE" }],
     credentials: { expiresAt: -1 },
@@ -78,20 +87,24 @@ describe(scriptName, function () {
   before(async function () {
     TestContext.newItId();
     await Promise.all([
-      AppsService.createDeveloperApp({ ...devctx, requestBody: application1 }),
-      AppsService.createDeveloperApp({ ...devctx, requestBody: application2 }),
-      AppsService.createDeveloperApp({ ...devctx, requestBody: application3 }),
+      DevelopersService.createDeveloperApp({ ...devctx, requestBody: application1 }),
+      DevelopersService.createDeveloperApp({ ...devctx, requestBody: application2 }),
+      TeamsService.createTeamApp({ ...teamctx, requestBody: application3 }),
     ]);
+  });
+
+  afterEach(function () {
+    PlatformAPIClient.setApiUser();
   });
 
   after(async function () {
     TestContext.newItId();
     await Promise.all([
-      AppsService.deleteDeveloperApp({ ...devctx, appName: application1.name }),
-      AppsService.deleteDeveloperApp({ ...devctx, appName: application2.name }),
-      AppsService.deleteDeveloperApp({ ...devctx, appName: application3.name }),
+      DevelopersService.deleteDeveloperApp({ ...devctx, appName: application1.name }),
+      DevelopersService.deleteDeveloperApp({ ...devctx, appName: application2.name }),
+      TeamsService.deleteTeamApp({ ...teamctx, appName: application3.name }),
     ]);
-  })
+  });
 
   setup.addAfterHooks(this);
 

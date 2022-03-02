@@ -146,8 +146,8 @@ export class TeamsService {
     }
   }
 
-  update(name: string, body: Team): Promise<Team> {
-    preconditionCheck(this, name);
+  async update(name: string, body: Team): Promise<Team> {
+    await preconditionCheck(this, name);
     return this.persistenceService.update(name, body);
   }
 

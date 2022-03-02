@@ -22,12 +22,12 @@ describe(scriptName, function () {
   const apiName1: string = "SayHelloApi";
   const apiSpec1: string = AsyncAPIHelper.loadYamlFileAsJsonString(`${apisDirectory}/say-hello.yml`);
 
-  const apiName2: string = "API-M Account Service";
+  const apiName2: string = "API-M-Account-Service";
   const apiSpec2: string = AsyncAPIHelper.loadYamlFileAsJsonString(`${apisDirectory}/account-service.yml`);
 
   const apiEventPortalId2: string = "30gb615l9re";
 
-  const apiName3: string = "API-M Email Service";
+  const apiName3: string = "API-M-Email-Service";
   const apiSpec3: string = AsyncAPIHelper.loadYamlFileAsJsonString(`${apisDirectory}/email-service.yml`);
 
   const apiEventPortalId3: string = "g7r2vc60i1j";

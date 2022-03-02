@@ -5,7 +5,12 @@ import yaml from 'js-yaml';
 import { PlatformAPIClient } from '../../lib/api.helpers';
 import { TestContext } from '../../lib/test.helpers';
 import type { App } from "../../lib/generated/openapi";
-import { ApiError, AppsService } from "../../lib/generated/openapi";
+import {
+  ApiError,
+  AppsService,
+  DevelopersService,
+  TeamsService,
+} from "../../lib/generated/openapi";
 
 import * as setup from './common/test.setup';
 
@@ -16,28 +21,33 @@ describe(scriptName, function () {
   type ApiSpecFormat = "application/json" | "application/x-yaml";
 
   const organizationName: string = setup.organizationName;
-  const developerName: string = setup.developer1.userName;
 
+  const developerName: string = setup.developer.userName;
   const devctx = {
     organizationName: organizationName,
     developerUsername: developerName,
   }
 
-  const applicationName1: string = `${developerName}-app1`;
-  const applicationName2: string = `${developerName}-app2`;
+  const teamName: string = setup.team.name;
+  const teamctx = {
+    organizationName: organizationName,
+    teamName: teamName,
+  }
 
+  const applicationName1: string = "test-app1";
   const appctx1 = {
     organizationName: organizationName,
     appName: applicationName1,
   }
 
+  const applicationName2: string = "test-app2";
   const appctx2 = {
     organizationName: organizationName,
     appName: applicationName2,
   }
 
   /**
-   * An application with API products.
+   * A developer application with API products.
    * 
    * API products:
    * - {@link setup.apiProduct1 apiProduct1}, {@link setup.apiProduct2 apiProduct2} and {@link setup.apiProduct3 apiProduct3}
@@ -48,7 +58,7 @@ describe(scriptName, function () {
     credentials: { expiresAt: -1 },
   }
 
-  /** An application without API products. */
+  /** A team application without API products. */
   const application2: App = {
     name: applicationName2,
     apiProducts: [],
@@ -62,16 +72,20 @@ describe(scriptName, function () {
   before(async function () {
     TestContext.newItId();
     await Promise.all([
-      AppsService.createDeveloperApp({ ...devctx, requestBody: application1 }),
-      AppsService.createDeveloperApp({ ...devctx, requestBody: application2 }),
+      DevelopersService.createDeveloperApp({ ...devctx, requestBody: application1 }),
+      TeamsService.createTeamApp({ ...teamctx, requestBody: application2 }),
     ]);
+  });
+
+  afterEach(function () {
+    PlatformAPIClient.setApiUser();
   });
 
   after(async function () {
     TestContext.newItId();
     await Promise.all([
-      AppsService.deleteDeveloperApp({ ...devctx, appName: applicationName1 }).catch(() => { }),
-      AppsService.deleteDeveloperApp({ ...devctx, appName: applicationName2 }).catch(() => { }),
+      DevelopersService.deleteDeveloperApp({ ...devctx, appName: applicationName1 }).catch(() => { }),
+      TeamsService.deleteTeamApp({ ...teamctx, appName: applicationName2 }).catch(() => { }),
     ]);
   });
 
@@ -121,7 +135,6 @@ describe(scriptName, function () {
   it("should not return an API spec if the user is not authorized", async function () {
 
     PlatformAPIClient.setManagementUser();
-
     await AppsService.getAppApiSpecification({ ...appctx1, apiName: setup.apiProduct1.apis[0] }).then(() => {
       expect.fail("unauthorized request was not rejected");
     }, (reason) => {

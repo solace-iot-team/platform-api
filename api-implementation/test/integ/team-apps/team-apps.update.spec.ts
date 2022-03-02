@@ -2,8 +2,8 @@ import 'mocha';
 import { expect } from 'chai';
 import path from 'path';
 import { PlatformAPIClient } from '../../lib/api.helpers';
-import type { App, AppPatch, AppResponse } from "../../lib/generated/openapi";
-import { ApiError, AppStatus, AppsService } from "../../lib/generated/openapi";
+import type { App, AppPatch } from "../../lib/generated/openapi";
+import { ApiError, AppStatus, TeamsService } from "../../lib/generated/openapi";
 
 import * as setup from './common/test.setup';
 import { AclProfile, Queue } from './common/test.helpers';
@@ -19,14 +19,14 @@ const scriptName: string = path.basename(__filename);
 describe(scriptName, function () {
 
   const organizationName: string = setup.organizationName;
-  const developerName: string = setup.developer1.userName;
+  const teamName: string = setup.team1.name;
 
-  const devctx = {
+  const teamctx = {
     organizationName: organizationName,
-    developerUsername: developerName,
+    teamName: teamName,
   }
 
-  const applicationName: string = `${developerName}-app`;
+  const applicationName: string = "test-app";
 
   // HOOKS
 
@@ -34,7 +34,7 @@ describe(scriptName, function () {
 
   afterEach(async function () {
     PlatformAPIClient.setApiUser();
-    await AppsService.deleteDeveloperApp({ ...devctx, appName: applicationName });
+    await TeamsService.deleteTeamApp({ ...teamctx, appName: applicationName });
   });
 
   setup.addAfterHooks(this);
@@ -49,28 +49,33 @@ describe(scriptName, function () {
       apiProducts: [],
       credentials: { expiresAt: -1 },
     }
-    application = (await AppsService.createDeveloperApp({ ...devctx, requestBody: application })).body;
 
-    const applicationPatch: AppPatch = {
-      displayName: "updated display name for app",
+    const r = await TeamsService.createTeamApp({ ...teamctx, requestBody: application });
+    application = r.body;
+
+    const applicationPatch = {
+      ...teamctx,
+      appName: applicationName,
+      requestBody: {
+        displayName: "updated display name for app",
+      },
     }
 
-    const response = await AppsService.updateDeveloperApp({ ...devctx, appName: applicationName, requestBody: applicationPatch }).catch((reason) => {
+    const response = await TeamsService.updateTeamApp(applicationPatch).catch((reason) => {
       expect(reason, `error=${reason.message}`).is.instanceof(ApiError);
-      expect.fail(`failed to update developer application; error="${reason.body.message}"`);
+      expect.fail(`failed to update team application; error="${reason.body.message}"`);
     });
 
-    const appResponse: AppResponse = response.body;
+    // Note: The updateTeamApp() function returns a AppPatch body. An AppPatch object contains
+    //       less information than a App or AppResponse object.
 
-    expect(appResponse, "status is not correct").to.have.property('status', AppStatus.APPROVED);
-    expect(appResponse, "name is not correct").to.have.property('name', application.name);
-    expect(appResponse, "display name is not correct").to.have.property('displayName', applicationPatch.displayName);
-    expect(appResponse, "internal name is not set").to.have.property('internalName', application.internalName);
-
-    const secret = application.credentials.secret;
-
-    expect(appResponse, "consumer key is not set").to.have.nested.property('credentials.secret.consumerKey', secret.consumerKey);
-    expect(appResponse, "consumer secret is not set").to.have.nested.property('credentials.secret.consumerSecret', secret.consumerSecret);
+    expect(response.body, "response is not correct").to.deep.include({
+      displayName: applicationPatch.requestBody.displayName,
+      apiProducts: application.apiProducts,
+      credentials: application.credentials,
+      internalName: application.internalName,
+      status: AppStatus.APPROVED,
+    });
   });
 
   it("should update the ACL profile when API products are added", async function () {
@@ -80,15 +85,21 @@ describe(scriptName, function () {
       apiProducts: [setup.apiProduct1.name],
       credentials: { expiresAt: -1 },
     }
-    application = (await AppsService.createDeveloperApp({ ...devctx, requestBody: application })).body;
 
-    const applicationPatch: AppPatch = {
-      apiProducts: [setup.apiProduct1.name, setup.apiProduct2.name],
+    const r = await TeamsService.createTeamApp({ ...teamctx, requestBody: application });
+    application = r.body;
+
+    const applicationPatch = {
+      ...teamctx,
+      appName: applicationName,
+      requestBody: {
+        apiProducts: [setup.apiProduct1.name, setup.apiProduct2.name],
+      },
     }
 
-    await AppsService.updateDeveloperApp({ ...devctx, appName: applicationName, requestBody: applicationPatch }).catch((reason) => {
+    await TeamsService.updateTeamApp(applicationPatch).catch((reason) => {
       expect(reason, `error=${reason.message}`).is.instanceof(ApiError);
-      expect.fail(`failed to update developer application; error="${reason.body.message}"`);
+      expect.fail(`failed to update team application; error="${reason.body.message}"`);
     });
 
     const aclProfileName: string = application.internalName;
@@ -112,15 +123,21 @@ describe(scriptName, function () {
       apiProducts: [setup.apiProduct1.name, setup.apiProduct2.name, setup.apiProduct3.name],
       credentials: { expiresAt: -1 },
     }
-    application = (await AppsService.createDeveloperApp({ ...devctx, requestBody: application })).body;
 
-    const applicationPatch: AppPatch = {
-      apiProducts: [setup.apiProduct2.name],
+    const r = await TeamsService.createTeamApp({ ...teamctx, requestBody: application });
+    application = r.body;
+
+    const applicationPatch = {
+      ...teamctx,
+      appName: applicationName,
+      requestBody: {
+        apiProducts: [setup.apiProduct2.name],
+      },
     }
 
-    await AppsService.updateDeveloperApp({ ...devctx, appName: applicationName, requestBody: applicationPatch }).catch((reason) => {
+    await TeamsService.updateTeamApp(applicationPatch).catch((reason) => {
       expect(reason, `error=${reason.message}`).is.instanceof(ApiError);
-      expect.fail(`failed to update developer application; error="${reason.body.message}"`);
+      expect.fail(`failed to update team application; error="${reason.body.message}"`);
     });
 
     const aclProfileName: string = application.internalName;
@@ -140,17 +157,31 @@ describe(scriptName, function () {
       apiProducts: [setup.apiProduct1.name],
       credentials: { expiresAt: -1 },
     }
-    application = (await AppsService.createDeveloperApp({ ...devctx, requestBody: application })).body;
+
+    const r = await TeamsService.createTeamApp({ ...teamctx, requestBody: application });
+    application = r.body;
 
     const aclProfileName: string = application.internalName;
 
-    const applicationPatch1: AppPatch = {
-      attributes: [{ name: "language", value: "EN" }],
+    const applicationPatch1 = {
+      ...teamctx,
+      appName: applicationName,
+      requestBody: {
+        attributes: [{ name: "language", value: "EN" }],
+      },
     }
 
-    await AppsService.updateDeveloperApp({ ...devctx, appName: applicationName, requestBody: applicationPatch1 }).catch((reason) => {
+    const applicationPatch2 = {
+      ...teamctx,
+      appName: applicationName,
+      requestBody: {
+        attributes: [{ name: "language", value: "DE" }],
+      },
+    }
+
+    await TeamsService.updateTeamApp(applicationPatch1).catch((reason) => {
       expect(reason, `error=${reason.message}`).is.instanceof(ApiError);
-      expect.fail(`failed to update developer application; error="${reason.body.message}"`);
+      expect.fail(`failed to update team application; error="${reason.body.message}"`);
     });
 
     const aclProfile1: AclProfile = {
@@ -161,13 +192,9 @@ describe(scriptName, function () {
     await verifyAclProfile(setup.environment1, aclProfileName, aclProfile1);
     await verifyAclProfile(setup.environment2, aclProfileName, null);
 
-    const applicationPatch2: AppPatch = {
-      attributes: [{ name: "language", value: "DE" }],
-    }
-
-    await AppsService.updateDeveloperApp({ ...devctx, appName: applicationName, requestBody: applicationPatch2 }).catch((reason) => {
+    await TeamsService.updateTeamApp(applicationPatch2).catch((reason) => {
       expect(reason, `error=${reason.message}`).is.instanceof(ApiError);
-      expect.fail(`failed to update developer application; error="${reason.body.message}"`);
+      expect.fail(`failed to update team application; error="${reason.body.message}"`);
     });
 
     const aclProfile2: AclProfile = {
@@ -187,18 +214,24 @@ describe(scriptName, function () {
       webHooks: [setup.webHook1],
       credentials: { expiresAt: -1 },
     }
-    application = (await AppsService.createDeveloperApp({ ...devctx, requestBody: application })).body;
+
+    const r = await TeamsService.createTeamApp({ ...teamctx, requestBody: application });
+    application = r.body;
 
     const queueName: string = application.internalName;
     const restDeliveryPointName: string = application.internalName;
 
-    const applicationPatch: AppPatch = {
-      webHooks: [setup.webHook1, setup.webHook2],
+    const applicationPatch = {
+      ...teamctx,
+      appName: applicationName,
+      requestBody: {
+        webHooks: [setup.webHook1, setup.webHook2],
+      },
     }
 
-    await AppsService.updateDeveloperApp({ ...devctx, appName: applicationName, requestBody: applicationPatch }).catch((reason) => {
+    await TeamsService.updateTeamApp(applicationPatch).catch((reason) => {
       expect(reason, `error=${reason.message}`).is.instanceof(ApiError);
-      expect.fail(`failed to update developer application; error="${reason.body.message}"`);
+      expect.fail(`failed to update team application; error="${reason.body.message}"`);
     });
 
     const queue: Queue = {
@@ -224,18 +257,24 @@ describe(scriptName, function () {
       webHooks: [setup.webHook1, setup.webHook2],
       credentials: { expiresAt: -1 },
     }
-    application = (await AppsService.createDeveloperApp({ ...devctx, requestBody: application })).body;
+
+    const r = await TeamsService.createTeamApp({ ...teamctx, requestBody: application });
+    application = r.body;
 
     const queueName: string = application.internalName;
     const restDeliveryPointName: string = application.internalName;
 
-    const applicationPatch: AppPatch = {
-      webHooks: [setup.webHook2],
+    const applicationPatch = {
+      ...teamctx,
+      appName: applicationName,
+      requestBody: {
+        webHooks: [setup.webHook2],
+      },
     }
 
-    await AppsService.updateDeveloperApp({ ...devctx, appName: applicationName, requestBody: applicationPatch }).catch((reason) => {
+    await TeamsService.updateTeamApp(applicationPatch).catch((reason) => {
       expect(reason, `error=${reason.message}`).is.instanceof(ApiError);
-      expect.fail(`failed to update developer application; error="${reason.body.message}"`);
+      expect.fail(`failed to update team application; error="${reason.body.message}"`);
     });
 
     const queue: Queue = {
@@ -260,18 +299,24 @@ describe(scriptName, function () {
       webHooks: [setup.webHook1],
       credentials: { expiresAt: -1 },
     }
-    application = (await AppsService.createDeveloperApp({ ...devctx, requestBody: application })).body;
+
+    const r = await TeamsService.createTeamApp({ ...teamctx, requestBody: application });
+    application = r.body;
 
     const queueName: string = application.internalName;
     const restDeliveryPointName: string = application.internalName;
 
-    const applicationPatch: AppPatch = {
-      webHooks: [setup.webHook2],
+    const applicationPatch = {
+      ...teamctx,
+      appName: applicationName,
+      requestBody: {
+        webHooks: [setup.webHook2],
+      },
     }
 
-    await AppsService.updateDeveloperApp({ ...devctx, appName: applicationName, requestBody: applicationPatch }).catch((reason) => {
+    await TeamsService.updateTeamApp(applicationPatch).catch((reason) => {
       expect(reason, `error=${reason.message}`).is.instanceof(ApiError);
-      expect.fail(`failed to update developer application; error="${reason.body.message}"`);
+      expect.fail(`failed to update team application; error="${reason.body.message}"`);
     });
 
     const queue: Queue = {
@@ -297,15 +342,18 @@ describe(scriptName, function () {
       credentials: { expiresAt: -1 },
     }
 
-    await AppsService.createDeveloperApp({ ...devctx, requestBody: application });
+    await TeamsService.createTeamApp({ ...teamctx, requestBody: application });
 
-    const applicationPatch: AppPatch = {
-      displayName: "updated display name for app",
+    const applicationPatch = {
+      ...teamctx,
+      appName: applicationName,
+      requestBody: {
+        displayName: "updated display name for app",
+      },
     }
 
     PlatformAPIClient.setManagementUser();
-
-    await AppsService.updateDeveloperApp({ ...devctx, appName: applicationName, requestBody: applicationPatch }).then(() => {
+    await TeamsService.updateTeamApp(applicationPatch).then(() => {
       expect.fail("unauthorized request was not rejected");
     }, (reason) => {
       expect(reason, `error=${reason.message}`).is.instanceof(ApiError);
@@ -322,18 +370,18 @@ describe(scriptName, function () {
       credentials: { expiresAt: -1 },
     }
 
-    await AppsService.createDeveloperApp({ ...devctx, requestBody: application });
+    await TeamsService.createTeamApp({ ...teamctx, requestBody: application });
 
     const applicationPatch = {
-      ...devctx,
+      ...teamctx,
       appName: applicationName,
       ifMatch: "1234",
       requestBody: {
         displayName: "updated display name for app",
-      }
+      },
     }
 
-    await AppsService.updateDeveloperApp(applicationPatch).then(() => {
+    await TeamsService.updateTeamApp(applicationPatch).then(() => {
       expect.fail("invalid request was not rejected");
     }, (reason) => {
       expect(reason, `error=${reason.message}`).is.instanceof(ApiError);
@@ -349,25 +397,25 @@ describe(scriptName, function () {
       credentials: { expiresAt: -1 },
     }
 
-    const response = await AppsService.createDeveloperApp({ ...devctx, requestBody: application });
+    const response = await TeamsService.createTeamApp({ ...teamctx, requestBody: application });
     const etag = response.headers['etag'];
 
     const applicationPatch1 = {
-      ...devctx,
+      ...teamctx,
       appName: applicationName,
       ifMatch: etag,
       requestBody: {
         displayName: "updated display name for app",
-      }
+      },
     }
 
     const applicationPatch2 = {
-      ...devctx,
+      ...teamctx,
       appName: applicationName,
       ifMatch: etag,
       requestBody: {
         apiProducts: [setup.apiProduct1.name],
-      }
+      },
     }
 
     // NOTE: The 2nd update must be submitted AFTER the 1st update has been processed, or
@@ -375,8 +423,8 @@ describe(scriptName, function () {
     //       calculated based on the data in the database and as long as the data hasn't
     //       been updated, the "old" ETag will still be valid.
 
-    await AppsService.updateDeveloperApp(applicationPatch1);
-    await AppsService.updateDeveloperApp(applicationPatch2).then(() => {
+    await TeamsService.updateTeamApp(applicationPatch1);
+    await TeamsService.updateTeamApp(applicationPatch2).then(() => {
       expect.fail("concurrent update request was not rejected");
     }, (reason) => {
       expect(reason, `error=${reason.message}`).is.instanceof(ApiError);

@@ -89,12 +89,7 @@ describe(`${scriptName}`, () => {
     const apiProductNameMaintenanceProduction: string = "elevator-maintenance-production";
     const apiProductMaintenanceProductionApprovalType: APIProduct.approvalType = APIProduct.approvalType.MANUAL;
     // developers
-    const _developers: Array<Developer> = require(testEnv.DEVELOPERS_FILE);
-    let developers: Array<Developer> = [];
-    for (let developer of _developers) {
-      developer.userName = developer.userName + '@' + orgName;
-      developers.push(developer);
-    }
+    const developers: Array<Developer> = require(testEnv.DEVELOPERS_FILE);
     const developerAppNameMaintenanceDevelopment: string = "elevator-maintenance-development";
     const developerAppNameMaintenanceProduction: string = "elevator-maintenance-production";
 
@@ -367,9 +362,10 @@ describe(`${scriptName}`, () => {
           }
         }
       };
-      for (let developer of developers) {
+      for (let index in developers) {
+        const developer = developers[index];
         request.credentials = createDefaultCredentials();
-        request.name = `${developerAppNameMaintenanceDevelopment}-${developer.userName}`
+        request.name = `${developerAppNameMaintenanceDevelopment}-${index}`
         try {
           const rsp = await AppsService.createDeveloperApp({ organizationName: orgName, developerUsername: developer.userName, requestBody: request });
           response = rsp.body;
@@ -389,8 +385,9 @@ describe(`${scriptName}`, () => {
       // api spec only specifies http binding type=request
       // so, only webhook supported
       // but no http in-bound
-      for (let developer of developers) {
-        let appName = `${developerAppNameMaintenanceDevelopment}-${developer.userName}`
+      for (let index in developers) {
+        const developer = developers[index];
+        let appName = `${developerAppNameMaintenanceDevelopment}-${index}`
         let responseGet: AppResponse;
         try {
           const rsp = await AppsService.getDeveloperApp({ organizationName: orgName, developerUsername: developer.userName, appName: appName });
@@ -417,8 +414,9 @@ describe(`${scriptName}`, () => {
       // the patch response does not contain the full get response
       // is it supposed to?
 
-      for (let developer of developers) {
-        let appName = `${developerAppNameMaintenanceDevelopment}-${developer.userName}`
+      for (let index in developers) {
+        const developer = developers[index];
+        let appName = `${developerAppNameMaintenanceDevelopment}-${index}`
         // get current DeveloperApp
         let responseGet: AppResponse;
         try {
@@ -470,8 +468,9 @@ describe(`${scriptName}`, () => {
           }
         }
       };
-      for (let developer of developers) {
-        appName = `${developerAppNameMaintenanceProduction}-${developer.userName}`;
+      for (let index in developers) {
+        const developer = developers[index];
+        appName = `${developerAppNameMaintenanceProduction}-${index}`;
         request.credentials = createDefaultCredentials();
         request.name = appName;
         try {

@@ -3,7 +3,7 @@ import { expect } from 'chai';
 import path from 'path';
 import { PlatformAPIClient } from '../../lib/api.helpers';
 import { TestContext } from '../../lib/test.helpers';
-import type { App } from "../../lib/generated/openapi";
+import { App, DevelopersService, TeamsService } from "../../lib/generated/openapi";
 import {
   ApiError,
   AppListItem,
@@ -18,56 +18,92 @@ const scriptName: string = path.basename(__filename);
 describe(scriptName, function () {
 
   const organizationName: string = setup.organizationName;
-  const developerName: string = setup.developer1.userName;
 
+  const developerName: string = setup.developer.userName;
   const devctx = {
     organizationName: organizationName,
     developerUsername: developerName,
   }
 
+  const teamName: string = setup.team.name;
+  const teamctx = {
+    organizationName: organizationName,
+    teamName: teamName,
+  }
+
   /**
-   * An application owned by {@link setup.developer1 developer1}.
+   * A developer application.
    * 
    * Application details:
-   * - Name: <{@link developerName}>-app1
+   * - Name: test-app1
    * - API Products: {@link setup.apiProduct1 apiProduct1}
    * - Attibutes:
    *   + language: DE,EN
    */
   const application1: App = {
-    name: `${developerName}-app1`,
+    name: "test-app1",
     apiProducts: [setup.apiProduct1.name],
     attributes: [{ name: "language", value: "DE,EN" }],
     credentials: { expiresAt: -1 },
   }
 
   /**
-   * An application owned by {@link setup.developer1 developer1}.
+   * A developer application.
    * 
    * Application details:
-   * - Name: <{@link developerName}>-app2
+   * - Name: test-app2
    * - API Products: {@link setup.apiProduct2 apiProduct2} and {@link setup.apiProduct3 apiProduct3}
    * - Attibutes: none
    */
   const application2: App = {
-    name: `${developerName}-app2`,
+    name: "test-app2",
     apiProducts: [setup.apiProduct2.name, setup.apiProduct3.name],
     credentials: { expiresAt: -1 },
   }
 
   /**
-   * An application owned by {@link setup.developer1 developer1}.
+   * A developer application.
    * 
    * Application details:
-   * - Name: <{@link developerName}>-app3
+   * - Name: test-app3
    * - API Products: {@link setup.apiProduct1 apiProduct1}, {@link setup.apiProduct2 apiProduct2} and {@link setup.apiProduct3 apiProduct3}
    * - Attibutes:
    *   + language: DE
    */
   const application3: App = {
-    name: `${developerName}-app3`,
+    name: "test-app3",
     apiProducts: [setup.apiProduct1.name, setup.apiProduct2.name, setup.apiProduct3.name],
     attributes: [{ name: "language", value: "DE" }],
+    credentials: { expiresAt: -1 },
+  }
+
+  /**
+   * A team application.
+   * 
+   * Application details:
+   * - Name: test-app4
+   * - API Products: {@link setup.apiProduct2 apiProduct2} and {@link setup.apiProduct3 apiProduct3}
+   * - Attibutes: none
+   */
+  const application4: App = {
+    name: "test-app4",
+    apiProducts: [setup.apiProduct2.name, setup.apiProduct3.name],
+    attributes: [{ name: "location", value: "US" }],
+    credentials: { expiresAt: -1 },
+  }
+
+  /**
+   * A team application.
+   * 
+   * Application details:
+   * - Name: test-app5
+   * - API Products: {@link setup.apiProduct1 apiProduct1}
+   * - Attibutes: none
+   */
+  const application5: App = {
+    name: "test-app5",
+    apiProducts: [setup.apiProduct1.name],
+    attributes: [{ name: "location", value: "US" }],
     credentials: { expiresAt: -1 },
   }
 
@@ -78,18 +114,26 @@ describe(scriptName, function () {
   before(async function () {
     TestContext.newItId();
     await Promise.all([
-      AppsService.createDeveloperApp({ ...devctx, requestBody: application1 }),
-      AppsService.createDeveloperApp({ ...devctx, requestBody: application2 }),
-      AppsService.createDeveloperApp({ ...devctx, requestBody: application3 }),
+      DevelopersService.createDeveloperApp({ ...devctx, requestBody: application1 }),
+      DevelopersService.createDeveloperApp({ ...devctx, requestBody: application2 }),
+      DevelopersService.createDeveloperApp({ ...devctx, requestBody: application3 }),
+      TeamsService.createTeamApp({ ...teamctx, requestBody: application4 }),
+      TeamsService.createTeamApp({ ...teamctx, requestBody: application5 }),
     ]);
+  });
+
+  afterEach(function () {
+    PlatformAPIClient.setApiUser();
   });
 
   after(async function () {
     TestContext.newItId();
     await Promise.all([
-      AppsService.deleteDeveloperApp({ ...devctx, appName: application1.name }),
-      AppsService.deleteDeveloperApp({ ...devctx, appName: application2.name }),
-      AppsService.deleteDeveloperApp({ ...devctx, appName: application3.name }),
+      DevelopersService.deleteDeveloperApp({ ...devctx, appName: application1.name }),
+      DevelopersService.deleteDeveloperApp({ ...devctx, appName: application2.name }),
+      DevelopersService.deleteDeveloperApp({ ...devctx, appName: application3.name }),
+      TeamsService.deleteTeamApp({ ...teamctx, appName: application4.name }),
+      TeamsService.deleteTeamApp({ ...teamctx, appName: application5.name }),
     ]);
   })
 
@@ -105,7 +149,7 @@ describe(scriptName, function () {
     });
 
     const applications: AppListItem[] = response.body;
-    expect(applications, "number of returned applications is incorrect").to.have.lengthOf(3);
+    expect(applications, "number of applications is not correct").to.have.lengthOf(5);
 
     [application1, application2, application3].forEach(application => {
 
@@ -121,15 +165,30 @@ describe(scriptName, function () {
         status: AppStatus.APPROVED,
       });
     });
+
+    [application4, application5].forEach(application => {
+
+      const app = applications.find(app => app.name == application.name);
+
+      expect(app, `application '${application.name}' is missing`).is.not.undefined;
+      expect(app, `application '${application.name}' is not correct`).to.deep.include({
+        name: application.name,
+        displayName: application.displayName ?? application.name,
+        apiProducts: application.apiProducts,
+        appType: AppListItem.appType.TEAM,
+        ownerId: teamName,
+        status: AppStatus.APPROVED,
+      });
+    });
   });
 
   it("should return applications with filter: search for a single word", async function () {
 
     // Search: applications that use API product #1
-    // Result: application1 and application3
+    // Result: application1, application3 and application5
 
     const filter = setup.apiProduct1.name;
-    const applicationNames = [application1.name, application3.name];
+    const applicationNames = [application1.name, application3.name, application5.name];
 
     await checkAppListWithFilter(organizationName, filter, applicationNames);
   });
@@ -167,10 +226,10 @@ describe(scriptName, function () {
   it("should return applications with filter: exclude results that contain a term", async function () {
 
     // Search: applications that use API product #1 but do not use API product #2
-    // Result: application1
+    // Result: application1 and application5
 
     const filter = `${setup.apiProduct1.name} -${setup.apiProduct2.name}`;
-    const applicationNames = [application1.name];
+    const applicationNames = [application1.name, application5.name];
 
     await checkAppListWithFilter(organizationName, filter, applicationNames);
   });
@@ -196,7 +255,6 @@ describe(scriptName, function () {
   it("should not return applications if the user is not authorized", async function () {
 
     PlatformAPIClient.setManagementUser();
-
     await AppsService.listApps({ organizationName: organizationName }).then(() => {
       expect.fail("unauthorized request was not rejected");
     }, (reason) => {

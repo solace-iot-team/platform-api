@@ -4,7 +4,12 @@ import path from 'path';
 import { PlatformAPIClient } from '../../lib/api.helpers';
 import { TestContext } from "../../lib/test.helpers";
 import type { App } from "../../lib/generated/openapi";
-import { ApiError, AppsService } from "../../lib/generated/openapi";
+import {
+  ApiError,
+  AppsService,
+  DevelopersService,
+  TeamsService,
+} from "../../lib/generated/openapi";
 
 import * as setup from './common/test.setup';
 
@@ -13,28 +18,33 @@ const scriptName: string = path.basename(__filename);
 describe(scriptName, function () {
 
   const organizationName: string = setup.organizationName;
-  const developerName: string = setup.developer1.userName;
 
+  const developerName: string = setup.developer.userName;
   const devctx = {
     organizationName: organizationName,
     developerUsername: developerName,
   }
 
-  const applicationName1: string = `${developerName}-app1`;
-  const applicationName2: string = `${developerName}-app2`;
+  const teamName: string = setup.team.name;
+  const teamctx = {
+    organizationName: organizationName,
+    teamName: teamName,
+  }
 
+  const applicationName1: string = "test-app1";
   const appctx1 = {
     organizationName: organizationName,
     appName: applicationName1,
   }
 
+  const applicationName2: string = "test-app2";
   const appctx2 = {
     organizationName: organizationName,
     appName: applicationName2,
   }
 
   /**
-   * An application with API products.
+   * A developer application with API products.
    * 
    * API products:
    * - {@link setup.apiProduct1 apiProduct1}, {@link setup.apiProduct2 apiProduct2} and {@link setup.apiProduct3 apiProduct3}
@@ -45,7 +55,7 @@ describe(scriptName, function () {
     credentials: { expiresAt: -1 },
   }
 
-  /** An application without API products. */
+  /** A team application without API products. */
   const application2: App = {
     name: applicationName2,
     apiProducts: [],
@@ -59,16 +69,16 @@ describe(scriptName, function () {
   before(async function () {
     TestContext.newItId();
     await Promise.all([
-      AppsService.createDeveloperApp({ ...devctx, requestBody: application1 }),
-      AppsService.createDeveloperApp({ ...devctx, requestBody: application2 }),
+      DevelopersService.createDeveloperApp({ ...devctx, requestBody: application1 }),
+      TeamsService.createTeamApp({ ...teamctx, requestBody: application2 }),
     ]);
   });
 
   after(async function () {
     TestContext.newItId();
     await Promise.all([
-      AppsService.deleteDeveloperApp({ ...devctx, appName: applicationName1 }).catch(() => { }),
-      AppsService.deleteDeveloperApp({ ...devctx, appName: applicationName2 }).catch(() => { }),
+      DevelopersService.deleteDeveloperApp({ ...devctx, appName: applicationName1 }).catch(() => { }),
+      TeamsService.deleteTeamApp({ ...teamctx, appName: applicationName2 }).catch(() => { }),
     ]);
   });
 
@@ -84,28 +94,27 @@ describe(scriptName, function () {
     });
 
     const names: Set<string> = new Set(setup.apiProduct1.apis.concat(setup.apiProduct2.apis, setup.apiProduct3.apis));
-    expect(response.body, "API names are incorrect").to.have.members(Array.from(names.values()));
+    expect(response.body, "API names are not correct").to.have.members(Array.from(names.values()));
   });
 
   it("should return no API names for an application without API products", async function () {
 
     const response = await AppsService.listAppApiSpecifications({ ...appctx2 }).catch((reason) => {
       expect(reason, `error=${reason.message}`).is.instanceof(ApiError);
-      expect.fail(`failed to get application status; error="${reason.body.message}"`);
+      expect.fail(`failed to get API names; error="${reason.body.message}"`);
     });
 
-    expect(response.body, "returned API names are incorrect").to.be.empty;
+    expect(response.body, "API names are not correct").to.be.empty;
   });
 
   it("should not return API names if the user is not authorized", async function () {
 
     PlatformAPIClient.setManagementUser();
-
     await AppsService.listAppApiSpecifications({ ...appctx1 }).then(() => {
       expect.fail("unauthorized request was not rejected");
     }, (reason) => {
       expect(reason, `error=${reason.message}`).is.instanceof(ApiError);
-      expect(reason.status, `status is not correct`).to.be.oneOf([401]);
+      expect(reason.status, "status is not correct").to.be.oneOf([401]);
     });
   });
 
@@ -115,7 +124,7 @@ describe(scriptName, function () {
       expect.fail("invalid request was not rejected");
     }, (reason) => {
       expect(reason, `error=${reason.message}`).is.instanceof(ApiError);
-      expect(reason.status, `status is not correct`).to.be.oneOf([404]);
+      expect(reason.status, "status is not correct").to.be.oneOf([404]);
     });
   });
 

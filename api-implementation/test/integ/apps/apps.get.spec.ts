@@ -13,6 +13,7 @@ import {
   ApiError,
   AppStatus,
   AppsService,
+  DevelopersService,
   Protocol
 } from "../../lib/generated/openapi";
 
@@ -23,20 +24,21 @@ const scriptName: string = path.basename(__filename);
 describe(scriptName, function () {
 
   const organizationName: string = setup.organizationName;
-  const developerName: string = setup.developer1.userName;
+  const developerName: string = setup.developer.userName;
 
   const devctx = {
     organizationName: organizationName,
     developerUsername: developerName,
   }
 
-  const applicationName: string = `${developerName}-app`;
+  const applicationName: string = "test-app";
 
   // HOOKS
 
   setup.addBeforeHooks(this);
 
   afterEach(async function () {
+    PlatformAPIClient.setApiUser();
     await AppsService.deleteDeveloperApp({ ...devctx, appName: applicationName }).catch(() => { });
   });
 
@@ -46,19 +48,17 @@ describe(scriptName, function () {
 
   it("should return an application", async function () {
 
-    this.slow(2000);
-
     const application: App = {
       name: applicationName,
       apiProducts: [],
       credentials: { expiresAt: -1 },
     }
 
-    await AppsService.createDeveloperApp({ ...devctx, requestBody: application });
+    await DevelopersService.createDeveloperApp({ ...devctx, requestBody: application });
 
     const response = await AppsService.getApp({ ...devctx, appName: application.name }).catch((reason) => {
       expect(reason, `error=${reason.message}`).is.instanceof(ApiError);
-      expect.fail(`failed to get developer application; error="${reason.body.message}"`);
+      expect.fail(`failed to get application; error="${reason.body.message}"`);
     });
 
     const appResponse: AppResponse = response.body;
@@ -76,8 +76,6 @@ describe(scriptName, function () {
   });
 
   it("should return an application with API products", async function () {
-
-    this.slow(5000);
 
     const application: App = {
       name: applicationName,
@@ -109,7 +107,7 @@ describe(scriptName, function () {
     expect(environments.length, "number of environments is not correct").to.be.equals(2);
 
     let envNames: Array<string> = environments.map(env => env.name);
-    expect(envNames, "list of environment names is incorrect").to.have.members([
+    expect(envNames, "environment names are not correct").to.have.members([
       setup.environment1.name,
       setup.environment2.name,
     ]);
@@ -159,8 +157,6 @@ describe(scriptName, function () {
 
   it("should return an application with API product and web hook", async function () {
 
-    this.slow(5000);
-
     const application: App = {
       name: applicationName,
       apiProducts: [setup.apiProduct1.name],
@@ -176,7 +172,7 @@ describe(scriptName, function () {
       expect.fail(`failed to get developer application; error="${reason.body.message}"`);
     });
 
-    const appResponse: AppResponse = response.body;
+    const appResponse = response.body;
 
     expect(appResponse, "name is not correct").to.have.property('name', application.name);
     expect(appResponse, "display name is not correct").to.have.property('displayName', application.displayName ?? application.name);
@@ -193,7 +189,7 @@ describe(scriptName, function () {
     expect(environments, "number of environments is not correct").to.have.lengthOf(1);
 
     let envNames: Array<string> = environments.map(env => env.name);
-    expect(envNames, "list of environment names is incorrect").to.have.members([setup.environment1.name]);
+    expect(envNames, "environment names are not correct").to.have.members([setup.environment1.name]);
 
     let environment: AppEnvironment;
 
@@ -232,12 +228,11 @@ describe(scriptName, function () {
     await AppsService.createDeveloperApp({ ...devctx, requestBody: application });
 
     PlatformAPIClient.setManagementUser();
-
     await AppsService.getApp({ ...devctx, appName: application.name }).then(() => {
       expect.fail("unauthorized request was not rejected");
     }, (reason) => {
       expect(reason, `error=${reason.message}`).is.instanceof(ApiError);
-      expect(reason.status, `status is not correct`).to.be.oneOf([401]);
+      expect(reason.status, "status is not correct").to.be.oneOf([401]);
     });
   });
 
@@ -247,7 +242,7 @@ describe(scriptName, function () {
       expect.fail("invalid request was not rejected");
     }, (reason) => {
       expect(reason, `error=${reason.message}`).is.instanceof(ApiError);
-      expect(reason.status, `status is not correct`).to.be.oneOf([404]);
+      expect(reason.status, "status is not correct").to.be.oneOf([404]);
     });
   });
 
