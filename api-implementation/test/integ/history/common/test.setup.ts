@@ -23,7 +23,7 @@ const env = {
 }
 
 /** The resources directory. */
-export const resourcesDirectory: string = `${scriptDir}/../../resources`;
+export const resourcesDirectory: string = `${scriptDir}/../../../resources`;
 
 /** The name of the test organization. */
 export const organizationName: string = "TestOrganization";
