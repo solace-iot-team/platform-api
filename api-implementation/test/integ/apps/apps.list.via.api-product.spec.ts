@@ -38,13 +38,13 @@ describe(scriptName, function () {
    * A developer application.
    * 
    * Application details:
-   * - Name: <{@link developerName}>-app1
+   * - Name: test-app1
    * - API Products: {@link setup.apiProduct1 apiProduct1}
    * - Attibutes:
    *   + language: DE,EN
    */
   const application1: App = {
-    name: `${developerName}-app1`,
+    name: "test-app1",
     apiProducts: [setup.apiProduct1.name],
     attributes: [{ name: "language", value: "DE,EN" }],
     credentials: { expiresAt: -1 },
@@ -54,12 +54,12 @@ describe(scriptName, function () {
    * A developer application.
    * 
    * Application details:
-   * - Name: <{@link developerName}>-app2
+   * - Name: test-app2
    * - API Products: {@link setup.apiProduct2 apiProduct2} and {@link setup.apiProduct3 apiProduct3}
    * - Attibutes: none
    */
   const application2: App = {
-    name: `${developerName}-app2`,
+    name: "test-app2",
     apiProducts: [setup.apiProduct2.name, setup.apiProduct3.name],
     credentials: { expiresAt: -1 },
   }
@@ -68,13 +68,13 @@ describe(scriptName, function () {
    * A team application.
    * 
    * Application details:
-   * - Name: <{@link teamName}>-app3
+   * - Name: test-app3
    * - API Products: {@link setup.apiProduct1 apiProduct1}, {@link setup.apiProduct2 apiProduct2} and {@link setup.apiProduct3 apiProduct3}
    * - Attibutes:
    *   + language: DE
    */
   const application3: App = {
-    name: `${teamName}-app3`,
+    name: "test-app3",
     apiProducts: [setup.apiProduct1.name, setup.apiProduct2.name, setup.apiProduct3.name],
     attributes: [{ name: "language", value: "DE" }],
     credentials: { expiresAt: -1 },

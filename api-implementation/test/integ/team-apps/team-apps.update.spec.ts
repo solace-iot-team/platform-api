@@ -26,7 +26,7 @@ describe(scriptName, function () {
     teamName: teamName,
   }
 
-  const applicationName: string = `${teamName}-app`;
+  const applicationName: string = "test-app";
 
   // HOOKS
 

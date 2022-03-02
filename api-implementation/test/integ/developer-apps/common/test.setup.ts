@@ -126,7 +126,7 @@ export const apiSpec1: string = AsyncAPIHelper.loadYamlFileAsJsonString(`${resou
  */
 export const apiProduct1: APIProduct = {
   name: "ApiProduct1",
-  displayName: "api product #1",
+  displayName: "API Product 1",
   apis: [apiName1],
   approvalType: APIProduct.approvalType.AUTO,
   attributes: [{ name: "language", value: "EN,DE" }],
@@ -160,7 +160,7 @@ export const apiSpec2: string = AsyncAPIHelper.loadYamlFileAsJsonString(`${resou
  */
 export const apiProduct2: APIProduct = {
   name: "ApiProduct2",
-  displayName: "api product #2",
+  displayName: "API Product 2",
   apis: [apiName2],
   approvalType: APIProduct.approvalType.AUTO,
   attributes: [],
@@ -190,7 +190,7 @@ export const apiSpec3: string = AsyncAPIHelper.loadYamlFileAsJsonString(`${resou
  */
 export const apiProduct3: APIProduct = {
   name: "ApiProduct3",
-  displayName: "api product #3",
+  displayName: "API Product 3",
   apis: [apiName3],
   approvalType: APIProduct.approvalType.AUTO,
   attributes: [],
@@ -222,7 +222,7 @@ export const apiProduct3: APIProduct = {
  */
 export const apiProduct4: APIProduct = {
   name: "ApiProduct4",
-  displayName: "api product #4",
+  displayName: "API Product 4",
   apis: [apiName1],
   approvalType: APIProduct.approvalType.AUTO,
   attributes: [{ name: "language", value: "EN" }],
@@ -277,16 +277,16 @@ export const webHook2: WebHook = {
 /** The 1st developer. */
 export const developer1: Developer = {
   email: "developer1@mycompany.com",
-  firstName: "firstName1",
-  lastName: "lastname1",
+  firstName: "firstNameA",
+  lastName: "lastnameA",
   userName: `developer1@${organizationName}`,
 }
 
 /** The 2nd developer. */
 export const developer2: Developer = {
   email: "developer2@mycompany.com",
-  firstName: "firstName2",
-  lastName: "lastname2",
+  firstName: "firstNameB",
+  lastName: "lastnameB",
   userName: `developer2@${organizationName}`,
 }
 

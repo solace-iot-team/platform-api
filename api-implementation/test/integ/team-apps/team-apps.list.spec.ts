@@ -31,14 +31,14 @@ describe(scriptName, function () {
 
   /** An application owned by team #1. */
   const application1: App = {
-    name: `${teamName1}-app1`,
+    name: "test-app1",
     apiProducts: [],
     credentials: { expiresAt: -1 },
   }
 
   /** An application owned by team #1. */
   const application2: App = {
-    name: `${teamName1}-app2`,
+    name: "test-app2",
     apiProducts: [setup.apiProduct1.name],
     attributes: [{ name: "language", value: "EN" }],
     credentials: { expiresAt: -1 },
@@ -46,7 +46,7 @@ describe(scriptName, function () {
 
   /** An application owned by team #2. */
   const application3: App = {
-    name: `${teamName2}-app3`,
+    name: "test-app3",
     apiProducts: [setup.apiProduct1.name],
     attributes: [{ name: "language", value: "EN,DE" }],
     credentials: { expiresAt: -1 },
@@ -54,14 +54,14 @@ describe(scriptName, function () {
 
   /** An application owned by team #2. */
   const application4: App = {
-    name: `${teamName2}-app4`,
+    name: "test-app4",
     apiProducts: [setup.apiProduct2.name, setup.apiProduct3.name],
     credentials: { expiresAt: -1 },
   }
 
   /** An application owned by team #2. */
   const application5: App = {
-    name: `${teamName2}-app5`,
+    name: "test-app5",
     apiProducts: [setup.apiProduct1.name, setup.apiProduct2.name, setup.apiProduct3.name],
     credentials: { expiresAt: -1 },
   }
