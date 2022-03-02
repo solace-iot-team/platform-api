@@ -663,7 +663,7 @@ components:
             example:
               access
             type: string
-            pattern: "^[a-zA-Z0-9_-]*$"
+            pattern: "^[a-zA-Z0-9._-]*$"
             minLength: 2
             maxLength: 1024
           value:
