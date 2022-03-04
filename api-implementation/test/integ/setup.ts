@@ -29,13 +29,15 @@ const testEnv = {
   apiPassword: getMandatoryEnvVarValue(scriptName, 'PLATFORM_API_TEST_ORG_ADMIN_PASSWORD'),
 }
 
+const mongodbDirectory: string = `${scriptDir}/../mongodb`;
+
 export async function mochaGlobalSetup() {
 
   TestContext.newItId();
   TestLogger.logTestEnv(scriptName, testEnv);
 
   TestLogger.logMessage(scriptName, "setup Mongo DB and server");
-  const code = s.exec(`${scriptDir}/mongodb/standup.mongo.sh 2>&1`, { silent: false }).code
+  const code = s.exec(`${mongodbDirectory}/standup.mongo.sh 2>&1`, { silent: false }).code
   if (code != 0) {
     TestLogger.logMessage(scriptName, "setup of Mongo DB failed");
   }
@@ -53,7 +55,7 @@ export async function mochaGlobalSetup() {
 export async function mochaGlobalTeardown() {
 
   TestLogger.logMessage(scriptName, "teardown Mongo DB and server");
-  const code = s.exec(`${scriptDir}/mongodb/teardown.mongo.sh 2>&1`, { silent: false }).code
+  const code = s.exec(`${mongodbDirectory}/teardown.mongo.sh 2>&1`, { silent: false }).code
   if (code != 0) {
     TestLogger.logMessage(scriptName, "teardown of Mongo DB failed");
   }
