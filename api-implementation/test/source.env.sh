@@ -58,7 +58,7 @@ export PLATFORM_API_PROJECT_HOME="$projectHome"
 
 # Set environment variables for common directories
 #
-export PLATFORM_API_TEST_HOME="$PLATFORM_API_PROJECT_HOME/api-implementation/test/integ"
+export PLATFORM_API_TEST_HOME="$PLATFORM_API_PROJECT_HOME/api-implementation/test"
 export PLATFORM_API_TEST_LOGS_DIR="$PLATFORM_API_TEST_HOME/tmp/logs/$(node --version)"
 
 # Set environment variables for database
