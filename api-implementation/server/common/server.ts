@@ -60,14 +60,19 @@ export default class ExpressServer {
         ignorePaths: /.*\/spec(\/|$)/,
       })
     );
-    if (l.isLevelEnabled('debug')) {
-      l.info('Enabling HTTP audit handler');
-      app.use(audit({
-        logger: l,
-        excludeURLs: ['liveliness', 'readiness'],
-      }));
-    }
+    app.use(audit({
+      logger: l,
+      excludeURLs: ['liveliness', 'readiness'],
+      response: {
+        levels: {
+          '2xx': 'debug',
+          '3xx': 'debug',
+          '4xx': 'debug',
+          '5xx': 'debug'
+        }
+      }
 
+    }));
   }
 
   router(routes: (app: Application) => void): ExpressServer {
