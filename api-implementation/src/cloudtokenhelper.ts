@@ -44,8 +44,10 @@ export async function validateToken(token: string, url: string): Promise<boolean
   }
 };
   try {
-    const response = await fetch(url, options);
+    const response: Response = (await fetch(url, options)) as Response;
     if (response.status > 299) {
+      L.warn(`invalid response code ${response.status}`);
+      L.warn(response.text);
       return false;
     } else {
       return true;
