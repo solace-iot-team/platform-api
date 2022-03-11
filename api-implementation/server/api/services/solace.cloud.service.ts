@@ -21,22 +21,24 @@ export class SolaceCloudService {
           authenticationBasicEnabled: cloudService.msgVpnAttributes.authenticationBasicEnabled,
         };
         const accountingLimits: AccountingLimit[] = [];
-        cloudService.accountingLimits.forEach(a=>{
-          const thresholds: Threshold[] = [];
-          a.thresholds.forEach(t=>{
-            thresholds.push({
-              type: t.type,
-              value: t.value
+        if (cloudService.accountingLimits) {
+          cloudService.accountingLimits.forEach(a => {
+            const thresholds: Threshold[] = [];
+            a.thresholds.forEach(t => {
+              thresholds.push({
+                type: t.type,
+                value: t.value
+              });
             });
-          });
-          accountingLimits.push({
-            id: a.id,
-            thresholds: thresholds,
-            unit: a.unit,
-            value: a.value
-          });
-        });
+            accountingLimits.push({
+              id: a.id,
+              thresholds: thresholds,
+              unit: a.unit,
+              value: a.value
+            });
 
+          });
+        }
         const service: Components.Schemas.Service = {
           accountingLimits: cloudService.accountingLimits,
           adminProgress: cloudService.adminProgress,
