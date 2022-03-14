@@ -2,7 +2,7 @@ openapi: 3.0.0
 info:
   title: Solace API Management Connector
   description: 'Solace API Management Connector API. Note: basic authentication security mechanism is deprecated.'
-  version: 0.6.8
+  version: 0.7.0
 servers:
   - url: /v1
 
@@ -789,12 +789,7 @@ components:
           minimum: -1
           description: A setting, in milliseconds, for the lifetime of the consumer key that will be  generated for the developer app. The default value, -1, indicates an infinite validity period. Once set, the expiration can't be updated.
         apiProducts:
-          type: array
-          uniqueItems: true
-          items:
-            $ref: '#/components/schemas/CommonName'
-          minItems: 0
-          maxItems: 255
+          $ref: '#/components/schemas/AppApiProducts'
         attributes:
           $ref: '#/components/schemas/attributes'
         callbackUrl:
@@ -820,15 +815,7 @@ components:
         displayName:
           $ref: '#/components/schemas/CommonDisplayName'
         apiProducts:
-          type: array
-          uniqueItems: true
-          items:
-            type: string
-            pattern: "^[a-zA-Z0-9_-]*$"
-            minLength: 4
-            maxLength: 188
-          minItems: 0
-          maxItems: 255
+          $ref: '#/components/schemas/AppApiProducts'
         attributes:
           $ref: '#/components/schemas/attributes'
         callbackUrl:
@@ -848,6 +835,7 @@ components:
       enum:
       - approved
       - pending
+      - revoked
     AppResponse:
       type: object
       description: "App Response Object - includes protocol binding information and app premissions. An app associated with a developer. Associates the app with an API product, and auto-generates an API credentials for the app to use."
@@ -870,15 +858,7 @@ components:
           maximum: 9007199254740991
           description: A setting, in milliseconds, for the lifetime of the consumer key that will be  generated for the developer app. The default value, -1, indicates an infinite validity period. Once set, the expiration can't be updated.
         apiProducts:
-          type: array
-          uniqueItems: true
-          items:
-            type: string
-            pattern: "^[a-zA-Z0-9_-]*$"
-            minLength: 4
-            maxLength: 188
-          minItems: 0
-          maxItems: 255
+          $ref: '#/components/schemas/AppApiProducts'
         attributes:
           $ref: '#/components/schemas/attributes'
         clientInformation:
@@ -930,17 +910,31 @@ components:
             minLength: 4
             maxLength: 188
           apiProducts:
-            type: array
-            uniqueItems: true
-            items:
-              type: string
-              pattern: "^[a-zA-Z0-9_-]*$"
-              minLength: 4
-              maxLength: 188
-            minItems: 0
-            maxItems: 255
+            $ref: '#/components/schemas/AppApiProducts'
           status:
              $ref: '#/components/schemas/AppStatus'
+    
+
+    AppApiProducts:
+      type: array
+      uniqueItems: true
+      items:
+        oneOf:
+        - $ref: '#/components/schemas/AppApiProductsComplex'
+        - $ref: '#/components/schemas/CommonName'
+      minItems: 0
+      maxItems: 255
+
+    AppApiProductsComplex:
+      type: object
+      additionalProperties: false
+      required:
+      - apiproduct 
+      properties:
+        apiproduct:
+          $ref: '#/components/schemas/CommonName'
+        status:
+          $ref: '#/components/schemas/AppStatus'
 
     AppEnvironment:
       type: object
@@ -4561,3 +4555,4 @@ paths:
           $ref: '#/components/responses/ServiceUnavailable'
         '504':
           $ref: '#/components/responses/GatewayTimeout'
+          

@@ -8,6 +8,7 @@ import App = Components.Schemas.App;
 import APIProduct = Components.Schemas.APIProduct;
 import Attributes = Components.Schemas.Attributes;
 import ClientOptions = Components.Schemas.ClientOptions;
+import AppApiProductsComplex = Components.Schemas.AppApiProductsComplex;
 
 import { Service } from '../../../../src/clients/solacecloud';
 import {
@@ -18,6 +19,7 @@ import {
 
 import SempV2ClientFactory from '../broker/sempv2clientfactory';
 import { ErrorResponseInternal } from '../../middlewares/error.handler';
+import { isString } from '../../../../src/typehelpers';
 
 export class QueueManager {
   public async createWebHookQueues(app: App, services: Service[],
@@ -47,7 +49,7 @@ export class QueueManager {
     apiProducts: APIProduct[], ownerAttributes: Attributes, queueName?: string, clientOptions?: ClientOptions): Promise<void> {
     L.info(`createQueueSubscriptions services: ${services}`);
     let subscribeExceptions: string[] = await ACLManager.getQueueSubscriptions(app, apiProducts, ownerAttributes);
-    if (subscribeExceptions === undefined || subscribeExceptions.length==0) {
+    if (subscribeExceptions === undefined || subscribeExceptions.length == 0) {
       return;
     }
     let objectName: string = app.internalName;
@@ -115,7 +117,13 @@ export class QueueManager {
 
   public async deleteAPIProductQueues(app: App, services: Service[], name: string) {
 
-    for (const productName of app.apiProducts) {
+    for (const apiProductReference of app.apiProducts) {
+      let productName: string = null;
+      if (isString(apiProductReference)) {
+        productName = apiProductReference as string;
+      } else {
+        productName = (apiProductReference as AppApiProductsComplex).apiproduct;
+      }
       const apiProduct: APIProduct = await ApiProductsService.byName(productName);
       if (QueueHelper.isAPIProductQueueRequired(apiProduct)) {
         const queueName: string = QueueHelper.getAPIProductQueueName(app, apiProduct);

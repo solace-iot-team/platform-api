@@ -267,11 +267,16 @@ declare namespace Components {
              * A setting, in milliseconds, for the lifetime of the consumer key that will be  generated for the developer app. The default value, -1, indicates an infinite validity period. Once set, the expiration can't be updated.
              */
             expiresIn?: number; // int64
-            apiProducts: CommonName /* ^[a-zA-Z0-9_-]*$ */ [];
+            apiProducts: AppApiProducts;
             attributes?: Attributes;
             callbackUrl?: CommonURL; // ^https?:\/\/[A-Za-z\.:0-9\-]*.*$
             webHooks?: WebHook[];
             credentials: Credentials;
+        }
+        export type AppApiProducts = (AppApiProductsComplex | CommonName /* ^[a-zA-Z0-9_-]*$ */ )[];
+        export interface AppApiProductsComplex {
+            apiproduct: CommonName; // ^[a-zA-Z0-9_-]*$
+            status?: AppStatus;
         }
         export interface AppConnection {
             protocol?: Protocol;
@@ -331,7 +336,7 @@ declare namespace Components {
              * Developer-1
              */
             ownerId?: string; // .*
-            apiProducts?: string /* ^[a-zA-Z0-9_-]*$ */ [];
+            apiProducts?: AppApiProducts;
             status?: AppStatus;
         }
         /**
@@ -339,7 +344,7 @@ declare namespace Components {
          */
         export interface AppPatch {
             displayName?: CommonDisplayName; // ^[\/\sa-z.A-z0-9_-]*$
-            apiProducts?: string /* ^[a-zA-Z0-9_-]*$ */ [];
+            apiProducts?: AppApiProducts;
             attributes?: Attributes;
             callbackUrl?: CommonURL; // ^https?:\/\/[A-Za-z\.:0-9\-]*.*$
             webHooks?: WebHook[];
@@ -360,7 +365,7 @@ declare namespace Components {
              * A setting, in milliseconds, for the lifetime of the consumer key that will be  generated for the developer app. The default value, -1, indicates an infinite validity period. Once set, the expiration can't be updated.
              */
             expiresIn?: number; // int64
-            apiProducts: string /* ^[a-zA-Z0-9_-]*$ */ [];
+            apiProducts: AppApiProducts;
             attributes?: Attributes;
             clientInformation?: ClientInformation[];
             callbackUrl?: CommonURL; // ^https?:\/\/[A-Za-z\.:0-9\-]*.*$
@@ -369,7 +374,7 @@ declare namespace Components {
             environments?: AppEnvironment[];
             status?: AppStatus;
         }
-        export type AppStatus = "approved" | "pending";
+        export type AppStatus = "approved" | "pending" | "revoked";
         /**
          * Arbitrary name/value pairs associated with an API product, team, developer or app.
          */

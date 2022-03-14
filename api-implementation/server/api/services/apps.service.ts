@@ -12,6 +12,8 @@ import AppPatch = Components.Schemas.AppPatch;
 import AppConnectionStatus = Components.Schemas.AppConnectionStatus;
 import passwordGenerator from 'generate-password';
 import ApiProduct = Components.Schemas.APIProduct;
+import AppApiProductsComplex = Components.Schemas.AppApiProductsComplex;
+
 import Attributes = Components.Schemas.Attributes;
 import ClientInformation = Components.Schemas.ClientInformation;
 import TopicSyntax = Components.Parameters.TopicSyntax.TopicSyntax;
@@ -19,6 +21,8 @@ import WebHook = Components.Schemas.WebHook;
 import AsyncApiGenerator from './asyncapi/asyncapigenerator';
 import QueueHelper from './broker/queuehelper';
 import ACLManager from './broker/aclmanager';
+
+import { isString } from '../../../src/typehelpers';
 
 export interface APISpecification {
   name: string;
@@ -112,8 +116,14 @@ export class AppsService {
         const subs = await ACLManager.getQueueSubscriptionsByApp(app);
         const requireClientInformation:boolean = subs.length > 0;
         if (requireClientInformation) {
-          const clientInformation: ClientInformation[] = []
-          for (const productName of app.apiProducts) {
+          const clientInformation: ClientInformation[] = [];
+          for (const apiProductReference of app.apiProducts) {
+            let productName: string = null;
+            if (isString(apiProductReference)){
+              productName = apiProductReference as string;
+            } else {
+              productName = (apiProductReference as AppApiProductsComplex).apiproduct;
+            }
             const apiProduct = await ApiProductsService.byName(productName);
             const isSupportedProtocol: boolean = apiProduct.protocols.find(p => p.name.toString().indexOf('smf') > -1
               || p.name.toString().indexOf('jms') > -1) != null;
@@ -267,8 +277,14 @@ export class AppsService {
 
     // validate api products exist and find out if any  require approval
     for (const product of app.apiProducts) {
+        let productName: string = null;
+        if (isString(product)) {
+          productName = product as string;
+        } else {
+          productName = (product as AppApiProductsComplex).apiproduct;
+        }
       try {
-        const apiProduct = await ApiProductsService.byName(product);
+        const apiProduct = await ApiProductsService.byName(productName);
         apiProduct.environments.forEach((envName) => {
           environments.add(envName);
         });
