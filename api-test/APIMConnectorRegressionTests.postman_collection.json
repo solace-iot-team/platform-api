@@ -110,7 +110,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n  \"name\": \"{{TENANT}}\",\n  \"cloud-token\": \"{{CLOUD_TOKEN}}\"\n}",
+							"raw": "{\n  \"name\": \"{{TENANT}}\",\n  \"cloud-token\": {\n\t\t\"eventPortal\": {\n\t\t\t\"baseUrl\": \"https://api.solace.cloud/api/v0/eventPortal\"\n\n\t\t},\n\t\t\"cloud\":{\n\t\t\t\"baseUrl\": \"{{CLOUD_BASE_URL}}\",\n            \"token\":\"{{CLOUD_TOKEN}}\"\n\t\t}\n  }\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -226,7 +226,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n  \"name\": \"{{CONNECTOR_ENV}}\",\n  \"description\": \"{{CONNECTOR_ENV}} environment\",\n  \"serviceId\": \"{{BROKER_ID}}\",\n  \"exposedProtocols\": [\n    {\n      \"name\": \"secure-mqtt\",\n      \"version\": \"3.1.1\"\n    },\n    {\n      \"name\": \"mqtt\",\n      \"version\": \"3.1.1\"\n    },\n    {\n      \"name\": \"http\",\n      \"version\": \"1.1\"\n    },\n    {\n      \"name\": \"https\",\n      \"version\": \"1.1\"\n    }\n  ]\n}",
+							"raw": "{\n  \"name\": \"{{CONNECTOR_ENV}}\",\n  \"description\": \"{{CONNECTOR_ENV}} environment\",\n  \"serviceId\": \"{{BROKER_ID}}\",\n  \"exposedProtocols\": [\n    {\n      \"name\": \"secure-mqtt\",\n      \"version\": \"3.1.1\"\n    },\n    {\n      \"name\": \"mqtt\",\n      \"version\": \"3.1.1\"\n    },\n    {\n      \"name\": \"http\",\n      \"version\": \"1.1\"\n    },\n    {\n      \"name\": \"https\",\n      \"version\": \"1.1\"\n    }\n  ]\n\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -1677,7 +1677,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n  \"name\": \"{{TENANT}}\",\n  \"cloud-token\": \"{{CLOUD_TOKEN}}\"\n}",
+							"raw": "{\n  \"name\": \"{{TENANT}}\",\n  \"cloud-token\": {\n\t\t\"eventPortal\": {\n\t\t\t\"baseUrl\": \"https://api.solace.cloud/api/v0/eventPortal\"\n\n\t\t},\n\t\t\"cloud\":{\n\t\t\t\"baseUrl\": \"{{CLOUD_BASE_URL}}\",\n            \"token\":\"{{CLOUD_TOKEN}}\"\n\t\t}\n  },\n  \"integrations\": {\n    \"notifications\": {\n      \"baseUrl\": \"https://mr1i5g7tif6z9h.messaging.solace.cloud:9443/apim\",\n      \"authentication\": {\n        \"userName\": \"solace-cloud-client\",\n        \"password\": \"enfe56t36gbp4evn4hner9grmh\"\n      }\n    }\n  }\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -12138,21 +12138,13 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "https://mr1i5g7tif6z9h.messaging.solace.cloud:943/SEMP/v2/config/msgVpns/apim-test/queues/{{APP_NAME_INTERNAL}}-{{API_NAME}}_PRODUCT2/subscriptions",
-							"protocol": "https",
+							"raw": "{{BROKER_BASEURL}}/msgVpns/{{CLOUD_VPN}}/queues/{{APP_NAME_INTERNAL}}-{{API_NAME}}_PRODUCT2/subscriptions",
 							"host": [
-								"mr1i5g7tif6z9h",
-								"messaging",
-								"solace",
-								"cloud"
+								"{{BROKER_BASEURL}}"
 							],
-							"port": "943",
 							"path": [
-								"SEMP",
-								"v2",
-								"config",
 								"msgVpns",
-								"apim-test",
+								"{{CLOUD_VPN}}",
 								"queues",
 								"{{APP_NAME_INTERNAL}}-{{API_NAME}}_PRODUCT2",
 								"subscriptions"
@@ -12269,6 +12261,814 @@
 								"{{TENANT}}",
 								"apiProducts",
 								"{{API_NAME}}_PRODUCT2"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "32 App API Product Level Approval",
+			"item": [
+				{
+					"name": "Reset Dev Env Protocols",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status OK\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "{{CONNECTOR_PASSWORD}}",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "{{CONNECTOR_USERNAME}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PATCH",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"exposedProtocols\": [\n    {\n      \"name\": \"secure-mqtt\",\n      \"version\": \"3.1.1\"\n    },\n    {\n      \"name\": \"mqtt\",\n      \"version\": \"3.1.1\"\n    },\n    {\n      \"name\": \"http\",\n      \"version\": \"1.1\"\n    },\n    {\n      \"name\": \"https\",\n      \"version\": \"1.1\"\n    },\n    {\n      \"name\": \"jms\",\n      \"version\": \"1.1\"\n   },\n    {\n      \"name\": \"smf\",\n      \"version\": \"smf\"\n    }\n  ]\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{CONNECTOR_BASEURL}}/{{TENANT}}/environments/{{CONNECTOR_ENV}}",
+							"host": [
+								"{{CONNECTOR_BASEURL}}"
+							],
+							"path": [
+								"{{TENANT}}",
+								"environments",
+								"{{CONNECTOR_ENV}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create API Product",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status OK\", function () {",
+									"    pm.response.to.have.status(201);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"apis\": [\n      \"SayHelloPub\"\n  ],\n  \"approvalType\": \"manual\",\n\n  \"description\": \"SayHello_PRODUCT\",\n  \"displayName\": \"SayHello_PRODUCT\",\n  \"environments\": [\n    \"{{CONNECTOR_ENV}}\",\n    \"{{PROD_CONNECTOR_ENV}}\"\n  ],\n  \"name\": \"SayHello_PRODUCT\",\n  \"pubResources\": [\n  ],\n  \"subResources\": [\n  ],\n  \"protocols\": [\n    {\n      \"name\": \"http\",\n      \"version\": \"1.1\"\n    },\n    {\n      \"name\": \"smf\",\n      \"version\": \"smf\"\n    }\n  ],\n  \"clientOptions\": {\n    \"guaranteedMessaging\": {\n      \"requireQueue\": true,\n      \"accessType\": \"exclusive\",\n      \"maxTtl\": 3600,\n      \"maxMsgSpoolUsage\": 50\n    }\n  },\n  \"attributes\": []\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{CONNECTOR_BASEURL}}/{{TENANT}}/apiProducts",
+							"host": [
+								"{{CONNECTOR_BASEURL}}"
+							],
+							"path": [
+								"{{TENANT}}",
+								"apiProducts"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create API Product 2",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status OK\", function () {",
+									"    pm.response.to.have.status(201);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"apis\": [\n      \"SayHello\"\n  ],\n  \"approvalType\": \"manual\",\n\n  \"description\": \"SayHello_PRODUCT2\",\n  \"displayName\": \"SayHello_PRODUCT2\",\n  \"environments\": [\n    \"{{CONNECTOR_ENV}}\",\n    \"{{PROD_CONNECTOR_ENV}}\"\n  ],\n  \"name\": \"SayHello_PRODUCT2\",\n  \"pubResources\": [\n  ],\n  \"subResources\": [\n  ],\n  \"protocols\": [\n    {\n      \"name\": \"http\",\n      \"version\": \"1.1\"\n    },\n    {\n      \"name\": \"smf\",\n      \"version\": \"smf\"\n    }\n  ],\n  \"clientOptions\": {\n    \"guaranteedMessaging\": {\n      \"requireQueue\": true,\n      \"accessType\": \"exclusive\",\n      \"maxTtl\": 3600,\n      \"maxMsgSpoolUsage\": 50\n    }\n  },\n  \"attributes\": []\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{CONNECTOR_BASEURL}}/{{TENANT}}/apiProducts",
+							"host": [
+								"{{CONNECTOR_BASEURL}}"
+							],
+							"path": [
+								"{{TENANT}}",
+								"apiProducts"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create app",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status OK\", function () {",
+									"    pm.response.to.have.status(201);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"name\": \"{{APP_NAME}}\",\n  \"internalName\": \"{{APP_NAME_INTERNAL}}\",    \n  \"displayName\": \"{{APP_NAME}}\",\n  \"expiresIn\": 0,\n  \"apiProducts\": [\n      { \n          \"apiproduct\": \"SayHello_PRODUCT\"\n      },\n      { \n          \"apiproduct\": \"SayHello_PRODUCT2\"\n      }\n  ],\n  \"credentials\": {\n    \"expiresAt\": -1,\n    \"issuedAt\": 0,\n    \"secret\": {\n      \"consumerKey\": \"{{CONSUMER_KEY}}\",\n      \"consumerSecret\": \"{{CONSUMER_SECRET}}\"\n    }\n  }\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{CONNECTOR_BASEURL}}/{{TENANT}}/teams/{{TEAM_NAME}}/apps",
+							"host": [
+								"{{CONNECTOR_BASEURL}}"
+							],
+							"path": [
+								"{{TENANT}}",
+								"teams",
+								"{{TEAM_NAME}}",
+								"apps"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Check app status",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"",
+									"",
+									"pm.test(\"App os pending\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.status).to.eql('pending');",
+									"});",
+									"",
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{CONNECTOR_BASEURL}}/{{TENANT}}/apps/{{APP_NAME}}",
+							"host": [
+								"{{CONNECTOR_BASEURL}}"
+							],
+							"path": [
+								"{{TENANT}}",
+								"apps",
+								"{{APP_NAME}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Approve",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status OK\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PATCH",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"status\": \"approved\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{CONNECTOR_BASEURL}}/{{TENANT}}/teams/{{TEAM_NAME}}/apps/{{APP_NAME}}",
+							"host": [
+								"{{CONNECTOR_BASEURL}}"
+							],
+							"path": [
+								"{{TENANT}}",
+								"teams",
+								"{{TEAM_NAME}}",
+								"apps",
+								"{{APP_NAME}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Check Broker ACL Subscriptions Present Copy 2",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"ACL is present\", function () {",
+									"    pm.expect(pm.response.text()).to.include(pm.environment.get(\"APP_NAME_INTERNAL\"));",
+									"});",
+									"pm.test(\"Body doesn't contain subscribe exception\", function () {",
+									"    pm.expect(pm.response.text()).to.not.include(\"say/hello\");",
+									"});",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "{{BROKER_PASSWORD}}",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "{{BROKER_USER}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{BROKER_BASEURL}}/msgVpns/{{CLOUD_VPN}}/aclProfiles/{{APP_NAME_INTERNAL}}/subscribeTopicExceptions",
+							"host": [
+								"{{BROKER_BASEURL}}"
+							],
+							"path": [
+								"msgVpns",
+								"{{CLOUD_VPN}}",
+								"aclProfiles",
+								"{{APP_NAME_INTERNAL}}",
+								"subscribeTopicExceptions"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Patch approve one product",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status OK\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PATCH",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"apiProducts\": [\n        {\n            \"apiproduct\": \"SayHello_PRODUCT\",\n            \"status\": \"approved\"\n        },\n        {\n            \"apiproduct\": \"SayHello_PRODUCT2\"\n        }\n    ],\n  \"displayName\": \"sayHello5\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{CONNECTOR_BASEURL}}/{{TENANT}}/teams/{{TEAM_NAME}}/apps/{{APP_NAME}}",
+							"host": [
+								"{{CONNECTOR_BASEURL}}"
+							],
+							"path": [
+								"{{TENANT}}",
+								"teams",
+								"{{TEAM_NAME}}",
+								"apps",
+								"{{APP_NAME}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Check app status includes webbhook Copy",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"",
+									"pm.test(\"API Product is approved\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.apiProducts[0]).to.have.property('status');",
+									"});",
+									"",
+									"pm.test(\"API Product is approved\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.apiProducts[0].status).to.equal('approved');",
+									"});",
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{CONNECTOR_BASEURL}}/{{TENANT}}/apps/{{APP_NAME}}",
+							"host": [
+								"{{CONNECTOR_BASEURL}}"
+							],
+							"path": [
+								"{{TENANT}}",
+								"apps",
+								"{{APP_NAME}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Check Broker ACL Subscriptions Present Copy",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"ACL is present\", function () {",
+									"    pm.expect(pm.response.text()).to.include(pm.environment.get(\"APP_NAME_INTERNAL\"));",
+									"});",
+									"pm.test(\"Body contains subscribe exception\", function () {",
+									"    pm.expect(pm.response.text()).to.include(\"say/hello\");",
+									"});",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "{{BROKER_PASSWORD}}",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "{{BROKER_USER}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{BROKER_BASEURL}}/msgVpns/{{CLOUD_VPN}}/aclProfiles/{{APP_NAME_INTERNAL}}/subscribeTopicExceptions",
+							"host": [
+								"{{BROKER_BASEURL}}"
+							],
+							"path": [
+								"msgVpns",
+								"{{CLOUD_VPN}}",
+								"aclProfiles",
+								"{{APP_NAME_INTERNAL}}",
+								"subscribeTopicExceptions"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Check Broker ACL Publish Subscription Not Present",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"ACL is present\", function () {",
+									"    pm.expect(pm.response.text()).to.include(pm.environment.get(\"APP_NAME_INTERNAL\"));",
+									"});",
+									"pm.test(\"Body not contains publish exception\", function () {",
+									"    pm.expect(pm.response.text()).to.not.include(\"say/hello\");",
+									"});",
+									"",
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "{{BROKER_PASSWORD}}",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "{{BROKER_USER}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{BROKER_BASEURL}}/msgVpns/{{CLOUD_VPN}}/aclProfiles/{{APP_NAME_INTERNAL}}/publishTopicExceptions",
+							"host": [
+								"{{BROKER_BASEURL}}"
+							],
+							"path": [
+								"msgVpns",
+								"{{CLOUD_VPN}}",
+								"aclProfiles",
+								"{{APP_NAME_INTERNAL}}",
+								"publishTopicExceptions"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Patch approve both products",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status OK\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PATCH",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"apiProducts\": [\n        {\n            \"apiproduct\": \"SayHello_PRODUCT\",\n            \"status\": \"approved\"\n        },\n        {\n            \"apiproduct\": \"SayHello_PRODUCT2\",\n            \"status\": \"approved\"\n        }\n    ],\n  \"displayName\": \"sayHello5\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{CONNECTOR_BASEURL}}/{{TENANT}}/teams/{{TEAM_NAME}}/apps/{{APP_NAME}}",
+							"host": [
+								"{{CONNECTOR_BASEURL}}"
+							],
+							"path": [
+								"{{TENANT}}",
+								"teams",
+								"{{TEAM_NAME}}",
+								"apps",
+								"{{APP_NAME}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Check Broker ACL Publish Subscription Present",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"ACL is present\", function () {",
+									"    pm.expect(pm.response.text()).to.include(pm.environment.get(\"APP_NAME_INTERNAL\"));",
+									"});",
+									"pm.test(\"Body contains publish exception\", function () {",
+									"    pm.expect(pm.response.text()).to.include(\"say/hello\");",
+									"});",
+									"",
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "{{BROKER_PASSWORD}}",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "{{BROKER_USER}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{BROKER_BASEURL}}/msgVpns/{{CLOUD_VPN}}/aclProfiles/{{APP_NAME_INTERNAL}}/publishTopicExceptions",
+							"host": [
+								"{{BROKER_BASEURL}}"
+							],
+							"path": [
+								"msgVpns",
+								"{{CLOUD_VPN}}",
+								"aclProfiles",
+								"{{APP_NAME_INTERNAL}}",
+								"publishTopicExceptions"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Patch revoke one product",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status OK\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PATCH",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"apiProducts\": [\n        {\n            \"apiproduct\": \"SayHello_PRODUCT\",\n            \"status\": \"revoked\"\n        },\n        {\n            \"apiproduct\": \"SayHello_PRODUCT2\",\n            \"status\": \"approved\"\n        }\n    ],\n  \"displayName\": \"sayHello5\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{CONNECTOR_BASEURL}}/{{TENANT}}/teams/{{TEAM_NAME}}/apps/{{APP_NAME}}",
+							"host": [
+								"{{CONNECTOR_BASEURL}}"
+							],
+							"path": [
+								"{{TENANT}}",
+								"teams",
+								"{{TEAM_NAME}}",
+								"apps",
+								"{{APP_NAME}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Check Broker ACL Subscriptions Present Copy 2",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"ACL is present\", function () {",
+									"    pm.expect(pm.response.text()).to.include(pm.environment.get(\"APP_NAME_INTERNAL\"));",
+									"});",
+									"pm.test(\"Body doesn't contains subscribe exception\", function () {",
+									"    pm.expect(pm.response.text()).to.not.include(\"say/hello\");",
+									"});",
+									"",
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "{{BROKER_PASSWORD}}",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "{{BROKER_USER}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{BROKER_BASEURL}}/msgVpns/{{CLOUD_VPN}}/aclProfiles/{{APP_NAME_INTERNAL}}/subscribeTopicExceptions",
+							"host": [
+								"{{BROKER_BASEURL}}"
+							],
+							"path": [
+								"msgVpns",
+								"{{CLOUD_VPN}}",
+								"aclProfiles",
+								"{{APP_NAME_INTERNAL}}",
+								"subscribeTopicExceptions"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete App",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is OK\", function () {",
+									"    pm.response.to.have.status(204);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{CONNECTOR_BASEURL}}/{{TENANT}}/teams/{{TEAM_NAME}}/apps/{{APP_NAME}}",
+							"host": [
+								"{{CONNECTOR_BASEURL}}"
+							],
+							"path": [
+								"{{TENANT}}",
+								"teams",
+								"{{TEAM_NAME}}",
+								"apps",
+								"{{APP_NAME}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete API Product",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is OK\", function () {",
+									"    pm.response.to.have.status(204);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{CONNECTOR_BASEURL}}/{{TENANT}}/apiProducts/SayHello_PRODUCT",
+							"host": [
+								"{{CONNECTOR_BASEURL}}"
+							],
+							"path": [
+								"{{TENANT}}",
+								"apiProducts",
+								"SayHello_PRODUCT"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete API Product 2",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is OK\", function () {",
+									"    pm.response.to.have.status(204);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{CONNECTOR_BASEURL}}/{{TENANT}}/apiProducts/SayHello_PRODUCT2",
+							"host": [
+								"{{CONNECTOR_BASEURL}}"
+							],
+							"path": [
+								"{{TENANT}}",
+								"apiProducts",
+								"SayHello_PRODUCT2"
 							]
 						}
 					},
@@ -12586,7 +13386,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n  \"name\": \"{{TENANT}}\",\n  \"cloud-token\":{\n\t\t\"eventPortal\": {\n\t\t\t\"baseUrl\": \"https://api.solace.cloud/api/v0/eventPortal\"\n\n\t\t},\n\t\t\"cloud\":{\n\t\t\t\"baseUrl\": \"https://api.solace.cloud/api/v0\",\n            \"token\":\"{{CLOUD_TOKEN}}\"\n\t\t}\n  }\n}",
+							"raw": "{\n  \"name\": \"{{TENANT}}\",\n  \"cloud-token\":{\n\t\t\"eventPortal\": {\n\t\t\t\"baseUrl\": \"https://api.solace.cloud/api/v0/eventPortal\"\n\n\t\t},\n\t\t\"cloud\":{\n\t\t\t\"baseUrl\": \"{{CLOUD_BASE_URL}}\",\n            \"token\":\"{{CLOUD_TOKEN}}\"\n\t\t}\n  }\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -12641,7 +13441,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n  \"name\": \"{{TENANT}}\",\n  \"cloud-token\":{\n\t\t\"eventPortal\": {\n\t\t\t\"baseUrl\": \"https://api.solace.cloud/api/v0/eventPortal\",\n\t\t\t\"token\":\"{{CLOUD_TOKEN}}\"\n\t\t},\n\t\t\"cloud\":{\n\t\t\t\"baseUrl\": \"https://api.solace.cloud/api/v0\",\n\t\t\t\"token\": \"{{CLOUD_TOKEN}}\"\n\t\t}\n  }\n}",
+							"raw": "{\n  \"name\": \"{{TENANT}}\",\n  \"cloud-token\":{\n\t\t\"eventPortal\": {\n\t\t\t\"baseUrl\": \"https://api.solace.cloud/api/v0/eventPortal\",\n\t\t\t\"token\":\"{{EP_TOKEN}}\"\n\t\t},\n\t\t\"cloud\":{\n\t\t\t\"baseUrl\": \"{{CLOUD_BASE_URL}}\",\n\t\t\t\"token\": \"{{CLOUD_TOKEN}}\"\n\t\t}\n  }\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -12696,7 +13496,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n  \"name\": \"{{TENANT}}\",\n  \"cloud-token\":{\n\t\t\"eventPortal\": {\n\t\t\t\"baseUrl\": \"https://api.solace.cloud/api/v0/eventPortal\"\n\t\t},\n\t\t\"cloud\":{\n\t\t\t\"baseUrl\": \"https://api.solace.cloud/api/v0\"\n\t\t}\n  }\n}",
+							"raw": "{\n  \"name\": \"{{TENANT}}\",\n  \"cloud-token\":{\n\t\t\"eventPortal\": {\n\t\t\t\"baseUrl\": \"https://api.solace.cloud/api/v0/eventPortal\"\n\t\t},\n\t\t\"cloud\":{\n\t\t\t\"baseUrl\": \"{{CLOUD_BASE_URL}}\"\n\t\t}\n  }\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -12717,7 +13517,7 @@
 					"response": []
 				},
 				{
-					"name": "Update org with invalid BaseURLs Copy",
+					"name": "Update org with invalid BaseURLs",
 					"event": [
 						{
 							"listen": "test",
