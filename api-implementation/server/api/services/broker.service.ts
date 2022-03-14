@@ -32,14 +32,22 @@ import {
 } from '../../../src/clients/sempv2';
 import SolaceCloudFacade from '../../../src/solacecloudfacade';
 import SempV2ClientFactory from './broker/sempv2clientfactory';
-
+import AppApiProductsComplex = Components.Schemas.AppApiProductsComplex;
 import { ErrorResponseInternal } from '../middlewares/error.handler';
+import { isString } from '../../../src/typehelpers';
 
 class BrokerService {
   async getPermissions(app: App, ownerAttributes: Attributes, envName: string, syntax: TopicSyntax): Promise<Permissions> {
     const products: APIProduct[] = [];
     try {
-      for (const productName of app.apiProducts) {
+      for (const apiProductReference of app.apiProducts) {
+        let productName: string = null;
+        if (isString(apiProductReference)) {
+          productName = apiProductReference as string;
+        } else {
+          productName = (apiProductReference as AppApiProductsComplex).apiproduct;
+        }
+
         const product = await ApiProductsService.byName(productName);
         products.push(product);
       }
@@ -90,9 +98,17 @@ class BrokerService {
         await this.doDeprovisionApp(app, app.credentials.secret.consumerKey);
       }
       const apiProductPromises: Promise<APIProduct>[] = [];
-      app.apiProducts.forEach((productName: string) => {
-        L.info(productName);
-        apiProductPromises.push(ApiProductsService.byName(productName));
+      app.apiProducts.forEach((apiProductReference) => {
+        let productName: string = null;
+        if (isString(apiProductReference)) {
+          productName = apiProductReference as string;
+        } else if ((apiProductReference as AppApiProductsComplex).status == 'approved') {
+          productName = (apiProductReference as AppApiProductsComplex).apiproduct;
+        }
+        if (productName) {
+          L.info(productName);
+          apiProductPromises.push(ApiProductsService.byName(productName));
+        }
       });
 
       Promise.all(apiProductPromises).then(async (productResults: APIProduct[]) => {
@@ -475,8 +491,13 @@ class BrokerService {
   public async getMessagingProtocols(app: App): Promise<AppEnvironment[]> {
     const appEnvironments: AppEnvironment[] = [];
     const products: APIProduct[] = [];
-    for (const productName of app.apiProducts) {
-      L.info(productName);
+    for (const apiProductReference of app.apiProducts) {
+      let productName: string = null;
+      if (isString(apiProductReference)) {
+        productName = apiProductReference as string;
+      } else {
+        productName = (apiProductReference as AppApiProductsComplex).apiproduct;
+      } L.info(productName);
       products.push(await ApiProductsService.byName(productName));
     };
 
@@ -524,7 +545,7 @@ class BrokerService {
             .find((mp) => mp.endPoints.find((ep) => ep.transport == keys.protocol && ep.name == keys.name));
           const endpoint = tmp ? tmp.endPoints.find((ep) => ep.transport == keys.protocol) : null;
           let newEndpoint: Endpoint = endpoints.find(
-            (ep) => (ep.uri == endpoint.uris[0]  && ep.protocol.name == keys.name)
+            (ep) => (ep.uri == endpoint.uris[0] && ep.protocol.name == keys.name)
           );
           if (newEndpoint === undefined && endpoint) {
             newEndpoint = {

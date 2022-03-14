@@ -2,6 +2,7 @@ import L from '../../../common/logger';
 
 import Environment = Components.Schemas.Environment;
 import EnvironmentResponse = Components.Schemas.EnvironmentResponse;
+import AppApiProductsComplex = Components.Schemas.AppApiProductsComplex;
 import App = Components.Schemas.App;
 import { Service } from '../../../../src/clients/solacecloud';
 
@@ -10,11 +11,19 @@ import ApiProductsService from '../apiProducts.service';
 
 import SolaceCloudFacade from '../../../../src/solacecloudfacade';
 
+import { isString } from '../../../../src/typehelpers';
+
 class BrokerUtils {
 
   async getEnvironments(app: App): Promise<string[]> {
     let environmentNames: string[] = [];
-    for (const productName of app.apiProducts) {
+    for (const apiProductReference of app.apiProducts) {
+      let productName: string = null;
+      if (isString(apiProductReference)) {
+        productName = apiProductReference as string;
+      } else {
+        productName = (apiProductReference as AppApiProductsComplex).apiproduct;
+      }
       let product = await ApiProductsService.byName(productName);
       environmentNames = environmentNames.concat(product.environments);
 
