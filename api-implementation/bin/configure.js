@@ -5,37 +5,6 @@
 const path = require("path");
 const { program } = require("commander");
 
-// const configuration = require(path.resolve(__dirname, '../dist/tools/configuration/index.js'));
-
-// program
-//   .name("configuration")
-//   .description("Configure an API Management Connector")
-//   //.usage("[global options] command")
-//   //.helpOption(false);
-//   .helpOption("-h, --help", "Display help")
-// //.helpOption("-h, --help", "display help");
-
-// program
-//   .command("create")
-//   .description("Create resources")
-//   .requiredOption("-f, --file <path>", "The configuration file (required)")
-//   .action((options) => {
-//     configuration.create(options.file);
-//   });
-
-// program
-//   .command("delete")
-//   .description("Remove resources")
-//   .requiredOption("-f, --file <path>", "The configuration file (required)")
-//   .action((options) => {
-//     configuration.delete(options.file);
-//   });
-
-// program
-//   .addHelpCommand(false);
-
-// program.parse(process.argv);
-
 program
   .name("configure")
   .description("Configure an API Management Connector")

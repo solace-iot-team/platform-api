@@ -2,37 +2,79 @@ import fs from 'fs';
 import yaml from "js-yaml";
 import fetch from 'node-fetch';
 import _ from 'lodash';
-import { stringify } from 'querystring';
 
+/** The options to configure an API Management Connector. */
 type Options = {
+
+  /** The API Management Connector to configure. */
   server: {
+    /** The base URL of the server. */
     baseUrl: string;
+    /** The username and password of the server admin. */
     admin: Credentials;
-  },
+  };
+
+  /** The organization to create. */
   organization: {
+    /** The name of the organization. */
     name: string;
+    /** The cloud token for the organization. */
     token: string;
+    /** The username and password of the organization admin. */
     admin: Credentials;
-  },
+  };
+
+  /**
+   * The names of service IDs of one or more Solace Cloud services.
+   * For each service, an environment will be created.
+   */
   services: string[];
-  apis: Record<string, string>,
+
+  /**
+   * The APIs to create as a name-value map. The name must be a valid
+   * API name and the value can be the name of a file with an API
+   * specification or the URL of a web-hosted API specification. The
+   * API specification can be in JSON or YAML format.
+   * 
+   * For each API, an API product will be created with the same name.
+   * Any API product will be associated with all environments.
+   */
+  apis: Record<string, string>;
+
+  /**
+   * The team application to create. The created team application
+   * will have access to all API products.
+   */
   application: {
+    /** The name of the application. */
     name: string;
+    /** The name of the team that owns the application. */
     owner: string;
+    /** The consumer key and secret of the application. */
     credentials: Credentials;
-  },
+  };
 }
 
+/** A username-password pair. */
 type Credentials = {
+  /** The username. */
   username: string;
+  /** The password. */
   password: string;
 }
 
+/** An environment. */
 type Environment = {
+
+  /** The name of the environment. */
   name: string;
+  /** The display name of the environment. */
   displayName: string;
+  /** The description of the environment. */
   description: string;
+  /** The ID of the corresponding Solace Cloud service. */
   serviceId: string;
+  /** The list of protocols that are exposed. */
   exposedProtocols: any[];
 }
 
@@ -384,10 +426,10 @@ const readConfiguration = (fileName: string): Options => {
  * 
  * This function uses the API Management Connector OpenAPI to create:
  * - An organization
- * - An environment for each service
+ * - One or more environments
  * - One or more APIs
- * - An API product for each API
- * - A team application with all API products and environments
+ * - For each API, an API product associated with all environments
+ * - A team application with access to all API products
  * 
  * @param fileName
  *                The name of the configuration file.
