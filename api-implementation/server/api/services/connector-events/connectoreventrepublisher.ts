@@ -24,7 +24,7 @@ interface Envelope {
 
 export class ConnectorEventRepublisher {
   static getTopic(req: Request): string {
-    let topic: string = `${req.method}${req.baseUrl}/${req.url}`;
+    let topic: string = `apc/${req.method}${req.baseUrl}/${req.url}`;
     topic = topic.split('/').filter(v => v !== '').join('/');
     return topic;
   }
