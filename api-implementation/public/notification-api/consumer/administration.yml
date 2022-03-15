@@ -1,0 +1,289 @@
+asyncapi: 2.3.0
+info:
+  title: Solace API Management Connector (administration)
+  description: Manage tenants/orgs. Requires admin access level.
+  version: 0.7.0
+channels:
+  apc/POST/v1/organizations:
+    publish:
+      operationId: createOrganization
+      tags:
+        - name: administration
+          description: Manage tenants/orgs. Requires admin access level.
+      message:
+        payload:
+          type: object
+          required:
+            - header
+            - payload
+          properties:
+            header:
+              $ref: '#/components/schemas/NotificationHeader'
+            payload:
+              $ref: '#/components/schemas/OrganizationResponse'
+        contentType: application/json
+        description: New Organization
+    parameters: {}
+  apc/PATCH/v1/organizations/{organization_name}:
+    publish:
+      operationId: updateOrganization
+      tags:
+        - name: administration
+          description: Manage tenants/orgs. Requires admin access level.
+      message:
+        payload:
+          type: object
+          required:
+            - header
+            - payload
+          properties:
+            header:
+              $ref: '#/components/schemas/NotificationHeader'
+            payload:
+              $ref: '#/components/schemas/OrganizationResponse'
+        contentType: application/json
+        description: Updated Organization
+    parameters:
+      organization_name:
+        $ref: '#/components/parameters/organization'
+  apc/DELETE/v1/organizations/{organization_name}:
+    publish:
+      operationId: deleteOrganization
+      tags:
+        - name: administration
+          description: Manage tenants/orgs. Requires admin access level.
+    parameters:
+      organization_name:
+        $ref: '#/components/parameters/organization'
+tags:
+  - name: administration
+    description: Manage tenants/orgs. Requires admin access level.
+components:
+  schemas:
+    NotificationHeader:
+      type: object
+      required:
+        - org
+        - time
+        - topic
+      additionalProperties: false
+      properties:
+        org:
+          type: string
+          maxLength: 188
+          minLength: 4
+          pattern: ^[a-zA-Z0-9_-]*$
+          description: The name of the organization
+        time:
+          type: string
+          description: The date and time when the event was created
+          format: date-time
+        topic:
+          type: string
+          description: The topic string
+    OrganizationResponse:
+      type: object
+      required:
+        - name
+      properties:
+        status:
+          $ref: '#/components/schemas/OrganizationStatus'
+      additionalProperties: false
+      allOf:
+        - $ref: '#/components/schemas/Organization'
+    OrganizationStatus:
+      type: object
+      properties:
+        cloudConnectivity:
+          type: boolean
+        eventPortalConnectivity:
+          type: boolean
+      additionalProperties: false
+    Organization:
+      type: object
+      required:
+        - name
+      properties:
+        name:
+          $ref: '#/components/schemas/CommonName'
+        sempV2Authentication:
+          $ref: '#/components/schemas/SempV2Authentication'
+        cloud-token:
+          oneOf:
+            - type: string
+              maxLength: 16384
+              minLength: 1
+              pattern: ^[A-Za-z0-9-_=]+\.[A-Za-z0-9-_=]+\.?[A-Za-z0-9-_.+/=]*$
+              examples:
+                - >-
+                  eyXhbGciOiJSUzI1NiIsImtpZCI6Im1hYXNfcHJvZF8yMDIwMDMyNiIsInR5cCI6IkpXVCJ9.eyJvcmcifiJzb2xhY2Vpb3R0ZWFtIiwib3JnVHlwZSI6IkVOVEVSUFJJU0UiLCJzdWIiOiIzZTJvY214MTA1IiwicGVybWlzc2lvbnMiOiJBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQXdBQU09IiwiYXBpVG9rZW5JZCI6Inlhb2wzc2ZveG03IiwiaXNzIjoiU29sYWNlIENvcnBvcmF0aW9uIiwiaWF0IjoxNjAzODA3NzQ1fQ.QIBpi5_U6b1DnAwbDbJiFIT0pomqa4AyOLtmSOEF6zhoxKMm4Y27WbILZnxnh_gpdX-tvt18Ycuck4xs3T5JjFfU3qrczRHSuj2vEdsCpDQWdyZTPV4NQ-zPxRvigTjaTlcdXin8XwMGh8nZdylgRMlRQjvotomnXQxgbUol0Kl1ziFFMybqeD10qCDsUW6Jv-PKibBN3cnCsWwPZX6d_XYUECs1AHjgs5pk-A8v3DHcnvbXiAP4XXrry6ztopAWKMc5rVFoB_WFY4yi0reuTYjn6Sf0g7vZxFifRZZHZmqZtNQUiX6S80eQG4kF3YDKlr5PfLDNp4iRfe0-3svIPw
+              description: >-
+                a Solace Cloud API Token, requires "get services" and "event
+                portal read" permissions
+            - $ref: '#/components/schemas/CloudToken'
+        integrations:
+          $ref: '#/components/schemas/OrganizationIntegrations'
+      additionalProperties: false
+    CommonName:
+      type: string
+      maxLength: 188
+      minLength: 2
+      pattern: ^[a-zA-Z0-9_-]*$
+      examples:
+        - '{name}'
+      description: >-
+        The internal name of an object. Characters you can use in the name are
+        restricted to: A-Z0-9._-. Once the object is created the internal name
+        can not be changed
+    SempV2Authentication:
+      type: object
+      required:
+        - authType
+      properties:
+        authType:
+          type: string
+          enum:
+            - BasicAuth
+            - APIKey
+          examples:
+            - APIKey
+          default: BasicAuth
+        apiKeyLocation:
+          type: string
+          enum:
+            - header
+            - query
+          examples:
+            - header
+          default: query
+        apiKeyName:
+          type: string
+          maxLength: 512
+          minLength: 4
+          pattern: ^[a-zA-Z0-9_-]*$
+          examples:
+            - X-API-KEY
+          description: >-
+            the name of the query parameter or HTTP header for submitting the
+            API Key
+      additionalProperties: false
+      description: >-
+        Specifies how requests to the SEMPv2 Management API are authenticated,
+        defaults to BasicAuth. If APIKey is specified the username returned in
+        the Services/Environments response is used as API Key.
+    CloudToken:
+      type: object
+      required:
+        - eventPortal
+        - cloud
+      properties:
+        eventPortal:
+          $ref: '#/components/schemas/CustomCloudEndpoint'
+        cloud:
+          $ref: '#/components/schemas/CustomCloudEndpoint'
+      additionalProperties: true
+    CustomCloudEndpoint:
+      type: object
+      required:
+        - baseUrl
+      properties:
+        baseUrl:
+          type: string
+          maxLength: 200
+          minLength: 0
+          pattern: ^https?:\/\/[A-Za-z\.:0-9\-]*.*$
+          examples:
+            - https://solace.cloud/v1
+        token:
+          type: string
+          maxLength: 16384
+          minLength: 2
+          pattern: ^[A-Za-z0-9-_=]+\.[A-Za-z0-9-_=]+\.?[A-Za-z0-9-_.+/=]*$
+          examples:
+            - >-
+              eyXhbGciOiJSUzI1NiIsImtpZCI6Im1hYXNfcHJvZF8yMDIwMDMyNiIsInR5cCI6IkpXVCJ9.eyJvcmcifiJzb2xhY2Vpb3R0ZWFtIiwib3JnVHlwZSI6IkVOVEVSUFJJU0UiLCJzdWIiOiIzZTJvY214MTA1IiwicGVybWlzc2lvbnMiOiJBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQXdBQU09IiwiYXBpVG9rZW5JZCI6Inlhb2wzc2ZveG03IiwiaXNzIjoiU29sYWNlIENvcnBvcmF0aW9uIiwiaWF0IjoxNjAzODA3NzQ1fQ.QIBpi5_U6b1DnAwbDbJiFIT0pomqa4AyOLtmSOEF6zhoxKMm4Y27WbILZnxnh_gpdX-tvt18Ycuck4xs3T5JjFfU3qrczRHSuj2vEdsCpDQWdyZTPV4NQ-zPxRvigTjaTlcdXin8XwMGh8nZdylgRMlRQjvotomnXQxgbUol0Kl1ziFFMybqeD10qCDsUW6Jv-PKibBN3cnCsWwPZX6d_XYUECs1AHjgs5pk-A8v3DHcnvbXiAP4XXrry6ztopAWKMc5rVFoB_WFY4yi0reuTYjn6Sf0g7vZxFifRZZHZmqZtNQUiX6S80eQG4kF3YDKlr5PfLDNp4iRfe0-3svIPw
+      additionalProperties: false
+    OrganizationIntegrations:
+      type: object
+      properties:
+        importers:
+          type: array
+          maxItems: 16
+          minItems: 0
+          items:
+            - $ref: '#/components/schemas/OrganizationImporter'
+        notifications:
+          $ref: '#/components/schemas/OrganizationNotifier'
+      additionalProperties: false
+    OrganizationImporter:
+      type: object
+      additionalProperties: false
+    OrganizationNotifier:
+      type: object
+      properties:
+        baseUrl:
+          type: string
+        authentication:
+          oneOf:
+            - $ref: '#/components/schemas/BasicAuthentication'
+            - $ref: '#/components/schemas/APIKeyAuthentication'
+            - $ref: '#/components/schemas/BearerTokenAuthentication'
+      additionalProperties: false
+    BasicAuthentication:
+      type: object
+      properties:
+        userName:
+          type: string
+        password:
+          type: string
+      additionalProperties: false
+    APIKeyAuthentication:
+      type: object
+      properties:
+        location:
+          type: string
+          enum:
+            - header
+            - query
+          examples:
+            - header
+          default: query
+        name:
+          type: string
+          maxLength: 512
+          minLength: 4
+          pattern: ^[a-zA-Z0-9_-]*$
+          examples:
+            - X-API-KEY
+          description: >-
+            the name of the query parameter or HTTP header for submitting the
+            API Key
+        key:
+          type: string
+          maxLength: 512
+          minLength: 4
+          pattern: ^[a-zA-Z0-9_-]*$
+          examples:
+            - abc-123-def-456
+          description: the api key value
+      additionalProperties: false
+    BearerTokenAuthentication:
+      type: object
+      properties:
+        token:
+          type: string
+          maxLength: 16384
+          minLength: 2
+          pattern: ^[A-Za-z0-9-_=]+\.[A-Za-z0-9-_=]+\.?[A-Za-z0-9-_.+/=]*$
+          examples:
+            - >-
+              eyXhbGciOiJSUzI1NiIsImtpZCI6Im1hYXNfcHJvZF8yMDIwMDMyNiIsInR5cCI6IkpXVCJ9.eyJvcmcifiJzb2xhY2Vpb3R0ZWFtIiwib3JnVHlwZSI6IkVOVEVSUFJJU0UiLCJzdWIiOiIzZTJvY214MTA1IiwicGVybWlzc2lvbnMiOiJBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQXdBQU09IiwiYXBpVG9rZW5JZCI6Inlhb2wzc2ZveG03IiwiaXNzIjoiU29sYWNlIENvcnBvcmF0aW9uIiwiaWF0IjoxNjAzODA3NzQ1fQ.QIBpi5_U6b1DnAwbDbJiFIT0pomqa4AyOLtmSOEF6zhoxKMm4Y27WbILZnxnh_gpdX-tvt18Ycuck4xs3T5JjFfU3qrczRHSuj2vEdsCpDQWdyZTPV4NQ-zPxRvigTjaTlcdXin8XwMGh8nZdylgRMlRQjvotomnXQxgbUol0Kl1ziFFMybqeD10qCDsUW6Jv-PKibBN3cnCsWwPZX6d_XYUECs1AHjgs5pk-A8v3DHcnvbXiAP4XXrry6ztopAWKMc5rVFoB_WFY4yi0reuTYjn6Sf0g7vZxFifRZZHZmqZtNQUiX6S80eQG4kF3YDKlr5PfLDNp4iRfe0-3svIPw
+      additionalProperties: false
+  parameters:
+    organization:
+      description: the name of the organization (tenant) a resource belongs to
+      schema:
+        type: string
+        maxLength: 188
+        minLength: 4
+        pattern: ^[a-zA-Z0-9_-]*$

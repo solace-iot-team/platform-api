@@ -1,0 +1,31 @@
+{
+  "server": {
+    "baseUrl": "http:/localhost:9090/v1",
+    "admin": {
+      "username": "admin",
+      "password": "${env:SERVER_ADMIN_PASSWORD}"
+    }
+  },
+  "organization": {
+    "name": "system-organization",
+    "token": "${env:ORGANIZATION_CLOUD_TOKEN}",
+    "admin": {
+      "username": "org_admin_user",
+      "password": "${env:ORGANIZATION_ADMIN_PASSWORD}"
+    }
+  },
+  "services": [
+    "APIM-GW-DEV"
+  ],
+  "apis": {
+    "NotificationProvider": "http://localhost:9090/notification-api/producer/api.yml"
+  },
+  "application": {
+    "name": "apim-connector",
+    "owner": "admin",
+    "credentials": {
+      "username": "${env:APPLICATION_CONSUMER_KEY}",
+      "password": "${env:APPLICATION_CONSUMER_SECRET}"
+    }
+  }
+}

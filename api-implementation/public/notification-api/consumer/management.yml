@@ -1,0 +1,65 @@
+asyncapi: 2.3.0
+info:
+  title: Solace API Management Connector (management)
+  description: Manage organization settings, audit history
+  version: 0.7.0
+channels:
+  apc/PUT/v1/{organization_name}/token:
+    publish:
+      operationId: updateToken
+      tags:
+        - name: management
+          description: Manage organization settings, audit history
+      message:
+        payload:
+          type: object
+          required:
+            - header
+            - payload
+          properties:
+            header:
+              $ref: '#/components/schemas/NotificationHeader'
+            payload:
+              type: string
+              maxLength: 16384
+              minLength: 1
+              pattern: ^[A-Za-z0-9-_=]+\.[A-Za-z0-9-_=]+\.?[A-Za-z0-9-_.+/=]*$
+        contentType: application/json
+        description: The cloud token
+    parameters:
+      organization_name:
+        $ref: '#/components/parameters/organization'
+tags:
+  - name: management
+    description: Manage organization settings, audit history
+components:
+  schemas:
+    NotificationHeader:
+      type: object
+      required:
+        - org
+        - time
+        - topic
+      additionalProperties: false
+      properties:
+        org:
+          type: string
+          maxLength: 188
+          minLength: 4
+          pattern: ^[a-zA-Z0-9_-]*$
+          description: The name of the organization
+        time:
+          type: string
+          description: The date and time when the event was created
+          format: date-time
+        topic:
+          type: string
+          description: The topic string
+  parameters:
+    organization:
+      description: the name of the organization (tenant) a resource belongs to
+      schema:
+        type: string
+        maxLength: 188
+        minLength: 4
+        pattern: ^[a-zA-Z0-9_-]*$
