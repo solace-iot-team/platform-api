@@ -19,6 +19,6 @@
       "dom"
     ]
   },
-  "include": ["typings.d.ts", "server/**/*.ts", "src/**/*.ts"],
+  "include": ["typings.d.ts", "server/**/*.ts", "src/**/*.ts", "tools/**/*.ts", "*.ts"],
   "exclude": ["node_modules"]
 }
