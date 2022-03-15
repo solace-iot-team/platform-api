@@ -1,0 +1,1656 @@
+asyncapi: 2.3.0
+info:
+  title: Solace API Management Connector
+  description: >-
+    Solace API Management Connector API. Note: basic authentication security
+    mechanism is deprecated.
+  version: 0.7.0
+channels:
+  apc/POST/v1/organizations:
+    subscribe:
+      operationId: createOrganization
+      tags:
+        - name: administration
+          description: Manage tenants/orgs. Requires admin access level.
+      message:
+        payload:
+          type: object
+          required:
+            - header
+            - payload
+          properties:
+            header:
+              $ref: '#/components/schemas/NotificationHeader'
+            payload:
+              $ref: '#/components/schemas/OrganizationResponse'
+        contentType: application/json
+        description: New Organization
+    parameters: {}
+  apc/PATCH/v1/organizations/{organization_name}:
+    subscribe:
+      operationId: updateOrganization
+      tags:
+        - name: administration
+          description: Manage tenants/orgs. Requires admin access level.
+      message:
+        payload:
+          type: object
+          required:
+            - header
+            - payload
+          properties:
+            header:
+              $ref: '#/components/schemas/NotificationHeader'
+            payload:
+              $ref: '#/components/schemas/OrganizationResponse'
+        contentType: application/json
+        description: Updated Organization
+    parameters:
+      organization_name:
+        $ref: '#/components/parameters/organization'
+  apc/DELETE/v1/organizations/{organization_name}:
+    subscribe:
+      operationId: deleteOrganization
+      tags:
+        - name: administration
+          description: Manage tenants/orgs. Requires admin access level.
+    parameters:
+      organization_name:
+        $ref: '#/components/parameters/organization'
+  apc/PUT/v1/{organization_name}/token:
+    subscribe:
+      operationId: updateToken
+      tags:
+        - name: management
+          description: Manage organization settings, audit history
+      message:
+        payload:
+          type: object
+          required:
+            - header
+            - payload
+          properties:
+            header:
+              $ref: '#/components/schemas/NotificationHeader'
+            payload:
+              type: string
+              maxLength: 16384
+              minLength: 1
+              pattern: ^[A-Za-z0-9-_=]+\.[A-Za-z0-9-_=]+\.?[A-Za-z0-9-_.+/=]*$
+        contentType: application/json
+        description: The cloud token
+    parameters:
+      organization_name:
+        $ref: '#/components/parameters/organization'
+  apc/POST/v1/{organization_name}/apis:
+    subscribe:
+      operationId: importApi
+      tags:
+        - name: apis
+          description: >-
+            Represents Async API specifications. The specifications must be
+            compliant documents in JSON or YML format
+      message:
+        payload:
+          type: object
+          required:
+            - header
+            - payload
+          properties:
+            header:
+              $ref: '#/components/schemas/NotificationHeader'
+            payload:
+              type: object
+              additionalProperties: true
+        contentType: application/json
+        description: New API that was imported
+    parameters:
+      organization_name:
+        $ref: '#/components/parameters/organization'
+  apc/PUT/v1/{organization_name}/apis/{api_name}:
+    subscribe:
+      operationId: createApi
+      tags:
+        - name: apis
+          description: >-
+            Represents Async API specifications. The specifications must be
+            compliant documents in JSON or YML format
+      message:
+        payload:
+          type: object
+          required:
+            - header
+            - payload
+          properties:
+            header:
+              $ref: '#/components/schemas/NotificationHeader'
+            payload:
+              type: object
+              additionalProperties: true
+        contentType: application/json
+        description: The async API specification
+    parameters:
+      organization_name:
+        $ref: '#/components/parameters/organization'
+      api_name:
+        $ref: '#/components/parameters/api_name'
+  apc/PATCH/v1/{organization_name}/apis/{api_name}:
+    subscribe:
+      operationId: updateApi
+      tags:
+        - name: apis
+          description: >-
+            Represents Async API specifications. The specifications must be
+            compliant documents in JSON or YML format
+      message:
+        payload:
+          type: object
+          required:
+            - header
+            - payload
+          properties:
+            header:
+              $ref: '#/components/schemas/NotificationHeader'
+            payload:
+              type: object
+              additionalProperties: true
+        contentType: application/json
+        description: updated async api specification
+    parameters:
+      organization_name:
+        $ref: '#/components/parameters/organization'
+      api_name:
+        $ref: '#/components/parameters/api_name'
+  apc/DELETE/v1/{organization_name}/apis/{api_name}:
+    subscribe:
+      operationId: deleteApi
+      tags:
+        - name: apis
+          description: >-
+            Represents Async API specifications. The specifications must be
+            compliant documents in JSON or YML format
+    parameters:
+      organization_name:
+        $ref: '#/components/parameters/organization'
+      api_name:
+        $ref: '#/components/parameters/api_name'
+  apc/POST/v1/{organization_name}/apiProducts:
+    subscribe:
+      operationId: createApiProduct
+      tags:
+        - name: apiProducts
+          description: >-
+            An API product consists of a list of API resources (URIs) and custom
+            metadata required by the API provider. API products enable you to
+            bundle and distribute your APIs to multiple developer groups
+            simultaneously
+      message:
+        payload:
+          type: object
+          required:
+            - header
+            - payload
+          properties:
+            header:
+              $ref: '#/components/schemas/NotificationHeader'
+            payload:
+              $ref: '#/components/schemas/APIProduct'
+        contentType: application/json
+        description: New API Product
+    parameters:
+      organization_name:
+        $ref: '#/components/parameters/organization'
+  apc/PATCH/v1/{organization_name}/apiProducts/{api_product_name}:
+    subscribe:
+      operationId: updateApiProduct
+      tags:
+        - name: apiProducts
+          description: >-
+            An API product consists of a list of API resources (URIs) and custom
+            metadata required by the API provider. API products enable you to
+            bundle and distribute your APIs to multiple developer groups
+            simultaneously
+      message:
+        payload:
+          type: object
+          required:
+            - header
+            - payload
+          properties:
+            header:
+              $ref: '#/components/schemas/NotificationHeader'
+            payload:
+              $ref: '#/components/schemas/APIProduct'
+        contentType: application/json
+        description: Updated API Product
+    parameters:
+      organization_name:
+        $ref: '#/components/parameters/organization'
+      api_product_name:
+        $ref: '#/components/parameters/api_product_name'
+  apc/DELETE/v1/{organization_name}/apiProducts/{api_product_name}:
+    subscribe:
+      operationId: deleteApiProduct
+      tags:
+        - name: apiProducts
+          description: >-
+            An API product consists of a list of API resources (URIs) and custom
+            metadata required by the API provider. API products enable you to
+            bundle and distribute your APIs to multiple developer groups
+            simultaneously
+    parameters:
+      organization_name:
+        $ref: '#/components/parameters/organization'
+      api_product_name:
+        $ref: '#/components/parameters/api_product_name'
+  apc/POST/v1/{organization_name}/developers:
+    subscribe:
+      operationId: createDeveloper
+      tags:
+        - name: developers
+          description: >-
+            Developers must register. After they are registered, developers
+            register their apps, choose the APIs they want to use, and receive
+            the unique API credentials (consumer keys and secrets) needed to
+            access APIs.
+      message:
+        payload:
+          type: object
+          required:
+            - header
+            - payload
+          properties:
+            header:
+              $ref: '#/components/schemas/NotificationHeader'
+            payload:
+              $ref: '#/components/schemas/Developer'
+        contentType: application/json
+        description: New developer
+    parameters:
+      organization_name:
+        $ref: '#/components/parameters/organization'
+  apc/PATCH/v1/{organization_name}/developers/{developer_username}:
+    subscribe:
+      operationId: updateDeveloper
+      tags:
+        - name: developers
+          description: >-
+            Developers must register. After they are registered, developers
+            register their apps, choose the APIs they want to use, and receive
+            the unique API credentials (consumer keys and secrets) needed to
+            access APIs.
+      message:
+        payload:
+          type: object
+          required:
+            - header
+            - payload
+          properties:
+            header:
+              $ref: '#/components/schemas/NotificationHeader'
+            payload:
+              $ref: '#/components/schemas/Developer'
+        contentType: application/json
+        description: Updated developer
+    parameters:
+      organization_name:
+        $ref: '#/components/parameters/organization'
+      developer_username:
+        $ref: '#/components/parameters/developer_username'
+  apc/DELETE/v1/{organization_name}/developers/{developer_username}:
+    subscribe:
+      operationId: deleteDeveloper
+      tags:
+        - name: developers
+          description: >-
+            Developers must register. After they are registered, developers
+            register their apps, choose the APIs they want to use, and receive
+            the unique API credentials (consumer keys and secrets) needed to
+            access APIs.
+    parameters:
+      organization_name:
+        $ref: '#/components/parameters/organization'
+      developer_username:
+        $ref: '#/components/parameters/developer_username'
+  apc/POST/v1/{organization_name}/developers/{developer_username}/apps:
+    subscribe:
+      operationId: createDeveloperApp
+      tags:
+        - name: apps
+          description: Manage consumer credentials for apps
+        - name: developers
+          description: >-
+            Developers must register. After they are registered, developers
+            register their apps, choose the APIs they want to use, and receive
+            the unique API credentials (consumer keys and secrets) needed to
+            access APIs.
+      message:
+        payload:
+          type: object
+          required:
+            - header
+            - payload
+          properties:
+            header:
+              $ref: '#/components/schemas/NotificationHeader'
+            payload:
+              $ref: '#/components/schemas/AppResponse'
+        contentType: application/json
+        description: New app
+    parameters:
+      organization_name:
+        $ref: '#/components/parameters/organization'
+      developer_username:
+        $ref: '#/components/parameters/developer_username'
+  apc/PATCH/v1/{organization_name}/developers/{developer_username}/apps/{app_name}:
+    subscribe:
+      operationId: updateDeveloperApp
+      tags:
+        - name: apps
+          description: Manage consumer credentials for apps
+        - name: developers
+          description: >-
+            Developers must register. After they are registered, developers
+            register their apps, choose the APIs they want to use, and receive
+            the unique API credentials (consumer keys and secrets) needed to
+            access APIs.
+      message:
+        payload:
+          type: object
+          required:
+            - header
+            - payload
+          properties:
+            header:
+              $ref: '#/components/schemas/NotificationHeader'
+            payload:
+              $ref: '#/components/schemas/AppResponse'
+        contentType: application/json
+        description: App
+    parameters:
+      organization_name:
+        $ref: '#/components/parameters/organization'
+      developer_username:
+        $ref: '#/components/parameters/developer_username'
+      app_name:
+        $ref: '#/components/parameters/app_name'
+  apc/DELETE/v1/{organization_name}/developers/{developer_username}/apps/{app_name}:
+    subscribe:
+      operationId: deleteDeveloperApp
+      tags:
+        - name: apps
+          description: Manage consumer credentials for apps
+        - name: developers
+          description: >-
+            Developers must register. After they are registered, developers
+            register their apps, choose the APIs they want to use, and receive
+            the unique API credentials (consumer keys and secrets) needed to
+            access APIs.
+    parameters:
+      organization_name:
+        $ref: '#/components/parameters/organization'
+      developer_username:
+        $ref: '#/components/parameters/developer_username'
+      app_name:
+        $ref: '#/components/parameters/app_name'
+  apc/POST/v1/{organization_name}/teams:
+    subscribe:
+      operationId: createTeam
+      tags:
+        - name: teams
+          description: >-
+            Teams can be set up. There is no concept of team membership
+            currently. After creation, apps can be created for a team, choosing
+            the APIs they want to use, and creating the unique API credentials
+            (consumer keys and secrets) needed to access APIs.
+      message:
+        payload:
+          type: object
+          required:
+            - header
+            - payload
+          properties:
+            header:
+              $ref: '#/components/schemas/NotificationHeader'
+            payload:
+              $ref: '#/components/schemas/Team'
+        contentType: application/json
+        description: New team
+    parameters:
+      organization_name:
+        $ref: '#/components/parameters/organization'
+  apc/PATCH/v1/{organization_name}/teams/{team_name}:
+    subscribe:
+      operationId: updateTeam
+      tags:
+        - name: teams
+          description: >-
+            Teams can be set up. There is no concept of team membership
+            currently. After creation, apps can be created for a team, choosing
+            the APIs they want to use, and creating the unique API credentials
+            (consumer keys and secrets) needed to access APIs.
+      message:
+        payload:
+          type: object
+          required:
+            - header
+            - payload
+          properties:
+            header:
+              $ref: '#/components/schemas/NotificationHeader'
+            payload:
+              $ref: '#/components/schemas/Team'
+        contentType: application/json
+        description: Updated team
+    parameters:
+      organization_name:
+        $ref: '#/components/parameters/organization'
+      team_name:
+        $ref: '#/components/parameters/team_name'
+  apc/DELETE/v1/{organization_name}/teams/{team_name}:
+    subscribe:
+      operationId: deleteTeam
+      tags:
+        - name: teams
+          description: >-
+            Teams can be set up. There is no concept of team membership
+            currently. After creation, apps can be created for a team, choosing
+            the APIs they want to use, and creating the unique API credentials
+            (consumer keys and secrets) needed to access APIs.
+    parameters:
+      organization_name:
+        $ref: '#/components/parameters/organization'
+      team_name:
+        $ref: '#/components/parameters/team_name'
+  apc/POST/v1/{organization_name}/teams/{team_name}/apps:
+    subscribe:
+      operationId: createTeamApp
+      tags:
+        - name: apps
+          description: Manage consumer credentials for apps
+        - name: teams
+          description: >-
+            Teams can be set up. There is no concept of team membership
+            currently. After creation, apps can be created for a team, choosing
+            the APIs they want to use, and creating the unique API credentials
+            (consumer keys and secrets) needed to access APIs.
+      message:
+        payload:
+          type: object
+          required:
+            - header
+            - payload
+          properties:
+            header:
+              $ref: '#/components/schemas/NotificationHeader'
+            payload:
+              $ref: '#/components/schemas/AppResponse'
+        contentType: application/json
+        description: New app
+    parameters:
+      organization_name:
+        $ref: '#/components/parameters/organization'
+      team_name:
+        $ref: '#/components/parameters/team_name'
+  apc/PATCH/v1/{organization_name}/teams/{team_name}/apps/{app_name}:
+    subscribe:
+      operationId: updateTeamApp
+      tags:
+        - name: apps
+          description: Manage consumer credentials for apps
+        - name: teams
+          description: >-
+            Teams can be set up. There is no concept of team membership
+            currently. After creation, apps can be created for a team, choosing
+            the APIs they want to use, and creating the unique API credentials
+            (consumer keys and secrets) needed to access APIs.
+      message:
+        payload:
+          type: object
+          required:
+            - header
+            - payload
+          properties:
+            header:
+              $ref: '#/components/schemas/NotificationHeader'
+            payload:
+              $ref: '#/components/schemas/AppResponse'
+        contentType: application/json
+        description: App
+    parameters:
+      organization_name:
+        $ref: '#/components/parameters/organization'
+      team_name:
+        $ref: '#/components/parameters/team_name'
+      app_name:
+        $ref: '#/components/parameters/app_name'
+  apc/DELETE/v1/{organization_name}/teams/{team_name}/apps/{app_name}:
+    subscribe:
+      operationId: deleteTeamApp
+      tags:
+        - name: apps
+          description: Manage consumer credentials for apps
+        - name: teams
+          description: >-
+            Teams can be set up. There is no concept of team membership
+            currently. After creation, apps can be created for a team, choosing
+            the APIs they want to use, and creating the unique API credentials
+            (consumer keys and secrets) needed to access APIs.
+    parameters:
+      organization_name:
+        $ref: '#/components/parameters/organization'
+      team_name:
+        $ref: '#/components/parameters/team_name'
+      app_name:
+        $ref: '#/components/parameters/app_name'
+  apc/POST/v1/{organization_name}/environments:
+    subscribe:
+      operationId: createEnvironment
+      tags:
+        - name: environments
+          description: >-
+            An environment provides a runtime execution context for APIs. Each
+            environment is associated with a specific Service in the associated
+            Solace Cloud account. Typical environments are dev, stage, prod ...
+      message:
+        payload:
+          type: object
+          required:
+            - header
+            - payload
+          properties:
+            header:
+              $ref: '#/components/schemas/NotificationHeader'
+            payload:
+              $ref: '#/components/schemas/Environment'
+        contentType: application/json
+        description: New environment
+    parameters:
+      organization_name:
+        $ref: '#/components/parameters/organization'
+  apc/PATCH/v1/{organization_name}/environments/{env_name}:
+    subscribe:
+      operationId: updateEnvironment
+      tags:
+        - name: environments
+          description: >-
+            An environment provides a runtime execution context for APIs. Each
+            environment is associated with a specific Service in the associated
+            Solace Cloud account. Typical environments are dev, stage, prod ...
+      message:
+        payload:
+          type: object
+          required:
+            - header
+            - payload
+          properties:
+            header:
+              $ref: '#/components/schemas/NotificationHeader'
+            payload:
+              $ref: '#/components/schemas/Environment'
+        contentType: application/json
+        description: Updated Environment
+    parameters:
+      organization_name:
+        $ref: '#/components/parameters/organization'
+      env_name:
+        $ref: '#/components/parameters/env_name'
+  apc/DELETE/v1/{organization_name}/environments/{env_name}:
+    subscribe:
+      operationId: deleteEnvironment
+      tags:
+        - name: environments
+          description: >-
+            An environment provides a runtime execution context for APIs. Each
+            environment is associated with a specific Service in the associated
+            Solace Cloud account. Typical environments are dev, stage, prod ...
+    parameters:
+      organization_name:
+        $ref: '#/components/parameters/organization'
+      env_name:
+        $ref: '#/components/parameters/env_name'
+components:
+  schemas:
+    NotificationHeader:
+      type: object
+      required:
+        - org
+        - time
+        - topic
+      additionalProperties: false
+      properties:
+        org:
+          type: string
+          maxLength: 188
+          minLength: 4
+          pattern: ^[a-zA-Z0-9_-]*$
+          description: The name of the organization
+        time:
+          type: string
+          description: The date and time when the event was created
+          format: date-time
+        topic:
+          type: string
+          description: The topic string
+    OrganizationResponse:
+      type: object
+      required:
+        - name
+      properties:
+        status:
+          $ref: '#/components/schemas/OrganizationStatus'
+      additionalProperties: false
+      allOf:
+        - $ref: '#/components/schemas/Organization'
+    OrganizationStatus:
+      type: object
+      properties:
+        cloudConnectivity:
+          type: boolean
+        eventPortalConnectivity:
+          type: boolean
+      additionalProperties: false
+    Organization:
+      type: object
+      required:
+        - name
+      properties:
+        name:
+          $ref: '#/components/schemas/CommonName'
+        sempV2Authentication:
+          $ref: '#/components/schemas/SempV2Authentication'
+        cloud-token:
+          oneOf:
+            - type: string
+              maxLength: 16384
+              minLength: 1
+              pattern: ^[A-Za-z0-9-_=]+\.[A-Za-z0-9-_=]+\.?[A-Za-z0-9-_.+/=]*$
+              examples:
+                - >-
+                  eyXhbGciOiJSUzI1NiIsImtpZCI6Im1hYXNfcHJvZF8yMDIwMDMyNiIsInR5cCI6IkpXVCJ9.eyJvcmcifiJzb2xhY2Vpb3R0ZWFtIiwib3JnVHlwZSI6IkVOVEVSUFJJU0UiLCJzdWIiOiIzZTJvY214MTA1IiwicGVybWlzc2lvbnMiOiJBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQXdBQU09IiwiYXBpVG9rZW5JZCI6Inlhb2wzc2ZveG03IiwiaXNzIjoiU29sYWNlIENvcnBvcmF0aW9uIiwiaWF0IjoxNjAzODA3NzQ1fQ.QIBpi5_U6b1DnAwbDbJiFIT0pomqa4AyOLtmSOEF6zhoxKMm4Y27WbILZnxnh_gpdX-tvt18Ycuck4xs3T5JjFfU3qrczRHSuj2vEdsCpDQWdyZTPV4NQ-zPxRvigTjaTlcdXin8XwMGh8nZdylgRMlRQjvotomnXQxgbUol0Kl1ziFFMybqeD10qCDsUW6Jv-PKibBN3cnCsWwPZX6d_XYUECs1AHjgs5pk-A8v3DHcnvbXiAP4XXrry6ztopAWKMc5rVFoB_WFY4yi0reuTYjn6Sf0g7vZxFifRZZHZmqZtNQUiX6S80eQG4kF3YDKlr5PfLDNp4iRfe0-3svIPw
+              description: >-
+                a Solace Cloud API Token, requires "get services" and "event
+                portal read" permissions
+            - $ref: '#/components/schemas/CloudToken'
+        integrations:
+          $ref: '#/components/schemas/OrganizationIntegrations'
+      additionalProperties: false
+    CommonName:
+      type: string
+      maxLength: 188
+      minLength: 2
+      pattern: ^[a-zA-Z0-9_-]*$
+      examples:
+        - '{name}'
+      description: >-
+        The internal name of an object. Characters you can use in the name are
+        restricted to: A-Z0-9._-. Once the object is created the internal name
+        can not be changed
+    SempV2Authentication:
+      type: object
+      required:
+        - authType
+      properties:
+        authType:
+          type: string
+          enum:
+            - BasicAuth
+            - APIKey
+          examples:
+            - APIKey
+          default: BasicAuth
+        apiKeyLocation:
+          type: string
+          enum:
+            - header
+            - query
+          examples:
+            - header
+          default: query
+        apiKeyName:
+          type: string
+          maxLength: 512
+          minLength: 4
+          pattern: ^[a-zA-Z0-9_-]*$
+          examples:
+            - X-API-KEY
+          description: >-
+            the name of the query parameter or HTTP header for submitting the
+            API Key
+      additionalProperties: false
+      description: >-
+        Specifies how requests to the SEMPv2 Management API are authenticated,
+        defaults to BasicAuth. If APIKey is specified the username returned in
+        the Services/Environments response is used as API Key.
+    CloudToken:
+      type: object
+      required:
+        - eventPortal
+        - cloud
+      properties:
+        eventPortal:
+          $ref: '#/components/schemas/CustomCloudEndpoint'
+        cloud:
+          $ref: '#/components/schemas/CustomCloudEndpoint'
+      additionalProperties: true
+    CustomCloudEndpoint:
+      type: object
+      required:
+        - baseUrl
+      properties:
+        baseUrl:
+          type: string
+          maxLength: 200
+          minLength: 0
+          pattern: ^https?:\/\/[A-Za-z\.:0-9\-]*.*$
+          examples:
+            - https://solace.cloud/v1
+        token:
+          type: string
+          maxLength: 16384
+          minLength: 2
+          pattern: ^[A-Za-z0-9-_=]+\.[A-Za-z0-9-_=]+\.?[A-Za-z0-9-_.+/=]*$
+          examples:
+            - >-
+              eyXhbGciOiJSUzI1NiIsImtpZCI6Im1hYXNfcHJvZF8yMDIwMDMyNiIsInR5cCI6IkpXVCJ9.eyJvcmcifiJzb2xhY2Vpb3R0ZWFtIiwib3JnVHlwZSI6IkVOVEVSUFJJU0UiLCJzdWIiOiIzZTJvY214MTA1IiwicGVybWlzc2lvbnMiOiJBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQXdBQU09IiwiYXBpVG9rZW5JZCI6Inlhb2wzc2ZveG03IiwiaXNzIjoiU29sYWNlIENvcnBvcmF0aW9uIiwiaWF0IjoxNjAzODA3NzQ1fQ.QIBpi5_U6b1DnAwbDbJiFIT0pomqa4AyOLtmSOEF6zhoxKMm4Y27WbILZnxnh_gpdX-tvt18Ycuck4xs3T5JjFfU3qrczRHSuj2vEdsCpDQWdyZTPV4NQ-zPxRvigTjaTlcdXin8XwMGh8nZdylgRMlRQjvotomnXQxgbUol0Kl1ziFFMybqeD10qCDsUW6Jv-PKibBN3cnCsWwPZX6d_XYUECs1AHjgs5pk-A8v3DHcnvbXiAP4XXrry6ztopAWKMc5rVFoB_WFY4yi0reuTYjn6Sf0g7vZxFifRZZHZmqZtNQUiX6S80eQG4kF3YDKlr5PfLDNp4iRfe0-3svIPw
+      additionalProperties: false
+    OrganizationIntegrations:
+      type: object
+      properties:
+        importers:
+          type: array
+          maxItems: 16
+          minItems: 0
+          items:
+            - $ref: '#/components/schemas/OrganizationImporter'
+        notifications:
+          $ref: '#/components/schemas/OrganizationNotifier'
+      additionalProperties: false
+    OrganizationImporter:
+      type: object
+      additionalProperties: false
+    OrganizationNotifier:
+      type: object
+      properties:
+        baseUrl:
+          type: string
+        authentication:
+          oneOf:
+            - $ref: '#/components/schemas/BasicAuthentication'
+            - $ref: '#/components/schemas/APIKeyAuthentication'
+            - $ref: '#/components/schemas/BearerTokenAuthentication'
+      additionalProperties: false
+    BasicAuthentication:
+      type: object
+      properties:
+        userName:
+          type: string
+        password:
+          type: string
+      additionalProperties: false
+    APIKeyAuthentication:
+      type: object
+      properties:
+        location:
+          type: string
+          enum:
+            - header
+            - query
+          examples:
+            - header
+          default: query
+        name:
+          type: string
+          maxLength: 512
+          minLength: 4
+          pattern: ^[a-zA-Z0-9_-]*$
+          examples:
+            - X-API-KEY
+          description: >-
+            the name of the query parameter or HTTP header for submitting the
+            API Key
+        key:
+          type: string
+          maxLength: 512
+          minLength: 4
+          pattern: ^[a-zA-Z0-9_-]*$
+          examples:
+            - abc-123-def-456
+          description: the api key value
+      additionalProperties: false
+    BearerTokenAuthentication:
+      type: object
+      properties:
+        token:
+          type: string
+          maxLength: 16384
+          minLength: 2
+          pattern: ^[A-Za-z0-9-_=]+\.[A-Za-z0-9-_=]+\.?[A-Za-z0-9-_.+/=]*$
+          examples:
+            - >-
+              eyXhbGciOiJSUzI1NiIsImtpZCI6Im1hYXNfcHJvZF8yMDIwMDMyNiIsInR5cCI6IkpXVCJ9.eyJvcmcifiJzb2xhY2Vpb3R0ZWFtIiwib3JnVHlwZSI6IkVOVEVSUFJJU0UiLCJzdWIiOiIzZTJvY214MTA1IiwicGVybWlzc2lvbnMiOiJBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQXdBQU09IiwiYXBpVG9rZW5JZCI6Inlhb2wzc2ZveG03IiwiaXNzIjoiU29sYWNlIENvcnBvcmF0aW9uIiwiaWF0IjoxNjAzODA3NzQ1fQ.QIBpi5_U6b1DnAwbDbJiFIT0pomqa4AyOLtmSOEF6zhoxKMm4Y27WbILZnxnh_gpdX-tvt18Ycuck4xs3T5JjFfU3qrczRHSuj2vEdsCpDQWdyZTPV4NQ-zPxRvigTjaTlcdXin8XwMGh8nZdylgRMlRQjvotomnXQxgbUol0Kl1ziFFMybqeD10qCDsUW6Jv-PKibBN3cnCsWwPZX6d_XYUECs1AHjgs5pk-A8v3DHcnvbXiAP4XXrry6ztopAWKMc5rVFoB_WFY4yi0reuTYjn6Sf0g7vZxFifRZZHZmqZtNQUiX6S80eQG4kF3YDKlr5PfLDNp4iRfe0-3svIPw
+      additionalProperties: false
+    APIProduct:
+      type: object
+      required:
+        - name
+        - displayName
+        - attributes
+        - subResources
+        - pubResources
+        - apis
+        - environments
+        - protocols
+      properties:
+        apis:
+          type: array
+          maxItems: 32768
+          minItems: 0
+          examples:
+            - - api1
+              - api2
+          items:
+            - $ref: '#/components/schemas/CommonName'
+          description: APIs associated with this product.
+        approvalType:
+          type: string
+          enum:
+            - manual
+            - auto
+          description: >-
+            manual or auto. If manual, credetials will only be activated on
+            manual approval
+        attributes:
+          $ref: '#/components/schemas/attributes'
+        description:
+          $ref: '#/components/schemas/CommonDescription'
+        displayName:
+          $ref: '#/components/schemas/CommonDisplayName'
+        environments:
+          type: array
+          maxItems: 32768
+          minItems: 1
+          items:
+            - $ref: '#/components/schemas/CommonName'
+          description: >-
+            An array of environment names in an organization. Requests to
+            environments not listed are rejected.
+        name:
+          $ref: '#/components/schemas/CommonName'
+        pubResources:
+          type: array
+          maxItems: 32768
+          minItems: 0
+          items:
+            - $ref: '#/components/schemas/CommonTopic'
+          description: An array of Publish API resources to be bundled in the API Product.
+        subResources:
+          type: array
+          maxItems: 32768
+          minItems: 0
+          items:
+            - $ref: '#/components/schemas/CommonTopic'
+          description: >-
+            An array of Subscribe API resources to be bundled in the API
+            Product.
+        protocols:
+          type: array
+          maxItems: 255
+          minItems: 1
+          items:
+            - $ref: '#/components/schemas/Protocol'
+        clientOptions:
+          $ref: '#/components/schemas/ClientOptions'
+        accessLevel:
+          $ref: '#/components/schemas/APIProductAccessLevel'
+      additionalProperties: false
+      description: >-
+        An API product consists of a list of API resources (URIs) and custom
+        metadata required by the API provider. API products enable you to bundle
+        and distribute your APIs to multiple developer groups simultaneously
+    attributes:
+      type: array
+      maxItems: 32768
+      minItems: 0
+      items:
+        - type: object
+          required:
+            - name
+            - value
+          properties:
+            name:
+              type: string
+              maxLength: 1024
+              minLength: 2
+              pattern: ^[a-zA-Z0-9._-]*$
+              examples:
+                - access
+              description: >-
+                Attribute name, access is a special value as it governs access
+                control to the product.
+            value:
+              type: string
+              maxLength: 1024
+              minLength: 1
+              pattern: ^[a-zA-Z0-9_\-\s,\*]*$
+              examples:
+                - public, private, or internal
+              description: Value of the attribute.
+          additionalProperties: false
+      description: >-
+        Arbitrary name/value pairs associated with an API product, team,
+        developer or app.
+    CommonDescription:
+      type: string
+      maxLength: 4096
+      minLength: 0
+      pattern: ^[\s\S]*$
+      examples:
+        - >
+          Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed ac
+          laoreet libero. Maecenas lacus urna, dignissim sollicitudin nisi nec,
+          mollis finibus tortor. Mauris ipsum dolor, eleifend eu bibendum
+          iaculis, pulvinar sit amet justo. Curabitur vestibulum quis quam at
+          pretium. Fusce a nulla non diam dapibus pretium. Phasellus vehicula
+          interdum ex at dapibus. Cras non pretium metus. Nulla auctor nibh non
+          lacus gravida, vitae molestie leo ultricies. Nunc tempor eros tempor
+          dapibus vulputate.
+
+
+          Vivamus eget vulputate ipsum, vel ornare nulla. Aenean hendrerit,
+          magna id mollis elementum, enim purus convallis arcu, eget eleifend
+          metus ipsum vitae felis. Cras condimentum feugiat fringilla. Etiam
+          ligula dui, malesuada ut finibus imperdiet, bibendum tristique velit.
+          Phasellus consectetur venenatis augue ac ornare. Ut vel sem in lorem
+          fermentum porttitor. Pellentesque eget fermentum enim. Suspendisse
+          risus elit, imperdiet facilisis volutpat in, congue ac ligula. Aenean
+          mollis sagittis finibus. Vestibulum viverra metus magna, ut volutpat
+          dui imperdiet ultricies.
+      description: >-
+        An overview of the object. Include key information about the object that
+        is not captured by other fields..
+    CommonDisplayName:
+      type: string
+      maxLength: 256
+      minLength: 1
+      pattern: ^[\/\sa-z.A-z0-9_-]*$
+      examples:
+        - A new IoT API / v2.0
+      description: >-
+        Friendly name of an object for display in UIs, Developer Portals. Can be
+        changed after object creation
+    CommonTopic:
+      type: string
+      maxLength: 250
+      minLength: 2
+      pattern: ^[a-zA-Z0-9][\S]*[^\/]$
+      examples:
+        - deliver/*/enroute/v1/45*/-75*/vehicle4*/>
+    Protocol:
+      type: object
+      required:
+        - name
+      properties:
+        name:
+          type: string
+          enum:
+            - amqp
+            - amqps
+            - http
+            - https
+            - jms
+            - secure-jms
+            - mqtt
+            - secure-mqtt
+            - ws-mqtt
+            - wss-mqtt
+            - ws
+            - wss
+            - smf
+            - smfs
+            - compressed-smf
+        version:
+          $ref: '#/components/schemas/CommonVersion'
+      additionalProperties: false
+    CommonVersion:
+      type: string
+      maxLength: 32
+      minLength: 1
+      pattern: ^[_\-\S\.]*$
+      examples:
+        - 3.1.1-alpha
+    ClientOptions:
+      type: object
+      properties:
+        guaranteedMessaging:
+          $ref: '#/components/schemas/ClientOptionsGuaranteedMessaging'
+      additionalProperties: false
+    ClientOptionsGuaranteedMessaging:
+      type: object
+      properties:
+        requireQueue:
+          type: boolean
+          examples:
+            - true
+          description: >-
+            Automatically provision a queue with all subscriptions permitted for
+            this app attached
+        accessType:
+          type: string
+          enum:
+            - exclusive
+            - non-exclusive
+          examples:
+            - exclusive
+          description: access mode for the queue
+          default: exclusive
+        maxTtl:
+          type: integer
+          maximum: 9007199254740991
+          minimum: 0
+          examples:
+            - 3600
+          description: >-
+            retention policy for message on the queue, default to 24 hours. Set
+            to 0 if messages are to be kept indefinitely
+          format: int64
+          default: 86400
+        maxMsgSpoolUsage:
+          type: integer
+          maximum: 9007199254740991
+          minimum: 0
+          examples:
+            - 50
+          description: >-
+            The maximum message spool usage allowed by the Queue, in megabytes
+            (MB). A value of 0 only allows spooling of the last message received
+            and disables quota checking
+          format: int64
+          default: 500
+      additionalProperties: false
+    APIProductAccessLevel:
+      type: string
+      enum:
+        - internal
+        - private
+        - public
+      default: public
+    Developer:
+      type: object
+      required:
+        - email
+        - firstName
+        - lastName
+        - userName
+      properties:
+        email:
+          type: string
+          maxLength: 512
+          minLength: 1
+          pattern: ^.*@.*\.[a-zA-Z]*$
+          format: email
+        firstName:
+          type: string
+          maxLength: 128
+          minLength: 2
+          pattern: ^([[:punct:]]|[a-zA-Z])*$
+        lastName:
+          type: string
+          maxLength: 128
+          minLength: 2
+          pattern: ^([[:punct:]]|[a-zA-Z])*$
+        userName:
+          $ref: '#/components/schemas/CommonUserName'
+        attributes:
+          $ref: '#/components/schemas/attributes'
+      additionalProperties: false
+      description: >-
+        A profile for a developer. After the developer is created, they can
+        register an app and receive API credentials
+    CommonUserName:
+      type: string
+      maxLength: 64
+      minLength: 1
+      pattern: ^[.a-zA-Z0-9@_-]*$
+      examples:
+        - tom
+    AppResponse:
+      type: object
+      required:
+        - name
+        - apiProducts
+        - credentials
+      properties:
+        name:
+          $ref: '#/components/schemas/CommonName'
+        displayName:
+          $ref: '#/components/schemas/CommonDisplayName'
+        internalName:
+          type: string
+          maxLength: 32
+          minLength: 4
+          pattern: ^[a-zA-Z0-9_]*$
+          description: >-
+            the internal name of the app used within the connector. This name is
+            auto generated by default. Warning - should ONLY be set if a naming
+            convention for broker objects must be imposed. This value can not be
+            updated.
+        expiresIn:
+          type: integer
+          maximum: 9007199254740991
+          minimum: -1
+          description: >-
+            A setting, in milliseconds, for the lifetime of the consumer key
+            that will be  generated for the developer app. The default value,
+            -1, indicates an infinite validity period. Once set, the expiration
+            can't be updated.
+          format: int64
+        apiProducts:
+          $ref: '#/components/schemas/AppApiProducts'
+        attributes:
+          $ref: '#/components/schemas/attributes'
+        clientInformation:
+          type: array
+          maxItems: 255
+          minItems: 0
+          items:
+            - $ref: '#/components/schemas/ClientInformation'
+        callbackUrl:
+          $ref: '#/components/schemas/CommonURL'
+        webHooks:
+          type: array
+          maxItems: 255
+          minItems: 0
+          items:
+            - $ref: '#/components/schemas/WebHook'
+        credentials:
+          $ref: '#/components/schemas/Credentials'
+        environments:
+          type: array
+          maxItems: 255
+          minItems: 0
+          items:
+            - $ref: '#/components/schemas/AppEnvironment'
+        status:
+          $ref: '#/components/schemas/AppStatus'
+      additionalProperties: false
+      description: >-
+        App Response Object - includes protocol binding information and app
+        premissions. An app associated with a developer. Associates the app with
+        an API product, and auto-generates an API credentials for the app to
+        use.
+    AppApiProducts:
+      type: array
+      maxItems: 255
+      minItems: 0
+      uniqueItems: true
+      items:
+        - oneOf:
+            - $ref: '#/components/schemas/AppApiProductsComplex'
+            - $ref: '#/components/schemas/CommonName'
+    AppApiProductsComplex:
+      type: object
+      required:
+        - apiproduct
+      properties:
+        apiproduct:
+          $ref: '#/components/schemas/CommonName'
+        status:
+          $ref: '#/components/schemas/AppStatus'
+      additionalProperties: false
+    AppStatus:
+      type: string
+      enum:
+        - approved
+        - pending
+        - revoked
+    ClientInformation:
+      type: object
+      properties:
+        guaranteedMessaging:
+          $ref: '#/components/schemas/ClientInformationGuaranteedMessaging'
+      additionalProperties: false
+    ClientInformationGuaranteedMessaging:
+      type: object
+      properties:
+        name:
+          type: string
+          maxLength: 250
+          minLength: 2
+          pattern: .*
+          examples:
+            - AlAOLG3xxuYCVDpoXl4wKGwWAIURFGuK
+          description: >-
+            The name of the queue that is available for this app's API Product
+            subcription
+        apiProduct:
+          $ref: '#/components/schemas/CommonName'
+        accessType:
+          type: string
+          enum:
+            - exclusive
+            - non-exclusive
+          examples:
+            - exclusive
+          description: access mode for the queue
+          default: exclusive
+        maxTtl:
+          type: integer
+          maximum: 9007199254740991
+          minimum: 0
+          examples:
+            - 3600
+          description: retention policy for message on the queue, in seconds
+          format: int64
+          default: 86400
+        maxMsgSpoolUsage:
+          type: integer
+          maximum: 9007199254740991
+          minimum: 0
+          examples:
+            - 50
+          description: >-
+            The maximum message spool usage allowed by the Queue, in megabytes
+            (MB). A value of 0 only allows spooling of the last message received
+            and disables quota checking
+          format: int64
+          default: 500
+      additionalProperties: false
+    CommonURL:
+      type: string
+      maxLength: 2083
+      minLength: 8
+      pattern: ^https?:\/\/[A-Za-z\.:0-9\-]*.*$
+      examples:
+        - >-
+          https://solace.cloud/api/v0/eventPortal/apiProducts/abc123/asyncApi.json
+    WebHook:
+      type: object
+      required:
+        - uri
+        - method
+      properties:
+        uri:
+          type: string
+          maxLength: 200
+          minLength: 0
+          pattern: ^https?:\/\/[A-Za-z\.:0-9\-]*.*$
+        environments:
+          type: array
+          maxItems: 255
+          minItems: 0
+          items:
+            - $ref: '#/components/schemas/CommonName'
+          description: >-
+            environments that this webhook serves, if absent webhook will be
+            used for all environments
+        method:
+          type: string
+          enum:
+            - POST
+            - PUT
+          default: POST
+        mode:
+          type: string
+          enum:
+            - parallel
+            - serial
+          default: parallel
+        authentication:
+          $ref: '#/components/schemas/WebHookAuth'
+        tlsOptions:
+          $ref: '#/components/schemas/WebHookTLSOptions'
+      additionalProperties: false
+    WebHookAuth:
+      additionalProperties: true
+      anyOf:
+        - $ref: '#/components/schemas/WebHookBasicAuth'
+        - $ref: '#/components/schemas/WebHookHeaderAuth'
+    WebHookBasicAuth:
+      type: object
+      required:
+        - username
+        - password
+      properties:
+        authMethod:
+          type: string
+          enum:
+            - Basic
+        username:
+          $ref: '#/components/schemas/CommonUserName'
+        password:
+          type: string
+          maxLength: 256
+          minLength: 8
+          pattern: ^[\S]*$
+      additionalProperties: false
+    WebHookHeaderAuth:
+      type: object
+      required:
+        - headerName
+        - headerValue
+      properties:
+        authMethod:
+          type: string
+          enum:
+            - Header
+        headerName:
+          type: string
+          maxLength: 512
+          minLength: 1
+          pattern: ^[\s\S]*$
+        headerValue:
+          type: string
+          maxLength: 16384
+          minLength: 1
+          pattern: ^[\s\S]*$
+      additionalProperties: false
+      description: A HTTP header used for authentication
+    WebHookTLSOptions:
+      type: object
+      properties:
+        tlsTrustedCommonNames:
+          type: array
+          maxItems: 255
+          minItems: 0
+          items:
+            - type: string
+          description: >-
+            The Trusted Common Names for the REST Consumer are used by encrypted
+            transports to verify the name in the certificate presented by the
+            remote REST consumer. They must include the common name of the
+            remote REST consumer's server certificate.
+      additionalProperties: false
+      description: TLS options required to support older PS+ brokers.
+      deprecated: true
+    Credentials:
+      type: object
+      required:
+        - expiresAt
+      properties:
+        expiresAt:
+          type: integer
+          maximum: 9007199254740991
+          minimum: -1
+          format: int64
+          default: -1
+        issuedAt:
+          $ref: '#/components/schemas/CommonTimestampInteger'
+        secret:
+          $ref: '#/components/schemas/Secret'
+      additionalProperties: false
+      description: Credentials object associated with an app
+    CommonTimestampInteger:
+      type: integer
+      maximum: 9007199254740991
+      minimum: 0
+      examples:
+        - 1620311683577
+      format: int64
+    Secret:
+      type: object
+      required:
+        - consumerKey
+      properties:
+        consumerKey:
+          type: string
+          maxLength: 64
+          minLength: 8
+          pattern: ^[a-zA-Z0-9_-]*$
+        consumerSecret:
+          type: string
+          maxLength: 64
+          minLength: 8
+          pattern: ^[a-zA-Z0-9_-]*$
+      additionalProperties: false
+    AppEnvironment:
+      type: object
+      properties:
+        name:
+          $ref: '#/components/schemas/CommonName'
+        displayName:
+          $ref: '#/components/schemas/CommonDisplayName'
+        messagingProtocols:
+          type: array
+          maxItems: 255
+          minItems: 0
+          items:
+            - $ref: '#/components/schemas/Endpoint'
+        permissions:
+          $ref: '#/components/schemas/Permissions'
+      additionalProperties: false
+    Endpoint:
+      type: object
+      properties:
+        protocol:
+          $ref: '#/components/schemas/Protocol'
+        transport:
+          type: string
+          maxLength: 32
+          minLength: 1
+          pattern: ^[A-Za-z0-9\/\.]*$
+          examples:
+            - TCP
+          description: The protocol transport
+        secure:
+          type: string
+          enum:
+            - 'yes'
+            - 'no'
+        compressed:
+          type: string
+          enum:
+            - 'yes'
+            - 'no'
+        uri:
+          type: string
+          maxLength: 2083
+          minLength: 5
+          pattern: ^[a-zA-Z0-9\.\-+]*:\/\/[A-Za-z\.:0-9\-]*.*$
+          examples:
+            - amqp://mr1i5g7tif6z9h.messaging.solace.cloud:5672
+      additionalProperties: false
+    Permissions:
+      type: object
+      properties:
+        subscribe:
+          type: array
+          maxItems: 32768
+          minItems: 0
+          examples:
+            - - order/notifications/{country_id}/{order_id}:
+                  permissions:
+                    - order/notifications/FR/>
+                    - order/notifications/DE/>
+                  channelId: c1
+                  isChannel: true
+              - another/random/exception/{resource_id}:
+                  permissions:
+                    - another/random/exception/1
+                    - another/random/exception/2
+                  isChannel: false
+          items:
+            - type: object
+              additionalProperties:
+                $ref: '#/components/schemas/ChannelPermission'
+        publish:
+          type: array
+          maxItems: 32768
+          minItems: 0
+          examples:
+            - - order/create/{country_id}/{order_id}:
+                  permissions:
+                    - order/create/FR/>
+                    - order/create/DE/>
+                  channelId: c2
+                  isChannel: true
+              - order/update/{country_id}/{order_id}:
+                  permissions:
+                    - order/update/FR/>
+                    - order/update/DE/>
+                  channelId: orderUpdateChannel
+                  isChannel: true
+              - another/random/exception/{resource_id}:
+                  permissions:
+                    - another/random/exception/3
+                    - another/random/exception/4
+                  isChannel: false
+          items:
+            - type: object
+              additionalProperties:
+                $ref: '#/components/schemas/ChannelPermission'
+      additionalProperties: false
+      description: >-
+        lists all the publish and subscribe topics an app has access to.
+        Restrictions on   topic elements are taken into account.
+    ChannelPermission:
+      type: object
+      required:
+        - permissions
+      properties:
+        permissions:
+          type: array
+          maxItems: 32768
+          minItems: 0
+          examples:
+            - - order/notifications/FR/>
+              - order/notifications/DE/>
+          items:
+            - $ref: '#/components/schemas/CommonTopic'
+        channelId:
+          type: string
+          maxLength: 2048
+          minLength: 1
+          pattern: ^[\s\S]*$
+        isChannel:
+          type: boolean
+          default: true
+      additionalProperties: false
+      description: a permission and its associated channel
+    Team:
+      type: object
+      required:
+        - displayName
+        - name
+      properties:
+        displayName:
+          $ref: '#/components/schemas/CommonDisplayName'
+        name:
+          $ref: '#/components/schemas/CommonName'
+        attributes:
+          $ref: '#/components/schemas/attributes'
+      additionalProperties: false
+      description: >-
+        A profile of a team. After the team is created, an app can be registered
+        and API credentials are created
+    Environment:
+      type: object
+      required:
+        - name
+        - description
+        - serviceId
+        - exposedProtocols
+      properties:
+        name:
+          $ref: '#/components/schemas/CommonName'
+        displayName:
+          $ref: '#/components/schemas/CommonDisplayName'
+        description:
+          $ref: '#/components/schemas/CommonDescription'
+        serviceId:
+          type: string
+          maxLength: 64
+          minLength: 4
+          pattern: ^[a-zA-Z0-9_-]*$
+          examples:
+            - xm7dc2dfas4
+        exposedProtocols:
+          type: array
+          maxItems: 255
+          minItems: 0
+          items:
+            - $ref: '#/components/schemas/Protocol'
+      additionalProperties: true
+      description: an environment
+  parameters:
+    organization:
+      description: the name of the organization (tenant) a resource belongs to
+      schema:
+        type: string
+        maxLength: 188
+        minLength: 4
+        pattern: ^[a-zA-Z0-9_-]*$
+    api_name:
+      description: the name of the api
+      schema:
+        type: string
+        maxLength: 188
+        minLength: 4
+        pattern: ^[a-zA-Z0-9_-]*$
+    api_product_name:
+      description: the id of the api product
+      schema:
+        type: string
+        maxLength: 188
+        minLength: 4
+        pattern: ^[a-zA-Z0-9_-]*$
+    developer_username:
+      description: username of developer
+      schema:
+        $ref: '#/components/schemas/CommonUserName'
+    app_name:
+      description: the name of the app
+      schema:
+        type: string
+        maxLength: 188
+        minLength: 4
+        pattern: ^[a-zA-Z0-9_-]*$
+    team_name:
+      description: name of a team
+      schema:
+        type: string
+        maxLength: 188
+        minLength: 4
+        pattern: ^[a-zA-Z0-9_-]*$
+    env_name:
+      schema:
+        type: string
+        maxLength: 188
+        minLength: 2
+        pattern: ^[a-zA-Z0-9_-]*$
+tags:
+  - name: apis
+    description: >-
+      Represents Async API specifications. The specifications must be compliant
+      documents in JSON or YML format
+  - name: apiProducts
+    description: >-
+      An API product consists of a list of API resources (URIs) and custom
+      metadata required by the API provider. API products enable you to bundle
+      and distribute your APIs to multiple developer groups simultaneously
+  - name: developers
+    description: >-
+      Developers must register. After they are registered, developers register
+      their apps, choose the APIs they want to use, and receive the unique API
+      credentials (consumer keys and secrets) needed to access APIs.
+  - name: teams
+    description: >-
+      Teams can be set up. There is no concept of team membership currently.
+      After creation, apps can be created for a team, choosing the APIs they
+      want to use, and creating the unique API credentials (consumer keys and
+      secrets) needed to access APIs.
+  - name: apps
+    description: Manage consumer credentials for apps
+  - name: environments
+    description: >-
+      An environment provides a runtime execution context for APIs. Each
+      environment is associated with a specific Service in the associated Solace
+      Cloud account. Typical environments are dev, stage, prod ...
+  - name: management
+    description: Manage organization settings, audit history
+  - name: administration
+    description: Manage tenants/orgs. Requires admin access level.
+  - name: eventPortal
+    description: >-
+      Provides read-only access to the Solace Event Portal associated with the
+      account.

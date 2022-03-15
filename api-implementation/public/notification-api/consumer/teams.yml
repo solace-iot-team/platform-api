@@ -1,0 +1,741 @@
+asyncapi: 2.3.0
+info:
+  title: Solace API Management Connector (teams)
+  description: >-
+    Teams can be set up. There is no concept of team membership currently. After
+    creation, apps can be created for a team, choosing the APIs they want to
+    use, and creating the unique API credentials (consumer keys and secrets)
+    needed to access APIs.
+  version: 0.7.0
+channels:
+  apc/POST/v1/{organization_name}/teams:
+    publish:
+      operationId: createTeam
+      tags:
+        - name: teams
+          description: >-
+            Teams can be set up. There is no concept of team membership
+            currently. After creation, apps can be created for a team, choosing
+            the APIs they want to use, and creating the unique API credentials
+            (consumer keys and secrets) needed to access APIs.
+      message:
+        payload:
+          type: object
+          required:
+            - header
+            - payload
+          properties:
+            header:
+              $ref: '#/components/schemas/NotificationHeader'
+            payload:
+              $ref: '#/components/schemas/Team'
+        contentType: application/json
+        description: New team
+    parameters:
+      organization_name:
+        $ref: '#/components/parameters/organization'
+  apc/PATCH/v1/{organization_name}/teams/{team_name}:
+    publish:
+      operationId: updateTeam
+      tags:
+        - name: teams
+          description: >-
+            Teams can be set up. There is no concept of team membership
+            currently. After creation, apps can be created for a team, choosing
+            the APIs they want to use, and creating the unique API credentials
+            (consumer keys and secrets) needed to access APIs.
+      message:
+        payload:
+          type: object
+          required:
+            - header
+            - payload
+          properties:
+            header:
+              $ref: '#/components/schemas/NotificationHeader'
+            payload:
+              $ref: '#/components/schemas/Team'
+        contentType: application/json
+        description: Updated team
+    parameters:
+      organization_name:
+        $ref: '#/components/parameters/organization'
+      team_name:
+        $ref: '#/components/parameters/team_name'
+  apc/DELETE/v1/{organization_name}/teams/{team_name}:
+    publish:
+      operationId: deleteTeam
+      tags:
+        - name: teams
+          description: >-
+            Teams can be set up. There is no concept of team membership
+            currently. After creation, apps can be created for a team, choosing
+            the APIs they want to use, and creating the unique API credentials
+            (consumer keys and secrets) needed to access APIs.
+    parameters:
+      organization_name:
+        $ref: '#/components/parameters/organization'
+      team_name:
+        $ref: '#/components/parameters/team_name'
+  apc/POST/v1/{organization_name}/teams/{team_name}/apps:
+    publish:
+      operationId: createTeamApp
+      tags:
+        - name: apps
+          description: Manage consumer credentials for apps
+        - name: teams
+          description: >-
+            Teams can be set up. There is no concept of team membership
+            currently. After creation, apps can be created for a team, choosing
+            the APIs they want to use, and creating the unique API credentials
+            (consumer keys and secrets) needed to access APIs.
+      message:
+        payload:
+          type: object
+          required:
+            - header
+            - payload
+          properties:
+            header:
+              $ref: '#/components/schemas/NotificationHeader'
+            payload:
+              $ref: '#/components/schemas/AppResponse'
+        contentType: application/json
+        description: New app
+    parameters:
+      organization_name:
+        $ref: '#/components/parameters/organization'
+      team_name:
+        $ref: '#/components/parameters/team_name'
+  apc/PATCH/v1/{organization_name}/teams/{team_name}/apps/{app_name}:
+    publish:
+      operationId: updateTeamApp
+      tags:
+        - name: apps
+          description: Manage consumer credentials for apps
+        - name: teams
+          description: >-
+            Teams can be set up. There is no concept of team membership
+            currently. After creation, apps can be created for a team, choosing
+            the APIs they want to use, and creating the unique API credentials
+            (consumer keys and secrets) needed to access APIs.
+      message:
+        payload:
+          type: object
+          required:
+            - header
+            - payload
+          properties:
+            header:
+              $ref: '#/components/schemas/NotificationHeader'
+            payload:
+              $ref: '#/components/schemas/AppResponse'
+        contentType: application/json
+        description: App
+    parameters:
+      organization_name:
+        $ref: '#/components/parameters/organization'
+      team_name:
+        $ref: '#/components/parameters/team_name'
+      app_name:
+        $ref: '#/components/parameters/app_name'
+  apc/DELETE/v1/{organization_name}/teams/{team_name}/apps/{app_name}:
+    publish:
+      operationId: deleteTeamApp
+      tags:
+        - name: apps
+          description: Manage consumer credentials for apps
+        - name: teams
+          description: >-
+            Teams can be set up. There is no concept of team membership
+            currently. After creation, apps can be created for a team, choosing
+            the APIs they want to use, and creating the unique API credentials
+            (consumer keys and secrets) needed to access APIs.
+    parameters:
+      organization_name:
+        $ref: '#/components/parameters/organization'
+      team_name:
+        $ref: '#/components/parameters/team_name'
+      app_name:
+        $ref: '#/components/parameters/app_name'
+tags:
+  - name: teams
+    description: >-
+      Teams can be set up. There is no concept of team membership currently.
+      After creation, apps can be created for a team, choosing the APIs they
+      want to use, and creating the unique API credentials (consumer keys and
+      secrets) needed to access APIs.
+components:
+  schemas:
+    NotificationHeader:
+      type: object
+      required:
+        - org
+        - time
+        - topic
+      additionalProperties: false
+      properties:
+        org:
+          type: string
+          maxLength: 188
+          minLength: 4
+          pattern: ^[a-zA-Z0-9_-]*$
+          description: The name of the organization
+        time:
+          type: string
+          description: The date and time when the event was created
+          format: date-time
+        topic:
+          type: string
+          description: The topic string
+    Team:
+      type: object
+      required:
+        - displayName
+        - name
+      properties:
+        displayName:
+          $ref: '#/components/schemas/CommonDisplayName'
+        name:
+          $ref: '#/components/schemas/CommonName'
+        attributes:
+          $ref: '#/components/schemas/attributes'
+      additionalProperties: false
+      description: >-
+        A profile of a team. After the team is created, an app can be registered
+        and API credentials are created
+    CommonDisplayName:
+      type: string
+      maxLength: 256
+      minLength: 1
+      pattern: ^[\/\sa-z.A-z0-9_-]*$
+      examples:
+        - A new IoT API / v2.0
+      description: >-
+        Friendly name of an object for display in UIs, Developer Portals. Can be
+        changed after object creation
+    CommonName:
+      type: string
+      maxLength: 188
+      minLength: 2
+      pattern: ^[a-zA-Z0-9_-]*$
+      examples:
+        - '{name}'
+      description: >-
+        The internal name of an object. Characters you can use in the name are
+        restricted to: A-Z0-9._-. Once the object is created the internal name
+        can not be changed
+    attributes:
+      type: array
+      maxItems: 32768
+      minItems: 0
+      items:
+        - type: object
+          required:
+            - name
+            - value
+          properties:
+            name:
+              type: string
+              maxLength: 1024
+              minLength: 2
+              pattern: ^[a-zA-Z0-9._-]*$
+              examples:
+                - access
+              description: >-
+                Attribute name, access is a special value as it governs access
+                control to the product.
+            value:
+              type: string
+              maxLength: 1024
+              minLength: 1
+              pattern: ^[a-zA-Z0-9_\-\s,\*]*$
+              examples:
+                - public, private, or internal
+              description: Value of the attribute.
+          additionalProperties: false
+      description: >-
+        Arbitrary name/value pairs associated with an API product, team,
+        developer or app.
+    AppResponse:
+      type: object
+      required:
+        - name
+        - apiProducts
+        - credentials
+      properties:
+        name:
+          $ref: '#/components/schemas/CommonName'
+        displayName:
+          $ref: '#/components/schemas/CommonDisplayName'
+        internalName:
+          type: string
+          maxLength: 32
+          minLength: 4
+          pattern: ^[a-zA-Z0-9_]*$
+          description: >-
+            the internal name of the app used within the connector. This name is
+            auto generated by default. Warning - should ONLY be set if a naming
+            convention for broker objects must be imposed. This value can not be
+            updated.
+        expiresIn:
+          type: integer
+          maximum: 9007199254740991
+          minimum: -1
+          description: >-
+            A setting, in milliseconds, for the lifetime of the consumer key
+            that will be  generated for the developer app. The default value,
+            -1, indicates an infinite validity period. Once set, the expiration
+            can't be updated.
+          format: int64
+        apiProducts:
+          $ref: '#/components/schemas/AppApiProducts'
+        attributes:
+          $ref: '#/components/schemas/attributes'
+        clientInformation:
+          type: array
+          maxItems: 255
+          minItems: 0
+          items:
+            - $ref: '#/components/schemas/ClientInformation'
+        callbackUrl:
+          $ref: '#/components/schemas/CommonURL'
+        webHooks:
+          type: array
+          maxItems: 255
+          minItems: 0
+          items:
+            - $ref: '#/components/schemas/WebHook'
+        credentials:
+          $ref: '#/components/schemas/Credentials'
+        environments:
+          type: array
+          maxItems: 255
+          minItems: 0
+          items:
+            - $ref: '#/components/schemas/AppEnvironment'
+        status:
+          $ref: '#/components/schemas/AppStatus'
+      additionalProperties: false
+      description: >-
+        App Response Object - includes protocol binding information and app
+        premissions. An app associated with a developer. Associates the app with
+        an API product, and auto-generates an API credentials for the app to
+        use.
+    AppApiProducts:
+      type: array
+      maxItems: 255
+      minItems: 0
+      uniqueItems: true
+      items:
+        - oneOf:
+            - $ref: '#/components/schemas/AppApiProductsComplex'
+            - $ref: '#/components/schemas/CommonName'
+    AppApiProductsComplex:
+      type: object
+      required:
+        - apiproduct
+      properties:
+        apiproduct:
+          $ref: '#/components/schemas/CommonName'
+        status:
+          $ref: '#/components/schemas/AppStatus'
+      additionalProperties: false
+    AppStatus:
+      type: string
+      enum:
+        - approved
+        - pending
+        - revoked
+    ClientInformation:
+      type: object
+      properties:
+        guaranteedMessaging:
+          $ref: '#/components/schemas/ClientInformationGuaranteedMessaging'
+      additionalProperties: false
+    ClientInformationGuaranteedMessaging:
+      type: object
+      properties:
+        name:
+          type: string
+          maxLength: 250
+          minLength: 2
+          pattern: .*
+          examples:
+            - AlAOLG3xxuYCVDpoXl4wKGwWAIURFGuK
+          description: >-
+            The name of the queue that is available for this app's API Product
+            subcription
+        apiProduct:
+          $ref: '#/components/schemas/CommonName'
+        accessType:
+          type: string
+          enum:
+            - exclusive
+            - non-exclusive
+          examples:
+            - exclusive
+          description: access mode for the queue
+          default: exclusive
+        maxTtl:
+          type: integer
+          maximum: 9007199254740991
+          minimum: 0
+          examples:
+            - 3600
+          description: retention policy for message on the queue, in seconds
+          format: int64
+          default: 86400
+        maxMsgSpoolUsage:
+          type: integer
+          maximum: 9007199254740991
+          minimum: 0
+          examples:
+            - 50
+          description: >-
+            The maximum message spool usage allowed by the Queue, in megabytes
+            (MB). A value of 0 only allows spooling of the last message received
+            and disables quota checking
+          format: int64
+          default: 500
+      additionalProperties: false
+    CommonURL:
+      type: string
+      maxLength: 2083
+      minLength: 8
+      pattern: ^https?:\/\/[A-Za-z\.:0-9\-]*.*$
+      examples:
+        - >-
+          https://solace.cloud/api/v0/eventPortal/apiProducts/abc123/asyncApi.json
+    WebHook:
+      type: object
+      required:
+        - uri
+        - method
+      properties:
+        uri:
+          type: string
+          maxLength: 200
+          minLength: 0
+          pattern: ^https?:\/\/[A-Za-z\.:0-9\-]*.*$
+        environments:
+          type: array
+          maxItems: 255
+          minItems: 0
+          items:
+            - $ref: '#/components/schemas/CommonName'
+          description: >-
+            environments that this webhook serves, if absent webhook will be
+            used for all environments
+        method:
+          type: string
+          enum:
+            - POST
+            - PUT
+          default: POST
+        mode:
+          type: string
+          enum:
+            - parallel
+            - serial
+          default: parallel
+        authentication:
+          $ref: '#/components/schemas/WebHookAuth'
+        tlsOptions:
+          $ref: '#/components/schemas/WebHookTLSOptions'
+      additionalProperties: false
+    WebHookAuth:
+      additionalProperties: true
+      anyOf:
+        - $ref: '#/components/schemas/WebHookBasicAuth'
+        - $ref: '#/components/schemas/WebHookHeaderAuth'
+    WebHookBasicAuth:
+      type: object
+      required:
+        - username
+        - password
+      properties:
+        authMethod:
+          type: string
+          enum:
+            - Basic
+        username:
+          $ref: '#/components/schemas/CommonUserName'
+        password:
+          type: string
+          maxLength: 256
+          minLength: 8
+          pattern: ^[\S]*$
+      additionalProperties: false
+    CommonUserName:
+      type: string
+      maxLength: 64
+      minLength: 1
+      pattern: ^[.a-zA-Z0-9@_-]*$
+      examples:
+        - tom
+    WebHookHeaderAuth:
+      type: object
+      required:
+        - headerName
+        - headerValue
+      properties:
+        authMethod:
+          type: string
+          enum:
+            - Header
+        headerName:
+          type: string
+          maxLength: 512
+          minLength: 1
+          pattern: ^[\s\S]*$
+        headerValue:
+          type: string
+          maxLength: 16384
+          minLength: 1
+          pattern: ^[\s\S]*$
+      additionalProperties: false
+      description: A HTTP header used for authentication
+    WebHookTLSOptions:
+      type: object
+      properties:
+        tlsTrustedCommonNames:
+          type: array
+          maxItems: 255
+          minItems: 0
+          items:
+            - type: string
+          description: >-
+            The Trusted Common Names for the REST Consumer are used by encrypted
+            transports to verify the name in the certificate presented by the
+            remote REST consumer. They must include the common name of the
+            remote REST consumer's server certificate.
+      additionalProperties: false
+      description: TLS options required to support older PS+ brokers.
+      deprecated: true
+    Credentials:
+      type: object
+      required:
+        - expiresAt
+      properties:
+        expiresAt:
+          type: integer
+          maximum: 9007199254740991
+          minimum: -1
+          format: int64
+          default: -1
+        issuedAt:
+          $ref: '#/components/schemas/CommonTimestampInteger'
+        secret:
+          $ref: '#/components/schemas/Secret'
+      additionalProperties: false
+      description: Credentials object associated with an app
+    CommonTimestampInteger:
+      type: integer
+      maximum: 9007199254740991
+      minimum: 0
+      examples:
+        - 1620311683577
+      format: int64
+    Secret:
+      type: object
+      required:
+        - consumerKey
+      properties:
+        consumerKey:
+          type: string
+          maxLength: 64
+          minLength: 8
+          pattern: ^[a-zA-Z0-9_-]*$
+        consumerSecret:
+          type: string
+          maxLength: 64
+          minLength: 8
+          pattern: ^[a-zA-Z0-9_-]*$
+      additionalProperties: false
+    AppEnvironment:
+      type: object
+      properties:
+        name:
+          $ref: '#/components/schemas/CommonName'
+        displayName:
+          $ref: '#/components/schemas/CommonDisplayName'
+        messagingProtocols:
+          type: array
+          maxItems: 255
+          minItems: 0
+          items:
+            - $ref: '#/components/schemas/Endpoint'
+        permissions:
+          $ref: '#/components/schemas/Permissions'
+      additionalProperties: false
+    Endpoint:
+      type: object
+      properties:
+        protocol:
+          $ref: '#/components/schemas/Protocol'
+        transport:
+          type: string
+          maxLength: 32
+          minLength: 1
+          pattern: ^[A-Za-z0-9\/\.]*$
+          examples:
+            - TCP
+          description: The protocol transport
+        secure:
+          type: string
+          enum:
+            - 'yes'
+            - 'no'
+        compressed:
+          type: string
+          enum:
+            - 'yes'
+            - 'no'
+        uri:
+          type: string
+          maxLength: 2083
+          minLength: 5
+          pattern: ^[a-zA-Z0-9\.\-+]*:\/\/[A-Za-z\.:0-9\-]*.*$
+          examples:
+            - amqp://mr1i5g7tif6z9h.messaging.solace.cloud:5672
+      additionalProperties: false
+    Protocol:
+      type: object
+      required:
+        - name
+      properties:
+        name:
+          type: string
+          enum:
+            - amqp
+            - amqps
+            - http
+            - https
+            - jms
+            - secure-jms
+            - mqtt
+            - secure-mqtt
+            - ws-mqtt
+            - wss-mqtt
+            - ws
+            - wss
+            - smf
+            - smfs
+            - compressed-smf
+        version:
+          $ref: '#/components/schemas/CommonVersion'
+      additionalProperties: false
+    CommonVersion:
+      type: string
+      maxLength: 32
+      minLength: 1
+      pattern: ^[_\-\S\.]*$
+      examples:
+        - 3.1.1-alpha
+    Permissions:
+      type: object
+      properties:
+        subscribe:
+          type: array
+          maxItems: 32768
+          minItems: 0
+          examples:
+            - - order/notifications/{country_id}/{order_id}:
+                  permissions:
+                    - order/notifications/FR/>
+                    - order/notifications/DE/>
+                  channelId: c1
+                  isChannel: true
+              - another/random/exception/{resource_id}:
+                  permissions:
+                    - another/random/exception/1
+                    - another/random/exception/2
+                  isChannel: false
+          items:
+            - type: object
+              additionalProperties:
+                $ref: '#/components/schemas/ChannelPermission'
+        publish:
+          type: array
+          maxItems: 32768
+          minItems: 0
+          examples:
+            - - order/create/{country_id}/{order_id}:
+                  permissions:
+                    - order/create/FR/>
+                    - order/create/DE/>
+                  channelId: c2
+                  isChannel: true
+              - order/update/{country_id}/{order_id}:
+                  permissions:
+                    - order/update/FR/>
+                    - order/update/DE/>
+                  channelId: orderUpdateChannel
+                  isChannel: true
+              - another/random/exception/{resource_id}:
+                  permissions:
+                    - another/random/exception/3
+                    - another/random/exception/4
+                  isChannel: false
+          items:
+            - type: object
+              additionalProperties:
+                $ref: '#/components/schemas/ChannelPermission'
+      additionalProperties: false
+      description: >-
+        lists all the publish and subscribe topics an app has access to.
+        Restrictions on   topic elements are taken into account.
+    ChannelPermission:
+      type: object
+      required:
+        - permissions
+      properties:
+        permissions:
+          type: array
+          maxItems: 32768
+          minItems: 0
+          examples:
+            - - order/notifications/FR/>
+              - order/notifications/DE/>
+          items:
+            - $ref: '#/components/schemas/CommonTopic'
+        channelId:
+          type: string
+          maxLength: 2048
+          minLength: 1
+          pattern: ^[\s\S]*$
+        isChannel:
+          type: boolean
+          default: true
+      additionalProperties: false
+      description: a permission and its associated channel
+    CommonTopic:
+      type: string
+      maxLength: 250
+      minLength: 2
+      pattern: ^[a-zA-Z0-9][\S]*[^\/]$
+      examples:
+        - deliver/*/enroute/v1/45*/-75*/vehicle4*/>
+  parameters:
+    organization:
+      description: the name of the organization (tenant) a resource belongs to
+      schema:
+        type: string
+        maxLength: 188
+        minLength: 4
+        pattern: ^[a-zA-Z0-9_-]*$
+    team_name:
+      description: name of a team
+      schema:
+        type: string
+        maxLength: 188
+        minLength: 4
+        pattern: ^[a-zA-Z0-9_-]*$
+    app_name:
+      description: the name of the app
+      schema:
+        type: string
+        maxLength: 188
+        minLength: 4
+        pattern: ^[a-zA-Z0-9_-]*$

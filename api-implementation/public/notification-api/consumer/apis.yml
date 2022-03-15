@@ -1,0 +1,143 @@
+asyncapi: 2.3.0
+info:
+  title: Solace API Management Connector (apis)
+  description: >-
+    Represents Async API specifications. The specifications must be compliant
+    documents in JSON or YML format
+  version: 0.7.0
+channels:
+  apc/POST/v1/{organization_name}/apis:
+    publish:
+      operationId: importApi
+      tags:
+        - name: apis
+          description: >-
+            Represents Async API specifications. The specifications must be
+            compliant documents in JSON or YML format
+      message:
+        payload:
+          type: object
+          required:
+            - header
+            - payload
+          properties:
+            header:
+              $ref: '#/components/schemas/NotificationHeader'
+            payload:
+              type: object
+              additionalProperties: true
+        contentType: application/json
+        description: New API that was imported
+    parameters:
+      organization_name:
+        $ref: '#/components/parameters/organization'
+  apc/PUT/v1/{organization_name}/apis/{api_name}:
+    publish:
+      operationId: createApi
+      tags:
+        - name: apis
+          description: >-
+            Represents Async API specifications. The specifications must be
+            compliant documents in JSON or YML format
+      message:
+        payload:
+          type: object
+          required:
+            - header
+            - payload
+          properties:
+            header:
+              $ref: '#/components/schemas/NotificationHeader'
+            payload:
+              type: object
+              additionalProperties: true
+        contentType: application/json
+        description: The async API specification
+    parameters:
+      organization_name:
+        $ref: '#/components/parameters/organization'
+      api_name:
+        $ref: '#/components/parameters/api_name'
+  apc/PATCH/v1/{organization_name}/apis/{api_name}:
+    publish:
+      operationId: updateApi
+      tags:
+        - name: apis
+          description: >-
+            Represents Async API specifications. The specifications must be
+            compliant documents in JSON or YML format
+      message:
+        payload:
+          type: object
+          required:
+            - header
+            - payload
+          properties:
+            header:
+              $ref: '#/components/schemas/NotificationHeader'
+            payload:
+              type: object
+              additionalProperties: true
+        contentType: application/json
+        description: updated async api specification
+    parameters:
+      organization_name:
+        $ref: '#/components/parameters/organization'
+      api_name:
+        $ref: '#/components/parameters/api_name'
+  apc/DELETE/v1/{organization_name}/apis/{api_name}:
+    publish:
+      operationId: deleteApi
+      tags:
+        - name: apis
+          description: >-
+            Represents Async API specifications. The specifications must be
+            compliant documents in JSON or YML format
+    parameters:
+      organization_name:
+        $ref: '#/components/parameters/organization'
+      api_name:
+        $ref: '#/components/parameters/api_name'
+tags:
+  - name: apis
+    description: >-
+      Represents Async API specifications. The specifications must be compliant
+      documents in JSON or YML format
+components:
+  schemas:
+    NotificationHeader:
+      type: object
+      required:
+        - org
+        - time
+        - topic
+      additionalProperties: false
+      properties:
+        org:
+          type: string
+          maxLength: 188
+          minLength: 4
+          pattern: ^[a-zA-Z0-9_-]*$
+          description: The name of the organization
+        time:
+          type: string
+          description: The date and time when the event was created
+          format: date-time
+        topic:
+          type: string
+          description: The topic string
+  parameters:
+    organization:
+      description: the name of the organization (tenant) a resource belongs to
+      schema:
+        type: string
+        maxLength: 188
+        minLength: 4
+        pattern: ^[a-zA-Z0-9_-]*$
+    api_name:
+      description: the name of the api
+      schema:
+        type: string
+        maxLength: 188
+        minLength: 4
+        pattern: ^[a-zA-Z0-9_-]*$

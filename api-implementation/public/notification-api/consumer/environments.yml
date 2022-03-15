@@ -1,0 +1,230 @@
+asyncapi: 2.3.0
+info:
+  title: Solace API Management Connector (environments)
+  description: >-
+    An environment provides a runtime execution context for APIs. Each
+    environment is associated with a specific Service in the associated Solace
+    Cloud account. Typical environments are dev, stage, prod ...
+  version: 0.7.0
+channels:
+  apc/POST/v1/{organization_name}/environments:
+    publish:
+      operationId: createEnvironment
+      tags:
+        - name: environments
+          description: >-
+            An environment provides a runtime execution context for APIs. Each
+            environment is associated with a specific Service in the associated
+            Solace Cloud account. Typical environments are dev, stage, prod ...
+      message:
+        payload:
+          type: object
+          required:
+            - header
+            - payload
+          properties:
+            header:
+              $ref: '#/components/schemas/NotificationHeader'
+            payload:
+              $ref: '#/components/schemas/Environment'
+        contentType: application/json
+        description: New environment
+    parameters:
+      organization_name:
+        $ref: '#/components/parameters/organization'
+  apc/PATCH/v1/{organization_name}/environments/{env_name}:
+    publish:
+      operationId: updateEnvironment
+      tags:
+        - name: environments
+          description: >-
+            An environment provides a runtime execution context for APIs. Each
+            environment is associated with a specific Service in the associated
+            Solace Cloud account. Typical environments are dev, stage, prod ...
+      message:
+        payload:
+          type: object
+          required:
+            - header
+            - payload
+          properties:
+            header:
+              $ref: '#/components/schemas/NotificationHeader'
+            payload:
+              $ref: '#/components/schemas/Environment'
+        contentType: application/json
+        description: Updated Environment
+    parameters:
+      organization_name:
+        $ref: '#/components/parameters/organization'
+      env_name:
+        $ref: '#/components/parameters/env_name'
+  apc/DELETE/v1/{organization_name}/environments/{env_name}:
+    publish:
+      operationId: deleteEnvironment
+      tags:
+        - name: environments
+          description: >-
+            An environment provides a runtime execution context for APIs. Each
+            environment is associated with a specific Service in the associated
+            Solace Cloud account. Typical environments are dev, stage, prod ...
+    parameters:
+      organization_name:
+        $ref: '#/components/parameters/organization'
+      env_name:
+        $ref: '#/components/parameters/env_name'
+tags:
+  - name: environments
+    description: >-
+      An environment provides a runtime execution context for APIs. Each
+      environment is associated with a specific Service in the associated Solace
+      Cloud account. Typical environments are dev, stage, prod ...
+components:
+  schemas:
+    NotificationHeader:
+      type: object
+      required:
+        - org
+        - time
+        - topic
+      additionalProperties: false
+      properties:
+        org:
+          type: string
+          maxLength: 188
+          minLength: 4
+          pattern: ^[a-zA-Z0-9_-]*$
+          description: The name of the organization
+        time:
+          type: string
+          description: The date and time when the event was created
+          format: date-time
+        topic:
+          type: string
+          description: The topic string
+    Environment:
+      type: object
+      required:
+        - name
+        - description
+        - serviceId
+        - exposedProtocols
+      properties:
+        name:
+          $ref: '#/components/schemas/CommonName'
+        displayName:
+          $ref: '#/components/schemas/CommonDisplayName'
+        description:
+          $ref: '#/components/schemas/CommonDescription'
+        serviceId:
+          type: string
+          maxLength: 64
+          minLength: 4
+          pattern: ^[a-zA-Z0-9_-]*$
+          examples:
+            - xm7dc2dfas4
+        exposedProtocols:
+          type: array
+          maxItems: 255
+          minItems: 0
+          items:
+            - $ref: '#/components/schemas/Protocol'
+      additionalProperties: true
+      description: an environment
+    CommonName:
+      type: string
+      maxLength: 188
+      minLength: 2
+      pattern: ^[a-zA-Z0-9_-]*$
+      examples:
+        - '{name}'
+      description: >-
+        The internal name of an object. Characters you can use in the name are
+        restricted to: A-Z0-9._-. Once the object is created the internal name
+        can not be changed
+    CommonDisplayName:
+      type: string
+      maxLength: 256
+      minLength: 1
+      pattern: ^[\/\sa-z.A-z0-9_-]*$
+      examples:
+        - A new IoT API / v2.0
+      description: >-
+        Friendly name of an object for display in UIs, Developer Portals. Can be
+        changed after object creation
+    CommonDescription:
+      type: string
+      maxLength: 4096
+      minLength: 0
+      pattern: ^[\s\S]*$
+      examples:
+        - >
+          Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed ac
+          laoreet libero. Maecenas lacus urna, dignissim sollicitudin nisi nec,
+          mollis finibus tortor. Mauris ipsum dolor, eleifend eu bibendum
+          iaculis, pulvinar sit amet justo. Curabitur vestibulum quis quam at
+          pretium. Fusce a nulla non diam dapibus pretium. Phasellus vehicula
+          interdum ex at dapibus. Cras non pretium metus. Nulla auctor nibh non
+          lacus gravida, vitae molestie leo ultricies. Nunc tempor eros tempor
+          dapibus vulputate.
+
+
+          Vivamus eget vulputate ipsum, vel ornare nulla. Aenean hendrerit,
+          magna id mollis elementum, enim purus convallis arcu, eget eleifend
+          metus ipsum vitae felis. Cras condimentum feugiat fringilla. Etiam
+          ligula dui, malesuada ut finibus imperdiet, bibendum tristique velit.
+          Phasellus consectetur venenatis augue ac ornare. Ut vel sem in lorem
+          fermentum porttitor. Pellentesque eget fermentum enim. Suspendisse
+          risus elit, imperdiet facilisis volutpat in, congue ac ligula. Aenean
+          mollis sagittis finibus. Vestibulum viverra metus magna, ut volutpat
+          dui imperdiet ultricies.
+      description: >-
+        An overview of the object. Include key information about the object that
+        is not captured by other fields..
+    Protocol:
+      type: object
+      required:
+        - name
+      properties:
+        name:
+          type: string
+          enum:
+            - amqp
+            - amqps
+            - http
+            - https
+            - jms
+            - secure-jms
+            - mqtt
+            - secure-mqtt
+            - ws-mqtt
+            - wss-mqtt
+            - ws
+            - wss
+            - smf
+            - smfs
+            - compressed-smf
+        version:
+          $ref: '#/components/schemas/CommonVersion'
+      additionalProperties: false
+    CommonVersion:
+      type: string
+      maxLength: 32
+      minLength: 1
+      pattern: ^[_\-\S\.]*$
+      examples:
+        - 3.1.1-alpha
+  parameters:
+    organization:
+      description: the name of the organization (tenant) a resource belongs to
+      schema:
+        type: string
+        maxLength: 188
+        minLength: 4
+        pattern: ^[a-zA-Z0-9_-]*$
+    env_name:
+      schema:
+        type: string
+        maxLength: 188
+        minLength: 2
+        pattern: ^[a-zA-Z0-9_-]*$
