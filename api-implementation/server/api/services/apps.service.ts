@@ -229,7 +229,7 @@ export class AppsService {
     ownerAttributes: Attributes
   ): Promise<AppPatch> {
     L.info(`App patch request ${JSON.stringify(app)}`);
-    const validated = await this.validate(app);
+    const validated = await this.validate(app, true);
     // need to hold on to unmodified app so we can roll back if required and can determine changes during reprovisioning
     const appNotModified: AppPatch = await this.persistenceService.byName(
       name
@@ -268,11 +268,11 @@ export class AppsService {
     }
   }
 
-  async validate(app: any): Promise<boolean> {
+  async validate(app: any, isUpdate: boolean = false): Promise<boolean> {
     let isApproved = true;
     const environments: Set<string> = new Set();
     if (!app.apiProducts || app.apiProducts.length == 0) {
-      return isApproved;
+      return false;
     }
 
     // validate api products exist and find out if any  require approval
@@ -282,7 +282,7 @@ export class AppsService {
         productName = product as string;
       } else {
         productName = (product as AppApiProductsComplex).apiproduct;
-        if (product.status) {
+        if (product.status && !isUpdate) {
           throw new ErrorResponseInternal(
             400,
             `Providing a status for associated API Products is not allowed. (API Product ${productName})`
@@ -294,10 +294,18 @@ export class AppsService {
         apiProduct.environments.forEach((envName) => {
           environments.add(envName);
         });
+        let productStatus = 'pending';
         if (apiProduct.approvalType == 'manual') {
+          productStatus = 'pending';
           isApproved = false;
+        } else {
+          productStatus = 'approved';
+        }
+        if (!isString(product) && !product.status) {
+          product.status = productStatus;
         }
       } catch (e) {
+        L.error(e);
         throw new ErrorResponseInternal(
           422,
           `Referenced API Product ${productName} does not exist`
