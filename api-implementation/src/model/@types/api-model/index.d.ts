@@ -111,19 +111,19 @@ declare namespace Components {
              * example:
              * header
              */
-            location?: "header" | "query";
+            location: "header" | "query";
             /**
              * the name of the query parameter or HTTP header for submitting the API Key
              * example:
              * X-API-KEY
              */
-            name?: string; // ^[a-zA-Z0-9_-]*$
+            name: string; // ^[a-zA-Z0-9_-]*$
             /**
              * the api key value
              * example:
              * abc-123-def-456
              */
-            key?: string; // ^[a-zA-Z0-9_-]*$
+            key: string; // ^[a-zA-Z0-9_-]*$
         }
         export type APIList = CommonName /* ^[a-zA-Z0-9_-]*$ */ [];
         export interface APIParameter {
@@ -393,15 +393,15 @@ declare namespace Components {
             value: string; // ^[a-zA-Z0-9_\-\s,\*]*$
         }[];
         export interface BasicAuthentication {
-            userName?: string;
-            password?: string;
+            userName: string; // ^.*$
+            password: string; // ^.*$
         }
         export interface BearerTokenAuthentication {
             /**
              * example:
              * eyXhbGciOiJSUzI1NiIsImtpZCI6Im1hYXNfcHJvZF8yMDIwMDMyNiIsInR5cCI6IkpXVCJ9.eyJvcmcifiJzb2xhY2Vpb3R0ZWFtIiwib3JnVHlwZSI6IkVOVEVSUFJJU0UiLCJzdWIiOiIzZTJvY214MTA1IiwicGVybWlzc2lvbnMiOiJBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQXdBQU09IiwiYXBpVG9rZW5JZCI6Inlhb2wzc2ZveG03IiwiaXNzIjoiU29sYWNlIENvcnBvcmF0aW9uIiwiaWF0IjoxNjAzODA3NzQ1fQ.QIBpi5_U6b1DnAwbDbJiFIT0pomqa4AyOLtmSOEF6zhoxKMm4Y27WbILZnxnh_gpdX-tvt18Ycuck4xs3T5JjFfU3qrczRHSuj2vEdsCpDQWdyZTPV4NQ-zPxRvigTjaTlcdXin8XwMGh8nZdylgRMlRQjvotomnXQxgbUol0Kl1ziFFMybqeD10qCDsUW6Jv-PKibBN3cnCsWwPZX6d_XYUECs1AHjgs5pk-A8v3DHcnvbXiAP4XXrry6ztopAWKMc5rVFoB_WFY4yi0reuTYjn6Sf0g7vZxFifRZZHZmqZtNQUiX6S80eQG4kF3YDKlr5PfLDNp4iRfe0-3svIPw
              */
-            token?: string; // ^[A-Za-z0-9-_=]+\.[A-Za-z0-9-_=]+\.?[A-Za-z0-9-_.+/=]*$
+            token: string; // ^[A-Za-z0-9-_=]+\.[A-Za-z0-9-_=]+\.?[A-Za-z0-9-_.+/=]*$
         }
         /**
          * a permission and its associated channel
@@ -783,8 +783,8 @@ declare namespace Components {
             notifications?: OrganizationNotifier;
         }
         export interface OrganizationNotifier {
-            baseUrl?: string;
-            authentication?: BasicAuthentication | APIKeyAuthentication | BearerTokenAuthentication;
+            baseUrl: CommonURL; // ^https?:\/\/[A-Za-z\.:0-9\-]*.*$
+            authentication: BasicAuthentication | APIKeyAuthentication | BearerTokenAuthentication;
         }
         export interface OrganizationResponse {
             status?: OrganizationStatus;
