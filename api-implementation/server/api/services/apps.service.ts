@@ -114,12 +114,12 @@ export class AppsService {
           appEnv.permissions = permissions;
         }
         const subs = await ACLManager.getQueueSubscriptionsByApp(app);
-        const requireClientInformation:boolean = subs.length > 0;
+        const requireClientInformation: boolean = subs.length > 0;
         if (requireClientInformation) {
           const clientInformation: ClientInformation[] = [];
           for (const apiProductReference of app.apiProducts) {
             let productName: string = null;
-            if (isString(apiProductReference)){
+            if (isString(apiProductReference)) {
               productName = apiProductReference as string;
             } else {
               productName = (apiProductReference as AppApiProductsComplex).apiproduct;
@@ -277,12 +277,18 @@ export class AppsService {
 
     // validate api products exist and find out if any  require approval
     for (const product of app.apiProducts) {
-        let productName: string = null;
-        if (isString(product)) {
-          productName = product as string;
-        } else {
-          productName = (product as AppApiProductsComplex).apiproduct;
+      let productName: string = null;
+      if (isString(product)) {
+        productName = product as string;
+      } else {
+        productName = (product as AppApiProductsComplex).apiproduct;
+        if (product.status) {
+          throw new ErrorResponseInternal(
+            400,
+            `Providing a status for associated API Products is not allowed. (API Product ${productName})`
+          );
         }
+      }
       try {
         const apiProduct = await ApiProductsService.byName(productName);
         apiProduct.environments.forEach((envName) => {
@@ -294,7 +300,7 @@ export class AppsService {
       } catch (e) {
         throw new ErrorResponseInternal(
           422,
-          `Referenced API Product ${product} does not exist`
+          `Referenced API Product ${productName} does not exist`
         );
       }
     }
