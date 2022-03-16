@@ -81,6 +81,81 @@ describe(scriptName, function () {
 
   });
 
+  it("should update the information for notifications", async function () {
+
+    const organization: Organization = {
+      name: organizationName,
+      integrations: {
+        notifications: {
+          baseUrl: "http://localhost:8080",
+          authentication: {
+            userName: "admin",
+            password: "secret",
+          },
+        },
+      },
+    }
+
+    await AdministrationService.createOrganization({ requestBody: organization });
+
+    const organizationPatch = {
+      ...orgctx,
+      requestBody: {
+        name: organizationName,
+        integrations: {
+          notifications: {
+            baseUrl: "http://server.io:3000",
+            authentication: {
+              token: "sVcNS3Pc.GKqep8dBnw5p8cvZ.s7LyXs4wH5",
+            },
+          },
+        },
+      }
+    }
+
+    const response = await AdministrationService.updateOrganization(organizationPatch).catch((reason) => {
+      expect(reason, `error=${reason.message}`).is.instanceof(ApiError);
+      expect.fail(`failed to update organization; error="${reason.body.message}"`);
+    });
+
+    expect(response.body, "response is not correct").to.have.nested.property(
+      "integrations.notifications"
+    ).that.is.eql(organizationPatch.requestBody.integrations.notifications);
+  });
+
+  it("should update an organization with notifications disabled", async function () {
+
+    const organization: Organization = {
+      name: organizationName,
+      integrations: {
+        notifications: {
+          baseUrl: "http://localhost:8080",
+          authentication: {
+            userName: "admin",
+            password: "secret",
+          },
+        },
+      },
+    }
+
+    await AdministrationService.createOrganization({ requestBody: organization });
+
+    const organizationPatch = {
+      ...orgctx,
+      requestBody: {
+        name: organizationName,
+        integrations: {},
+      }
+    }
+
+    const response = await AdministrationService.updateOrganization(organizationPatch).catch((reason) => {
+      expect(reason, `error=${reason.message}`).is.instanceof(ApiError);
+      expect.fail(`failed to update organization; error="${reason.body.message}"`);
+    });
+
+    expect(response.body, "response is not correct").to.have.property("integrations").that.is.empty;
+  });
+
   it("should update an organization when If-Match header is used", async function () {
 
     const organization: Organization = {
@@ -116,14 +191,17 @@ describe(scriptName, function () {
 
     await AdministrationService.createOrganization({ requestBody: organization });
 
-    const organizationPatch: Organization = {
-      name: organizationName,
-      'cloud-token': setup.solaceCloudToken,
+    const organizationPatch = {
+      ...orgctx,
+      requestBody: {
+        name: organizationName,
+        'cloud-token': setup.solaceCloudToken,
+      },
     }
 
     PlatformAPIClient.setApiUser();
 
-    await AdministrationService.updateOrganization({ ...orgctx, requestBody: organizationPatch }).then(() => {
+    await AdministrationService.updateOrganization(organizationPatch).then(() => {
       expect.fail("unauthorized request was not rejected");
     }, (reason) => {
       expect(reason, `error=${reason.message}`).is.instanceof(ApiError);
@@ -133,12 +211,15 @@ describe(scriptName, function () {
 
   it("should not update an organization that does not exist", async function () {
 
-    const organizationPatch: Organization = {
-      name: "unknown",
-      'cloud-token': setup.solaceCloudToken,
+    const organizationPatch = {
+      organizationName: "unknown",
+      requestBody: {
+        name: "unknown",
+        'cloud-token': setup.solaceCloudToken,
+      },
     }
 
-    await AdministrationService.updateOrganization({ organizationName: "unknown", requestBody: organizationPatch }).then(() => {
+    await AdministrationService.updateOrganization(organizationPatch).then(() => {
       expect.fail("invalid request was not rejected");
     }, (reason) => {
       expect(reason, `error=${reason.message}`).is.instanceof(ApiError);
@@ -155,12 +236,15 @@ describe(scriptName, function () {
 
     await AdministrationService.createOrganization({ requestBody: organization });
 
-    const organizationPatch: Organization = {
-      name: organizationName,
-      'cloud-token': "invalid",
+    const organizationPatch = {
+      ...orgctx,
+      requestBody: {
+        name: organizationName,
+        'cloud-token': "invalid",
+      },
     }
 
-    await AdministrationService.updateOrganization({ ...orgctx, requestBody: organizationPatch }).then(() => {
+    await AdministrationService.updateOrganization(organizationPatch).then(() => {
       expect.fail("invalid request was not rejected");
     }, (reason) => {
       expect(reason, `error=${reason.message}`).is.instanceof(ApiError);
@@ -168,7 +252,7 @@ describe(scriptName, function () {
     });
   });
 
-  it("should not update an organization if the event portal URL is invalid", async function () {
+  it("should not update an organization if the event portal endpoint is invalid", async function () {
 
     const organization: Organization = {
       name: organizationName,
@@ -180,15 +264,49 @@ describe(scriptName, function () {
 
     await AdministrationService.createOrganization({ requestBody: organization });
 
-    const organizationPatch: Organization = {
-      name: organizationName,
-      'cloud-token': {
-        cloud: { baseUrl: setup.solaceCloudBaseUrl },
-        eventPortal: { baseUrl: "https://somewhere.solace.cloud/event-portal" },
+    const organizationPatch = {
+      ...orgctx,
+      requestBody: {
+        name: organizationName,
+        'cloud-token': {
+          cloud: { baseUrl: setup.solaceCloudBaseUrl },
+          eventPortal: { baseUrl: "https://somewhere.solace.cloud/event-portal" },
+        },
       },
     }
 
-    await AdministrationService.updateOrganization({ ...orgctx, requestBody: organizationPatch }).then(() => {
+    await AdministrationService.updateOrganization(organizationPatch).then(() => {
+      expect.fail("invalid request was not rejected");
+    }, (reason) => {
+      expect(reason, `error=${reason.message}`).is.instanceof(ApiError);
+      expect(reason.status, "status is not correct").to.be.oneOf([400]);
+    });
+  });
+
+  it("should not update an organization if the notification URL is invalid", async function () {
+
+    const organization: Organization = {
+      name: organizationName,
+    }
+
+    await AdministrationService.createOrganization({ requestBody: organization });
+
+    const organizationPatch = {
+      ...orgctx,
+      requestBody: {
+        name: organizationName,
+        integrations: {
+          notifications: {
+            baseUrl: "not://valid.me",
+            authentication: {
+              token: "sVcNS3Pc.GKqep8dBnw5p8cvZ.s7LyXs4wH5",
+            },
+          },
+        },
+      },
+    }
+
+    await AdministrationService.updateOrganization(organizationPatch).then(() => {
       expect.fail("invalid request was not rejected");
     }, (reason) => {
       expect(reason, `error=${reason.message}`).is.instanceof(ApiError);
