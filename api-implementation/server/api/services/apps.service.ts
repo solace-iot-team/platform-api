@@ -13,6 +13,7 @@ import AppConnectionStatus = Components.Schemas.AppConnectionStatus;
 import passwordGenerator from 'generate-password';
 import ApiProduct = Components.Schemas.APIProduct;
 import AppApiProductsComplex = Components.Schemas.AppApiProductsComplex;
+import AppStatus = Components.Schemas.AppStatus;
 
 import Attributes = Components.Schemas.Attributes;
 import ClientInformation = Components.Schemas.ClientInformation;
@@ -174,6 +175,7 @@ export class AppsService {
       } else {
         app.status = 'pending';
       }
+      await this.initializeStatus(app);
 
       if (!app.credentials.secret) {
         const consumerCredentials = {
@@ -234,6 +236,7 @@ export class AppsService {
     const appNotModified: AppPatch = await this.persistenceService.byName(
       name
     );
+    await this.updateStatus(app as App, appNotModified as App);
     // persist the updated app, need to do this to get the full app object, the patch rerquest contains only the updated properties
     let appPatch: AppPatch = await this.persistenceService.update(
       name,
@@ -271,8 +274,10 @@ export class AppsService {
   async validate(app: any, isUpdate: boolean = false): Promise<boolean> {
     let isApproved = true;
     const environments: Set<string> = new Set();
-    if (!app.apiProducts || app.apiProducts.length == 0) {
+    if ((!app.apiProducts || app.apiProducts.length == 0) && !isUpdate) {
       return false;
+    } else if (!app.apiProducts) {
+      return true;
     }
 
     // validate api products exist and find out if any  require approval
@@ -294,15 +299,8 @@ export class AppsService {
         apiProduct.environments.forEach((envName) => {
           environments.add(envName);
         });
-        let productStatus = 'pending';
         if (apiProduct.approvalType == 'manual') {
-          productStatus = 'pending';
           isApproved = false;
-        } else {
-          productStatus = 'approved';
-        }
-        if (!isString(product) && !product.status) {
-          product.status = productStatus;
         }
       } catch (e) {
         L.error(e);
@@ -349,6 +347,80 @@ export class AppsService {
     return attrs;
   }
 
+  private async initializeStatus(app: App): Promise<void> {
+    if (!app.apiProducts) {
+      return;
+    }
+    for (const product of app.apiProducts) {
+      let productName: string = null;
+      if (isString(product)) {
+        productName = product as string;
+      } else {
+        productName = (product as AppApiProductsComplex).apiproduct;
+
+      }
+      try {
+        const apiProduct = await ApiProductsService.byName(productName);
+        let productStatus = 'pending';
+        if (apiProduct.approvalType == 'manual') {
+          productStatus = 'pending';
+        } else {
+          productStatus = 'approved';
+        }
+        if (!isString(product) && !(product as AppApiProductsComplex).status) {
+          (product as AppApiProductsComplex).status = productStatus as AppStatus;
+        }
+      } catch (e) {
+        L.error(e);
+        throw new ErrorResponseInternal(
+          422,
+          `Referenced API Product ${productName} does not exist`
+        );
+      }
+    }
+
+  }
+
+  private async updateStatus(app: App, appPersistentState: App): Promise<void> {
+    if (!app.apiProducts) {
+      return;
+    }
+    for (const product of app.apiProducts) {
+      let productName: string = null;
+      if (isString(product)) {
+        productName = product as string;
+      } else {
+        productName = (product as AppApiProductsComplex).apiproduct;
+      }
+      try {
+        const apiProduct = await ApiProductsService.byName(productName);
+        let productStatus = 'pending';
+        if (apiProduct.approvalType == 'manual') {
+          productStatus = 'pending';
+        } else {
+          productStatus = 'approved';
+        }
+        const persistentProduct = appPersistentState.apiProducts.find(a => !isString(a) && (a as AppApiProductsComplex).apiproduct == productName);
+
+        const hasPersistentStatus: boolean = (persistentProduct && (persistentProduct as AppApiProductsComplex).status !== undefined);
+        L.error(`${hasPersistentStatus}`);
+        if (!isString(product) && !(product as AppApiProductsComplex).status
+        ) {
+          if (hasPersistentStatus) {
+            (product as AppApiProductsComplex).status = (persistentProduct as AppApiProductsComplex).status;
+          } else {
+            (product as AppApiProductsComplex).status = (productStatus as AppStatus);
+          }
+        }
+      } catch (e) {
+        L.error(e);
+        throw new ErrorResponseInternal(
+          422,
+          `Referenced API Product ${productName} does not exist`
+        );
+      }
+    }
+  }
 }
 
 export default new AppsService();
