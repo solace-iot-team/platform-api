@@ -74,7 +74,7 @@ describe(scriptName, function () {
       apiProducts: application.apiProducts,
       credentials: application.credentials,
       internalName: application.internalName,
-      status: AppStatus.APPROVED,
+      status: AppStatus.PENDING,
     });
   });
 

@@ -71,7 +71,7 @@ describe(scriptName, function () {
     expect(appResponse, "internal name is not set").to.have.property('internalName');
     expect(appResponse, "attributes are unexpected").to.not.have.property('attributes');
     expect(appResponse, "web hooks are unexpected").to.not.have.property('webHooks');
-    expect(appResponse, "status is not correct").to.have.property('status', AppStatus.APPROVED);
+    expect(appResponse, "status is not correct").to.have.property('status', AppStatus.PENDING);
     expect(appResponse, "environments are not correct").to.have.property('environments').that.is.empty;
   });
 

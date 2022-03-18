@@ -62,7 +62,7 @@ describe(scriptName, function () {
     const appResponse: AppResponse = response.body;
     const internalName: string = appResponse.internalName;
 
-    expect(appResponse, "status is not correct").to.have.property('status', AppStatus.APPROVED);
+    expect(appResponse, "status is not correct").to.have.property('status', AppStatus.PENDING);
     expect(appResponse, "name is not correct").to.have.property('name', application.name);
     expect(appResponse, "display name is not correct").to.have.property('displayName', application.displayName ?? application.name);
     expect(appResponse, "internal name is not set").to.have.property('internalName');
@@ -108,7 +108,7 @@ describe(scriptName, function () {
     const appResponse: AppResponse = response.body;
     const internalName: string = appResponse.internalName;
 
-    expect(appResponse, "status is not correct").to.have.property('status', AppStatus.APPROVED);
+    expect(appResponse, "status is not correct").to.have.property('status', AppStatus.PENDING);
     expect(appResponse, "name is not correct").to.have.property('name', application.name);
     expect(appResponse, "display name is not correct").to.have.property('displayName', application.displayName ?? application.name);
     expect(appResponse, "internal name is not set").to.have.property('internalName');
