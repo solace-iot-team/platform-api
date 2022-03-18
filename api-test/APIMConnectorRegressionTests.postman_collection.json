@@ -12408,6 +12408,48 @@
 					"response": []
 				},
 				{
+					"name": "Create app failure (api product approval status)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status client error\", function () {",
+									"    pm.response.to.have.status(400);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"name\": \"{{APP_NAME}}\",\n  \"internalName\": \"{{APP_NAME_INTERNAL}}\",    \n  \"displayName\": \"{{APP_NAME}}\",\n  \"expiresIn\": 0,\n  \"apiProducts\": [\n      { \n          \"apiproduct\": \"SayHello_PRODUCT\",\n          \"status\": \"pending\"\n      },\n      { \n          \"apiproduct\": \"SayHello_PRODUCT2\"\n      }\n  ],\n  \"credentials\": {\n    \"expiresAt\": -1,\n    \"issuedAt\": 0,\n    \"secret\": {\n      \"consumerKey\": \"{{CONSUMER_KEY}}\",\n      \"consumerSecret\": \"{{CONSUMER_SECRET}}\"\n    }\n  }\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{CONNECTOR_BASEURL}}/{{TENANT}}/teams/{{TEAM_NAME}}/apps",
+							"host": [
+								"{{CONNECTOR_BASEURL}}"
+							],
+							"path": [
+								"{{TENANT}}",
+								"teams",
+								"{{TEAM_NAME}}",
+								"apps"
+							]
+						}
+					},
+					"response": []
+				},
+				{
 					"name": "Create app",
 					"event": [
 						{
