@@ -62,7 +62,7 @@ describe(scriptName, function () {
 
     const appResponse: AppResponse = response.body;
 
-    expect(appResponse, "status is not correct").to.have.property('status', AppStatus.APPROVED);
+    expect(appResponse, "status is not correct").to.have.property('status', AppStatus.PENDING);
     expect(appResponse, "name is not correct").to.have.property('name', application.name);
     expect(appResponse, "display name is not correct").to.have.property('displayName', applicationPatch.displayName);
     expect(appResponse, "internal name is not set").to.have.property('internalName', application.internalName);
