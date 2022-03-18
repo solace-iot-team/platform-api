@@ -144,15 +144,10 @@ describe(scriptName, function () {
       expect.fail(`failed to create team application; error="${reason.body.message}"`);
     });
 
-    const appResponse: AppResponse = response.body;
-    const internalName: string = appResponse.internalName;
+    expect(response.body, "status is not correct").to.have.property('status', AppStatus.APPROVED);
+    expect(response.body, "internal name is not set").to.have.property('internalName');
 
-    expect(appResponse, "status is not correct").to.have.property('status', AppStatus.APPROVED);
-    expect(appResponse, "name is not correct").to.have.property('name', application.name);
-    expect(appResponse, "display name is not correct").to.have.property('displayName', application.displayName ?? application.name);
-    expect(appResponse, "internal name is not set").to.have.property('internalName');
-    expect(appResponse, "consumer key is not set").to.have.nested.property('credentials.secret.consumerKey');
-    expect(appResponse, "consumer secret is not set").to.have.nested.property('credentials.secret.consumerSecret');
+    const internalName: string = response.body.internalName;
 
     const aclProfileName: string = internalName;
     const aclProfile: AclProfile = {
@@ -187,15 +182,10 @@ describe(scriptName, function () {
       expect.fail(`failed to create team application; error="${reason.body.message}"`);
     });
 
-    const appResponse: AppResponse = response.body;
-    const internalName: string = appResponse.internalName;
+    expect(response.body, "status is not correct").to.have.property('status', AppStatus.APPROVED);
+    expect(response.body, "internal name is not set").to.have.property('internalName');
 
-    expect(appResponse, "status is not correct").to.have.property('status', AppStatus.APPROVED);
-    expect(appResponse, "name is not correct").to.have.property('name', application.name);
-    expect(appResponse, "display name is not correct").to.have.property('displayName', application.displayName ?? application.name);
-    expect(appResponse, "internal name is not set").to.have.property('internalName');
-    expect(appResponse, "consumer key is not set").to.have.nested.property('credentials.secret.consumerKey');
-    expect(appResponse, "consumer secret is not set").to.have.nested.property('credentials.secret.consumerSecret');
+    const internalName: string = response.body.internalName;
 
     const aclProfileName: string = internalName;
     const aclProfile1: AclProfile = {
@@ -223,8 +213,6 @@ describe(scriptName, function () {
 
   it("should create an application with API product and web hook", async function () {
 
-    this.slow(5000);
-
     const application: App = {
       name: applicationName,
       apiProducts: [setup.apiProduct1.name],
@@ -238,15 +226,10 @@ describe(scriptName, function () {
       expect.fail(`failed to create team application; error="${reason.body.message}"`);
     });
 
-    const appResponse: AppResponse = response.body;
-    const internalName: string = appResponse.internalName;
+    expect(response.body, "status is not correct").to.have.property('status', AppStatus.APPROVED);
+    expect(response.body, "internal name is not set").to.have.property('internalName');
 
-    expect(appResponse, "status is not correct").to.have.property('status', AppStatus.APPROVED);
-    expect(appResponse, "name is not correct").to.have.property('name', application.name);
-    expect(appResponse, "display name is not correct").to.have.property('displayName', application.displayName ?? application.name);
-    expect(appResponse, "internal name is not set").to.have.property('internalName');
-    expect(appResponse, "consumer key is not set").to.have.nested.property('credentials.secret.consumerKey');
-    expect(appResponse, "consumer secret is not set").to.have.nested.property('credentials.secret.consumerSecret');
+    const internalName: string = response.body.internalName;
 
     const aclProfileName: string = internalName;
     const aclProfile: AclProfile = {
@@ -270,6 +253,95 @@ describe(scriptName, function () {
     const restDeliveryPoint = createRestDeliveryPointFromWebHook(setup.webHook1);
 
     await verifyRestDeliveryPoint(setup.environment1, restDeliveryPointName, restDeliveryPoint);
+    await verifyRestDeliveryPoint(setup.environment2, restDeliveryPointName, null);
+  });
+
+  it("should create an application with API products with guaranteed delivery", async function () {
+
+    const application: App = {
+      name: applicationName,
+      apiProducts: [setup.apiProduct4.name],
+      credentials: { expiresAt: -1 },
+    }
+
+    const response = await TeamsService.createTeamApp({ ...teamctx, requestBody: application }).catch((reason) => {
+      expect(reason, `error=${reason.message}`).is.instanceof(ApiError);
+      expect.fail(`failed to create developer application; error="${reason.body.message}"`);
+    });
+
+    expect(response.body, "status is not correct").to.have.property('status', AppStatus.APPROVED);
+    expect(response.body, "internal name is not set").to.have.property('internalName');
+
+    const internalName: string = response.body.internalName;
+
+    const aclProfileName: string = internalName;
+    const aclProfile: AclProfile = {
+      pubTopicExceptions: ["say/hello/EN"],
+      subTopicExceptions: ["say/hello/EN"],
+    }
+
+    await verifyAclProfile(setup.environment1, aclProfileName, null);
+    await verifyAclProfile(setup.environment2, aclProfileName, aclProfile);
+
+    const queueName: string = `${internalName}-${setup.apiProduct4.name}`;
+    const queue: Queue = {
+      accessType: Queue.accessType.EXCLUSIVE,
+      maxTimeToLive: 86400,
+    }
+
+    await verifyMessageQueue(setup.environment1, queueName, null);
+    await verifyMessageQueue(setup.environment2, queueName, queue);
+
+    const restDeliveryPointName: string = internalName;
+
+    await verifyRestDeliveryPoint(setup.environment1, restDeliveryPointName, null);
+    await verifyRestDeliveryPoint(setup.environment2, restDeliveryPointName, null);
+  });
+
+  it("should create an application with API products that require approval", async function () {
+
+    // When an application is created, the list of API products must contain the name of an API product or
+    // an (apiproduct, status) object, with the status being optional. When the name is specified, the API
+    // product will be considered being approved. When an (apiproduct, status) object is used, the status
+    // of the API product depends on the status value.
+
+    const application: App = {
+      name: applicationName,
+      apiProducts: [{
+        apiproduct: setup.apiProduct5.name,
+      }, {
+        apiproduct: setup.apiProduct6.name,
+      }],
+      credentials: { expiresAt: -1 },
+    }
+
+    const response = await TeamsService.createTeamApp({ ...teamctx, requestBody: application }).catch((reason) => {
+      expect(reason, `error=${reason.message}`).is.instanceof(ApiError);
+      expect.fail(`failed to create developer application; error="${reason.body.message}"`);
+    });
+
+    // The application status depends on the approval type of all API products and will be "pending" if one
+    // or more API products have an approval type of "manual". The application status is independent of the
+    // API product status.
+
+    expect(response.body, "status is not correct").to.have.property('status', AppStatus.PENDING);
+    expect(response.body, "internal name is not set").to.have.property('internalName');
+
+    const internalName: string = response.body.internalName;
+
+    const aclProfileName: string = internalName;
+
+    await verifyAclProfile(setup.environment1, aclProfileName, null);
+    await verifyAclProfile(setup.environment2, aclProfileName, null);
+
+    const queueName: string = internalName;
+
+    await verifyMessageQueue(setup.environment1, queueName, null);
+    await verifyMessageQueue(setup.environment2, queueName, null);
+
+    const restDeliveryPointName: string = internalName;
+
+    await verifyRestDeliveryPoint(setup.environment1, restDeliveryPointName, null);
     await verifyRestDeliveryPoint(setup.environment2, restDeliveryPointName, null);
   });
 
@@ -337,6 +409,27 @@ describe(scriptName, function () {
           mode: WebHook.mode.SERIAL,
         }
       ],
+    }
+
+    await TeamsService.createTeamApp({ ...teamctx, requestBody: application }).then(() => {
+      expect.fail("invalid request was not rejected");
+    }, (reason) => {
+      expect(reason, `error=${reason.message}`).is.instanceof(ApiError);
+      expect(reason.status, "status is not correct").to.be.oneOf([422]);
+    });
+  });
+
+  xit("should not create an application if a status is specified for an API product", async function () {
+
+    const application: App = {
+      name: applicationName,
+      apiProducts: [{
+        apiproduct: setup.apiProduct5.name,
+        status: AppStatus.APPROVED,
+      }, {
+        apiproduct: setup.apiProduct6.name,
+      }],
+      credentials: { expiresAt: -1 },
     }
 
     await TeamsService.createTeamApp({ ...teamctx, requestBody: application }).then(() => {
