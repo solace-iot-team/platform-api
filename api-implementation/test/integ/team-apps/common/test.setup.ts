@@ -208,7 +208,7 @@ export const apiProduct3: APIProduct = {
  * - [SUB] `say/hello/{language}`
  * 
  * Product details:
- * - Environment: {@link environment1} and {@link environment2}
+ * - Environment: {@link environment2}
  * - Protocols: MQTT 3.1.1, HTTP 1.1 and JMS 1.1
  * - Approval type: auto
  * - Attributes:
@@ -226,7 +226,7 @@ export const apiProduct4: APIProduct = {
   apis: [apiName1],
   approvalType: APIProduct.approvalType.AUTO,
   attributes: [{ name: "language", value: "EN" }],
-  environments: [environment1.name, environment2.name],
+  environments: [environment2.name],
   protocols: [{
     name: Protocol.name.MQTT, version: '3.1.1'
   }, {
@@ -244,6 +244,54 @@ export const apiProduct4: APIProduct = {
       maxMsgSpoolUsage: 10,
     },
   },
+}
+
+/**
+ * API product for the AccountService API with manual approval.
+ * 
+ * Operations:
+ * - [SUB] `user/signedup`
+ * 
+ * Product details:
+ * - Environment: {@link environment2}
+ * - Protocols: MQTT 3.1.1 and HTTP 1.1
+ * - Approval type: manual
+ * - Attributes: none
+ */
+export const apiProduct5: APIProduct = {
+  name: "ApiProduct5",
+  displayName: "API Product 5",
+  apis: [apiName2],
+  approvalType: APIProduct.approvalType.MANUAL,
+  attributes: [],
+  environments: [environment2.name],
+  protocols: [{ name: Protocol.name.MQTT, version: '3.1.1' }, { name: Protocol.name.HTTP, version: '1.1' }],
+  pubResources: [],
+  subResources: [],
+}
+
+/**
+ * API product for the EmailService API with manual approval.
+ * 
+ * Operations:
+ * - [PUB] `user/signedup`
+ * 
+ * Product details:
+ * - Environment: {@link environment2}
+ * - Protocols: MQTT 3.1.1 and HTTP 1.1
+ * - Approval type: auto
+ * - Attributes: none
+ */
+export const apiProduct6: APIProduct = {
+  name: "ApiProduct6",
+  displayName: "API Product 6",
+  apis: [apiName3],
+  approvalType: APIProduct.approvalType.MANUAL,
+  attributes: [],
+  environments: [environment2.name],
+  protocols: [{ name: Protocol.name.MQTT, version: '3.1.1' }, { name: Protocol.name.HTTP, version: '1.1' }],
+  pubResources: [],
+  subResources: [],
 }
 
 /**
@@ -292,10 +340,10 @@ export const team2: Team = {
  * The `before()` hook logs a ">>> Start to execute test cases" message and all environment
  * variables that are used, and creates the following resources:
  * 
- * - The {@link organization}
- * - The environments {@link environment1} and {@link environment2}
- * - The API products {@link apiProduct1}, {@link apiProduct2}, {@link apiProduct3} and {@link apiProduct4}
- * - The teams {@link team1} and {@link team2}
+ * - The organization
+ * - The environments 1&2
+ * - The API products 1-6
+ * - The teams 1&2
  * 
  * The `beforeEach()` hook generates a new identifier for the {@link TestContext} and
  * configures the {@link PlatformAPIClient} to use the API user.
@@ -367,6 +415,8 @@ async function before() {
     ApiProductsService.createApiProduct({ ...orgctx, requestBody: apiProduct2 }),
     ApiProductsService.createApiProduct({ ...orgctx, requestBody: apiProduct3 }),
     ApiProductsService.createApiProduct({ ...orgctx, requestBody: apiProduct4 }),
+    ApiProductsService.createApiProduct({ ...orgctx, requestBody: apiProduct5 }),
+    ApiProductsService.createApiProduct({ ...orgctx, requestBody: apiProduct6 }),
   ]);
 
   await Promise.all([
@@ -386,8 +436,8 @@ function beforeEach() {
 /**
  * Registers an `after()` hook for a team-application test suite.
  * 
- * The `after()` hook deletes the {@link organization} (and all resources that are part of
- * it) and logs a ">>> Finished" message.
+ * The `after()` hook deletes the organization (and all resources that are part of it) and logs
+ * a ">>> Finished" message.
  * 
  * **Important:**
  * 
