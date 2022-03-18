@@ -15,7 +15,7 @@ on:
       - main
 
 env:
-  PLATFORM_API_HOME: "platform-api/api-implementation/"
+  PLATFORM_API_HOME: "platform-api/api-implementation"
 
 jobs:
 
@@ -25,7 +25,7 @@ jobs:
       matrix:
         node-version: [ '14.x', '16.x' ]
     env:
-      TEST_DIRECTORY: "test/"
+      TEST_DIRECTORY: "test"
     defaults:
       run:
         working-directory: ${{ env.PLATFORM_API_HOME }}
@@ -83,7 +83,7 @@ jobs:
         uses: actions/upload-artifact@v2
         with:
           name: integ-test-logs
-          path: ${{ github.workspace }}/${{ env.PLATFORM_API_HOME }}/${{ env.TEST_DIRECTORY }}/integ/tmp
+          path: ${{ github.workspace }}/${{ env.PLATFORM_API_HOME }}/${{ env.TEST_DIRECTORY }}/tmp
           if-no-files-found: error
 
 ###
