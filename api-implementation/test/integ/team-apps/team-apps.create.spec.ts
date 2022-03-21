@@ -419,7 +419,7 @@ describe(scriptName, function () {
     });
   });
 
-  xit("should not create an application if a status is specified for an API product", async function () {
+  it("should not create an application if a status is specified for an API product", async function () {
 
     const application: App = {
       name: applicationName,
@@ -436,7 +436,7 @@ describe(scriptName, function () {
       expect.fail("invalid request was not rejected");
     }, (reason) => {
       expect(reason, `error=${reason.message}`).is.instanceof(ApiError);
-      expect(reason.status, "status is not correct").to.be.oneOf([422]);
+      expect(reason.status, "status is not correct").to.be.oneOf([400]);
     });
   });
 
