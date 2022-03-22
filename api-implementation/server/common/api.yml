@@ -2,7 +2,7 @@ openapi: 3.0.0
 info:
   title: Solace API Management Connector
   description: 'Solace API Management Connector API. Note: basic authentication security mechanism is deprecated.'
-  version: 0.7.1
+  version: 0.7.2
 servers:
   - url: /v1
 
@@ -1402,16 +1402,25 @@ components:
         msgVpnName:
           $ref: '#/components/schemas/MsgVpnName'
         datacenterId:
-          $ref: "#/components/schemas/CommonSolaceCloudObjectId"
+          type: string
+          minLength: 1
+          maxLength: 256
+          pattern: "^[\\s\\S]*$"
         datacenterProvider:
           type: string
           minLength: 1
           maxLength: 256
           pattern: "^[\\s\\S]*$"
         serviceTypeId:
-          $ref: "#/components/schemas/CommonSolaceCloudObjectId"
+          type: string
+          minLength: 1
+          maxLength: 256
+          pattern: "^[\\s\\S]*$"
         serviceClassId:
-          $ref: "#/components/schemas/CommonSolaceCloudObjectId"
+          type: string
+          minLength: 1
+          maxLength: 256
+          pattern: "^[\\s\\S]*$"
         adminState:
           type: string
           minLength: 1
@@ -1451,7 +1460,10 @@ components:
           maxLength: 256
           pattern: "^[\\s\\S]*$"
         servicePackageId:
-          $ref: "#/components/schemas/CommonSolaceCloudObjectId"
+          type: string
+          minLength: 1
+          maxLength: 256
+          pattern: "^[\\s\\S]*$"
         serviceClassDisplayedAttributes:
           $ref: '#/components/schemas/ServiceClassDisplayedAttributes'
         accountingLimits:
