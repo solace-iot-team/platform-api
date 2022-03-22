@@ -51,6 +51,7 @@ declare namespace Components {
     }
     namespace Responses {
         export type BadRequest = Schemas.ErrorResponse;
+        export type Conflict = Schemas.ErrorResponse;
         export type Forbidden = Schemas.ErrorResponse;
         export type GatewayTimeout = Schemas.ErrorResponse;
         export type InternalServerError = Schemas.ErrorResponse;
@@ -747,14 +748,14 @@ declare namespace Components {
              * 1610714525243
              */
             at?: number;
-            user?: CommonUserName; // ^[.a-zA-Z0-9@_-]*$
+            user?: string; // .*
             /**
              * the request URI
              */
             requestURI?: string; // .*
             requestBody?: {
                 [name: string]: any;
-            };
+            } | String2MB /* ^[\s\S]*$ */ ;
             /**
              * example:
              * 200
@@ -912,10 +913,10 @@ declare namespace Components {
             infrastructureId?: CommonSolaceCloudObjectId; // ^[a-zA-Z0-9]*$
             name?: string; // ^[\s\S]*$
             msgVpnName?: MsgVpnName; // ^[^*^?]*$
-            datacenterId?: CommonSolaceCloudObjectId; // ^[a-zA-Z0-9]*$
+            datacenterId?: string; // ^[\s\S]*$
             datacenterProvider?: string; // ^[\s\S]*$
-            serviceTypeId?: CommonSolaceCloudObjectId; // ^[a-zA-Z0-9]*$
-            serviceClassId?: CommonSolaceCloudObjectId; // ^[a-zA-Z0-9]*$
+            serviceTypeId?: string; // ^[\s\S]*$
+            serviceClassId?: string; // ^[\s\S]*$
             adminState?: string; // ^[\s\S]*$
             adminProgress?: string; // ^[\s\S]*$
             created?: CommonTimestampInteger; // int64
@@ -928,7 +929,7 @@ declare namespace Components {
             locked?: boolean;
             messagingStorage?: number; // int64
             serviceStage?: string; // ^[\s\S]*$
-            servicePackageId?: CommonSolaceCloudObjectId; // ^[a-zA-Z0-9]*$
+            servicePackageId?: string; // ^[\s\S]*$
             serviceClassDisplayedAttributes?: ServiceClassDisplayedAttributes;
             accountingLimits?: AccountingLimit[];
         }
@@ -1147,7 +1148,9 @@ declare namespace Paths {
             export type $403 = Components.Responses.Forbidden;
             export type $404 = Components.Responses.NotFound;
             export type $406 = Components.Responses.NotAcceptable;
+            export type $409 = Components.Responses.Conflict;
             export type $415 = Components.Responses.UnsupportedMediaType;
+            export type $422 = Components.Schemas.ErrorResponse;
             export type $429 = Components.Responses.TooManyRequests;
             export type $500 = Components.Responses.InternalServerError;
             export type $503 = Components.Responses.ServiceUnavailable;
@@ -1196,6 +1199,7 @@ declare namespace Paths {
             export type $403 = Components.Responses.Forbidden;
             export type $404 = Components.Responses.NotFound;
             export type $406 = Components.Responses.NotAcceptable;
+            export type $409 = Components.Schemas.ErrorResponse;
             export type $429 = Components.Responses.TooManyRequests;
             export type $500 = Components.Responses.InternalServerError;
             export type $503 = Components.Responses.ServiceUnavailable;
@@ -1258,6 +1262,7 @@ declare namespace Paths {
             export type $403 = Components.Responses.Forbidden;
             export type $404 = Components.Responses.NotFound;
             export type $406 = Components.Responses.NotAcceptable;
+            export type $409 = Components.Schemas.ErrorResponse;
             export type $429 = Components.Responses.TooManyRequests;
             export type $500 = Components.Responses.InternalServerError;
             export type $503 = Components.Responses.ServiceUnavailable;
@@ -1757,7 +1762,7 @@ declare namespace Paths {
             status?: Parameters.Status;
         }
         namespace Responses {
-            export type $200 = Components.Schemas.App[];
+            export type $200 = Components.Schemas.AppResponse[];
             export type $400 = Components.Responses.BadRequest;
             export type $401 = Components.Responses.Unauthorized;
             export type $403 = Components.Responses.Forbidden;
