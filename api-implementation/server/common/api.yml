@@ -2470,6 +2470,9 @@ paths:
                 pattern: "^[A-Za-z0-9-_=]+\\.[A-Za-z0-9-_=]+\\.?[A-Za-z0-9-_.+/=]*$"
                 minLength: 1
                 maxLength: 16384
+            "application/json":
+              schema:
+                $ref: '#/components/schemas/CloudToken'
         '400':
            $ref: '#/components/responses/BadRequest'
         '401':
@@ -2501,16 +2504,22 @@ paths:
             minLength: 100
             maxLength: 16384
             pattern: "^[A-Za-z0-9-_=]+\\.[A-Za-z0-9-_=]+\\.?[A-Za-z0-9-_.+/=]*$"
+         "application/json":
+           schema:
+             $ref: '#/components/schemas/CloudToken'
       responses:
         '201':
           description: The cloud token
           content:
-            application/json:
+            "text/plain":
               schema:
                 type: string
                 minLength: 1
                 maxLength: 16384
                 pattern: "^[A-Za-z0-9-_=]+\\.[A-Za-z0-9-_=]+\\.?[A-Za-z0-9-_.+/=]*$"
+            "application/json":
+              schema:
+                $ref: '#/components/schemas/CloudToken'
         '400':
            $ref: '#/components/responses/BadRequest'
         '401':
