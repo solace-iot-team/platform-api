@@ -155,7 +155,7 @@ export class PersistenceService {
     L.info(q);
     try {
       const item: DeleteWriteOpResultObject = await collection.deleteOne(q);
-      L.debug(` deleted count: ${item.deletedCount}`);
+      L.debug(`Deleted count: ${item.deletedCount}`);
       if (item.deletedCount == 1) {
         retVal = 204;
       } else {
