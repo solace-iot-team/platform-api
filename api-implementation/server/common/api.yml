@@ -1752,7 +1752,10 @@ components:
           description: UNIX timestamp when auditable event occurred
           example: 1610714525243
         user:
-          $ref: "#/components/schemas/CommonUserName"
+          type: string
+          pattern: ".*"
+          minLength: 0
+          maxLength: 256
         requestURI:
           type: string
           description: the request URI
@@ -1760,8 +1763,10 @@ components:
           maxLength: 1024
           pattern: ".*"
         requestBody:
-          type: object
-          additionalProperties: true
+          oneOf:
+          - type: object
+            additionalProperties: true
+          - $ref: "#/components/schemas/String2MB"
         responseCode:
           type: integer
           format: int64
