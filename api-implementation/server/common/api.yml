@@ -3406,7 +3406,7 @@ paths:
                minItems: 0
                maxItems: 32768
                items:
-                  $ref: '#/components/schemas/App'
+                  $ref: '#/components/schemas/AppListItem'
         '400':
            $ref: '#/components/responses/BadRequest'
         '401':
