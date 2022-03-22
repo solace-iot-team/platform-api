@@ -236,6 +236,12 @@ components:
         application/json:
           schema:
             $ref: '#/components/schemas/ErrorResponse'
+    Conflict:
+      description: Conflict.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
 
   schemas:
     ErrorResponse:
@@ -1545,8 +1551,6 @@ components:
       type: object
       allOf: 
         - $ref: "#/components/schemas/Organization"
-      required:
-      - name
       additionalProperties: false
       properties:
         status: 
@@ -1641,7 +1645,7 @@ components:
       type: object
       properties:
         baseUrl:
-          $ref: "#/components/schemas/CommonURL"
+         $ref: "#/components/schemas/CommonURL"
         authentication:
           oneOf:
           - "$ref": "#/components/schemas/BasicAuthentication"
@@ -2160,8 +2164,16 @@ paths:
           $ref: '#/components/responses/NotFound'
         '406':
           $ref: '#/components/responses/NotAcceptable'
+        '409':
+          $ref: '#/components/responses/Conflict'
         '415':
           $ref: '#/components/responses/UnsupportedMediaType'
+        '422':
+          description: "Duplicate organization"
+          content:
+           "application/json":
+            schema:
+              "$ref": "#/components/schemas/ErrorResponse"        
         '429':
           $ref: '#/components/responses/TooManyRequests'
         '500':
