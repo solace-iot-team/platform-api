@@ -2786,6 +2786,12 @@ paths:
           $ref: '#/components/responses/NotFound'
         '406':
           $ref: '#/components/responses/NotAcceptable'
+        '409':
+          description: "Can't delete, API Product is still referenced."
+          content:
+           "application/json":
+            schema:
+             "$ref": "#/components/schemas/ErrorResponse"
         '429':
           $ref: '#/components/responses/TooManyRequests'
         '500':
@@ -4396,6 +4402,12 @@ paths:
           $ref: '#/components/responses/NotFound'
         '406':
           $ref: '#/components/responses/NotAcceptable'
+        '409':
+          description: "Can't delete, Environment is still referenced."
+          content:
+           "application/json":
+            schema:
+             "$ref": "#/components/schemas/ErrorResponse"
         '429':
           $ref: '#/components/responses/TooManyRequests'
         '500':
