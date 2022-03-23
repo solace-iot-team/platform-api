@@ -78,14 +78,7 @@ describe(scriptName, function () {
       expect.fail(`failed to get token; error="${reason.body.message}"`);
     });
 
-    let tokenFromResponse: any;
-    try {
-      tokenFromResponse = JSON.parse(response.body);
-    } catch (e) {
-      expect.fail(`failed to parse token from response; error=${e.message}`);
-    }
-
-    expect(tokenFromResponse, "response is not correct").to.deep.include(organization2['cloud-token']);
+    expect(response.body, "response is not correct").to.deep.include(organization2['cloud-token']);
   });
 
   it("should return no token for an organization without token", async function () {
