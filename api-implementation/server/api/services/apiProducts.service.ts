@@ -42,10 +42,10 @@ export class ApiProductsService {
     return new Promise<APIProduct>(async (resolve, reject) => {
       try {
         const apiReferenceCheck: boolean = await this.validateReferences(body);
-        L.info(` reference check result ${apiReferenceCheck}`);
+        L.info(`Reference check result ${apiReferenceCheck}`);
         if (!apiReferenceCheck) {
-          L.info(` reference check failed ${apiReferenceCheck}`);
-          reject(new ErrorResponseInternal(422, ` reference check failed ${apiReferenceCheck}`));
+          L.info(`Reference check failed ${apiReferenceCheck}`);
+          reject(new ErrorResponseInternal(422, `Reference check failed ${apiReferenceCheck}`));
 
         }
         this.persistenceService.create(body.name, body).then((p) => {
@@ -75,9 +75,9 @@ export class ApiProductsService {
         body.protocols = body.protocols ?? oldProduct.protocols;
       }
       const apiReferenceCheck = await this.validateReferences(body);
-      L.info(` reference check result ${apiReferenceCheck}`);
+      L.info(`Reference check result ${apiReferenceCheck}`);
       if (!apiReferenceCheck)
-        throw new ErrorResponseInternal(422, ` reference check failed ${apiReferenceCheck}`);
+        throw new ErrorResponseInternal(422, `Reference check failed ${apiReferenceCheck}`);
       const p = await this.persistenceService.update(name, body);
       if (p != null) {
         return p;

@@ -78,44 +78,37 @@ describe(scriptName, function () {
       expect.fail(`failed to get token; error="${reason.body.message}"`);
     });
 
-    let tokenFromResponse: any;
-    try {
-      tokenFromResponse = JSON.parse(response.body);
-    } catch (e) {
-      expect.fail(`failed to parse token from response; error=${e.message}`);
-    }
-
-    expect(tokenFromResponse, "response is not correct").to.deep.include(organization2['cloud-token']);
+    expect(response.body, "response is not correct").to.deep.include(organization2['cloud-token']);
   });
 
-  it("should return no token for an organization without token", async function () {
-
-    const response = await ManagementService.getToken({ organizationName: organization3.name }).catch((reason) => {
-      expect(reason, `error=${reason.message}`).is.instanceof(ApiError);
-      expect.fail(`failed to get token; error="${reason.body.message}"`);
-    });
-
-    expect(response.body, "response is not correct").to.be.empty;
-  });
-
-  it("should not return an organization if the user is not authorized", async function () {
+  it("should not return a token if the user is not authorized", async function () {
 
     PlatformAPIClient.setManagementUser();
     await ManagementService.getToken({ organizationName: organization1.name }).then(() => {
-      expect.fail("an unauthorized user retrieved an organization");
+      expect.fail("unauthorized request was not rejected");
     }, (reason) => {
       expect(reason, `error=${reason.message}`).is.instanceof(ApiError);
-      expect(reason.status, `status is not correct`).to.be.oneOf([401]);
+      expect(reason.status, "status is not correct").to.be.oneOf([401]);
     });
   });
 
   it("should not return a token if the organization is unknown", async function () {
 
     await ManagementService.getToken({ organizationName: "unknown" }).then(() => {
-      expect.fail("an unknown organization was returned");
+      expect.fail("invalid request was not rejected");
     }, (reason) => {
       expect(reason, `error=${reason.message}`).is.instanceof(ApiError);
-      expect(reason.status, `status is not correct`).to.be.oneOf([404]);
+      expect(reason.status, "status is not correct").to.be.oneOf([404]);
+    });
+  });
+
+  it("should not return a token if not token is defined", async function () {
+
+    await ManagementService.getToken({ organizationName: organization3.name }).then(() => {
+      expect.fail("invalid request was not rejected");
+    }, (reason) => {
+      expect(reason, `error=${reason.message}`).is.instanceof(ApiError);
+      expect(reason.status, "status is not correct").to.be.oneOf([404]);
     });
   });
 

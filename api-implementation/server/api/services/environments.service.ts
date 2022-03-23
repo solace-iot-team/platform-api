@@ -159,14 +159,14 @@ export class EnvironmentsService {
       if (svc == null) {
         return new ErrorResponseInternal(
           422,
-          ` reference check failed service ${env.serviceId} does not exist`
+          `Reference check failed service ${env.serviceId} does not exist`
         );
       } else {
         // check the exposed protocols against the actual protocols supported by the service
         if (env.exposedProtocols == null || env.exposedProtocols.length == 0) {
           return new ErrorResponseInternal(
             422,
-            ` no protocols exposed for service ${env.serviceId}`
+            `No protocols exposed for service ${env.serviceId}`
           );
         }
         const serverProtocols: Components.Schemas.Endpoint[] = await ProtocolMapper.mapSolaceMessagingProtocolsToAsyncAPI(svc.messagingProtocols);
@@ -178,7 +178,7 @@ export class EnvironmentsService {
           if (matchingSP === undefined) {
             return new ErrorResponseInternal(
               422,
-              ` reference check failed protocol ${exposedProtocol.name} ${exposedProtocol.version} does not exist on service ${env.serviceId}`
+              `Reference check failed protocol ${exposedProtocol.name} ${exposedProtocol.version} does not exist on service ${env.serviceId}`
             );
           }
         }
@@ -187,7 +187,7 @@ export class EnvironmentsService {
     } catch (e) {
       return new ErrorResponseInternal(
         422,
-        ` reference check failed service ${env.serviceId} does not exist (error ${e})`
+        `Reference check failed service ${env.serviceId} does not exist (error ${e})`
       );
     }
   }

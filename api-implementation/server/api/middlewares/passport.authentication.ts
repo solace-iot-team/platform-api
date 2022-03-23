@@ -74,7 +74,7 @@ export default class PassportFactory {
         if (authenticated !== null) {
           return cb(null, authenticated);
         } else {
-          return cb(new ErrorResponseInternal(401, 'user not authenticated'));
+          return cb(new ErrorResponseInternal(401, 'User not authenticated'));
         }
       })
     );

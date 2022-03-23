@@ -12,12 +12,15 @@ export default function errorHandler(
   let theError: ErrorResponseInternal = err;
   if (!(typeof theError.message === 'string') && !(theError.message as any instanceof String)){
     theError.message = JSON.stringify(theError.message);
+  } else {
+    theError.message = theError.message.trim();
+    theError.message = `${theError.message[0].toUpperCase()}${theError.message.slice(1)}`;
   }
   let statusCode: number = theError.statusCode;
   if (!statusCode){
     statusCode = err['status'];
   }
-  L.debug(`errorHandler ${statusCode} - ${err.message}`);
+  L.debug(`${statusCode} - [${err.message}]`);
   L.debug(err);
   delete theError.statusCode;
   res.status(statusCode || 500).json(theError);
