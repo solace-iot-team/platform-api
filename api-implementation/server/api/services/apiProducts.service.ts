@@ -3,6 +3,7 @@ import APIProduct = Components.Schemas.APIProduct;
 import AppListitem = Components.Schemas.AppListItem;
 import CommonEntityNameList = Components.Schemas.CommonEntityNameList;
 import CommonEntityNames = Components.Schemas.CommonEntityNames;
+import Meta = Components.Schemas.Meta;
 import { PersistenceService } from './persistence.service';
 
 import EnvironmentsService from './environments.service';
@@ -10,6 +11,7 @@ import AppsService from './apps.service';
 
 import ApisService from './apis.service';
 import { ErrorResponseInternal } from '../middlewares/error.handler';
+import { Versioning } from '../../common/constants';
 import asyncapigenerator from './asyncapi/asyncapigenerator';
 import preconditionCheck from './persistence/preconditionhelper';
 
@@ -22,12 +24,24 @@ export class ApiProductsService {
 
   }
 
-  all(query?: any): Promise<APIProduct[]> {
-    return this.persistenceService.all(query);
+  async all(query?: any): Promise<APIProduct[]> {
+    const results: APIProduct[] = await this.persistenceService.all(query);
+    for (const p of results) {
+      if (p.meta.version == Versioning.INITIAL_VERSION) {
+        p.meta.version = `1.${p.meta[Versioning.INTERNAL_REVISION]}.0`
+      }
+      delete p.meta[Versioning.INTERNAL_REVISION];
+    }
+    return results;
   }
 
-  byName(name: string): Promise<APIProduct> {
-    return this.persistenceService.byName(name);
+  async byName(name: string): Promise<APIProduct> {
+    const p: APIProduct = await this.persistenceService.byName(name);
+    if (p.meta.version == Versioning.INITIAL_VERSION) {
+      p.meta.version = `1.${p.meta[Versioning.INTERNAL_REVISION]}.0`
+    }
+    delete p.meta[Versioning.INTERNAL_REVISION];
+    return p;
   }
 
   async delete(name: string): Promise<number> {
@@ -48,8 +62,17 @@ export class ApiProductsService {
           reject(new ErrorResponseInternal(422, `Reference check failed ${apiReferenceCheck}`));
 
         }
+        if (!body.meta) {
+          body.meta = {
+            version: Versioning.INITIAL_VERSION,
+            lastModified: new Date().toISOString()
+          };
+        } else if (!body.meta.lastModified) {
+          body.meta.lastModified = new Date().toISOString()
+        }
+        body.meta[Versioning.INTERNAL_REVISION] = Versioning.INITIAL_REVISION;
         this.persistenceService.create(body.name, body).then((p) => {
-          resolve(p);
+          resolve(this.byName(body.name));
         }).catch((e) => {
           L.error(`APIProductsService.create error ${e}`);
           reject(e);
@@ -68,8 +91,8 @@ export class ApiProductsService {
     try {
       // if the environments are updated, the current protocols must be re-validated
       // if the protocols are updated, they must be validated against the current environments
-      if (    (body.environments != null && body.protocols == null)
-           || (body.environments == null && body.protocols != null)) {
+      if ((body.environments != null && body.protocols == null)
+        || (body.environments == null && body.protocols != null)) {
         const oldProduct = await this.persistenceService.byName(name);
         body.environments = body.environments ?? oldProduct.environments;
         body.protocols = body.protocols ?? oldProduct.protocols;
@@ -78,9 +101,25 @@ export class ApiProductsService {
       L.info(`Reference check result ${apiReferenceCheck}`);
       if (!apiReferenceCheck)
         throw new ErrorResponseInternal(422, `Reference check failed ${apiReferenceCheck}`);
+      const currentState: APIProduct = await this.persistenceService.byName(name);
+      if (!Versioning.validateNewVersion(body.meta, currentState.meta)) {
+        throw new ErrorResponseInternal(409, `Version supplied in meta element is not greater than current version`);
+      }
+      if (!body.meta) {
+        body.meta = {
+          version: Versioning.INITIAL_VERSION,
+          lastModified: new Date().toISOString()
+        };
+      } else if (!body.meta.lastModified) {
+        body.meta.lastModified = new Date().toISOString()
+      }
+      L.info(JSON.stringify(currentState.meta));
+      body.meta[Versioning.INTERNAL_REVISION] = Versioning.nextRevision(currentState.meta[Versioning.INTERNAL_REVISION] as number);
+      // todo check semver against current state
+
       const p = await this.persistenceService.update(name, body);
       if (p != null) {
-        return p;
+        return await this.byName(name);
       } else {
         throw new ErrorResponseInternal(500, `Could not update object`);
       }
@@ -96,9 +135,9 @@ export class ApiProductsService {
   }
   async apiByName(apiProductName: string, name: string): Promise<string> {
     const apiList = await this.apiList(apiProductName);
-    if (apiList.find(n=>n==name)){
-    const apiProduct = await this.byName(apiProductName);
-    return asyncapigenerator.getSpecificationByApiProduct(name, apiProduct);
+    if (apiList.find(n => n == name)) {
+      const apiProduct = await this.byName(apiProductName);
+      return asyncapigenerator.getSpecificationByApiProduct(name, apiProduct);
     } else {
       throw new ErrorResponseInternal(404, `API [${name}] is not associated with API Product [${apiProductName}]`);
     }
@@ -107,7 +146,7 @@ export class ApiProductsService {
   async appsByName(name: string): Promise<CommonEntityNameList> {
     const apps: AppListitem[] = await this.listAppsReferencingProduct(name);
     const names: CommonEntityNameList = [];
-    for (const app of apps){
+    for (const app of apps) {
       const name: CommonEntityNames = {
         displayName: app.displayName,
         name: app.name,

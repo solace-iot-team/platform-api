@@ -511,6 +511,8 @@ components:
             $ref: '#/components/schemas/ClientOptions'
           accessLevel:
             $ref: '#/components/schemas/APIProductAccessLevel'
+          meta:
+            $ref: '#/components/schemas/Meta'
 
     APIProductPatch:
       type: object
@@ -570,6 +572,8 @@ components:
             $ref: '#/components/schemas/ClientOptions'
           accessLevel:
             $ref: '#/components/schemas/APIProductAccessLevel'
+          meta:
+            $ref: '#/components/schemas/Meta'
 
     APIProductAccessLevel:
       type: string
@@ -2145,6 +2149,23 @@ components:
       maxLength: 32
       example: "API-GW-EU:AWS:1"
       pattern: "^[^*^?]*$"
+    
+    Meta:
+      type: object
+      description: meta information of an object. Will be returned by some resources. Can be set when patching or creating an object. Auto generated if not set.
+      additionalProperties: false
+      required:
+      - version
+      properties:
+        version:
+          type: string
+          description: a version number in semver (Semantic Versioning) format
+          example: 1.0.1
+          pattern: "^(0|[1-9]\\d*)\\.(0|[1-9]\\d*)\\.(0|[1-9]\\d*)(?:-((?:0|[1-9]\\d*|\\d*[a-zA-Z-][0-9a-zA-Z-]*)(?:\\.(?:0|[1-9]\\d*|\\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?(?:\\+([0-9a-zA-Z-]+(?:\\.[0-9a-zA-Z-]+)*))?$"
+        lastModified: 
+          type: string
+          description: The date and time the object was last modified
+          format: date-time
 security:
   - OpenId: []
   - BasicAuth: []
@@ -3074,6 +3095,12 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/APIProduct'
+        '409':
+          description: "The API Product is not valid. For example the object version provided is not greater than the current version."
+          content:
+           "application/json":
+            schema:
+              "$ref": "#/components/schemas/ErrorResponse"
         '422':
           description: "Duplicate API Product or invalid object reference e.g. invalid environment name"
           content:

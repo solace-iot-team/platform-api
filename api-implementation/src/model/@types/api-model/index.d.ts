@@ -185,6 +185,7 @@ declare namespace Components {
             protocols: Protocol[];
             clientOptions?: ClientOptions;
             accessLevel?: APIProductAccessLevel;
+            meta?: Meta;
         }
         export type APIProductAccessLevel = "internal" | "private" | "public";
         /**
@@ -222,6 +223,7 @@ declare namespace Components {
             protocols?: Protocol[];
             clientOptions?: ClientOptions;
             accessLevel?: APIProductAccessLevel;
+            meta?: Meta;
         }
         export interface APISummary {
             name?: CommonName; // ^[a-zA-Z0-9_-]*$
@@ -790,6 +792,21 @@ declare namespace Components {
              * 200
              */
             responseCode?: number; // int64
+        }
+        /**
+         * meta information of an object. Will be returned by some resources. Can be set when patching or creating an object. Auto generated if not set.
+         */
+        export interface Meta {
+            /**
+             * a version number in semver (Semantic Versioning) format
+             * example:
+             * 1.0.1
+             */
+            version: string; // ^(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)(?:-((?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*)(?:\.(?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?(?:\+([0-9a-zA-Z-]+(?:\.[0-9a-zA-Z-]+)*))?$
+            /**
+             * The date and time the object was last modified
+             */
+            lastModified?: string; // date-time
         }
         export interface MsgVpnAttributes {
             authenticationClientCertEnabled: string; // ^[\s\S]*$
