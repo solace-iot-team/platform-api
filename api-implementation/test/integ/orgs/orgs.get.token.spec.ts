@@ -85,7 +85,7 @@ describe(scriptName, function () {
 
     const response = await ManagementService.getToken({ organizationName: organization3.name }).catch((reason) => {
       expect(reason, `error=${reason.message}`).is.instanceof(ApiError);
-      expect(reason.status, `status is not correct`).to.be.oneOf([404]);
+      expect.fail(`failed to get token; error="${reason.body.message}"`);
     });
 
     expect(response.body, "response is not correct").to.be.empty;
