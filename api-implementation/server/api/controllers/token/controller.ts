@@ -4,6 +4,7 @@ import OrganizationsService from '../../services/organizations.service';
 import { NextFunction, Request, Response } from 'express';
 import { ns } from '../../middlewares/context.handler';
 import { isString } from '../../../../src/typehelpers';
+import { ErrorResponseInternal } from '../../middlewares/error.handler';
 
 export class Controller {
 
@@ -28,8 +29,10 @@ export class Controller {
       .then((org) => {
         if (isString(org[ContextConstants.CLOUD_TOKEN])) {
           res.status(200).contentType('text/plain').send(org[ContextConstants.CLOUD_TOKEN]);
-        } else {
+        } else if (org[ContextConstants.CLOUD_TOKEN]) {
           res.status(200).json(org[ContextConstants.CLOUD_TOKEN]);
+        } else {
+          throw new ErrorResponseInternal(404, `No token configured`)
         }
       })
       .catch((e) => next(e));
