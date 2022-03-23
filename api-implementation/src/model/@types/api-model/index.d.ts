@@ -801,6 +801,7 @@ declare namespace Components {
          */
         export type MsgVpnName = string; // ^[^*^?]*$
         export interface Organization {
+            [name: string]: any;
             name: CommonName; // ^[a-zA-Z0-9_-]*$
             sempV2Authentication?: SempV2Authentication;
             "cloud-token"?: string /* ^[A-Za-z0-9-_=]+\.[A-Za-z0-9-_=]+\.?[A-Za-z0-9-_.+/=]*$ */  | CloudToken;
@@ -817,11 +818,12 @@ declare namespace Components {
             authentication: BasicAuthentication | APIKeyAuthentication | BearerTokenAuthentication;
         }
         export interface OrganizationResponse {
+            [name: string]: any;
+            status?: OrganizationStatus;
             name: CommonName; // ^[a-zA-Z0-9_-]*$
             sempV2Authentication?: SempV2Authentication;
             "cloud-token"?: string /* ^[A-Za-z0-9-_=]+\.[A-Za-z0-9-_=]+\.?[A-Za-z0-9-_.+/=]*$ */  | CloudToken;
             integrations?: OrganizationIntegrations;
-            status?: OrganizationStatus;
         }
         export interface OrganizationStatus {
             cloudConnectivity?: boolean;

@@ -1606,7 +1606,7 @@ components:
       type: object
       required:
       - name
-      additionalProperties: false
+      additionalProperties: true
       properties:
         name:
           $ref: "#/components/schemas/CommonName"
@@ -1625,25 +1625,10 @@ components:
           "$ref": "#/components/schemas/OrganizationIntegrations"
 
     OrganizationResponse:
-      required:
-      - name
-      additionalProperties: false
+      allOf:
+      - $ref: "#/components/schemas/Organization"
+      additionalProperties: true
       properties:
-        name:
-          $ref: "#/components/schemas/CommonName"
-        sempV2Authentication:
-          $ref: "#/components/schemas/SempV2Authentication"
-        cloud-token:
-          oneOf:
-          - type: string
-            pattern: "^[A-Za-z0-9-_=]+\\.[A-Za-z0-9-_=]+\\.?[A-Za-z0-9-_.+/=]*$"
-            minLength: 1
-            maxLength: 16384
-            description: a Solace Cloud API Token, requires "get services" and "event portal read" permissions
-            example: eyXhbGciOiJSUzI1NiIsImtpZCI6Im1hYXNfcHJvZF8yMDIwMDMyNiIsInR5cCI6IkpXVCJ9.eyJvcmcifiJzb2xhY2Vpb3R0ZWFtIiwib3JnVHlwZSI6IkVOVEVSUFJJU0UiLCJzdWIiOiIzZTJvY214MTA1IiwicGVybWlzc2lvbnMiOiJBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQXdBQU09IiwiYXBpVG9rZW5JZCI6Inlhb2wzc2ZveG03IiwiaXNzIjoiU29sYWNlIENvcnBvcmF0aW9uIiwiaWF0IjoxNjAzODA3NzQ1fQ.QIBpi5_U6b1DnAwbDbJiFIT0pomqa4AyOLtmSOEF6zhoxKMm4Y27WbILZnxnh_gpdX-tvt18Ycuck4xs3T5JjFfU3qrczRHSuj2vEdsCpDQWdyZTPV4NQ-zPxRvigTjaTlcdXin8XwMGh8nZdylgRMlRQjvotomnXQxgbUol0Kl1ziFFMybqeD10qCDsUW6Jv-PKibBN3cnCsWwPZX6d_XYUECs1AHjgs5pk-A8v3DHcnvbXiAP4XXrry6ztopAWKMc5rVFoB_WFY4yi0reuTYjn6Sf0g7vZxFifRZZHZmqZtNQUiX6S80eQG4kF3YDKlr5PfLDNp4iRfe0-3svIPw
-          - "$ref": "#/components/schemas/CloudToken"
-        integrations:
-          "$ref": "#/components/schemas/OrganizationIntegrations"
         status: 
           $ref: "#/components/schemas/OrganizationStatus"
 
