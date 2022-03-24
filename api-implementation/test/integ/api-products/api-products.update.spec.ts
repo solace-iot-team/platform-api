@@ -305,7 +305,7 @@ describe(scriptName, function () {
       ...apiProduct,
       ...apiProductPatch,
     }
-    response.body.should.be.like(updatedApiProduct);
+    response.body.should.like(updatedApiProduct);
   }
 
 });
