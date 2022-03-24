@@ -102,6 +102,7 @@
     "@typescript-eslint/parser": "^4.4.0",
     "abort-controller": "^3.0.0",
     "chai": "^4.2.0",
+    "chai-like": "^1.1.1",
     "commander": "^9.0.0",
     "dtsgenerator": "^2.7.0",
     "eslint": "^7.11.0",
