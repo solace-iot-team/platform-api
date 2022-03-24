@@ -1,6 +1,3 @@
-import semver from 'semver';
-import Meta = Components.Schemas.Meta;
-
 export class PlatformConstants {
   public static PLATFORM_DB = 'platform';
   public static PLATFORM_COLLECTIONS = ['organizations', 'history'];
@@ -27,21 +24,4 @@ export class TopicWildcards {
 
   public static MULTI_LEVEL_SMF = '>';
   public static MULTI_LEVEL_MQTT = '#';
-}
-
-export class Versioning {
-  public static INTERNAL_REVISION = 'internalRevision';
-  public static INITIAL_VERSION = 'default';
-  public static INITIAL_REVISION:number = 1;
-  public static nextRevision(current: number): number{
-    return current + 1;
-  }
-  public static validateNewVersion(newVersion: Meta, previousVersion: Meta): boolean {
-    if (!newVersion){
-      return true;
-    }
-    let semVerPrev = previousVersion.version==Versioning.INITIAL_VERSION?`1.${previousVersion[Versioning.INTERNAL_REVISION]}.0`:previousVersion.version;
-
-    return semver.gt(newVersion.version,semVerPrev);
-  }
 }

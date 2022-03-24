@@ -2,7 +2,7 @@ openapi: 3.0.0
 info:
   title: Solace API Management Connector
   description: 'Solace API Management Connector API. Note: basic authentication security mechanism is deprecated.'
-  version: 0.7.2
+  version: 0.7.3
 servers:
   - url: /v1
 
@@ -169,6 +169,12 @@ components:
       schema:
         type: string
       description: specify search terms to filter results on, multiple search terms can be supplied. Search will return results matching any of the terms (OR). Enclose search terms in quotes to limit results to recoirds matching ALL terms (AND).)  
+    version:
+      name: version
+      in: path
+      required: true
+      schema:
+        $ref: '#/components/schemas/SemVer' 
   responses:
     PreconditionFailed:
       description: PreConditon Failed, likely a mismatch between current etag and if-match header
@@ -2158,14 +2164,24 @@ components:
       - version
       properties:
         version:
-          type: string
-          description: a version number in semver (Semantic Versioning) format
-          example: 1.0.1
-          pattern: "^(0|[1-9]\\d*)\\.(0|[1-9]\\d*)\\.(0|[1-9]\\d*)(?:-((?:0|[1-9]\\d*|\\d*[a-zA-Z-][0-9a-zA-Z-]*)(?:\\.(?:0|[1-9]\\d*|\\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?(?:\\+([0-9a-zA-Z-]+(?:\\.[0-9a-zA-Z-]+)*))?$"
+          $ref: "#/components/schemas/SemVer"
         lastModified: 
-          type: string
+          type: number
+          readOnly: true
           description: The date and time the object was last modified
-          format: date-time
+        lastModifiedBy: 
+          $ref: "#/components/schemas/CommonUserName"
+        created: 
+          type: number
+          readOnly: true
+          description: The date and time the object was last modified
+        createdBy: 
+          $ref: "#/components/schemas/CommonUserName"
+    SemVer:
+      type: string
+      description: a version number in semver (Semantic Versioning) format
+      example: 1.0.1
+      pattern: "^(0|[1-9]\\d*)\\.(0|[1-9]\\d*)\\.(0|[1-9]\\d*)(?:-((?:0|[1-9]\\d*|\\d*[a-zA-Z-][0-9a-zA-Z-]*)(?:\\.(?:0|[1-9]\\d*|\\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?(?:\\+([0-9a-zA-Z-]+(?:\\.[0-9a-zA-Z-]+)*))?$"
 security:
   - OpenId: []
   - BasicAuth: []
@@ -3271,6 +3287,82 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/CommonEntityNameList'
+        '400':
+           $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '406':
+          $ref: '#/components/responses/NotAcceptable'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
+        '504':
+          $ref: '#/components/responses/GatewayTimeout'
+  /{organization_name}/apiProducts/{api_product_name}/revisions:
+    parameters:
+    - $ref: '#/components/parameters/organization'
+    - $ref: '#/components/parameters/api_product_name'
+    get:
+     operationId: listApiProductRevisions
+     tags:
+     - apiProducts
+     parameters:
+     - $ref: '#/components/parameters/page_size'
+     - $ref: '#/components/parameters/page_number'
+     - $ref: '#/components/parameters/sort_field_name'
+     - $ref: '#/components/parameters/sort_direction'
+     responses:
+        '200':
+          description:  revisions of the api product
+          content:
+            application/json:
+              schema:
+                type: array
+                minItems: 0
+                maxItems: 32768
+                items:
+                 $ref: "#/components/schemas/SemVer"
+        '400':
+           $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '406':
+          $ref: '#/components/responses/NotAcceptable'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
+        '504':
+          $ref: '#/components/responses/GatewayTimeout'
+  /{organization_name}/apiProducts/{api_product_name}/revisions/{version}:
+    parameters:
+    - $ref: '#/components/parameters/organization'
+    - $ref: '#/components/parameters/api_product_name'
+    - $ref: '#/components/parameters/version'
+    get:
+     operationId: getApiProductRevision
+     tags:
+     - apiProducts
+     responses:
+        '200':
+          description: revision of the API Product
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/APIProduct"
         '400':
            $ref: '#/components/responses/BadRequest'
         '401':

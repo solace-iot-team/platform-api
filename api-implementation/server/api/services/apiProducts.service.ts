@@ -3,7 +3,6 @@ import APIProduct = Components.Schemas.APIProduct;
 import AppListitem = Components.Schemas.AppListItem;
 import CommonEntityNameList = Components.Schemas.CommonEntityNameList;
 import CommonEntityNames = Components.Schemas.CommonEntityNames;
-import Meta = Components.Schemas.Meta;
 import { PersistenceService } from './persistence.service';
 
 import EnvironmentsService from './environments.service';
@@ -11,41 +10,41 @@ import AppsService from './apps.service';
 
 import ApisService from './apis.service';
 import { ErrorResponseInternal } from '../middlewares/error.handler';
-import { Versioning } from '../../common/constants';
+import { Versioning } from '../../common/versioning';
 import asyncapigenerator from './asyncapi/asyncapigenerator';
 import preconditionCheck from './persistence/preconditionhelper';
 
 export class ApiProductsService {
 
   private persistenceService: PersistenceService;
+  private revisionPersistenceService: PersistenceService;
 
   constructor() {
     this.persistenceService = new PersistenceService('api_products');
+    this.revisionPersistenceService = new PersistenceService('api_products_revisions');
 
   }
 
   async all(query?: any): Promise<APIProduct[]> {
     const results: APIProduct[] = await this.persistenceService.all(query);
     for (const p of results) {
-      if (p.meta.version == Versioning.INITIAL_VERSION) {
-        p.meta.version = `1.${p.meta[Versioning.INTERNAL_REVISION]}.0`
-      }
-      delete p.meta[Versioning.INTERNAL_REVISION];
+      p.meta = Versioning.toExternalRepresentation(p.meta);
     }
     return results;
   }
 
   async byName(name: string): Promise<APIProduct> {
     const p: APIProduct = await this.persistenceService.byName(name);
-    if (p.meta.version == Versioning.INITIAL_VERSION) {
-      p.meta.version = `1.${p.meta[Versioning.INTERNAL_REVISION]}.0`
-    }
-    delete p.meta[Versioning.INTERNAL_REVISION];
+    p.meta = Versioning.toExternalRepresentation(p.meta);
     return p;
   }
 
   async delete(name: string): Promise<number> {
     if (await this.canDelete(name)) {
+      const revisions: string[] = await this.revisionList(name);
+      for (const r of revisions){
+        await this.revisionPersistenceService.delete(Versioning.createRevisionId(name, r));
+      }
       return this.persistenceService.delete(name);
     } else {
       throw new ErrorResponseInternal(409, `Can't delete, API Product is still referenced`);
@@ -63,15 +62,12 @@ export class ApiProductsService {
 
         }
         if (!body.meta) {
-          body.meta = {
-            version: Versioning.INITIAL_VERSION,
-            lastModified: new Date().toISOString()
-          };
-        } else if (!body.meta.lastModified) {
-          body.meta.lastModified = new Date().toISOString()
+          body.meta = Versioning.createMeta();
+        } else {
+          body.meta = Versioning.createMeta(body.meta.version);
         }
-        body.meta[Versioning.INTERNAL_REVISION] = Versioning.INITIAL_REVISION;
-        this.persistenceService.create(body.name, body).then((p) => {
+        this.persistenceService.create(body.name, body).then(async (p) => {
+          await this.saveRevision(body);
           resolve(this.byName(body.name));
         }).catch((e) => {
           L.error(`APIProductsService.create error ${e}`);
@@ -106,19 +102,16 @@ export class ApiProductsService {
         throw new ErrorResponseInternal(409, `Version supplied in meta element is not greater than current version`);
       }
       if (!body.meta) {
-        body.meta = {
-          version: Versioning.INITIAL_VERSION,
-          lastModified: new Date().toISOString()
-        };
-      } else if (!body.meta.lastModified) {
-        body.meta.lastModified = new Date().toISOString()
+        body.meta = Versioning.update(currentState.meta);
+      } else {
+        body.meta = Versioning.update(currentState.meta, body.meta);
       }
       L.info(JSON.stringify(currentState.meta));
-      body.meta[Versioning.INTERNAL_REVISION] = Versioning.nextRevision(currentState.meta[Versioning.INTERNAL_REVISION] as number);
       // todo check semver against current state
 
       const p = await this.persistenceService.update(name, body);
       if (p != null) {
+        await this.saveRevision(p);
         return await this.byName(name);
       } else {
         throw new ErrorResponseInternal(500, `Could not update object`);
@@ -155,6 +148,33 @@ export class ApiProductsService {
     }
     return names;
   }
+
+  async revisionList(apiProductName: string): Promise<string[]> {
+    const products: APIProduct[] = await this.revisionPersistenceService.all({ name: apiProductName });
+    const revisions: string[] = [];
+    for (const p of products) {
+      const m = Versioning.toExternalRepresentation(p.meta);
+      revisions.push(m.version);
+    }
+    return revisions;
+  }
+
+  async revisionByVersion(apiProductName: string, version: string): Promise<APIProduct> {
+    const revisionList = await this.revisionList(apiProductName);
+    if (revisionList.find(n => n == version)) {
+      const id = Versioning.createRevisionId(apiProductName, version);
+
+      const apiProduct = await this.revisionPersistenceService.byName(id);
+      if (!apiProduct){
+        throw new ErrorResponseInternal(404, `Version ${version} of API Product [${apiProductName}] does not exist`);
+      }
+      return apiProduct;
+    } else {
+      throw new ErrorResponseInternal(404, `Version ${version} of API Product [${apiProductName}] does not exist`);
+    }
+  }
+
+
   private async canDelete(name: string): Promise<boolean> {
     const apps = await this.listAppsReferencingProduct(name);
     if (apps == null || apps.length == 0) {
@@ -236,6 +256,11 @@ export class ApiProductsService {
     return true;
   }
 
+  private async saveRevision(product: APIProduct): Promise<void> {
+    const meta = Versioning.toExternalRepresentation(product.meta);
+    const id = Versioning.createRevisionId(product.name, meta.version);
+    await this.revisionPersistenceService.create(id, product);
+  }
 }
 
 export default new ApiProductsService();

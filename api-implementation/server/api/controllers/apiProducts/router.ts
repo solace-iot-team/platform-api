@@ -10,5 +10,7 @@ export default express
   .get('/:name/apps', controller.appsByName)
   .get('/:name/apis', controller.allApis)
   .get('/:name/apis/:api', controller.apiByName)
+  .get('/:name/revisions', controller.allRevisions)
+  .get('/:name/revisions/:version', controller.revisionByVersion)
   ;
 

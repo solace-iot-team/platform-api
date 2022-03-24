@@ -48,6 +48,9 @@ declare namespace Components {
         namespace TopicSyntax {
             export type TopicSyntax = "smf" | "mqtt";
         }
+        namespace Version {
+            export type Version = Schemas.SemVer; // ^(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)(?:-((?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*)(?:\.(?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?(?:\+([0-9a-zA-Z-]+(?:\.[0-9a-zA-Z-]+)*))?$
+        }
     }
     namespace Responses {
         export type BadRequest = Schemas.ErrorResponse;
@@ -797,16 +800,17 @@ declare namespace Components {
          * meta information of an object. Will be returned by some resources. Can be set when patching or creating an object. Auto generated if not set.
          */
         export interface Meta {
-            /**
-             * a version number in semver (Semantic Versioning) format
-             * example:
-             * 1.0.1
-             */
-            version: string; // ^(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)(?:-((?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*)(?:\.(?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?(?:\+([0-9a-zA-Z-]+(?:\.[0-9a-zA-Z-]+)*))?$
+            version: SemVer; // ^(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)(?:-((?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*)(?:\.(?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?(?:\+([0-9a-zA-Z-]+(?:\.[0-9a-zA-Z-]+)*))?$
             /**
              * The date and time the object was last modified
              */
-            lastModified?: string; // date-time
+            readonly lastModified?: number;
+            lastModifiedBy?: CommonUserName; // ^[.a-zA-Z0-9@_-]*$
+            /**
+             * The date and time the object was last modified
+             */
+            readonly created?: number;
+            createdBy?: CommonUserName; // ^[.a-zA-Z0-9@_-]*$
         }
         export interface MsgVpnAttributes {
             authenticationClientCertEnabled: string; // ^[\s\S]*$
@@ -929,6 +933,12 @@ declare namespace Components {
             consumerKey: string; // ^[a-zA-Z0-9_-]*$
             consumerSecret?: string; // ^[a-zA-Z0-9_-]*$
         }
+        /**
+         * a version number in semver (Semantic Versioning) format
+         * example:
+         * 1.0.1
+         */
+        export type SemVer = string; // ^(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)(?:-((?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*)(?:\.(?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?(?:\+([0-9a-zA-Z-]+(?:\.[0-9a-zA-Z-]+)*))?$
         /**
          * Specifies how requests to the SEMPv2 Management API are authenticated, defaults to BasicAuth. If APIKey is specified the username returned in the Services/Environments response is used as API Key.
          */
@@ -1434,6 +1444,20 @@ declare namespace Paths {
             export type $504 = Components.Responses.GatewayTimeout;
         }
     }
+    namespace GetApiProductRevision {
+        namespace Responses {
+            export type $200 = Components.Schemas.APIProduct;
+            export type $400 = Components.Responses.BadRequest;
+            export type $401 = Components.Responses.Unauthorized;
+            export type $403 = Components.Responses.Forbidden;
+            export type $404 = Components.Responses.NotFound;
+            export type $406 = Components.Responses.NotAcceptable;
+            export type $429 = Components.Responses.TooManyRequests;
+            export type $500 = Components.Responses.InternalServerError;
+            export type $503 = Components.Responses.ServiceUnavailable;
+            export type $504 = Components.Responses.GatewayTimeout;
+        }
+    }
     namespace GetApiReferencedByAPIProducts {
         namespace Responses {
             export type $200 = Components.Schemas.CommonEntityNameList;
@@ -1732,6 +1756,20 @@ declare namespace Paths {
             export type $504 = Components.Responses.GatewayTimeout;
         }
     }
+    namespace ListApiProductRevisions {
+        namespace Responses {
+            export type $200 = Components.Schemas.SemVer /* ^(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)(?:-((?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*)(?:\.(?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?(?:\+([0-9a-zA-Z-]+(?:\.[0-9a-zA-Z-]+)*))?$ */ [];
+            export type $400 = Components.Responses.BadRequest;
+            export type $401 = Components.Responses.Unauthorized;
+            export type $403 = Components.Responses.Forbidden;
+            export type $404 = Components.Responses.NotFound;
+            export type $406 = Components.Responses.NotAcceptable;
+            export type $429 = Components.Responses.TooManyRequests;
+            export type $500 = Components.Responses.InternalServerError;
+            export type $503 = Components.Responses.ServiceUnavailable;
+            export type $504 = Components.Responses.GatewayTimeout;
+        }
+    }
     namespace ListApiProducts {
         namespace Responses {
             export type $200 = Components.Schemas.APIProduct[];
@@ -1974,6 +2012,7 @@ declare namespace Paths {
             export type $403 = Components.Responses.Forbidden;
             export type $404 = Components.Responses.NotFound;
             export type $406 = Components.Responses.NotAcceptable;
+            export type $409 = Components.Schemas.ErrorResponse;
             export type $412 = Components.Responses.PreconditionFailed;
             export type $415 = Components.Responses.UnsupportedMediaType;
             export type $422 = Components.Schemas.ErrorResponse;
