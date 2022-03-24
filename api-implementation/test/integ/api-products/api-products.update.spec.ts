@@ -306,7 +306,6 @@ describe(scriptName, function () {
       ...apiProductPatch,
     }
     response.body.should.be.like(updatedApiProduct);
-    //expect(response.body, "response is not correct").to.be.like(updatedApiProduct);
   }
 
 });
