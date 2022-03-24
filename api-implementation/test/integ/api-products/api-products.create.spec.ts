@@ -60,8 +60,10 @@ describe(scriptName, function () {
       expect(reason, `error=${reason.message}`).is.instanceof(ApiError);
       expect.fail(`failed to create API; error="${reason.body.message}"`);
     });
-
-    expect(response.body, "response is not correct").to.be.eql(apiProduct);
+    const b = response.body;
+    expect(b.meta.version, "version is not correct").to.be.equal("1.1.0");
+    delete b.meta;
+    expect(b, "response is not correct").to.be.eql(apiProduct);
   });
 
   it("should create an API product with optional parameters", async function () {
@@ -88,8 +90,9 @@ describe(scriptName, function () {
       expect(reason, `error=${reason.message}`).is.instanceof(ApiError);
       expect.fail(`failed to create API; error="${reason.body.message}"`);
     });
-
-    expect(response.body, "response is not correct").to.be.eql(apiProduct);
+    const b = response.body;
+    delete b.meta;
+    expect(b, "response is not correct").to.be.eql(apiProduct);
   });
 
   it("should not create an API product if the user is not authorized", async function () {
