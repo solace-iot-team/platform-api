@@ -1,5 +1,6 @@
 import 'mocha';
-import { expect, should  } from 'chai';
+import { expect, should } from 'chai';
+import chai from 'chai';
 import like from 'chai-like';
 import path from 'path';
 import { PlatformAPIClient } from '../../lib/api.helpers';
