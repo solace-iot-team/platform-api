@@ -11,15 +11,19 @@ export class Versioning {
     return current + 1;
   }
   public static validateNewVersion(newVersion: Meta, previousVersion: Meta): boolean {
-    // if the caller has not provided a new version and it was set manually before we reject the request
-    if (!newVersion && previousVersion.version != Versioning.INITIAL_VERSION) {
-      return false;
-    }
-    // if the caller has not supplied a new version and it was not set manually before we accept the request
-    if (!newVersion && previousVersion.version == Versioning.INITIAL_VERSION) {
+    if (!previousVersion && !newVersion){
       return true;
     }
-    let semVerPrev = previousVersion.version == Versioning.INITIAL_VERSION ? `1.${previousVersion[Versioning.INTERNAL_REVISION]}.0` : previousVersion.version;
+    // if the caller has not provided a new version and it was set manually before we reject the request
+    if (!newVersion && previousVersion && previousVersion.version != Versioning.INITIAL_VERSION) {
+      return false;
+    }    
+    // if the caller has not supplied a new version and it was not set manually before we accept the request
+    if (!newVersion && previousVersion &&  previousVersion.version == Versioning.INITIAL_VERSION) {
+      return true;
+    }
+    let semVerPrev = (previousVersion && previousVersion.version == Versioning.INITIAL_VERSION) ? `1.${previousVersion[Versioning.INTERNAL_REVISION]}.0` : previousVersion.version
+;
 
     return semver.gt(newVersion.version, semVerPrev);
   }
@@ -43,25 +47,24 @@ export class Versioning {
     const user: string = ns.getStore().get(ContextConstants.AUTHENTICATED_USER);
     const m: Meta = {
       version: (newMeta && newMeta.version) ? newMeta.version : Versioning.INITIAL_VERSION,
-      created: previousMeta.created,
+      created: previousMeta?previousMeta.created:ts,
       lastModified: ts,
-      createdBy: previousMeta.createdBy,
+      createdBy: previousMeta?previousMeta.createdBy:user,
       lastModifiedBy: user,
 
     };
-    m[Versioning.INTERNAL_REVISION] = Versioning.nextRevision(previousMeta[Versioning.INTERNAL_REVISION] as number);
+    m[Versioning.INTERNAL_REVISION] = Versioning.nextRevision(previousMeta?previousMeta[Versioning.INTERNAL_REVISION]:Versioning.INITIAL_REVISION as number);
     return m;
   }
 
-  public static toExternalRepresentation(meta: Meta): Meta {
-    if (!meta) {
+  public static toExternalRepresentation(meta: Meta): Meta{
+      if (meta && meta.version && meta.version == Versioning.INITIAL_VERSION) {
+        meta.version = `1.${meta[Versioning.INTERNAL_REVISION]}.0`
+      }
+      if (meta){
+        delete meta[Versioning.INTERNAL_REVISION];
+      }
       return meta;
-    }
-    if (meta.version == Versioning.INITIAL_VERSION) {
-      meta.version = `1.${meta[Versioning.INTERNAL_REVISION]}.0`
-    }
-    delete meta[Versioning.INTERNAL_REVISION];
-    return meta;
   }
 
   public static createRevisionId(name: string, version: string): string {
