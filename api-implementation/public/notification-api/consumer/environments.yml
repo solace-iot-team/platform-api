@@ -5,7 +5,7 @@ info:
     An environment provides a runtime execution context for APIs. Each
     environment is associated with a specific Service in the associated Solace
     Cloud account. Typical environments are dev, stage, prod ...
-  version: 0.7.0
+  version: 0.7.3
 channels:
   apc/POST/v1/{organization_name}/environments:
     publish:

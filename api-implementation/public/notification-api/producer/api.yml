@@ -4,7 +4,7 @@ info:
   description: >-
     Solace API Management Connector API. Note: basic authentication security
     mechanism is deprecated.
-  version: 0.7.0
+  version: 0.7.3
 channels:
   apc/POST/v1/organizations:
     subscribe:
@@ -633,13 +633,10 @@ components:
           type: string
           description: The topic string
     OrganizationResponse:
-      type: object
-      required:
-        - name
       properties:
         status:
           $ref: '#/components/schemas/OrganizationStatus'
-      additionalProperties: false
+      additionalProperties: true
       allOf:
         - $ref: '#/components/schemas/Organization'
     OrganizationStatus:
@@ -674,7 +671,7 @@ components:
             - $ref: '#/components/schemas/CloudToken'
         integrations:
           $ref: '#/components/schemas/OrganizationIntegrations'
-      additionalProperties: false
+      additionalProperties: true
     CommonName:
       type: string
       maxLength: 188
@@ -771,25 +768,49 @@ components:
       additionalProperties: false
     OrganizationNotifier:
       type: object
+      required:
+        - baseUrl
+        - authentication
       properties:
         baseUrl:
-          type: string
+          $ref: '#/components/schemas/CommonURL'
         authentication:
           oneOf:
             - $ref: '#/components/schemas/BasicAuthentication'
             - $ref: '#/components/schemas/APIKeyAuthentication'
             - $ref: '#/components/schemas/BearerTokenAuthentication'
       additionalProperties: false
+    CommonURL:
+      type: string
+      maxLength: 2083
+      minLength: 8
+      pattern: ^https?:\/\/[A-Za-z\.:0-9\-]*.*$
+      examples:
+        - >-
+          https://solace.cloud/api/v0/eventPortal/apiProducts/abc123/asyncApi.json
     BasicAuthentication:
       type: object
+      required:
+        - userName
+        - password
       properties:
         userName:
           type: string
+          maxLength: 512
+          minLength: 3
+          pattern: ^.*$
         password:
           type: string
+          maxLength: 512
+          minLength: 3
+          pattern: ^.*$
       additionalProperties: false
     APIKeyAuthentication:
       type: object
+      required:
+        - location
+        - name
+        - key
       properties:
         location:
           type: string
@@ -820,6 +841,8 @@ components:
       additionalProperties: false
     BearerTokenAuthentication:
       type: object
+      required:
+        - token
       properties:
         token:
           type: string
@@ -903,6 +926,8 @@ components:
           $ref: '#/components/schemas/ClientOptions'
         accessLevel:
           $ref: '#/components/schemas/APIProductAccessLevel'
+        meta:
+          $ref: '#/components/schemas/Meta'
       additionalProperties: false
       description: >-
         An API product consists of a list of API resources (URIs) and custom
@@ -1075,6 +1100,43 @@ components:
         - private
         - public
       default: public
+    Meta:
+      type: object
+      required:
+        - version
+      properties:
+        version:
+          $ref: '#/components/schemas/SemVer'
+        lastModified:
+          type: number
+          readOnly: true
+          description: The date and time the object was last modified
+        lastModifiedBy:
+          $ref: '#/components/schemas/CommonUserName'
+        created:
+          type: number
+          readOnly: true
+          description: The date and time the object was last modified
+        createdBy:
+          $ref: '#/components/schemas/CommonUserName'
+      additionalProperties: false
+      description: >-
+        meta information of an object. Will be returned by some resources. Can
+        be set when patching or creating an object. Auto generated if not set.
+    SemVer:
+      type: string
+      pattern: >-
+        ^(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)(?:-((?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*)(?:\.(?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?(?:\+([0-9a-zA-Z-]+(?:\.[0-9a-zA-Z-]+)*))?$
+      examples:
+        - 1.0.1
+      description: a version number in semver (Semantic Versioning) format
+    CommonUserName:
+      type: string
+      maxLength: 64
+      minLength: 1
+      pattern: ^[.a-zA-Z0-9@_-]*$
+      examples:
+        - tom
     Developer:
       type: object
       required:
@@ -1107,13 +1169,6 @@ components:
       description: >-
         A profile for a developer. After the developer is created, they can
         register an app and receive API credentials
-    CommonUserName:
-      type: string
-      maxLength: 64
-      minLength: 1
-      pattern: ^[.a-zA-Z0-9@_-]*$
-      examples:
-        - tom
     AppResponse:
       type: object
       required:
@@ -1256,14 +1311,6 @@ components:
           format: int64
           default: 500
       additionalProperties: false
-    CommonURL:
-      type: string
-      maxLength: 2083
-      minLength: 8
-      pattern: ^https?:\/\/[A-Za-z\.:0-9\-]*.*$
-      examples:
-        - >-
-          https://solace.cloud/api/v0/eventPortal/apiProducts/abc123/asyncApi.json
     WebHook:
       type: object
       required:
