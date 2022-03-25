@@ -1,5 +1,5 @@
 import 'mocha';
-import { expect, should } from 'chai';
+import { expect } from 'chai';
 import chai from 'chai';
 import like from 'chai-like';
 import path from 'path';
