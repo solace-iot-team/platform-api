@@ -1,8 +1,11 @@
 import "mocha";
 import * as chai from "chai";
+import like from 'chai-like';
+
 const expect = chai.expect;
 const sinonChai = require('sinon-chai');
 chai.use(sinonChai);
+chai.use(like);
 import path from 'path';
 import _ from 'lodash';
 
@@ -276,7 +279,7 @@ describe(`${scriptName}`, () => {
         let message = `org=${orgName}, create apiProduct='${apiProductNameMaintenanceDevelopment}`;
         expect(false, `${TestLogger.createTestFailMessage(message)}`).to.be.true;
       }
-      expect(_.isEqual(request, response), `${TestLogger.createTestFailMessage('response not equal to request')}`).to.be.true;
+      expect(response, `${TestLogger.createTestFailMessage('response not equal to request')}`).to.be.like(request);
     });
 
     it(`${scriptName}: should add http protocol to api product maintenance-development`, async () => {
