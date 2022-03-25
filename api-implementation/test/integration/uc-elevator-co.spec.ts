@@ -307,6 +307,7 @@ describe(`${scriptName}`, () => {
         expect(false, `${TestLogger.createTestFailMessage(message)}`).to.be.true;
       }
       delete responsePatch.meta;
+      delete expectedResponsePatch.meta;
       let expectDiff: ExpectDiff = getExpectEqualDiff(expectedResponsePatch, responsePatch);
       let message = expectDiff.message;
       expect(expectDiff.diff, `${TestLogger.createTestFailMessage(message)}`).to.be.empty;
