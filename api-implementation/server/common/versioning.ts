@@ -11,7 +11,12 @@ export class Versioning {
     return current + 1;
   }
   public static validateNewVersion(newVersion: Meta, previousVersion: Meta): boolean {
-    if (!newVersion) {
+    // if the caller has not provided a new version and it was set manually before we reject the request
+    if (!newVersion && previousVersion.version != Versioning.INITIAL_VERSION) {
+      return false;
+    }    
+    // if the caller has not supplied a new version and it was not set manually before we accept the request
+    if (!newVersion && previousVersion.version == Versioning.INITIAL_VERSION) {
       return true;
     }
     let semVerPrev = previousVersion.version == Versioning.INITIAL_VERSION ? `1.${previousVersion[Versioning.INTERNAL_REVISION]}.0` : previousVersion.version;
