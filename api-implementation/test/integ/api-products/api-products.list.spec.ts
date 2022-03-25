@@ -169,7 +169,7 @@ describe(scriptName, function () {
     });
 
     expect(response.body, "number of APIs is not correct").to.have.lengthOf(3);
-    expect(response.body, "response is not correct").to.have.deep.members(
+    expect(response.body, "response is not correct").to.be.like(
       [apiProduct2, apiProduct1, apiProduct3].sort((a, b) => (a.name > b.name ? 1 : -1))
     );
   });
@@ -188,7 +188,7 @@ describe(scriptName, function () {
     });
 
     expect(response.body, "number of APIs is not correct").to.have.lengthOf(3);
-    expect(response.body, "response is not correct").to.have.deep.members(
+    expect(response.body, "response is not correct").to.be.like(
       [apiProduct2, apiProduct1, apiProduct3].sort((a, b) => (a.name > b.name ? -1 : 1))
     );
   });
@@ -274,6 +274,6 @@ describe(scriptName, function () {
     });
 
     const names = response.body.map(apiProduct => apiProduct.name);
-    expect(names, "response is not correct").to.have.members(apiProductNames);
+    expect(names, "response is not correct").to.be.like(apiProductNames);
   }
 });
