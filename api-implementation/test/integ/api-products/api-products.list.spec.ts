@@ -274,6 +274,6 @@ describe(scriptName, function () {
     });
 
     const names = response.body.map(apiProduct => apiProduct.name);
-    expect(names, "response is not correct").to.be.like(apiProductNames);
+    expect(names, "response is not correct").to.have.members(apiProductNames);
   }
 });
