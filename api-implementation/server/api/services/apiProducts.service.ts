@@ -10,28 +10,41 @@ import AppsService from './apps.service';
 
 import ApisService from './apis.service';
 import { ErrorResponseInternal } from '../middlewares/error.handler';
+import { Versioning } from '../../common/versioning';
 import asyncapigenerator from './asyncapi/asyncapigenerator';
 import preconditionCheck from './persistence/preconditionhelper';
 
 export class ApiProductsService {
 
   private persistenceService: PersistenceService;
+  private revisionPersistenceService: PersistenceService;
 
   constructor() {
     this.persistenceService = new PersistenceService('api_products');
+    this.revisionPersistenceService = new PersistenceService('api_products_revisions');
 
   }
 
-  all(query?: any): Promise<APIProduct[]> {
-    return this.persistenceService.all(query);
+  async all(query?: any): Promise<APIProduct[]> {
+    const results: APIProduct[] = await this.persistenceService.all(query);
+    for (const p of results) {
+      p.meta = Versioning.toExternalRepresentation(p.meta);
+    }
+    return results;
   }
 
-  byName(name: string): Promise<APIProduct> {
-    return this.persistenceService.byName(name);
+  async byName(name: string): Promise<APIProduct> {
+    const p: APIProduct = await this.persistenceService.byName(name);
+    p.meta = Versioning.toExternalRepresentation(p.meta);
+    return p;
   }
 
   async delete(name: string): Promise<number> {
     if (await this.canDelete(name)) {
+      const revisions: string[] = await this.revisionList(name);
+      for (const r of revisions){
+        await this.revisionPersistenceService.delete(Versioning.createRevisionId(name, r));
+      }
       return this.persistenceService.delete(name);
     } else {
       throw new ErrorResponseInternal(409, `Can't delete, API Product is still referenced`);
@@ -48,8 +61,14 @@ export class ApiProductsService {
           reject(new ErrorResponseInternal(422, `Reference check failed ${apiReferenceCheck}`));
 
         }
-        this.persistenceService.create(body.name, body).then((p) => {
-          resolve(p);
+        if (!body.meta) {
+          body.meta = Versioning.createMeta();
+        } else {
+          body.meta = Versioning.createMeta(body.meta.version);
+        }
+        this.persistenceService.create(body.name, body).then(async (p) => {
+          await this.saveRevision(body);
+          resolve(this.byName(body.name));
         }).catch((e) => {
           L.error(`APIProductsService.create error ${e}`);
           reject(e);
@@ -68,8 +87,8 @@ export class ApiProductsService {
     try {
       // if the environments are updated, the current protocols must be re-validated
       // if the protocols are updated, they must be validated against the current environments
-      if (    (body.environments != null && body.protocols == null)
-           || (body.environments == null && body.protocols != null)) {
+      if ((body.environments != null && body.protocols == null)
+        || (body.environments == null && body.protocols != null)) {
         const oldProduct = await this.persistenceService.byName(name);
         body.environments = body.environments ?? oldProduct.environments;
         body.protocols = body.protocols ?? oldProduct.protocols;
@@ -78,9 +97,22 @@ export class ApiProductsService {
       L.info(`Reference check result ${apiReferenceCheck}`);
       if (!apiReferenceCheck)
         throw new ErrorResponseInternal(422, `Reference check failed ${apiReferenceCheck}`);
+      const currentState: APIProduct = await this.persistenceService.byName(name);
+      if (!Versioning.validateNewVersion(body.meta, currentState.meta)) {
+        throw new ErrorResponseInternal(409, `Version supplied in meta element is not greater than current version`);
+      }
+      if (!body.meta) {
+        body.meta = Versioning.update(currentState.meta);
+      } else {
+        body.meta = Versioning.update(currentState.meta, body.meta);
+      }
+      L.info(JSON.stringify(currentState.meta));
+      // todo check semver against current state
+
       const p = await this.persistenceService.update(name, body);
       if (p != null) {
-        return p;
+        await this.saveRevision(p);
+        return await this.byName(name);
       } else {
         throw new ErrorResponseInternal(500, `Could not update object`);
       }
@@ -96,9 +128,9 @@ export class ApiProductsService {
   }
   async apiByName(apiProductName: string, name: string): Promise<string> {
     const apiList = await this.apiList(apiProductName);
-    if (apiList.find(n=>n==name)){
-    const apiProduct = await this.byName(apiProductName);
-    return asyncapigenerator.getSpecificationByApiProduct(name, apiProduct);
+    if (apiList.find(n => n == name)) {
+      const apiProduct = await this.byName(apiProductName);
+      return asyncapigenerator.getSpecificationByApiProduct(name, apiProduct);
     } else {
       throw new ErrorResponseInternal(404, `API [${name}] is not associated with API Product [${apiProductName}]`);
     }
@@ -107,7 +139,7 @@ export class ApiProductsService {
   async appsByName(name: string): Promise<CommonEntityNameList> {
     const apps: AppListitem[] = await this.listAppsReferencingProduct(name);
     const names: CommonEntityNameList = [];
-    for (const app of apps){
+    for (const app of apps) {
       const name: CommonEntityNames = {
         displayName: app.displayName,
         name: app.name,
@@ -116,6 +148,33 @@ export class ApiProductsService {
     }
     return names;
   }
+
+  async revisionList(apiProductName: string): Promise<string[]> {
+    const products: APIProduct[] = await this.revisionPersistenceService.all({ name: apiProductName });
+    const revisions: string[] = [];
+    for (const p of products) {
+      const m = Versioning.toExternalRepresentation(p.meta);
+      revisions.push(m.version);
+    }
+    return revisions;
+  }
+
+  async revisionByVersion(apiProductName: string, version: string): Promise<APIProduct> {
+    const revisionList = await this.revisionList(apiProductName);
+    if (revisionList.find(n => n == version)) {
+      const id = Versioning.createRevisionId(apiProductName, version);
+
+      const apiProduct = await this.revisionPersistenceService.byName(id);
+      if (!apiProduct){
+        throw new ErrorResponseInternal(404, `Version ${version} of API Product [${apiProductName}] does not exist`);
+      }
+      return apiProduct;
+    } else {
+      throw new ErrorResponseInternal(404, `Version ${version} of API Product [${apiProductName}] does not exist`);
+    }
+  }
+
+
   private async canDelete(name: string): Promise<boolean> {
     const apps = await this.listAppsReferencingProduct(name);
     if (apps == null || apps.length == 0) {
@@ -197,6 +256,11 @@ export class ApiProductsService {
     return true;
   }
 
+  private async saveRevision(product: APIProduct): Promise<void> {
+    const meta = Versioning.toExternalRepresentation(product.meta);
+    const id = Versioning.createRevisionId(product.name, meta.version);
+    await this.revisionPersistenceService.create(id, product);
+  }
 }
 
 export default new ApiProductsService();

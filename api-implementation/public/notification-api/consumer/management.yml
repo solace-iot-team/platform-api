@@ -2,7 +2,7 @@ asyncapi: 2.3.0
 info:
   title: Solace API Management Connector (management)
   description: Manage organization settings, audit history
-  version: 0.7.0
+  version: 0.7.3
 channels:
   apc/PUT/v1/{organization_name}/token:
     publish:

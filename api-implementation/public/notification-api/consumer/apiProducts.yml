@@ -5,7 +5,7 @@ info:
     An API product consists of a list of API resources (URIs) and custom
     metadata required by the API provider. API products enable you to bundle and
     distribute your APIs to multiple developer groups simultaneously
-  version: 0.7.0
+  version: 0.7.3
 channels:
   apc/POST/v1/{organization_name}/apiProducts:
     publish:
@@ -178,6 +178,8 @@ components:
           $ref: '#/components/schemas/ClientOptions'
         accessLevel:
           $ref: '#/components/schemas/APIProductAccessLevel'
+        meta:
+          $ref: '#/components/schemas/Meta'
       additionalProperties: false
       description: >-
         An API product consists of a list of API resources (URIs) and custom
@@ -361,6 +363,43 @@ components:
         - private
         - public
       default: public
+    Meta:
+      type: object
+      required:
+        - version
+      properties:
+        version:
+          $ref: '#/components/schemas/SemVer'
+        lastModified:
+          type: number
+          readOnly: true
+          description: The date and time the object was last modified
+        lastModifiedBy:
+          $ref: '#/components/schemas/CommonUserName'
+        created:
+          type: number
+          readOnly: true
+          description: The date and time the object was last modified
+        createdBy:
+          $ref: '#/components/schemas/CommonUserName'
+      additionalProperties: false
+      description: >-
+        meta information of an object. Will be returned by some resources. Can
+        be set when patching or creating an object. Auto generated if not set.
+    SemVer:
+      type: string
+      pattern: >-
+        ^(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)(?:-((?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*)(?:\.(?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?(?:\+([0-9a-zA-Z-]+(?:\.[0-9a-zA-Z-]+)*))?$
+      examples:
+        - 1.0.1
+      description: a version number in semver (Semantic Versioning) format
+    CommonUserName:
+      type: string
+      maxLength: 64
+      minLength: 1
+      pattern: ^[.a-zA-Z0-9@_-]*$
+      examples:
+        - tom
   parameters:
     organization:
       description: the name of the organization (tenant) a resource belongs to

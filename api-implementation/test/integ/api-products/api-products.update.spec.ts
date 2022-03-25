@@ -1,5 +1,7 @@
 import 'mocha';
 import { expect } from 'chai';
+import chai from 'chai';
+import like from 'chai-like';
 import path from 'path';
 import { PlatformAPIClient } from '../../lib/api.helpers';
 import {
@@ -13,6 +15,8 @@ import {
 } from '../../lib/generated/openapi';
 
 import * as setup from './common/test.setup';
+
+chai.use(like);
 
 const scriptName: string = path.basename(__filename);
 
@@ -302,8 +306,7 @@ describe(scriptName, function () {
       ...apiProduct,
       ...apiProductPatch,
     }
-
-    expect(response.body, "response is not correct").to.be.eql(updatedApiProduct);
+    expect(response.body, "response is not correct").to.be.like(updatedApiProduct);
   }
 
 });

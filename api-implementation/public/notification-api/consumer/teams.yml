@@ -6,7 +6,7 @@ info:
     creation, apps can be created for a team, choosing the APIs they want to
     use, and creating the unique API credentials (consumer keys and secrets)
     needed to access APIs.
-  version: 0.7.0
+  version: 0.7.3
 channels:
   apc/POST/v1/{organization_name}/teams:
     publish:

@@ -4,7 +4,7 @@ info:
   description: >-
     Represents Async API specifications. The specifications must be compliant
     documents in JSON or YML format
-  version: 0.7.0
+  version: 0.7.3
 channels:
   apc/POST/v1/{organization_name}/apis:
     publish:

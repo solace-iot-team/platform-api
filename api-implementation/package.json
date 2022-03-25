@@ -45,6 +45,7 @@
   "dependencies": {
     "@asyncapi/parser": "^1.14.1",
     "@godaddy/terminus": "^4.9.0",
+    "@types/chai-like": "^1.1.1",
     "@types/jsonpath": "^0.2.0",
     "@types/passport": "^1.0.6",
     "@types/passport-http": "^0.3.8",
@@ -74,6 +75,7 @@
     "pino": "^6.7.0",
     "pino-caller": "^3.2.0",
     "print-env": "^0.1.2",
+    "semver": "^7.3.5",
     "tiny-typed-emitter": "^2.1.0",
     "uuidv4": "^6.2.6"
   },
@@ -93,6 +95,7 @@
     "@types/node": "^14.18.12",
     "@types/node-fetch": "^2.5.8",
     "@types/pino": "^6.3.2",
+    "@types/semver": "^7.3.9",
     "@types/sinon": "^9.0.11",
     "@types/sinon-chai": "^3.2.5",
     "@types/supertest": "^2.0.11",
@@ -100,6 +103,7 @@
     "@typescript-eslint/parser": "^4.4.0",
     "abort-controller": "^3.0.0",
     "chai": "^4.2.0",
+    "chai-like": "^1.1.1",
     "commander": "^9.0.0",
     "dtsgenerator": "^2.7.0",
     "eslint": "^7.11.0",

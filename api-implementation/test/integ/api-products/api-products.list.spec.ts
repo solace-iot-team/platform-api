@@ -1,5 +1,7 @@
 import 'mocha';
 import { expect } from 'chai';
+import chai from 'chai';
+import like from 'chai-like';
 import path from 'path';
 import { PlatformAPIClient } from '../../lib/api.helpers';
 import {
@@ -13,6 +15,8 @@ import * as setup from './common/test.setup';
 import { before } from 'mocha';
 
 const scriptName: string = path.basename(__filename);
+
+chai.use(like);
 
 describe(scriptName, function () {
 
@@ -116,7 +120,7 @@ describe(scriptName, function () {
     });
 
     expect(response.body, "number of APIs is not correct").to.have.lengthOf(3);
-    expect(response.body, "response is not correct").to.have.deep.members([apiProduct1, apiProduct2, apiProduct3]);
+    expect(response.body, "response is not correct").to.be.like([apiProduct1, apiProduct2, apiProduct3]);
   });
 
   it("should return all API products for page #1", async function () {
@@ -165,7 +169,7 @@ describe(scriptName, function () {
     });
 
     expect(response.body, "number of APIs is not correct").to.have.lengthOf(3);
-    expect(response.body, "response is not correct").to.have.deep.members(
+    expect(response.body, "response is not correct").to.be.like(
       [apiProduct2, apiProduct1, apiProduct3].sort((a, b) => (a.name > b.name ? 1 : -1))
     );
   });
@@ -184,7 +188,7 @@ describe(scriptName, function () {
     });
 
     expect(response.body, "number of APIs is not correct").to.have.lengthOf(3);
-    expect(response.body, "response is not correct").to.have.deep.members(
+    expect(response.body, "response is not correct").to.be.like(
       [apiProduct2, apiProduct1, apiProduct3].sort((a, b) => (a.name > b.name ? -1 : 1))
     );
   });

@@ -70,5 +70,22 @@ export class Controller {
         next(e);
       });
   };
+  allRevisions(req: Request, res: Response, next: NextFunction): void {
+    ApiProductsService.revisionList(req.params['name'])
+      .then((r) => res.json(r))
+      .catch(e => {
+        L.error(e);
+        next(e);
+      });
+  }
+  revisionByVersion(req: Request, res: Response, next: NextFunction): void {
+    ApiProductsService.revisionByVersion(req.params['name'], req.params['version'])
+      .then((r) => res.json(r))
+      .catch((e) => {
+        L.error(e);
+        next(e);
+      });
+  };
+
 }
 export default new Controller();
