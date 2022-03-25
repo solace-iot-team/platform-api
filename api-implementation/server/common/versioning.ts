@@ -14,7 +14,7 @@ export class Versioning {
     // if the caller has not provided a new version and it was set manually before we reject the request
     if (!newVersion && previousVersion.version != Versioning.INITIAL_VERSION) {
       return false;
-    }    
+    }
     // if the caller has not supplied a new version and it was not set manually before we accept the request
     if (!newVersion && previousVersion.version == Versioning.INITIAL_VERSION) {
       return true;
@@ -53,12 +53,15 @@ export class Versioning {
     return m;
   }
 
-  public static toExternalRepresentation(meta: Meta): Meta{
-      if (meta.version == Versioning.INITIAL_VERSION) {
-        meta.version = `1.${meta[Versioning.INTERNAL_REVISION]}.0`
-      }
-      delete meta[Versioning.INTERNAL_REVISION];
+  public static toExternalRepresentation(meta: Meta): Meta {
+    if (!meta) {
       return meta;
+    }
+    if (meta.version == Versioning.INITIAL_VERSION) {
+      meta.version = `1.${meta[Versioning.INTERNAL_REVISION]}.0`
+    }
+    delete meta[Versioning.INTERNAL_REVISION];
+    return meta;
   }
 
   public static createRevisionId(name: string, version: string): string {
