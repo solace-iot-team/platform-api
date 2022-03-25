@@ -306,6 +306,7 @@ describe(`${scriptName}`, () => {
         let message = `update apiProduct=${apiProductNameMaintenanceDevelopment}`;
         expect(false, `${TestLogger.createTestFailMessage(message)}`).to.be.true;
       }
+      delete responsePatch.meta;
       let expectDiff: ExpectDiff = getExpectEqualDiff(expectedResponsePatch, responsePatch);
       let message = expectDiff.message;
       expect(expectDiff.diff, `${TestLogger.createTestFailMessage(message)}`).to.be.empty;
@@ -333,7 +334,7 @@ describe(`${scriptName}`, () => {
         let message = `create apiProduct='${apiProductNameMaintenanceProduction}`;
         expect(false, `${TestLogger.createTestFailMessage(message)}`).to.be.true;
       }
-      expect(_.isEqual(request, response), `${TestLogger.createTestFailMessage('response not equal to request')}`).to.be.true;
+      expect(response, `${TestLogger.createTestFailMessage('response not equal to request')}`).to.be.like(request);
     });
 
     it(`${scriptName}: should create all developers`, async () => {
