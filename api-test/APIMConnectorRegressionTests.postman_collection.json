@@ -350,7 +350,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "---\ncomponents:\n  schemas:\n    SensorEvent:\n      \"$schema\": http://json-schema.org/draft-04/schema#\n      description: ''\n      type: object\n      properties:\n        communicationDate:\n          type: integer\n        signedCommunication:\n          type: boolean\n        events:\n          type: array\n          items:\n          - type: string\n          - type: array\n            items:\n            - type: object\n              properties:\n                tripPlanId:\n                  type: integer\n                sensorName:\n                  type: string\n                communicationType:\n                  type: string\n                eventType:\n                  type: string\n                gps:\n                  type: string\n                sensorValues:\n                  type: array\n                  items:\n                  - type: string\n                  - type: object\n                    properties:\n                      Uncertainty:\n                        type: string\n                      Compass Direction:\n                        type: string\n                    required:\n                    - Uncertainty\n                    - Compass Direction\n                sensorValue:\n                  type: string\n                deviceSerialNumber:\n                  type: string\n                eventDate:\n                  type: integer\n                sensorId:\n                  type: integer\n              required:\n              - deviceSerialNumber\n              - eventDate\n              - eventType\n              - communicationType\n              - gps\n              - sensorName\n              - sensorValue\n              - sensorValues\n              - tripPlanId\n              - sensorId\n        deviceSerialNumber:\n          type: string\n        validatedSignature:\n          type: boolean\n      required:\n      - events\n      - deviceSerialNumber\n      - communicationDate\n      - signedCommunication\n      - validatedSignature\n  messages:\n    GeoSensorEvent:\n      payload:\n        \"$ref\": \"#/components/schemas/SensorEvent\"\n      description: My Description\n      schemaFormat: application/vnd.aai.asyncapi+json;version=2.0.0\n      contentType: application/json\n    SensorEvent:\n      payload:\n        \"$ref\": \"#/components/schemas/SensorEvent\"\n      description: ''\n      schemaFormat: application/vnd.aai.asyncapi+json;version=2.0.0\n      contentType: application/json\nservers: {}\nchannels:\n  traxens/feed/{shippingline}/v1/{equipmentId}/{sensor}/{sensorvalue}:\n    publish:\n      message:\n        \"$ref\": \"#/components/messages/SensorEvent\"\n    parameters:\n      shippingline:\n        schema:\n          type: string\n      sensor:\n        schema:\n          type: string\n          enum:\n          - HUMIDITY\n          - LIGHT\n          - DOOR\n          - GEOFENCE\n      sensorvalue:\n        schema:\n          type: string\n      equipmentId:\n        schema:\n          type: string\n  traxens/feed/{shippingline}/v1/{equipmentId}/{geosensor}/{longitude}:\n    publish:\n      message:\n        \"$ref\": \"#/components/messages/GeoSensorEvent\"\n    parameters:\n      geosensor:\n        schema:\n          type: string\n          enum:\n          - GEOPOSITIONING\n      shippingline:\n        schema:\n          type: string\n      equipmentId:\n        schema:\n          type: string\n      longitude:\n        schema:\n          type: string\nasyncapi: 2.0.0\ninfo:\n  x-generated-time: 2021-07-15 15:03 UTC\n  description: ''\n  title: WebSub API\n  x-view: provider\n  version: '1'\n  x-origin:\n    vendor: solace\n    name: event-portal\n",
+							"raw": "---\ncomponents:\n  schemas:\n    SensorEvent:\n      \"$schema\": http://json-schema.org/draft-04/schema#\n      description: ''\n      type: object\n      properties:\n        communicationDate:\n          type: integer\n        signedCommunication:\n          type: boolean\n        events:\n          type: array\n          items:\n          - type: string\n          - type: array\n            items:\n            - type: object\n              properties:\n                tripPlanId:\n                  type: integer\n                sensorName:\n                  type: string\n                communicationType:\n                  type: string\n                eventType:\n                  type: string\n                gps:\n                  type: string\n                sensorValues:\n                  type: array\n                  items:\n                  - type: string\n                  - type: object\n                    properties:\n                      Uncertainty:\n                        type: string\n                      Compass Direction:\n                        type: string\n                    required:\n                    - Uncertainty\n                    - Compass Direction\n                sensorValue:\n                  type: string\n                deviceSerialNumber:\n                  type: string\n                eventDate:\n                  type: integer\n                sensorId:\n                  type: integer\n              required:\n              - deviceSerialNumber\n              - eventDate\n              - eventType\n              - communicationType\n              - gps\n              - sensorName\n              - sensorValue\n              - sensorValues\n              - tripPlanId\n              - sensorId\n        deviceSerialNumber:\n          type: string\n        validatedSignature:\n          type: boolean\n      required:\n      - events\n      - deviceSerialNumber\n      - communicationDate\n      - signedCommunication\n      - validatedSignature\n  messages:\n    GeoSensorEvent:\n      payload:\n        \"$ref\": \"#/components/schemas/SensorEvent\"\n      description: My Description\n      schemaFormat: application/vnd.aai.asyncapi+json;version=2.0.0\n      contentType: application/json\n    SensorEvent:\n      payload:\n        \"$ref\": \"#/components/schemas/SensorEvent\"\n      description: ''\n      schemaFormat: application/vnd.aai.asyncapi+json;version=2.0.0\n      contentType: application/json\nservers: {}\nchannels:\n  traxens/feed/{shippingline}/v1/{equipmentId}/{sensor}/{sensorvalue}:\n    publish:\n      message:\n        \"$ref\": \"#/components/messages/SensorEvent\"\n    parameters:\n      shippingline:\n        schema:\n          type: string\n      sensor:\n        schema:\n          type: string\n          enum:\n          - HUMIDITY\n          - LIGHT\n          - DOOR\n          - GEOFENCE\n      sensorvalue:\n        schema:\n          type: string\n      equipmentId:\n        schema:\n          type: string\n  traxens/feed/{shippingline}/v1/{equipmentId}/{geosensor}/{longitude}:\n    publish:\n      message:\n        \"$ref\": \"#/components/messages/GeoSensorEvent\"\n    parameters:\n      geosensor:\n        schema:\n          type: string\n          enum:\n          - GEOPOSITIONING\n      shippingline:\n        schema:\n          type: string\n      equipmentId:\n        schema:\n          type: string\n      longitude:\n        schema:\n          type: string\nasyncapi: 2.0.0\ninfo:\n  x-generated-time: 2021-07-15 15:03 UTC\n  description: ''\n  title: WebSub API\n  x-view: provider\n  version: '2'\n  x-origin:\n    vendor: solace\n    name: event-portal\n",
 							"options": {
 								"raw": {
 									"language": "text"
@@ -1841,7 +1841,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n  \"components\": {\n    \"schemas\": {\n      \"SensorEvent\": {\n        \"$schema\": \"http://json-schema.org/draft-04/schema#\",\n        \"description\": \"\",\n        \"type\": \"object\",\n        \"properties\": {\n          \"communicationDate\": {\n            \"type\": \"integer\"\n          },\n          \"signedCommunication\": {\n            \"type\": \"boolean\"\n          },\n          \"events\": {\n            \"type\": \"array\",\n            \"items\": [\n              {\n                \"type\": \"string\"\n              },\n              {\n                \"type\": \"array\",\n                \"items\": [\n                  {\n                    \"type\": \"object\",\n                    \"properties\": {\n                      \"tripPlanId\": {\n                        \"type\": \"integer\"\n                      },\n                      \"sensorName\": {\n                        \"type\": \"string\"\n                      },\n                      \"communicationType\": {\n                        \"type\": \"string\"\n                      },\n                      \"eventType\": {\n                        \"type\": \"string\"\n                      },\n                      \"gps\": {\n                        \"type\": \"string\"\n                      },\n                      \"sensorValues\": {\n                        \"type\": \"array\",\n                        \"items\": [\n                          {\n                            \"type\": \"string\"\n                          },\n                          {\n                            \"type\": \"object\",\n                            \"properties\": {\n                              \"Uncertainty\": {\n                                \"type\": \"string\"\n                              },\n                              \"Compass Direction\": {\n                                \"type\": \"string\"\n                              }\n                            },\n                            \"required\": [\n                              \"Uncertainty\",\n                              \"Compass Direction\"\n                            ]\n                          }\n                        ]\n                      },\n                      \"sensorValue\": {\n                        \"type\": \"string\"\n                      },\n                      \"deviceSerialNumber\": {\n                        \"type\": \"string\"\n                      },\n                      \"eventDate\": {\n                        \"type\": \"integer\"\n                      },\n                      \"sensorId\": {\n                        \"type\": \"integer\"\n                      }\n                    },\n                    \"required\": [\n                      \"deviceSerialNumber\",\n                      \"eventDate\",\n                      \"eventType\",\n                      \"communicationType\",\n                      \"gps\",\n                      \"sensorName\",\n                      \"sensorValue\",\n                      \"sensorValues\",\n                      \"tripPlanId\",\n                      \"sensorId\"\n                    ]\n                  }\n                ]\n              }\n            ]\n          },\n          \"deviceSerialNumber\": {\n            \"type\": \"string\"\n          },\n          \"validatedSignature\": {\n            \"type\": \"boolean\"\n          }\n        },\n        \"required\": [\n          \"events\",\n          \"deviceSerialNumber\",\n          \"communicationDate\",\n          \"signedCommunication\",\n          \"validatedSignature\"\n        ]\n      }\n    },\n    \"messages\": {\n      \"GeoSensorEvent\": {\n        \"payload\": {\n          \"$ref\": \"#/components/schemas/SensorEvent\"\n        },\n        \"description\": \"\",\n        \"schemaFormat\": \"application/vnd.aai.asyncapi+json;version=2.0.0\",\n        \"contentType\": \"application/json\"\n      },\n      \"SensorEvent\": {\n        \"payload\": {\n          \"$ref\": \"#/components/schemas/SensorEvent\"\n        },\n        \"description\": \"\",\n        \"schemaFormat\": \"application/vnd.aai.asyncapi+json;version=2.0.0\",\n        \"contentType\": \"application/json\"\n      }\n    }\n  },\n  \"servers\": {},\n  \"channels\": {\n    \"traxens/feed/{shippingline}/v1/{equipmentId}/{sensor}/{sensorvalue}\": {\n      \"publish\": {\n        \"message\": {\n          \"$ref\": \"#/components/messages/SensorEvent\"\n        }\n      },\n      \"parameters\": {\n        \"shippingline\": {\n          \"schema\": {\n            \"type\": \"string\"\n          }\n        },\n        \"sensor\": {\n          \"schema\": {\n            \"type\": \"string\",\n            \"enum\": [\n              \"HUMIDITY\",\n              \"LIGHT\",\n              \"DOOR\",\n              \"GEOFENCE\"\n            ]\n          }\n        },\n        \"sensorvalue\": {\n          \"schema\": {\n            \"type\": \"string\"\n          }\n        },\n        \"equipmentId\": {\n          \"schema\": {\n            \"type\": \"string\"\n          }\n        }\n      }\n    },\n    \"traxens/feed/{shippingline}/v1/{equipmentId}/{geosensor}/{longitude}\": {\n      \"publish\": {\n        \"message\": {\n          \"$ref\": \"#/components/messages/GeoSensorEvent\"\n        }\n      },\n      \"parameters\": {\n        \"geosensor\": {\n          \"schema\": {\n            \"type\": \"string\",\n            \"enum\": [\n              \"GEOPOSITIONING\"\n            ]\n          }\n        },\n        \"shippingline\": {\n          \"schema\": {\n            \"type\": \"string\"\n          }\n        },\n        \"equipmentId\": {\n          \"schema\": {\n            \"type\": \"string\"\n          }\n        },\n        \"longitude\": {\n          \"schema\": {\n            \"type\": \"string\"\n          }\n        }\n      }\n    }\n  },\n  \"asyncapi\": \"2.0.0\",\n  \"info\": {\n    \"x-generated-time\": \"2021-07-15 15:03 UTC\",\n    \"description\": \"\",\n    \"title\": \"WebSub API\",\n    \"x-view\": \"provider\",\n    \"version\": \"1\",\n    \"x-origin\": {\n      \"vendor\": \"solace\",\n      \"name\": \"event-portal\"\n    }\n  }\n}",
+							"raw": "{\n  \"components\": {\n    \"schemas\": {\n      \"SensorEvent\": {\n        \"$schema\": \"http://json-schema.org/draft-04/schema#\",\n        \"description\": \"\",\n        \"type\": \"object\",\n        \"properties\": {\n          \"communicationDate\": {\n            \"type\": \"integer\"\n          },\n          \"signedCommunication\": {\n            \"type\": \"boolean\"\n          },\n          \"events\": {\n            \"type\": \"array\",\n            \"items\": [\n              {\n                \"type\": \"string\"\n              },\n              {\n                \"type\": \"array\",\n                \"items\": [\n                  {\n                    \"type\": \"object\",\n                    \"properties\": {\n                      \"tripPlanId\": {\n                        \"type\": \"integer\"\n                      },\n                      \"sensorName\": {\n                        \"type\": \"string\"\n                      },\n                      \"communicationType\": {\n                        \"type\": \"string\"\n                      },\n                      \"eventType\": {\n                        \"type\": \"string\"\n                      },\n                      \"gps\": {\n                        \"type\": \"string\"\n                      },\n                      \"sensorValues\": {\n                        \"type\": \"array\",\n                        \"items\": [\n                          {\n                            \"type\": \"string\"\n                          },\n                          {\n                            \"type\": \"object\",\n                            \"properties\": {\n                              \"Uncertainty\": {\n                                \"type\": \"string\"\n                              },\n                              \"Compass Direction\": {\n                                \"type\": \"string\"\n                              }\n                            },\n                            \"required\": [\n                              \"Uncertainty\",\n                              \"Compass Direction\"\n                            ]\n                          }\n                        ]\n                      },\n                      \"sensorValue\": {\n                        \"type\": \"string\"\n                      },\n                      \"deviceSerialNumber\": {\n                        \"type\": \"string\"\n                      },\n                      \"eventDate\": {\n                        \"type\": \"integer\"\n                      },\n                      \"sensorId\": {\n                        \"type\": \"integer\"\n                      }\n                    },\n                    \"required\": [\n                      \"deviceSerialNumber\",\n                      \"eventDate\",\n                      \"eventType\",\n                      \"communicationType\",\n                      \"gps\",\n                      \"sensorName\",\n                      \"sensorValue\",\n                      \"sensorValues\",\n                      \"tripPlanId\",\n                      \"sensorId\"\n                    ]\n                  }\n                ]\n              }\n            ]\n          },\n          \"deviceSerialNumber\": {\n            \"type\": \"string\"\n          },\n          \"validatedSignature\": {\n            \"type\": \"boolean\"\n          }\n        },\n        \"required\": [\n          \"events\",\n          \"deviceSerialNumber\",\n          \"communicationDate\",\n          \"signedCommunication\",\n          \"validatedSignature\"\n        ]\n      }\n    },\n    \"messages\": {\n      \"GeoSensorEvent\": {\n        \"payload\": {\n          \"$ref\": \"#/components/schemas/SensorEvent\"\n        },\n        \"description\": \"\",\n        \"schemaFormat\": \"application/vnd.aai.asyncapi+json;version=2.0.0\",\n        \"contentType\": \"application/json\"\n      },\n      \"SensorEvent\": {\n        \"payload\": {\n          \"$ref\": \"#/components/schemas/SensorEvent\"\n        },\n        \"description\": \"\",\n        \"schemaFormat\": \"application/vnd.aai.asyncapi+json;version=2.0.0\",\n        \"contentType\": \"application/json\"\n      }\n    }\n  },\n  \"servers\": {},\n  \"channels\": {\n    \"traxens/feed/{shippingline}/v1/{equipmentId}/{sensor}/{sensorvalue}\": {\n      \"publish\": {\n        \"message\": {\n          \"$ref\": \"#/components/messages/SensorEvent\"\n        }\n      },\n      \"parameters\": {\n        \"shippingline\": {\n          \"schema\": {\n            \"type\": \"string\"\n          }\n        },\n        \"sensor\": {\n          \"schema\": {\n            \"type\": \"string\",\n            \"enum\": [\n              \"HUMIDITY\",\n              \"LIGHT\",\n              \"DOOR\",\n              \"GEOFENCE\"\n            ]\n          }\n        },\n        \"sensorvalue\": {\n          \"schema\": {\n            \"type\": \"string\"\n          }\n        },\n        \"equipmentId\": {\n          \"schema\": {\n            \"type\": \"string\"\n          }\n        }\n      }\n    },\n    \"traxens/feed/{shippingline}/v1/{equipmentId}/{geosensor}/{longitude}\": {\n      \"publish\": {\n        \"message\": {\n          \"$ref\": \"#/components/messages/GeoSensorEvent\"\n        }\n      },\n      \"parameters\": {\n        \"geosensor\": {\n          \"schema\": {\n            \"type\": \"string\",\n            \"enum\": [\n              \"GEOPOSITIONING\"\n            ]\n          }\n        },\n        \"shippingline\": {\n          \"schema\": {\n            \"type\": \"string\"\n          }\n        },\n        \"equipmentId\": {\n          \"schema\": {\n            \"type\": \"string\"\n          }\n        },\n        \"longitude\": {\n          \"schema\": {\n            \"type\": \"string\"\n          }\n        }\n      }\n    }\n  },\n  \"asyncapi\": \"2.0.0\",\n  \"info\": {\n    \"x-generated-time\": \"2021-07-15 15:03 UTC\",\n    \"description\": \"\",\n    \"title\": \"WebSub API\",\n    \"x-view\": \"provider\",\n    \"version\": \"1.0.0\",\n    \"x-origin\": {\n      \"vendor\": \"solace\",\n      \"name\": \"event-portal\"\n    }\n  }\n}",
 							"options": {
 								"raw": {
 									"language": "text"
@@ -1953,7 +1953,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "components:\n  schemas:\n    HelloWorldSayHello: &ref_0\n      default: {}\n      $schema: http://json-schema.org/draft-07/schema\n      examples:\n        - greeting: hello\n          name: solace\n      description: <p>A simple hello world schema</p>\n      additionalProperties: false\n      type: object\n      title: The root schema\n      required:\n        - greeting\n        - name\n      properties:\n        greeting:\n          default: ''\n          examples:\n            - hello\n          description: The greeting\n          type: string\n          title: The greeting schema\n          $id: '#/properties/greeting'\n        name:\n          default: ''\n          examples:\n            - solace\n          description: The name.\n          type: string\n          title: The name schema\n          $id: '#/properties/name'\n      $id: http://example.com/example.json\n      x-parser-schema-id: HelloWorldSayHello\n  messages:\n    SayHello: &ref_1\n      payload: *ref_0\n      description: ''\n      schemaFormat: application/vnd.aai.asyncapi;version=2.0.0\n      contentType: application/json\nchannels:\n  say/hello:\n    subscribe:\n      message: *ref_1\nasyncapi: 2.0.0\ninfo:\n  description: This API says hello --- Hello\n  title: SayHello\n  x-view: provider\n  version: '1'\n  x-origin:\n    vendor: solace\n    name: event-portal\nx-parser-spec-parsed: true",
+							"raw": "components:\n  schemas:\n    HelloWorldSayHello: &ref_0\n      default: {}\n      $schema: http://json-schema.org/draft-07/schema\n      examples:\n        - greeting: hello\n          name: solace\n      description: <p>A simple hello world schema</p>\n      additionalProperties: false\n      type: object\n      title: The root schema\n      required:\n        - greeting\n        - name\n      properties:\n        greeting:\n          default: ''\n          examples:\n            - hello\n          description: The greeting\n          type: string\n          title: The greeting schema\n          $id: '#/properties/greeting'\n        name:\n          default: ''\n          examples:\n            - solace\n          description: The name.\n          type: string\n          title: The name schema\n          $id: '#/properties/name'\n      $id: http://example.com/example.json\n      x-parser-schema-id: HelloWorldSayHello\n  messages:\n    SayHello: &ref_1\n      payload: *ref_0\n      description: ''\n      schemaFormat: application/vnd.aai.asyncapi;version=2.0.0\n      contentType: application/json\nchannels:\n  say/hello:\n    subscribe:\n      message: *ref_1\nasyncapi: 2.0.0\ninfo:\n  description: This API says hello --- Hello\n  title: SayHello\n  x-view: provider\n  version: v1\n  x-origin:\n    vendor: solace\n    name: event-portal\nx-parser-spec-parsed: true",
 							"options": {
 								"raw": {
 									"language": "text"
@@ -13115,6 +13115,383 @@
 						}
 					},
 					"response": []
+				}
+			]
+		},
+		{
+			"name": "33 API Versions",
+			"item": [
+				{
+					"name": "Patch API - SemVer Success",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status OK\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "{{CONNECTOR_PASSWORD}}",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "{{CONNECTOR_USERNAME}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PATCH",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"components\": {\n    \"schemas\": {\n      \"SensorEvent\": {\n        \"$schema\": \"http://json-schema.org/draft-04/schema#\",\n        \"description\": \"\",\n        \"type\": \"object\",\n        \"properties\": {\n          \"communicationDate\": {\n            \"type\": \"integer\"\n          },\n          \"signedCommunication\": {\n            \"type\": \"boolean\"\n          },\n          \"events\": {\n            \"type\": \"array\",\n            \"items\": [\n              {\n                \"type\": \"string\"\n              },\n              {\n                \"type\": \"array\",\n                \"items\": [\n                  {\n                    \"type\": \"object\",\n                    \"properties\": {\n                      \"tripPlanId\": {\n                        \"type\": \"integer\"\n                      },\n                      \"sensorName\": {\n                        \"type\": \"string\"\n                      },\n                      \"communicationType\": {\n                        \"type\": \"string\"\n                      },\n                      \"eventType\": {\n                        \"type\": \"string\"\n                      },\n                      \"gps\": {\n                        \"type\": \"string\"\n                      },\n                      \"sensorValues\": {\n                        \"type\": \"array\",\n                        \"items\": [\n                          {\n                            \"type\": \"string\"\n                          },\n                          {\n                            \"type\": \"object\",\n                            \"properties\": {\n                              \"Uncertainty\": {\n                                \"type\": \"string\"\n                              },\n                              \"Compass Direction\": {\n                                \"type\": \"string\"\n                              }\n                            },\n                            \"required\": [\n                              \"Uncertainty\",\n                              \"Compass Direction\"\n                            ]\n                          }\n                        ]\n                      },\n                      \"sensorValue\": {\n                        \"type\": \"string\"\n                      },\n                      \"deviceSerialNumber\": {\n                        \"type\": \"string\"\n                      },\n                      \"eventDate\": {\n                        \"type\": \"integer\"\n                      },\n                      \"sensorId\": {\n                        \"type\": \"integer\"\n                      }\n                    },\n                    \"required\": [\n                      \"deviceSerialNumber\",\n                      \"eventDate\",\n                      \"eventType\",\n                      \"communicationType\",\n                      \"gps\",\n                      \"sensorName\",\n                      \"sensorValue\",\n                      \"sensorValues\",\n                      \"tripPlanId\",\n                      \"sensorId\"\n                    ]\n                  }\n                ]\n              }\n            ]\n          },\n          \"deviceSerialNumber\": {\n            \"type\": \"string\"\n          },\n          \"validatedSignature\": {\n            \"type\": \"boolean\"\n          }\n        },\n        \"required\": [\n          \"events\",\n          \"deviceSerialNumber\",\n          \"communicationDate\",\n          \"signedCommunication\",\n          \"validatedSignature\"\n        ]\n      }\n    },\n    \"messages\": {\n      \"GeoSensorEvent\": {\n        \"payload\": {\n          \"$ref\": \"#/components/schemas/SensorEvent\"\n        },\n        \"description\": \"\",\n        \"schemaFormat\": \"application/vnd.aai.asyncapi+json;version=2.0.0\",\n        \"contentType\": \"application/json\"\n      },\n      \"SensorEvent\": {\n        \"payload\": {\n          \"$ref\": \"#/components/schemas/SensorEvent\"\n        },\n        \"description\": \"\",\n        \"schemaFormat\": \"application/vnd.aai.asyncapi+json;version=2.0.0\",\n        \"contentType\": \"application/json\"\n      }\n    }\n  },\n  \"servers\": {},\n  \"channels\": {\n    \"traxens/feed/{shippingline}/v1/{equipmentId}/{sensor}/{sensorvalue}\": {\n      \"publish\": {\n        \"message\": {\n          \"$ref\": \"#/components/messages/SensorEvent\"\n        }\n      },\n      \"parameters\": {\n        \"shippingline\": {\n          \"schema\": {\n            \"type\": \"string\"\n          }\n        },\n        \"sensor\": {\n          \"schema\": {\n            \"type\": \"string\",\n            \"enum\": [\n              \"HUMIDITY\",\n              \"LIGHT\",\n              \"DOOR\",\n              \"GEOFENCE\"\n            ]\n          }\n        },\n        \"sensorvalue\": {\n          \"schema\": {\n            \"type\": \"string\"\n          }\n        },\n        \"equipmentId\": {\n          \"schema\": {\n            \"type\": \"string\"\n          }\n        }\n      }\n    },\n    \"traxens/feed/{shippingline}/v1/{equipmentId}/{geosensor}/{longitude}\": {\n      \"publish\": {\n        \"message\": {\n          \"$ref\": \"#/components/messages/GeoSensorEvent\"\n        }\n      },\n      \"parameters\": {\n        \"geosensor\": {\n          \"schema\": {\n            \"type\": \"string\",\n            \"enum\": [\n              \"GEOPOSITIONING\"\n            ]\n          }\n        },\n        \"shippingline\": {\n          \"schema\": {\n            \"type\": \"string\"\n          }\n        },\n        \"equipmentId\": {\n          \"schema\": {\n            \"type\": \"string\"\n          }\n        },\n        \"longitude\": {\n          \"schema\": {\n            \"type\": \"string\"\n          }\n        }\n      }\n    }\n  },\n  \"asyncapi\": \"2.0.0\",\n  \"info\": {\n    \"x-generated-time\": \"2021-07-15 15:03 UTC\",\n    \"description\": \"\",\n    \"title\": \"WebSub API\",\n    \"x-view\": \"provider\",\n    \"version\": \"1.1.0\",\n    \"x-origin\": {\n      \"vendor\": \"solace\",\n      \"name\": \"event-portal\"\n    }\n  }\n}",
+							"options": {
+								"raw": {
+									"language": "text"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{CONNECTOR_BASEURL}}/{{TENANT}}/apis/{{API_NAME}}",
+							"host": [
+								"{{CONNECTOR_BASEURL}}"
+							],
+							"path": [
+								"{{TENANT}}",
+								"apis",
+								"{{API_NAME}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Patch API - SemVer Success Copy",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status OK\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Version number is updated\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.version).to.eql(\"1.1.0\");",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "{{CONNECTOR_PASSWORD}}",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "{{CONNECTOR_USERNAME}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{CONNECTOR_BASEURL}}/{{TENANT}}/apis/{{API_NAME}}/info",
+							"host": [
+								"{{CONNECTOR_BASEURL}}"
+							],
+							"path": [
+								"{{TENANT}}",
+								"apis",
+								"{{API_NAME}}",
+								"info"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Patch API - SemVer Failure",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status COnflict 409 - Invalid version\", function () {",
+									"    pm.response.to.have.status(409);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "{{CONNECTOR_PASSWORD}}",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "{{CONNECTOR_USERNAME}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PATCH",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"components\": {\n    \"schemas\": {\n      \"SensorEvent\": {\n        \"$schema\": \"http://json-schema.org/draft-04/schema#\",\n        \"description\": \"\",\n        \"type\": \"object\",\n        \"properties\": {\n          \"communicationDate\": {\n            \"type\": \"integer\"\n          },\n          \"signedCommunication\": {\n            \"type\": \"boolean\"\n          },\n          \"events\": {\n            \"type\": \"array\",\n            \"items\": [\n              {\n                \"type\": \"string\"\n              },\n              {\n                \"type\": \"array\",\n                \"items\": [\n                  {\n                    \"type\": \"object\",\n                    \"properties\": {\n                      \"tripPlanId\": {\n                        \"type\": \"integer\"\n                      },\n                      \"sensorName\": {\n                        \"type\": \"string\"\n                      },\n                      \"communicationType\": {\n                        \"type\": \"string\"\n                      },\n                      \"eventType\": {\n                        \"type\": \"string\"\n                      },\n                      \"gps\": {\n                        \"type\": \"string\"\n                      },\n                      \"sensorValues\": {\n                        \"type\": \"array\",\n                        \"items\": [\n                          {\n                            \"type\": \"string\"\n                          },\n                          {\n                            \"type\": \"object\",\n                            \"properties\": {\n                              \"Uncertainty\": {\n                                \"type\": \"string\"\n                              },\n                              \"Compass Direction\": {\n                                \"type\": \"string\"\n                              }\n                            },\n                            \"required\": [\n                              \"Uncertainty\",\n                              \"Compass Direction\"\n                            ]\n                          }\n                        ]\n                      },\n                      \"sensorValue\": {\n                        \"type\": \"string\"\n                      },\n                      \"deviceSerialNumber\": {\n                        \"type\": \"string\"\n                      },\n                      \"eventDate\": {\n                        \"type\": \"integer\"\n                      },\n                      \"sensorId\": {\n                        \"type\": \"integer\"\n                      }\n                    },\n                    \"required\": [\n                      \"deviceSerialNumber\",\n                      \"eventDate\",\n                      \"eventType\",\n                      \"communicationType\",\n                      \"gps\",\n                      \"sensorName\",\n                      \"sensorValue\",\n                      \"sensorValues\",\n                      \"tripPlanId\",\n                      \"sensorId\"\n                    ]\n                  }\n                ]\n              }\n            ]\n          },\n          \"deviceSerialNumber\": {\n            \"type\": \"string\"\n          },\n          \"validatedSignature\": {\n            \"type\": \"boolean\"\n          }\n        },\n        \"required\": [\n          \"events\",\n          \"deviceSerialNumber\",\n          \"communicationDate\",\n          \"signedCommunication\",\n          \"validatedSignature\"\n        ]\n      }\n    },\n    \"messages\": {\n      \"GeoSensorEvent\": {\n        \"payload\": {\n          \"$ref\": \"#/components/schemas/SensorEvent\"\n        },\n        \"description\": \"\",\n        \"schemaFormat\": \"application/vnd.aai.asyncapi+json;version=2.0.0\",\n        \"contentType\": \"application/json\"\n      },\n      \"SensorEvent\": {\n        \"payload\": {\n          \"$ref\": \"#/components/schemas/SensorEvent\"\n        },\n        \"description\": \"\",\n        \"schemaFormat\": \"application/vnd.aai.asyncapi+json;version=2.0.0\",\n        \"contentType\": \"application/json\"\n      }\n    }\n  },\n  \"servers\": {},\n  \"channels\": {\n    \"traxens/feed/{shippingline}/v1/{equipmentId}/{sensor}/{sensorvalue}\": {\n      \"publish\": {\n        \"message\": {\n          \"$ref\": \"#/components/messages/SensorEvent\"\n        }\n      },\n      \"parameters\": {\n        \"shippingline\": {\n          \"schema\": {\n            \"type\": \"string\"\n          }\n        },\n        \"sensor\": {\n          \"schema\": {\n            \"type\": \"string\",\n            \"enum\": [\n              \"HUMIDITY\",\n              \"LIGHT\",\n              \"DOOR\",\n              \"GEOFENCE\"\n            ]\n          }\n        },\n        \"sensorvalue\": {\n          \"schema\": {\n            \"type\": \"string\"\n          }\n        },\n        \"equipmentId\": {\n          \"schema\": {\n            \"type\": \"string\"\n          }\n        }\n      }\n    },\n    \"traxens/feed/{shippingline}/v1/{equipmentId}/{geosensor}/{longitude}\": {\n      \"publish\": {\n        \"message\": {\n          \"$ref\": \"#/components/messages/GeoSensorEvent\"\n        }\n      },\n      \"parameters\": {\n        \"geosensor\": {\n          \"schema\": {\n            \"type\": \"string\",\n            \"enum\": [\n              \"GEOPOSITIONING\"\n            ]\n          }\n        },\n        \"shippingline\": {\n          \"schema\": {\n            \"type\": \"string\"\n          }\n        },\n        \"equipmentId\": {\n          \"schema\": {\n            \"type\": \"string\"\n          }\n        },\n        \"longitude\": {\n          \"schema\": {\n            \"type\": \"string\"\n          }\n        }\n      }\n    }\n  },\n  \"asyncapi\": \"2.0.0\",\n  \"info\": {\n    \"x-generated-time\": \"2021-07-15 15:03 UTC\",\n    \"description\": \"\",\n    \"title\": \"WebSub API\",\n    \"x-view\": \"provider\",\n    \"version\": \"1.1.0\",\n    \"x-origin\": {\n      \"vendor\": \"solace\",\n      \"name\": \"event-portal\"\n    }\n  }\n}",
+							"options": {
+								"raw": {
+									"language": "text"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{CONNECTOR_BASEURL}}/{{TENANT}}/apis/{{API_NAME}}",
+							"host": [
+								"{{CONNECTOR_BASEURL}}"
+							],
+							"path": [
+								"{{TENANT}}",
+								"apis",
+								"{{API_NAME}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Patch API SayHelloPub success",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status OK\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "{{CONNECTOR_PASSWORD}}",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "{{CONNECTOR_USERNAME}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PATCH",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "components:\n  schemas:\n    HelloWorldSayHello: &ref_0\n      default: {}\n      $schema: http://json-schema.org/draft-07/schema\n      examples:\n        - greeting: hello\n          name: solace\n      description: A simple hello world schema\n      additionalProperties: false\n      type: object\n      title: The root schema\n      required:\n        - greeting\n        - name\n      properties:\n        greeting:\n          default: ''\n          examples:\n            - hello\n          description: The greeting\n          type: string\n          title: The greeting schema\n          $id: '#/properties/greeting'\n        name:\n          default: ''\n          examples:\n            - solace\n          description: The name.\n          type: string\n          title: The name schema\n          $id: '#/properties/name'\n      $id: http://example.com/example.json\n      x-parser-schema-id: HelloWorldSayHello\n  messages:\n    SayHello: &ref_1\n      payload: *ref_0\n      description: ''\n      schemaFormat: application/vnd.aai.asyncapi;version=2.0.0\n      contentType: application/json\nchannels:\n  say/hello:\n    publish:\n      message: *ref_1\nasyncapi: 2.0.0\ninfo:\n  description: ''\n  title: SayHelloPub\n  x-view: provider\n  version: '2'\n  x-origin:\n    vendor: solace\n    name: event-portal\nx-parser-spec-parsed: true",
+							"options": {
+								"raw": {
+									"language": "text"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{CONNECTOR_BASEURL}}/{{TENANT}}/apis/SayHelloPub",
+							"host": [
+								"{{CONNECTOR_BASEURL}}"
+							],
+							"path": [
+								"{{TENANT}}",
+								"apis",
+								"SayHelloPub"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Patch API SayHelloPub success Copy",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status OK\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Version number is updated in API Info\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.version).to.eql(\"2\");",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "{{CONNECTOR_PASSWORD}}",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "{{CONNECTOR_USERNAME}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{CONNECTOR_BASEURL}}/{{TENANT}}/apis/SayHelloPub/info",
+							"host": [
+								"{{CONNECTOR_BASEURL}}"
+							],
+							"path": [
+								"{{TENANT}}",
+								"apis",
+								"SayHelloPub",
+								"info"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Patch API SayHello",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status OK\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Your test name\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.info.version).to.eql(\"v144 (2)\");",
+									"});",
+									"",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "{{CONNECTOR_PASSWORD}}",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "{{CONNECTOR_USERNAME}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PATCH",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "components:\n  schemas:\n    HelloWorldSayHello: &ref_0\n      default: {}\n      $schema: http://json-schema.org/draft-07/schema\n      examples:\n        - greeting: hello\n          name: solace\n      description: <p>A simple hello world schema</p>\n      additionalProperties: false\n      type: object\n      title: The root schema\n      required:\n        - greeting\n        - name\n      properties:\n        greeting:\n          default: ''\n          examples:\n            - hello\n          description: The greeting\n          type: string\n          title: The greeting schema\n          $id: '#/properties/greeting'\n        name:\n          default: ''\n          examples:\n            - solace\n          description: The name.\n          type: string\n          title: The name schema\n          $id: '#/properties/name'\n      $id: http://example.com/example.json\n      x-parser-schema-id: HelloWorldSayHello\n  messages:\n    SayHello: &ref_1\n      payload: *ref_0\n      description: ''\n      schemaFormat: application/vnd.aai.asyncapi;version=2.0.0\n      contentType: application/json\nchannels:\n  say/hello:\n    subscribe:\n      message: *ref_1\nasyncapi: 2.0.0\ninfo:\n  description: This API says hello --- Hello\n  title: SayHello\n  x-view: provider\n  version: v144\n  x-origin:\n    vendor: solace\n    name: event-portal\nx-parser-spec-parsed: true",
+							"options": {
+								"raw": {
+									"language": "text"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{CONNECTOR_BASEURL}}/{{TENANT}}/apis/SayHello",
+							"host": [
+								"{{CONNECTOR_BASEURL}}"
+							],
+							"path": [
+								"{{TENANT}}",
+								"apis",
+								"SayHello"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"auth": {
+				"type": "basic",
+				"basic": [
+					{
+						"key": "password",
+						"value": "{{CONNECTOR_PASSWORD}}",
+						"type": "string"
+					},
+					{
+						"key": "username",
+						"value": "{{CONNECTOR_USERNAME}}",
+						"type": "string"
+					}
+				]
+			},
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
 				}
 			]
 		},

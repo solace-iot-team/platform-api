@@ -2,7 +2,7 @@ openapi: 3.0.0
 info:
   title: Solace API Management Connector
   description: 'Solace API Management Connector API. Note: basic authentication security mechanism is deprecated.'
-  version: 0.7.3
+  version: 0.7.5
 servers:
   - url: /v1
 
@@ -169,12 +169,18 @@ components:
       schema:
         type: string
       description: specify search terms to filter results on, multiple search terms can be supplied. Search will return results matching any of the terms (OR). Enclose search terms in quotes to limit results to recoirds matching ALL terms (AND).)  
+    semver:
+      name: semver
+      in: path
+      required: true
+      schema:
+        $ref: '#/components/schemas/SemVer' 
     version:
       name: version
       in: path
       required: true
       schema:
-        $ref: '#/components/schemas/SemVer' 
+        $ref: '#/components/schemas/Version' 
   responses:
     PreconditionFailed:
       description: PreConditon Failed, likely a mismatch between current etag and if-match header
@@ -2149,6 +2155,13 @@ components:
       maxLength: 32
       pattern: "^[_\\-\\S\\.]*$"
       example: "3.1.1-alpha"
+    Version:
+      type: string
+      example: 1.1.0
+      pattern: ^[ |\S]*$
+      minLength: 1
+      maxLength: 255
+
     MsgVpnName:
       type: string
       minLength: 1
@@ -2182,6 +2195,7 @@ components:
       description: a version number in semver (Semantic Versioning) format
       example: 1.0.1
       pattern: "^(0|[1-9]\\d*)\\.(0|[1-9]\\d*)\\.(0|[1-9]\\d*)(?:-((?:0|[1-9]\\d*|\\d*[a-zA-Z-][0-9a-zA-Z-]*)(?:\\.(?:0|[1-9]\\d*|\\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?(?:\\+([0-9a-zA-Z-]+(?:\\.[0-9a-zA-Z-]+)*))?$"
+        
 security:
   - OpenId: []
   - BasicAuth: []
@@ -2855,6 +2869,12 @@ paths:
            "application/json":
             schema:
              "$ref": "#/components/schemas/ErrorResponse"
+        '409':
+          description: "Invalid API version provided"
+          content:
+           "application/json":
+            schema:
+             "$ref": "#/components/schemas/ErrorResponse"
         '401':
           $ref: '#/components/responses/Unauthorized'
         '403':
@@ -2939,6 +2959,94 @@ paths:
           $ref: '#/components/responses/ServiceUnavailable'
         '504':
           $ref: '#/components/responses/GatewayTimeout'
+  /{organization_name}/apis/{api_name}/revisions:
+    parameters:
+    - $ref: '#/components/parameters/organization'
+    - $ref: '#/components/parameters/api_name'
+    get:
+     operationId: listApiRevisions
+     tags:
+     - apis
+     parameters:
+     - $ref: '#/components/parameters/page_size'
+     - $ref: '#/components/parameters/page_number'
+     - $ref: '#/components/parameters/sort_field_name'
+     - $ref: '#/components/parameters/sort_direction'
+     responses:
+        '200':
+          description:  revisions of the api 
+          content:
+            application/json:
+              schema:
+                type: array
+                minItems: 0
+                maxItems: 32768
+                items:
+                 $ref: "#/components/schemas/CommonVersion"
+        '400':
+           $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '406':
+          $ref: '#/components/responses/NotAcceptable'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
+        '504':
+          $ref: '#/components/responses/GatewayTimeout'
+  /{organization_name}/apis/{api_name}/revisions/{version}:
+    parameters:
+    - $ref: '#/components/parameters/organization'
+    - $ref: '#/components/parameters/api_name'
+    - $ref: '#/components/parameters/version'
+    get:
+     operationId: getApiRevision
+     tags:
+     - apis
+     parameters:
+     - name: format
+       in: query
+       schema:
+        type: string
+        enum:
+        - application/json
+        - application/x-yaml
+     responses:
+        '200':
+          description:  async api sepc
+          content:
+            application/json:
+              schema:
+                type: object
+            application/x-yaml:
+              schema:
+                $ref: "#/components/schemas/String2MB"
+        '400':
+           $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '406':
+          $ref: '#/components/responses/NotAcceptable'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
+        '504':
+          $ref: '#/components/responses/GatewayTimeout'
+
   /{organization_name}/apis/{api_name}/apiProducts:
     parameters:
     - $ref: '#/components/parameters/organization'
@@ -3347,11 +3455,11 @@ paths:
           $ref: '#/components/responses/ServiceUnavailable'
         '504':
           $ref: '#/components/responses/GatewayTimeout'
-  /{organization_name}/apiProducts/{api_product_name}/revisions/{version}:
+  /{organization_name}/apiProducts/{api_product_name}/revisions/{semver}:
     parameters:
     - $ref: '#/components/parameters/organization'
     - $ref: '#/components/parameters/api_product_name'
-    - $ref: '#/components/parameters/version'
+    - $ref: '#/components/parameters/semver'
     get:
      operationId: getApiProductRevision
      tags:

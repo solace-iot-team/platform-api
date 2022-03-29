@@ -79,7 +79,7 @@ export class Controller {
       });
   }
   revisionByVersion(req: Request, res: Response, next: NextFunction): void {
-    ApiProductsService.revisionByVersion(req.params['name'], req.params['version'])
+    ApiProductsService.revisionByVersion(req.params['name'], req.params['semver'])
       .then((r) => res.json(r))
       .catch((e) => {
         L.error(e);

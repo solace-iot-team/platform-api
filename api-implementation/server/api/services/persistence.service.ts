@@ -33,7 +33,7 @@ export class PersistenceService {
         collection.createIndex(
           { '$**': 'text' },
           { name: idxName },
-          function(err, s){
+          function (err, s) {
             L.trace(s);
             L.trace(err);
             L.info(`Created index ${idxName}`);
@@ -67,7 +67,7 @@ export class PersistenceService {
     DatabaseBootstrapper.on('added', this.createCollection.bind(this));
   }
 
-  all(query?: object, sort?: object, paging?: Paging): Promise<any[]> {
+  all(query?: object, sort?: object, paging?: Paging, returnIds: boolean = false): Promise<any[]> {
 
     if (query == null) {
       query = {};
@@ -108,7 +108,9 @@ export class PersistenceService {
             reject(this.createPublicErrorMessage(err));
           } else {
             items.forEach((item) => {
-              delete item._id;
+              if (!returnIds) {
+                delete item._id;
+              }
             });
             resolve(items);
           }

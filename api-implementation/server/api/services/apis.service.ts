@@ -16,8 +16,9 @@ import CommonEntityNameList = Components.Schemas.CommonEntityNameList;
 import CommonEntityNames = Components.Schemas.CommonEntityNames;
 import APIProduct = Components.Schemas.APIProduct;
 import EventAPIProduct = Components.Schemas.EventAPIProduct;
-import {updateProtectionByObject} from './persistence/preconditionhelper';
+import { updateProtectionByObject } from './persistence/preconditionhelper';
 import asyncapihelper from '../../../src/asyncapihelper';
+import { Versioning } from '../../common/versioning';
 
 export interface APISpecification {
   name: string;
@@ -27,10 +28,12 @@ export interface APISpecification {
 export class ApisService {
   private persistenceService: PersistenceService;
   private apiInfoPersistenceService: PersistenceService;
+  private revisionPersistenceService: PersistenceService;
   private readStrategy: ApisReadStrategy;
 
   constructor() {
     this.persistenceService = new PersistenceService('apis');
+    this.revisionPersistenceService = new PersistenceService('apis_revisions');
     this.apiInfoPersistenceService = new PersistenceService('apisInfo');
     this.readStrategy = ApisReadStrategyFactory.getReadStrategy();
   }
@@ -54,9 +57,9 @@ export class ApisService {
   }
 
   async apiProductsByName(name: string): Promise<CommonEntityNameList> {
-    const apiProducts: APIProduct[] = await APIProductsService.all({apis: name});
+    const apiProducts: APIProduct[] = await APIProductsService.all({ apis: name });
     const names: CommonEntityNameList = [];
-    for (const apiProduct of apiProducts){
+    for (const apiProduct of apiProducts) {
       const name: CommonEntityNames = {
         displayName: apiProduct.displayName,
         name: apiProduct.name,
@@ -68,6 +71,10 @@ export class ApisService {
 
   async delete(name: string): Promise<number> {
     if (await this.canDelete(name)) {
+      const revisions: string[] = await this.revisionList(name);
+      for (const r of revisions) {
+        await this.revisionPersistenceService.delete(Versioning.createRevisionId(name, r));
+      }
       await this.apiInfoPersistenceService.delete(name);
       return this.persistenceService.delete(name);
     } else {
@@ -104,8 +111,8 @@ export class ApisService {
     let api: EventAPIProduct;
     try {
       apiSpec = await EventPortalFacade.getEventApiProductAsyncApi(body.id)
-      api = await EventPortalFacade.getEventApiProduct(body.id) ;
-    } catch (e){
+      api = await EventPortalFacade.getEventApiProduct(body.id);
+    } catch (e) {
       throw new ErrorResponseInternal(500, `No Event Portal Connectivity, Entity ${api.name} can not be imported`)
     }
     const apiName = api.name.replace(/[^a-zA-Z0-9_-]+/g, '-');
@@ -126,24 +133,29 @@ export class ApisService {
       version: api.version,
     }
     if (!body.overwrite) {
-      return this.createInternal(info, apiSpec);
+      return this.createInternal(info, apiSpec, true);
     } else {
       try {
-        const response = await this.createInternal(info, apiSpec);
+        const response = await this.createInternal(info, apiSpec, true);
         return response;
       } catch (e) {
-        return this.updateInternal(info, apiSpec);
+        return this.updateInternal(info, apiSpec, true);
       }
     }
   }
 
-  createInternal(info: APIInfo, asyncapi: string): Promise<string> {
+  createInternal(info: APIInfo, asyncapi: string, isImport: boolean = false): Promise<string> {
     return new Promise<string>(async (resolve, reject) => {
       const validationMessage = await this.getAPIValidationError(asyncapi);
       if (validationMessage) {
         reject(new ErrorResponseInternal(400, `Entity ${info.name} is not valid, ${validationMessage}`));
       } else {
         info.apiParameters = await AsyncAPIHelper.getAsyncAPIParameters(asyncapi);
+        const d: AsyncAPIDocument = await parser.parse(asyncapi);
+        const version = d.info().version();
+        if (Versioning.isRecognizedVersion(version)) {
+          info.version = version;
+        }
         const spec: APISpecification = {
           name: info.name,
           specification: this.convertAPISpec(asyncapi),
@@ -155,7 +167,8 @@ export class ApisService {
         }
         this.persistenceService
           .create(info.name, spec)
-          .then((spec: APISpecification) => {
+          .then(async (spec: APISpecification) => {
+            await this.saveRevision(spec, info, isImport);
             resolve(spec.specification);
           })
           .catch((e) => {
@@ -169,20 +182,37 @@ export class ApisService {
   async update(name: string, body: string): Promise<string> {
     const r: APIInfo = await this.apiInfoPersistenceService.byName(name);
     const a: APISpecification = await this.persistenceService.byName(name);
-    try  {
+    try {
       await updateProtectionByObject(a.specification);
-    } catch (e){
+    } catch (e) {
       // this will fail if the API was obtained in YAML format - let;s try again with "r" converted to YAML
       await updateProtectionByObject(asyncapihelper.JSONtoYAML(a.specification));
     }
+    const validationMessage = await this.getAPIValidationError(body);
+    if (validationMessage) {
+      throw new ErrorResponseInternal(400, `AsyncAPI document is not valid, ${validationMessage}`);
+    }
+    const d: AsyncAPIDocument = await parser.parse(body);
+    const version = d.info().version();
+    const previousSpec: AsyncAPIDocument = await parser.parse(a.specification);
+    const previousSpecVersion = previousSpec.info().version();
+    const previousVersion = Versioning.isRecognizedVersion(version) ? r.version : previousSpecVersion;
+
+    if (!Versioning.validateNewVersionString(version, previousVersion)) {
+      throw new ErrorResponseInternal(409, `Version supplied in specification is not greater than current version`);
+    }
     if (r.source == 'Upload') {
       // for internal APIs increase the version number
-      r.version = (Number(r.version) + 1).toString();
+      if (Versioning.isRecognizedVersion(version)) {
+        r.version = version;
+      } else {
+        r.version = Versioning.nextRevision(Number(r.version)).toString();
+      }
     }
     return this.updateInternal(r, body);
   }
 
-  updateInternal(info: APIInfo, body: string): Promise<string> {
+  updateInternal(info: APIInfo, body: string, isImport: boolean = false): Promise<string> {
     return new Promise<string>(async (resolve, reject) => {
       try {
         const validationMessage = await this.getAPIValidationError(body);
@@ -204,7 +234,8 @@ export class ApisService {
 
           this.persistenceService
             .update(info.name, spec)
-            .then((spec: APISpecification) => {
+            .then(async (spec: APISpecification) => {
+              await this.saveRevision(spec, info, isImport);
               resolve(spec.specification);
             })
             .catch((e) => {
@@ -216,6 +247,32 @@ export class ApisService {
       }
     });
   }
+
+  async revisionList(apiName: string): Promise<string[]> {
+    const apis: APISpecification[] = await this.revisionPersistenceService.all({ name: apiName }, null, null, true);
+    const revisions: string[] = [];
+    for (const a of apis) {
+      const version: string = (a['_id'] as string).replace(`${apiName}-`, '');
+      revisions.push(version);
+    }
+    return revisions;
+  }
+
+  async revisionByVersion(apiName: string, version: string): Promise<string> {
+    const revisionList = await this.revisionList(apiName);
+    if (revisionList.find(n => n == version)) {
+      const id = Versioning.createRevisionId(apiName, version);
+
+      const api: APISpecification = await this.revisionPersistenceService.byName(id);
+      if (!api) {
+        throw new ErrorResponseInternal(404, `Version ${version} of API [${apiName}] does not exist`);
+      }
+      return api.specification;
+    } else {
+      throw new ErrorResponseInternal(404, `Version ${version} of API [${apiName}] does not exist`);
+    }
+  }
+
 
   private async canDelete(name: string): Promise<boolean> {
     const q = {
@@ -275,7 +332,24 @@ export class ApisService {
     };
     spec.info['x-origin'] = origin;
   }
+  private async saveRevision(spec: APISpecification, info: APIInfo, isImport: boolean = false): Promise<void> {
+    const d = JSON.parse(spec.specification);
+    let version: string = info.version;
+    if (!Versioning.isRecognizedVersion(d.info.version)) {
+      version = d.info.version;
+      d.info.version = `${d.info.version} (${info.version})`;
+      spec.specification = JSON.stringify(d);
+    }
+    const id = Versioning.createRevisionId(spec.name, version);
+    try {
+      await this.revisionPersistenceService.create(id, spec);
+    } catch (e) {
+      if (!isImport || (e as ErrorResponseInternal).statusCode != 422) {
+        throw e;
+      }
+    }
 
+  }
 }
 
 export default new ApisService();
