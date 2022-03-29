@@ -39,7 +39,7 @@ describe(scriptName, function () {
 
     const changedApiSpec = JSON.parse(apiSpec);
 
-    changedApiSpec.info.version = "v2";
+    changedApiSpec.info.version = "2";
     delete changedApiSpec.channels["say/hello/{language}"].publish;
 
     const apiPatch = {
@@ -130,7 +130,7 @@ describe(scriptName, function () {
 
     const changedApiSpec = JSON.parse(apiSpec);
 
-    changedApiSpec.info.version = "v2";
+    changedApiSpec.info.version = "2";
     delete changedApiSpec.channels["say/hello/{language}"].publish;
 
     const apiPatch1 = {
