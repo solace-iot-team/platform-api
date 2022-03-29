@@ -61,4 +61,4 @@ info:
   description: "This API says hello and sometimes goodbye"
   title: "SayHello"
   x-view: "provider"
-  version: "v1"
+  version: "1"
