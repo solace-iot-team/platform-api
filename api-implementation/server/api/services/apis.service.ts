@@ -139,7 +139,7 @@ export class ApisService {
         const response = await this.createInternal(info, apiSpec, true);
         return response;
       } catch (e) {
-        return this.updateInternal(info, apiSpec);
+        return this.updateInternal(info, apiSpec, true);
       }
     }
   }
@@ -168,13 +168,7 @@ export class ApisService {
         this.persistenceService
           .create(info.name, spec)
           .then(async (spec: APISpecification) => {
-            try {
-            await this.saveRevision(spec, info);
-            } catch (e){
-              if (!isImport || (e as ErrorResponseInternal).statusCode!=422){
-                throw e;
-              }
-            }
+            await this.saveRevision(spec, info, isImport);
             resolve(spec.specification);
           })
           .catch((e) => {
@@ -214,7 +208,7 @@ export class ApisService {
     return this.updateInternal(r, body);
   }
 
-  updateInternal(info: APIInfo, body: string): Promise<string> {
+  updateInternal(info: APIInfo, body: string, isImport: boolean = false): Promise<string> {
     return new Promise<string>(async (resolve, reject) => {
       try {
         const validationMessage = await this.getAPIValidationError(body);
@@ -237,7 +231,7 @@ export class ApisService {
           this.persistenceService
             .update(info.name, spec)
             .then(async (spec: APISpecification) => {
-              await this.saveRevision(spec, info);
+              await this.saveRevision(spec, info, isImport);
               resolve(spec.specification);
             })
             .catch((e) => {
@@ -334,7 +328,7 @@ export class ApisService {
     };
     spec.info['x-origin'] = origin;
   }
-  private async saveRevision(spec: APISpecification, info: APIInfo): Promise<void> {
+  private async saveRevision(spec: APISpecification, info: APIInfo, isImport: boolean = false): Promise<void> {
     const d = JSON.parse(spec.specification);
     let version: string = info.version;
     if (!Versioning.isRecognizedVersion(d.info.version)) {
@@ -343,7 +337,14 @@ export class ApisService {
       spec.specification = JSON.stringify(d);
     }
     const id = Versioning.createRevisionId(spec.name, version);
-    await this.revisionPersistenceService.create(id, spec);
+    try {
+      await this.revisionPersistenceService.create(id, spec);
+    } catch (e) {
+      if (!isImport || (e as ErrorResponseInternal).statusCode != 422) {
+        throw e;
+      }
+    }
+
   }
 }
 
