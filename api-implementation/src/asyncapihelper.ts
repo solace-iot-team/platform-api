@@ -1,7 +1,9 @@
 import { ErrorResponseInternal } from "../server/api/middlewares/error.handler";
 import L from '../server/common/logger';
 import Format = Paths.GetApi.Parameters.Format;
+import APIParameter = Components.Schemas.APIParameter;
 import { isString } from './typehelpers';
+import parser, { AsyncAPIDocument } from '@asyncapi/parser';
 
 import YAML from 'js-yaml';
 
@@ -71,6 +73,44 @@ export class AsyncAPIHelper {
     } else {
       next(new ErrorResponseInternal(404, `Not found`));
     }
+  }
+
+
+    public async getAsyncAPIParameters(spec: string): Promise<APIParameter[]> {
+    try {
+      let parameterNames: APIParameter[] = [];
+      const d: AsyncAPIDocument = await parser
+        .parse(spec);
+      d.channelNames().forEach(s => {
+        const c = d.channel(s);
+        if (c.hasParameters()) {
+          const keys = Object.keys(c.parameters());
+          keys.forEach(k => {
+            const param: APIParameter = {
+              name: k,
+              type: (c.parameter(k).schema().type() as string) == "string" ? "string" : "number"
+            };
+            if (c.parameter(k).schema().enum()) {
+              param.enum = c.parameter(k).schema().enum();
+            }
+            parameterNames.push(param);
+          });
+        }
+      });
+
+      return this.uniqueLastVal(parameterNames, it => it.name);
+    } catch (e) {
+      L.fatal(`Unable to parse Async API spec ${name}`)
+      throw new ErrorResponseInternal(500, `Unable to parse ${name}`);
+    }
+  }
+
+  private uniqueLastVal(data: any[], key: any): any[] {
+    return [
+      ...new Map(
+        data.map(x => [key(x), x])
+      ).values()
+    ]
   }
 
 }
