@@ -188,6 +188,10 @@ export class ApisService {
       // this will fail if the API was obtained in YAML format - let;s try again with "r" converted to YAML
       await updateProtectionByObject(asyncapihelper.JSONtoYAML(a.specification));
     }
+    const validationMessage = await this.getAPIValidationError(body);
+    if (validationMessage) {
+      throw new ErrorResponseInternal(400, `AsyncAPI document is not valid, ${validationMessage}`);
+    }
     const d: AsyncAPIDocument = await parser.parse(body);
     const version = d.info().version();
     const previousSpec: AsyncAPIDocument = await parser.parse(a.specification);
