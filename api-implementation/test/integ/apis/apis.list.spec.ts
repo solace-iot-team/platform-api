@@ -207,7 +207,7 @@ describe(scriptName, function () {
     const apiUser: string = await PlatformAPIClient.getOpenApiUser();
     const apiData = response.body[0];
 
-    expect(apiData, "response is not correct").to.include({
+    expect(apiData, "response is not correct").to.deep.include({
       source: "Upload",
       createdBy: apiUser,
       description: apiName1,
