@@ -72,6 +72,10 @@ export class ApisService {
 
   async delete(name: string): Promise<number> {
     if (await this.canDelete(name)) {
+      const revisions: string[] = await this.revisionList(name);
+      for (const r of revisions){
+        await this.revisionPersistenceService.delete(Versioning.createRevisionId(name, r));
+      }
       await this.apiInfoPersistenceService.delete(name);
       return this.persistenceService.delete(name);
     } else {
@@ -188,7 +192,7 @@ export class ApisService {
     const version = d.info().version();
     const previousSpec: AsyncAPIDocument = await parser.parse(a.specification);
     const previousSpecVersion = previousSpec.info().version();
-    const previousVersion = Versioning.isRecognizedVersion(version)?r.version:previousSpecVersion;
+    const previousVersion = Versioning.isRecognizedVersion(version) ? r.version : previousSpecVersion;
 
     if (!Versioning.validateNewVersionString(version, previousVersion)) {
       throw new ErrorResponseInternal(409, `Version supplied in specification is not greater than current version`);
@@ -238,6 +242,32 @@ export class ApisService {
       }
     });
   }
+
+  async revisionList(apiName: string): Promise<string[]> {
+    const apis: APISpecification[] = await this.revisionPersistenceService.all({ name: apiName }, null, null, true);
+    const revisions: string[] = [];
+    for (const a of apis) {
+      const version: string = (a['_id'] as string).replace(`${apiName}-`, '');
+      revisions.push(version);
+    }
+    return revisions;
+  }
+
+  async revisionByVersion(apiName: string, version: string): Promise<string> {
+    const revisionList = await this.revisionList(apiName);
+    if (revisionList.find(n => n == version)) {
+      const id = Versioning.createRevisionId(apiName, version);
+
+      const api: APISpecification = await this.revisionPersistenceService.byName(id);
+      if (!api) {
+        throw new ErrorResponseInternal(404, `Version ${version} of API [${apiName}] does not exist`);
+      }
+      return api.specification;
+    } else {
+      throw new ErrorResponseInternal(404, `Version ${version} of API [${apiName}] does not exist`);
+    }
+  }
+
 
   private async canDelete(name: string): Promise<boolean> {
     const q = {
@@ -336,11 +366,13 @@ export class ApisService {
   }
   private async saveRevision(spec: APISpecification, info: APIInfo): Promise<void> {
     const d = JSON.parse(spec.specification);
+    let version: string = info.version; 
     if (!Versioning.isRecognizedVersion(d.info.version)) {
+      version = d.info.version;
       d.info.version = `${d.info.version} (${info.version})`;
       spec.specification = JSON.stringify(d);
     }
-    const id = Versioning.createRevisionId(spec.name, info.version);
+    const id = Versioning.createRevisionId(spec.name, version);
     await this.revisionPersistenceService.create(id, spec);
   }
 }

@@ -41,7 +41,7 @@ export class Controller {
   };
 
   create(req: Request, res: Response, next: NextFunction): void {
-    ApisService.create(req.params['name'],req.body)
+    ApisService.create(req.params['name'], req.body)
       .then((r) => {
         AsyncAPIHelper.handleResponse(r, req, res, next, 201);
       })
@@ -49,7 +49,7 @@ export class Controller {
   }
 
   import(req: Request, res: Response, next: NextFunction): void {
-    ApisService.import( req.body)
+    ApisService.import(req.body)
       .then((r) => {
         AsyncAPIHelper.handleResponse(r, req, res, next, 201);
       })
@@ -71,6 +71,24 @@ export class Controller {
       })
       .catch((e) => next(e));
   }
+  allRevisions(req: Request, res: Response, next: NextFunction): void {
+    ApisService.revisionList(req.params['name'])
+      .then((r) => res.json(r))
+      .catch(e => {
+        L.error(e);
+        next(e);
+      });
+  }
+  revisionByVersion(req: Request, res: Response, next: NextFunction): void {
+    ApisService.revisionByVersion(req.params['name'], req.params['version'])
+      .then((r) => {
+        AsyncAPIHelper.handleResponse(r, req, res, next);
+      })
+      .catch((e) => {
+        L.error(e);
+        next(e);
+      });
+  };
 
 
 }

@@ -9,4 +9,7 @@ export default express
   .get('/:name/apiProducts', controller.apiProductsByName)
   .put('/:name', controller.create)
   .patch('/:name', controller.update)
-  .delete('/:name', controller.delete);
+  .delete('/:name', controller.delete)
+  .get('/:name/revisions', controller.allRevisions)
+  .get('/:name/revisions/:version', controller.revisionByVersion)
+  ;
