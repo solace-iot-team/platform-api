@@ -65,12 +65,13 @@ describe(scriptName, function () {
 
     const response = await ApisService.getApi({ ...orgctx, apiName: apiName });
     const etag = response.headers['etag'];
-
+    const updateApiSpec = JSON.parse(apiSpec);
+    updateApiSpec.info.version = '5';
     const apiPatch = {
       ...orgctx,
       apiName: apiName,
       ifMatch: etag,
-      requestBody: apiSpec,
+      requestBody: JSON.stringify(updateApiSpec),
     }
 
     await ApisService.updateApi(apiPatch).catch((reason) => {
