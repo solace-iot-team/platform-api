@@ -72,7 +72,7 @@ export class ApisService {
   async delete(name: string): Promise<number> {
     if (await this.canDelete(name)) {
       const revisions: string[] = await this.revisionList(name);
-      for (const r of revisions){
+      for (const r of revisions) {
         await this.revisionPersistenceService.delete(Versioning.createRevisionId(name, r));
       }
       await this.apiInfoPersistenceService.delete(name);
@@ -151,7 +151,7 @@ export class ApisService {
         reject(new ErrorResponseInternal(400, `Entity ${info.name} is not valid, ${validationMessage}`));
       } else {
         info.apiParameters = await AsyncAPIHelper.getAsyncAPIParameters(asyncapi);
-		const d: AsyncAPIDocument = await parser.parse(asyncapi);
+        const d: AsyncAPIDocument = await parser.parse(asyncapi);
         const version = d.info().version();
         if (Versioning.isRecognizedVersion(version)) {
           info.version = version;
@@ -328,7 +328,17 @@ export class ApisService {
     };
     spec.info['x-origin'] = origin;
   }
-
+  private async saveRevision(spec: APISpecification, info: APIInfo): Promise<void> {
+    const d = JSON.parse(spec.specification);
+    let version: string = info.version;
+    if (!Versioning.isRecognizedVersion(d.info.version)) {
+      version = d.info.version;
+      d.info.version = `${d.info.version} (${info.version})`;
+      spec.specification = JSON.stringify(d);
+    }
+    const id = Versioning.createRevisionId(spec.name, version);
+    await this.revisionPersistenceService.create(id, spec);
+  }
 }
 
 export default new ApisService();
