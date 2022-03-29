@@ -36,6 +36,7 @@ class ApisReadLocalStrategy implements ApisReadStrategy {
               delete apiInfo.summary;
               delete apiInfo.updatedTime;
               delete apiInfo.version;
+              delete apiInfo.apiParameters;
             });
             resolve(apiInfos);
           } else {
