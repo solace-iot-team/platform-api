@@ -44,7 +44,7 @@ class ApisReadLocalStrategy implements ApisReadStrategy {
             const apiInfos: APIInfo[] = await this.apiInfoPersistenceService.all();
             for (const info of apiInfos){
               if (!info.apiParameters){
-                const spec: string = (await this.apiInfoPersistenceService.byName(info.name));
+                const spec: string = (await this.persistenceService.byName(info.name)).specification;
                 info.apiParameters = await AsyncAPIHelper.getAsyncAPIParameters(spec);
               }
             }
