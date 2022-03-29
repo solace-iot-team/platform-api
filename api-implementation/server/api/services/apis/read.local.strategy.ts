@@ -5,6 +5,7 @@ import { PersistenceService } from '../persistence.service';
 import APIInfo = Components.Schemas.APIInfo;
 import Format = Components.Parameters.ApiListFormat.Format;
 import L from '../../../common/logger';
+import AsyncAPIHelper from '../../../../src/asyncapihelper';
 
 class ApisReadLocalStrategy implements ApisReadStrategy {
   private persistenceService: PersistenceService;
@@ -39,6 +40,12 @@ class ApisReadLocalStrategy implements ApisReadStrategy {
             resolve(apiInfos);
           } else {
             const apiInfos: APIInfo[] = await this.apiInfoPersistenceService.all();
+            for (const info of apiInfos){
+              if (!info.apiParameters){
+                const spec: string = (await this.apiInfoPersistenceService.byName(info.name));
+                info.apiParameters = await AsyncAPIHelper.getAsyncAPIParameters(spec);
+              }
+            }
             resolve(apiInfos);
           }
         })
