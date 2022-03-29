@@ -10,6 +10,28 @@ export class Versioning {
   public static nextRevision(current: number): number {
     return current + 1;
   }
+
+  public static isRecognizedVersion(version : string): boolean{
+    const isSemVer: boolean = semver.parse(version)!=null;
+    const isInteger:boolean = !isNaN(version as any);
+    return isSemVer || isInteger;
+  }
+
+  public static validateNewVersionString(newVersion: string, previousVersion: string): boolean {
+    // version is mandatory, do not accept null values
+    if (!previousVersion || !newVersion){
+      return false;
+    }
+    const isSemVer: boolean = (semver.parse(newVersion)!=null && semver.parse(previousVersion)!=null);
+    const isInteger:boolean = !isNaN(newVersion as any) && !isNaN(previousVersion as any);
+    if (isSemVer){
+      return semver.gt(newVersion, previousVersion);
+    } else if (isInteger){
+      return parseInt(newVersion)> parseInt(previousVersion);
+    } else  {
+      return (newVersion != previousVersion);
+    }
+  }
   public static validateNewVersion(newVersion: Meta, previousVersion: Meta): boolean {
     if (!previousVersion && !newVersion){
       return true;
@@ -22,10 +44,8 @@ export class Versioning {
     if (!newVersion && previousVersion &&  previousVersion.version == Versioning.INITIAL_VERSION) {
       return true;
     }
-    let semVerPrev = (previousVersion && previousVersion.version == Versioning.INITIAL_VERSION) ? `1.${previousVersion[Versioning.INTERNAL_REVISION]}.0` : previousVersion.version
-;
-
-    return semver.gt(newVersion.version, semVerPrev);
+    let semVerPrev = (previousVersion && previousVersion.version == Versioning.INITIAL_VERSION) ? `1.${previousVersion[Versioning.INTERNAL_REVISION]}.0` : previousVersion.version;
+    return Versioning.validateNewVersionString(newVersion.version, semVerPrev);
   }
   public static createMeta(version?: string): Meta {
     const ts: number = Date.now();

@@ -2,6 +2,7 @@ import { ApisReadStrategy } from './read.strategy';
 import { APISpecification } from '../apis.service';
 import { ErrorResponseInternal } from '../../middlewares/error.handler';
 import { PersistenceService } from '../persistence.service';
+import { Versioning } from '../../../common/versioning';
 import APIInfo = Components.Schemas.APIInfo;
 import Format = Components.Parameters.ApiListFormat.Format;
 import L from '../../../common/logger';
@@ -53,12 +54,18 @@ class ApisReadLocalStrategy implements ApisReadStrategy {
       L.info('read local strategy byName');
       this.persistenceService
         .byName(name)
-        .then((spec: APISpecification) => {
+        .then(async (spec: APISpecification) => {
           if (!spec) {
             reject(
               new ErrorResponseInternal(404, `Async API ${name} not found`)
             );
           } else {
+            const d = JSON.parse(spec.specification);
+            if (!Versioning.isRecognizedVersion(d.info.version)) {
+              const info = await this.infoByName(name);
+              d.info.version = `${d.info.version} (${info.version})`;
+              spec.specification = JSON.stringify(d);
+            }
             resolve(spec.specification);
           }
         })
