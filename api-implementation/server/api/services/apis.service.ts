@@ -12,7 +12,6 @@ import { ContextConstants } from '../../common/constants';
 import { ApisReadStrategy } from './apis/read.strategy';
 import ApisReadStrategyFactory from './apis/read.strategy.factory';
 import ApiListFormat = Components.Parameters.ApiListFormat.Format;
-import APIParameter = Components.Schemas.APIParameter;
 import CommonEntityNameList = Components.Schemas.CommonEntityNameList;
 import CommonEntityNames = Components.Schemas.CommonEntityNames;
 import APIProduct = Components.Schemas.APIProduct;
@@ -50,7 +49,7 @@ export class ApisService {
   async infoByName(name: string): Promise<APIInfo> {
     const apiInfo = await this.readStrategy.infoByName(name);
     const spec: string = await this.byName(name);
-    const params = await this.getAsyncAPIParameters(spec);
+    const params = await AsyncAPIHelper.getAsyncAPIParameters(spec);
     if (params) {
       apiInfo.apiParameters = params;
     }
@@ -151,7 +150,8 @@ export class ApisService {
       if (validationMessage) {
         reject(new ErrorResponseInternal(400, `Entity ${info.name} is not valid, ${validationMessage}`));
       } else {
-        const d: AsyncAPIDocument = await parser.parse(asyncapi);
+        info.apiParameters = await AsyncAPIHelper.getAsyncAPIParameters(asyncapi);
+		const d: AsyncAPIDocument = await parser.parse(asyncapi);
         const version = d.info().version();
         if (Versioning.isRecognizedVersion(version)) {
           info.version = version;
@@ -221,6 +221,7 @@ export class ApisService {
             name: info.name,
             specification: this.convertAPISpec(body),
           };
+          info.apiParameters = await AsyncAPIHelper.getAsyncAPIParameters(body);
           try {
             const r = await this.apiInfoPersistenceService.update(info.name, info);
           } catch (e) {
@@ -328,53 +329,6 @@ export class ApisService {
     spec.info['x-origin'] = origin;
   }
 
-  private async getAsyncAPIParameters(spec: string): Promise<APIParameter[]> {
-    try {
-      let parameterNames: APIParameter[] = [];
-      const d: AsyncAPIDocument = await parser
-        .parse(spec);
-      d.channelNames().forEach(s => {
-        const c = d.channel(s);
-        if (c.hasParameters()) {
-          const keys = Object.keys(c.parameters());
-          keys.forEach(k => {
-            const param: APIParameter = {
-              name: k,
-              type: (c.parameter(k).schema().type() as string) == "string" ? "string" : "number"
-            };
-            if (c.parameter(k).schema().enum()) {
-              param.enum = c.parameter(k).schema().enum();
-            }
-            parameterNames.push(param);
-          });
-        }
-      });
-
-      return this.uniqueLastVal(parameterNames, it => it.name);
-    } catch (e) {
-      L.fatal(`Unable to parse Async API spec ${name}`)
-      throw new ErrorResponseInternal(500, `Unable to parse ${name}`);
-    }
-  }
-
-  private uniqueLastVal(data: any[], key: any): any[] {
-    return [
-      ...new Map(
-        data.map(x => [key(x), x])
-      ).values()
-    ]
-  }
-  private async saveRevision(spec: APISpecification, info: APIInfo): Promise<void> {
-    const d = JSON.parse(spec.specification);
-    let version: string = info.version; 
-    if (!Versioning.isRecognizedVersion(d.info.version)) {
-      version = d.info.version;
-      d.info.version = `${d.info.version} (${info.version})`;
-      spec.specification = JSON.stringify(d);
-    }
-    const id = Versioning.createRevisionId(spec.name, version);
-    await this.revisionPersistenceService.create(id, spec);
-  }
 }
 
 export default new ApisService();
