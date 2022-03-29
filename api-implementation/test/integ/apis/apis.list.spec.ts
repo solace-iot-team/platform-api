@@ -191,7 +191,7 @@ describe(scriptName, function () {
     const options = {
       ...orgctx,
       pageSize: 1,
-      pageNumber: 2,
+      pageNumber: 3,
       sortFieldName: "name",
       sortDirection: "asc" as ApiSortDirection,
       format: "extended" as ApiFormat,
@@ -205,17 +205,20 @@ describe(scriptName, function () {
     expect(response.body, "number of returned APIs is not correct").to.have.lengthOf(1);
 
     const apiUser: string = await PlatformAPIClient.getOpenApiUser();
-    const apiSpec = JSON.parse(apiSpec3);
-
     const apiData = response.body[0];
 
     expect(apiData, "response is not correct").to.include({
+      source: "Upload",
       createdBy: apiUser,
-      description: apiSpec.info?.description,
-      name: apiName3,
-      source: APIImport.source.EVENT_APIPRODUCT,
-      summary: "",
+      description: apiName1,
+      name: apiName1,
+      summary: apiName1,
       version: "1",
+      apiParameters: [{
+        name: "language",
+        type: "string",
+        enum: ["EN", "DE"],
+      }],
     });
     expect(apiData, "response is not correct").to.have.property("createdTime").that.is.a('number');
   });
