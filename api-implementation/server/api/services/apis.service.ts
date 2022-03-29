@@ -133,10 +133,10 @@ export class ApisService {
       version: api.version,
     }
     if (!body.overwrite) {
-      return this.createInternal(info, apiSpec);
+      return this.createInternal(info, apiSpec, true);
     } else {
       try {
-        const response = await this.createInternal(info, apiSpec);
+        const response = await this.createInternal(info, apiSpec, true);
         return response;
       } catch (e) {
         return this.updateInternal(info, apiSpec);
@@ -144,7 +144,7 @@ export class ApisService {
     }
   }
 
-  createInternal(info: APIInfo, asyncapi: string): Promise<string> {
+  createInternal(info: APIInfo, asyncapi: string, isImport: boolean = false): Promise<string> {
     return new Promise<string>(async (resolve, reject) => {
       const validationMessage = await this.getAPIValidationError(asyncapi);
       if (validationMessage) {
@@ -168,7 +168,13 @@ export class ApisService {
         this.persistenceService
           .create(info.name, spec)
           .then(async (spec: APISpecification) => {
+            try {
             await this.saveRevision(spec, info);
+            } catch (e){
+              if (!isImport || (e as ErrorResponseInternal).statusCode!=422){
+                throw e;
+              }
+            }
             resolve(spec.specification);
           })
           .catch((e) => {
