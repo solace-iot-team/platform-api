@@ -19,7 +19,6 @@ import ApiProductsService from '../apiProducts.service';
 import SempV2ClientFactory from './sempv2clientfactory';
 import brokerutils from './brokerutils';
 import EnvironmentService from '../environments.service';
-import { AjvOptions } from 'express-openapi-validator/dist/framework/ajv/options';
 
 export enum Direction {
   Publish = 'Publish',
@@ -287,7 +286,14 @@ class ACLManager {
       (resolve, reject) => {
         const apiPromises: Promise<string>[] = [];
         apis.forEach((api: string) => {
-          apiPromises.push(ApisService.byName(api));
+          let spec: Promise<string>;
+          const ref: string[] = api.split('@');
+          if (ref.length == 2) {
+            spec = ApisService.revisionByVersion(ref[0], ref[1]);
+          } else {
+            spec = ApisService.byName(api);
+          }
+          apiPromises.push(spec);
         });
         Promise.all(apiPromises).then(async (specs) => {
           const parserPromises: Promise<any>[] = [];
@@ -435,7 +441,14 @@ class ACLManager {
       (resolve, reject) => {
         const apiPromises: Promise<string>[] = [];
         apis.forEach((api: string) => {
-          apiPromises.push(ApisService.byName(api));
+          let spec: Promise<string>;
+          const ref: string[] = api.split('@');
+          if (ref.length == 2) {
+            spec = ApisService.revisionByVersion(ref[0], ref[1]);
+          } else {
+            spec = ApisService.byName(api);
+          }
+          apiPromises.push(spec);
         });
         Promise.all(apiPromises).then(async (specs) => {
           const parserPromises: Promise<any>[] = [];
