@@ -40,6 +40,7 @@ export class ConnectorEventRepublisher {
     });
     const headers = new Headers({
       Accept: 'application/json',
+      'Content-Type': 'application/json',
     });
 
     // set the authorization for the webhook
