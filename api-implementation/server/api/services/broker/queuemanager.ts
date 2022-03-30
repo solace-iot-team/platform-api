@@ -19,7 +19,7 @@ import {
 
 import SempV2ClientFactory from '../broker/sempv2clientfactory';
 import { ErrorResponseInternal } from '../../middlewares/error.handler';
-import { isString } from '../../../../src/typehelpers';
+import APIProductsTypeHelper from '../../../../src/apiproductstypehelper';
 
 export class QueueManager {
   public async createWebHookQueues(app: App, services: Service[],
@@ -30,7 +30,7 @@ export class QueueManager {
 
     const noWebHookServices: Service[] = QueueHelper.fiterServicesWithoutWebHook(app, services);
     L.info(`nowebHookServices ${noWebHookServices.length}`);
-    await this.deleteQueues(app, noWebHookServices, app.internalName);
+    await this.deleteQueues(noWebHookServices, app.internalName);
   }
 
   public async createAPIProductQueues(app: App, services: Service[],
@@ -40,7 +40,7 @@ export class QueueManager {
       if (QueueHelper.isAPIProductQueueRequired(apiProduct)) {
         await this.createQueues(app, services, [apiProduct], ownerAttributes, queueName, apiProduct.clientOptions);
       } else {
-        await this.deleteQueues(app, services, queueName);
+        await this.deleteQueues(services, queueName);
       }
     }
   }
@@ -118,26 +118,21 @@ export class QueueManager {
   public async deleteAPIProductQueues(app: App, services: Service[], name: string) {
 
     for (const apiProductReference of app.apiProducts) {
-      let productName: string = null;
-      if (isString(apiProductReference)) {
-        productName = apiProductReference as string;
-      } else {
-        productName = (apiProductReference as AppApiProductsComplex).apiproduct;
-      }
+      let productName: string = APIProductsTypeHelper.apiProductReferenceToString(apiProductReference);
       const apiProduct: APIProduct = await ApiProductsService.byName(productName);
       if (QueueHelper.isAPIProductQueueRequired(apiProduct)) {
         const queueName: string = QueueHelper.getAPIProductQueueName(app, apiProduct);
-        await this.deleteQueues(app, services, queueName);
+        await this.deleteQueues(services, queueName);
       }
     }
-    await this.deleteQueues(app, services, name);
+    //await this.deleteQueues(services, name);
   }
 
   public async deleteWebHookQueues(app: App, services: Service[], name: string) {
-    await this.deleteQueues(app, services, name);
+    await this.deleteQueues(services, name);
   }
 
-  private async deleteQueues(app: App, services: Service[], name: string) {
+  private async deleteQueues(services: Service[], name: string) {
     for (const service of services) {
       const apiClient: AllService = SempV2ClientFactory.getSEMPv2Client(service);
       try {
