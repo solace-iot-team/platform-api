@@ -2,7 +2,7 @@ openapi: 3.0.0
 info:
   title: Solace API Management Connector
   description: 'Solace API Management Connector API. Note: basic authentication security mechanism is deprecated.'
-  version: 0.7.5
+  version: 0.7.6
 servers:
   - url: /v1
 
@@ -46,10 +46,7 @@ components:
       in: path
       required: true
       schema:
-        type: string
-        pattern: "^[a-zA-Z0-9_-]*$"
-        minLength: 4
-        maxLength: 188
+        $ref: "#/components/schemas/CommonName"
     api_product_name:
       name: api_product_name
       description: the id of the api product
@@ -2105,7 +2102,7 @@ components:
       example:
         '{name}'
       type: string
-      pattern: "^[a-zA-Z0-9_-]*$"
+      pattern: "^[a-zA-Z0-9_\\-]*(@[ |\\S]*)?$"
       minLength: 2
       maxLength: 188
     CommonUserName:
@@ -3307,10 +3304,7 @@ paths:
                 minItems: 0
                 maxItems: 32768
                 items:
-                 type: string
-                 minLength: 4
-                 maxLength: 188
-                 pattern: "^[a-zA-Z0-9_-]*$"
+                 $ref: "#/components/schemas/CommonName"
         '400':
            $ref: '#/components/responses/BadRequest'
         '401':
@@ -4434,10 +4428,7 @@ paths:
                 minItems: 0
                 maxItems: 32768
                 items:
-                 type: string
-                 minLength: 4
-                 maxLength: 188
-                 pattern: "^[a-zA-Z0-9_-]*$"
+                 $ref: "#/components/schemas/CommonName"
         '400':
            $ref: '#/components/responses/BadRequest'
         '401':
