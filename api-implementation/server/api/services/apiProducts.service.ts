@@ -8,7 +8,7 @@ import { PersistenceService } from './persistence.service';
 import EnvironmentsService from './environments.service';
 import AppsService from './apps.service';
 
-import ApisService from './apis.service';
+import ApisService, { APISpecification } from './apis.service';
 import { ErrorResponseInternal } from '../middlewares/error.handler';
 import { Versioning } from '../../common/versioning';
 import asyncapigenerator from './asyncapi/asyncapigenerator';
@@ -42,7 +42,7 @@ export class ApiProductsService {
   async delete(name: string): Promise<number> {
     if (await this.canDelete(name)) {
       const revisions: string[] = await this.revisionList(name);
-      for (const r of revisions){
+      for (const r of revisions) {
         await this.revisionPersistenceService.delete(Versioning.createRevisionId(name, r));
       }
       return this.persistenceService.delete(name);
@@ -165,7 +165,7 @@ export class ApiProductsService {
       const id = Versioning.createRevisionId(apiProductName, version);
 
       const apiProduct = await this.revisionPersistenceService.byName(id);
-      if (!apiProduct){
+      if (!apiProduct) {
         throw new ErrorResponseInternal(404, `Version ${version} of API Product [${apiProductName}] does not exist`);
       }
       return apiProduct;
@@ -203,7 +203,13 @@ export class ApiProductsService {
       for (const apiName of product.apis) {
         const errMsg = `Referenced API ${apiName} does not exist`;
         try {
-          const api = await ApisService.byName(apiName);
+          let api: string;
+          const ref: string[] = apiName.split('@');
+          if (ref.length==2) {
+            api = (await ApisService.revisionByVersion(ref[0], ref[1]));
+          } else {
+            api = (await ApisService.byName(apiName));
+          }
           if (api == null) {
             throw new ErrorResponseInternal(422, errMsg);
           }

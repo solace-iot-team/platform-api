@@ -33,6 +33,7 @@ import {
 import SolaceCloudFacade from '../../../src/solacecloudfacade';
 import SempV2ClientFactory from './broker/sempv2clientfactory';
 import AppApiProductsComplex = Components.Schemas.AppApiProductsComplex;
+import APIProductsTypeHelper from '../../../src/apiproductstypehelper';
 import { ErrorResponseInternal } from '../middlewares/error.handler';
 import { isString } from '../../../src/typehelpers';
 
@@ -81,6 +82,21 @@ class BrokerService {
     if (deProvisionServices && deProvisionServices.length > 0) {
       await this.doDeprovisionAppByEnvironments(appUnmodified, appUnmodified.internalName, deProvisionServices);
     }
+
+    // need to figure out if products were removed and if need to remove associated queues
+    if (appPatch.apiProducts && appUnmodified.apiProducts){
+      const previousProductNames: string[] = APIProductsTypeHelper.apiProductReferencesToStringArray(appUnmodified.apiProducts);
+      const newProductNames: string[] = APIProductsTypeHelper.apiProductReferencesToStringArray(appPatch.apiProducts);
+      const diff: string[] = previousProductNames.filter(x => !newProductNames.includes(x));
+      const tempApp: App = {
+        internalName: appPatch.internalName,
+        name: appPatch.name,
+        apiProducts: diff,
+        credentials: null,
+      }
+      QueueManager.deleteAPIProductQueues(tempApp, newServices, tempApp.internalName);
+    }
+
     // try to provision the modified app, if it fails roll back to previous version and provision the previous version
     try {
       const r = await this.provisionApp(appPatch as App, ownerAttributes, true);

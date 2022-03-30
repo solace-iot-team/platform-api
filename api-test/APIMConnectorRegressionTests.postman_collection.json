@@ -3530,8 +3530,8 @@
 							"listen": "test",
 							"script": {
 								"exec": [
-									"pm.test(\"Status OK\", function () {",
-									"    pm.response.to.have.status(200);",
+									"pm.test(\"SNot allowed to patch API with same version number\", function () {",
+									"    pm.response.to.have.status(409);",
 									"});"
 								],
 								"type": "text/javascript"
@@ -3558,7 +3558,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n  \"components\": {\n    \"schemas\": {\n      \"SensorEvent\": {\n        \"$schema\": \"http://json-schema.org/draft-04/schema#\",\n        \"description\": \"\",\n        \"type\": \"object\",\n        \"properties\": {\n          \"communicationDate\": {\n            \"type\": \"integer\"\n          },\n          \"signedCommunication\": {\n            \"type\": \"boolean\"\n          },\n          \"events\": {\n            \"type\": \"array\",\n            \"items\": [\n              {\n                \"type\": \"string\"\n              },\n              {\n                \"type\": \"array\",\n                \"items\": [\n                  {\n                    \"type\": \"object\",\n                    \"properties\": {\n                      \"tripPlanId\": {\n                        \"type\": \"integer\"\n                      },\n                      \"sensorName\": {\n                        \"type\": \"string\"\n                      },\n                      \"communicationType\": {\n                        \"type\": \"string\"\n                      },\n                      \"eventType\": {\n                        \"type\": \"string\"\n                      },\n                      \"gps\": {\n                        \"type\": \"string\"\n                      },\n                      \"sensorValues\": {\n                        \"type\": \"array\",\n                        \"items\": [\n                          {\n                            \"type\": \"string\"\n                          },\n                          {\n                            \"type\": \"object\",\n                            \"properties\": {\n                              \"Uncertainty\": {\n                                \"type\": \"string\"\n                              },\n                              \"Compass Direction\": {\n                                \"type\": \"string\"\n                              }\n                            },\n                            \"required\": [\n                              \"Uncertainty\",\n                              \"Compass Direction\"\n                            ]\n                          }\n                        ]\n                      },\n                      \"sensorValue\": {\n                        \"type\": \"string\"\n                      },\n                      \"deviceSerialNumber\": {\n                        \"type\": \"string\"\n                      },\n                      \"eventDate\": {\n                        \"type\": \"integer\"\n                      },\n                      \"sensorId\": {\n                        \"type\": \"integer\"\n                      }\n                    },\n                    \"required\": [\n                      \"deviceSerialNumber\",\n                      \"eventDate\",\n                      \"eventType\",\n                      \"communicationType\",\n                      \"gps\",\n                      \"sensorName\",\n                      \"sensorValue\",\n                      \"sensorValues\",\n                      \"tripPlanId\",\n                      \"sensorId\"\n                    ]\n                  }\n                ]\n              }\n            ]\n          },\n          \"deviceSerialNumber\": {\n            \"type\": \"string\"\n          },\n          \"validatedSignature\": {\n            \"type\": \"boolean\"\n          }\n        },\n        \"required\": [\n          \"events\",\n          \"deviceSerialNumber\",\n          \"communicationDate\",\n          \"signedCommunication\",\n          \"validatedSignature\"\n        ]\n      }\n    },\n    \"messages\": {\n      \"GeoSensorEvent\": {\n        \"payload\": {\n          \"$ref\": \"#/components/schemas/SensorEvent\"\n        },\n        \"description\": \"\",\n        \"schemaFormat\": \"application/vnd.aai.asyncapi+json;version=2.0.0\",\n        \"contentType\": \"application/json\"\n      },\n      \"SensorEvent\": {\n        \"payload\": {\n          \"$ref\": \"#/components/schemas/SensorEvent\"\n        },\n        \"description\": \"\",\n        \"schemaFormat\": \"application/vnd.aai.asyncapi+json;version=2.0.0\",\n        \"contentType\": \"application/json\"\n      }\n    }\n  },\n  \"servers\": {},\n  \"channels\": {\n    \"traxens/feed/{shippingline}/v1/{equipmentId}/{sensor}/{sensorvalue}\": {\n      \"publish\": {\n        \"message\": {\n          \"$ref\": \"#/components/messages/SensorEvent\"\n        }\n      },\n      \"parameters\": {\n        \"shippingline\": {\n          \"schema\": {\n            \"type\": \"string\"\n          }\n        },\n        \"sensor\": {\n          \"schema\": {\n            \"type\": \"string\",\n            \"enum\": [\n              \"HUMIDITY\",\n              \"LIGHT\",\n              \"DOOR\",\n              \"GEOFENCE\"\n            ]\n          }\n        },\n        \"sensorvalue\": {\n          \"schema\": {\n            \"type\": \"string\"\n          }\n        },\n        \"equipmentId\": {\n          \"schema\": {\n            \"type\": \"string\"\n          }\n        }\n      }\n    },\n    \"traxens/feed/{shippingline}/v1/{equipmentId}/{geosensor}/{longitude}\": {\n      \"publish\": {\n        \"message\": {\n          \"$ref\": \"#/components/messages/GeoSensorEvent\"\n        }\n      },\n      \"parameters\": {\n        \"geosensor\": {\n          \"schema\": {\n            \"type\": \"string\",\n            \"enum\": [\n              \"GEOPOSITIONING\"\n            ]\n          }\n        },\n        \"shippingline\": {\n          \"schema\": {\n            \"type\": \"string\"\n          }\n        },\n        \"equipmentId\": {\n          \"schema\": {\n            \"type\": \"string\"\n          }\n        },\n        \"longitude\": {\n          \"schema\": {\n            \"type\": \"string\"\n          }\n        }\n      }\n    }\n  },\n  \"asyncapi\": \"2.0.0\",\n  \"info\": {\n    \"x-generated-time\": \"2021-07-15 15:03 UTC\",\n    \"description\": \"\",\n    \"title\": \"WebSub API\",\n    \"x-view\": \"provider\",\n    \"version\": \"1\",\n    \"x-origin\": {\n      \"vendor\": \"solace\",\n      \"name\": \"event-portal\"\n    }\n  }\n}",
+							"raw": "{\n  \"components\": {\n    \"schemas\": {\n      \"SensorEvent\": {\n        \"$schema\": \"http://json-schema.org/draft-04/schema#\",\n        \"description\": \"\",\n        \"type\": \"object\",\n        \"properties\": {\n          \"communicationDate\": {\n            \"type\": \"integer\"\n          },\n          \"signedCommunication\": {\n            \"type\": \"boolean\"\n          },\n          \"events\": {\n            \"type\": \"array\",\n            \"items\": [\n              {\n                \"type\": \"string\"\n              },\n              {\n                \"type\": \"array\",\n                \"items\": [\n                  {\n                    \"type\": \"object\",\n                    \"properties\": {\n                      \"tripPlanId\": {\n                        \"type\": \"integer\"\n                      },\n                      \"sensorName\": {\n                        \"type\": \"string\"\n                      },\n                      \"communicationType\": {\n                        \"type\": \"string\"\n                      },\n                      \"eventType\": {\n                        \"type\": \"string\"\n                      },\n                      \"gps\": {\n                        \"type\": \"string\"\n                      },\n                      \"sensorValues\": {\n                        \"type\": \"array\",\n                        \"items\": [\n                          {\n                            \"type\": \"string\"\n                          },\n                          {\n                            \"type\": \"object\",\n                            \"properties\": {\n                              \"Uncertainty\": {\n                                \"type\": \"string\"\n                              },\n                              \"Compass Direction\": {\n                                \"type\": \"string\"\n                              }\n                            },\n                            \"required\": [\n                              \"Uncertainty\",\n                              \"Compass Direction\"\n                            ]\n                          }\n                        ]\n                      },\n                      \"sensorValue\": {\n                        \"type\": \"string\"\n                      },\n                      \"deviceSerialNumber\": {\n                        \"type\": \"string\"\n                      },\n                      \"eventDate\": {\n                        \"type\": \"integer\"\n                      },\n                      \"sensorId\": {\n                        \"type\": \"integer\"\n                      }\n                    },\n                    \"required\": [\n                      \"deviceSerialNumber\",\n                      \"eventDate\",\n                      \"eventType\",\n                      \"communicationType\",\n                      \"gps\",\n                      \"sensorName\",\n                      \"sensorValue\",\n                      \"sensorValues\",\n                      \"tripPlanId\",\n                      \"sensorId\"\n                    ]\n                  }\n                ]\n              }\n            ]\n          },\n          \"deviceSerialNumber\": {\n            \"type\": \"string\"\n          },\n          \"validatedSignature\": {\n            \"type\": \"boolean\"\n          }\n        },\n        \"required\": [\n          \"events\",\n          \"deviceSerialNumber\",\n          \"communicationDate\",\n          \"signedCommunication\",\n          \"validatedSignature\"\n        ]\n      }\n    },\n    \"messages\": {\n      \"GeoSensorEvent\": {\n        \"payload\": {\n          \"$ref\": \"#/components/schemas/SensorEvent\"\n        },\n        \"description\": \"\",\n        \"schemaFormat\": \"application/vnd.aai.asyncapi+json;version=2.0.0\",\n        \"contentType\": \"application/json\"\n      },\n      \"SensorEvent\": {\n        \"payload\": {\n          \"$ref\": \"#/components/schemas/SensorEvent\"\n        },\n        \"description\": \"\",\n        \"schemaFormat\": \"application/vnd.aai.asyncapi+json;version=2.0.0\",\n        \"contentType\": \"application/json\"\n      }\n    }\n  },\n  \"servers\": {},\n  \"channels\": {\n    \"traxens/feed/{shippingline}/v1/{equipmentId}/{sensor}/{sensorvalue}\": {\n      \"publish\": {\n        \"message\": {\n          \"$ref\": \"#/components/messages/SensorEvent\"\n        }\n      },\n      \"parameters\": {\n        \"shippingline\": {\n          \"schema\": {\n            \"type\": \"string\"\n          }\n        },\n        \"sensor\": {\n          \"schema\": {\n            \"type\": \"string\",\n            \"enum\": [\n              \"HUMIDITY\",\n              \"LIGHT\",\n              \"DOOR\",\n              \"GEOFENCE\"\n            ]\n          }\n        },\n        \"sensorvalue\": {\n          \"schema\": {\n            \"type\": \"string\"\n          }\n        },\n        \"equipmentId\": {\n          \"schema\": {\n            \"type\": \"string\"\n          }\n        }\n      }\n    },\n    \"traxens/feed/{shippingline}/v1/{equipmentId}/{geosensor}/{longitude}\": {\n      \"publish\": {\n        \"message\": {\n          \"$ref\": \"#/components/messages/GeoSensorEvent\"\n        }\n      },\n      \"parameters\": {\n        \"geosensor\": {\n          \"schema\": {\n            \"type\": \"string\",\n            \"enum\": [\n              \"GEOPOSITIONING\"\n            ]\n          }\n        },\n        \"shippingline\": {\n          \"schema\": {\n            \"type\": \"string\"\n          }\n        },\n        \"equipmentId\": {\n          \"schema\": {\n            \"type\": \"string\"\n          }\n        },\n        \"longitude\": {\n          \"schema\": {\n            \"type\": \"string\"\n          }\n        }\n      }\n    }\n  },\n  \"asyncapi\": \"2.0.0\",\n  \"info\": {\n    \"x-generated-time\": \"2021-07-15 15:03 UTC\",\n    \"description\": \"\",\n    \"title\": \"WebSub API\",\n    \"x-view\": \"provider\",\n    \"version\": \"1.0.0\",\n    \"x-origin\": {\n      \"vendor\": \"solace\",\n      \"name\": \"event-portal\"\n    }\n  }\n}",
 							"options": {
 								"raw": {
 									"language": "text"
@@ -3675,7 +3675,7 @@
 								"exec": [
 									"pm.test(\"Check version of API\", function () {",
 									"    var jsonData = pm.response.json();",
-									"    pm.expect(jsonData.info.version).to.eql(\"1\");",
+									"    pm.expect(jsonData.info.version).to.eql(\"1.0.0\");",
 									"});",
 									"",
 									"pm.test(\"Status code is 200\", function () {",
@@ -3722,7 +3722,7 @@
 								"exec": [
 									"pm.test(\"Check version of API\", function () {",
 									"    var jsonData = pm.response.json();",
-									"    pm.expect(jsonData.info.version).to.eql(\"1\");",
+									"    pm.expect(jsonData.info.version).to.eql(\"1.0.0\");",
 									"});",
 									"",
 									"pm.test(\"Status code is 200\", function () {",
@@ -13492,6 +13492,878 @@
 							""
 						]
 					}
+				}
+			]
+		},
+		{
+			"name": "34  API Products referencing API versions",
+			"item": [
+				{
+					"name": "Patch API - SemVer Success Copy",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "{{CONNECTOR_PASSWORD}}",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "{{CONNECTOR_USERNAME}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PATCH",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"components\": {\n    \"schemas\": {\n      \"SensorEvent\": {\n        \"$schema\": \"http://json-schema.org/draft-04/schema#\",\n        \"description\": \"\",\n        \"type\": \"object\",\n        \"properties\": {\n          \"communicationDate\": {\n            \"type\": \"integer\"\n          },\n          \"signedCommunication\": {\n            \"type\": \"boolean\"\n          },\n          \"events\": {\n            \"type\": \"array\",\n            \"items\": [\n              {\n                \"type\": \"string\"\n              },\n              {\n                \"type\": \"array\",\n                \"items\": [\n                  {\n                    \"type\": \"object\",\n                    \"properties\": {\n                      \"tripPlanId\": {\n                        \"type\": \"integer\"\n                      },\n                      \"sensorName\": {\n                        \"type\": \"string\"\n                      },\n                      \"communicationType\": {\n                        \"type\": \"string\"\n                      },\n                      \"eventType\": {\n                        \"type\": \"string\"\n                      },\n                      \"gps\": {\n                        \"type\": \"string\"\n                      },\n                      \"sensorValues\": {\n                        \"type\": \"array\",\n                        \"items\": [\n                          {\n                            \"type\": \"string\"\n                          },\n                          {\n                            \"type\": \"object\",\n                            \"properties\": {\n                              \"Uncertainty\": {\n                                \"type\": \"string\"\n                              },\n                              \"Compass Direction\": {\n                                \"type\": \"string\"\n                              }\n                            },\n                            \"required\": [\n                              \"Uncertainty\",\n                              \"Compass Direction\"\n                            ]\n                          }\n                        ]\n                      },\n                      \"sensorValue\": {\n                        \"type\": \"string\"\n                      },\n                      \"deviceSerialNumber\": {\n                        \"type\": \"string\"\n                      },\n                      \"eventDate\": {\n                        \"type\": \"integer\"\n                      },\n                      \"sensorId\": {\n                        \"type\": \"integer\"\n                      }\n                    },\n                    \"required\": [\n                      \"deviceSerialNumber\",\n                      \"eventDate\",\n                      \"eventType\",\n                      \"communicationType\",\n                      \"gps\",\n                      \"sensorName\",\n                      \"sensorValue\",\n                      \"sensorValues\",\n                      \"tripPlanId\",\n                      \"sensorId\"\n                    ]\n                  }\n                ]\n              }\n            ]\n          },\n          \"deviceSerialNumber\": {\n            \"type\": \"string\"\n          },\n          \"validatedSignature\": {\n            \"type\": \"boolean\"\n          }\n        },\n        \"required\": [\n          \"events\",\n          \"deviceSerialNumber\",\n          \"communicationDate\",\n          \"signedCommunication\",\n          \"validatedSignature\"\n        ]\n      }\n    },\n    \"messages\": {\n      \"GeoSensorEvent\": {\n        \"payload\": {\n          \"$ref\": \"#/components/schemas/SensorEvent\"\n        },\n        \"description\": \"\",\n        \"schemaFormat\": \"application/vnd.aai.asyncapi+json;version=2.0.0\",\n        \"contentType\": \"application/json\"\n      },\n      \"SensorEvent\": {\n        \"payload\": {\n          \"$ref\": \"#/components/schemas/SensorEvent\"\n        },\n        \"description\": \"\",\n        \"schemaFormat\": \"application/vnd.aai.asyncapi+json;version=2.0.0\",\n        \"contentType\": \"application/json\"\n      }\n    }\n  },\n  \"servers\": {},\n  \"channels\": {\n    \"traxens/feed/{shippingline}/v1/{equipmentId}/{sensor}/{sensorvalue}\": {\n      \"publish\": {\n        \"message\": {\n          \"$ref\": \"#/components/messages/SensorEvent\"\n        }\n      },\n      \"parameters\": {\n        \"shippingline\": {\n          \"schema\": {\n            \"type\": \"string\"\n          }\n        },\n        \"sensor\": {\n          \"schema\": {\n            \"type\": \"string\",\n            \"enum\": [\n              \"HUMIDITY\",\n              \"LIGHT\",\n              \"DOOR\",\n              \"GEOFENCE\"\n            ]\n          }\n        },\n        \"sensorvalue\": {\n          \"schema\": {\n            \"type\": \"string\"\n          }\n        },\n        \"equipmentId\": {\n          \"schema\": {\n            \"type\": \"string\"\n          }\n        }\n      }\n    },\n    \"traxens/feed/{shippingline}/v1/{equipmentId}/{geosensor}/{longitude}\": {\n      \"publish\": {\n        \"message\": {\n          \"$ref\": \"#/components/messages/GeoSensorEvent\"\n        }\n      },\n      \"parameters\": {\n        \"geosensor\": {\n          \"schema\": {\n            \"type\": \"string\",\n            \"enum\": [\n              \"GEOPOSITIONING\"\n            ]\n          }\n        },\n        \"shippingline\": {\n          \"schema\": {\n            \"type\": \"string\"\n          }\n        },\n        \"equipmentId\": {\n          \"schema\": {\n            \"type\": \"string\"\n          }\n        },\n        \"longitude\": {\n          \"schema\": {\n            \"type\": \"string\"\n          }\n        }\n      }\n    }\n  },\n  \"asyncapi\": \"2.0.0\",\n  \"info\": {\n    \"x-generated-time\": \"2021-07-15 15:03 UTC\",\n    \"description\": \"\",\n    \"title\": \"WebSub API\",\n    \"x-view\": \"provider\",\n    \"version\": \"1.1.0\",\n    \"x-origin\": {\n      \"vendor\": \"solace\",\n      \"name\": \"event-portal\"\n    }\n  }\n}",
+							"options": {
+								"raw": {
+									"language": "text"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{CONNECTOR_BASEURL}}/{{TENANT}}/apis/{{API_NAME}}",
+							"host": [
+								"{{CONNECTOR_BASEURL}}"
+							],
+							"path": [
+								"{{TENANT}}",
+								"apis",
+								"{{API_NAME}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create API Product1",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status OK\", function () {",
+									"    pm.response.to.have.status(201);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"apis\": [\n      \"SayHello@v1\"\n  ],\n  \"approvalType\": \"auto\",\n\n  \"description\": \"SayHelloSub_PRODUCT\",\n  \"displayName\": \"SayHelloSub_PRODUCT\",\n  \"environments\": [\n    \"{{CONNECTOR_ENV}}\"\n  ],\n  \"name\": \"SayHelloSub_PRODUCTA\",\n  \"pubResources\": [\n  ],\n  \"subResources\": [\n  ],\n  \"protocols\": [\n    {\n      \"name\": \"http\",\n      \"version\": \"1.1\"\n    },\n    {\n      \"name\": \"smf\",\n      \"version\": \"smf\"\n    }\n  ],\n  \"clientOptions\": {\n    \"guaranteedMessaging\": {\n      \"requireQueue\": true,\n      \"accessType\": \"exclusive\",\n      \"maxTtl\": 3600,\n      \"maxMsgSpoolUsage\": 50\n    }\n  },\n  \"attributes\": [],\n  \"accessLevel\": \"internal\"\n\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{CONNECTOR_BASEURL}}/{{TENANT}}/apiProducts",
+							"host": [
+								"{{CONNECTOR_BASEURL}}"
+							],
+							"path": [
+								"{{TENANT}}",
+								"apiProducts"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create API Product2",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status OK\", function () {",
+									"    pm.response.to.have.status(201);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"apis\": [\n      \"SayHelloPub\"\n  ],\n  \"approvalType\": \"auto\",\n\n  \"description\": \"SayHelloPub_PRODUCT\",\n  \"displayName\": \"SayHelloPub_PRODUCT\",\n  \"environments\": [\n    \"{{CONNECTOR_ENV}}\"\n  ],\n  \"name\": \"SayHelloPub_PRODUCTB\",\n  \"pubResources\": [\n  ],\n  \"subResources\": [\n  ],\n  \"protocols\": [\n    {\n      \"name\": \"http\",\n      \"version\": \"1.1\"\n    },\n    {\n      \"name\": \"smf\",\n      \"version\": \"smf\"\n    }\n  ],\n  \"clientOptions\": {\n    \"guaranteedMessaging\": {\n      \"requireQueue\": true,\n      \"accessType\": \"exclusive\",\n      \"maxTtl\": 3600,\n      \"maxMsgSpoolUsage\": 50\n    }\n  },\n  \"attributes\": [],\n  \"accessLevel\": \"public\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{CONNECTOR_BASEURL}}/{{TENANT}}/apiProducts",
+							"host": [
+								"{{CONNECTOR_BASEURL}}"
+							],
+							"path": [
+								"{{TENANT}}",
+								"apiProducts"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create API Product3",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status OK\", function () {",
+									"    pm.response.to.have.status(201);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"apis\": [\n      \"{{API_NAME}}@1.0.0\"\n  ],\n  \"approvalType\": \"auto\",\n  \"attributes\": [\n  ],\n  \"description\": \"{{API_NAME}}_PRODUCT\",\n  \"displayName\": \"{{API_NAME}}_PRODUCT\",\n  \"environments\": [\n    \"{{CONNECTOR_ENV}}\",\n    \"{{PROD_CONNECTOR_ENV}}\"\n  ],\n  \"name\": \"{{API_NAME}}_PRODUCT2\",\n  \"pubResources\": [\n  ],\n  \"subResources\": [\n  ],\n  \"protocols\": [\n    {\n      \"name\": \"smf\",\n      \"version\": \"smf\"\n    }\n  ],\n  \"clientOptions\": {\n    \"guaranteedMessaging\": {\n      \"requireQueue\": true,\n      \"accessType\": \"exclusive\",\n      \"maxTtl\": 600,\n      \"maxMsgSpoolUsage\": 50\n    }\n  },\n  \"accessLevel\": \"private\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{CONNECTOR_BASEURL}}/{{TENANT}}/apiProducts",
+							"host": [
+								"{{CONNECTOR_BASEURL}}"
+							],
+							"path": [
+								"{{TENANT}}",
+								"apiProducts"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get API Product3 APIs",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status OK\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Get 1 API name\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.length).to.eql(1);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{CONNECTOR_BASEURL}}/{{TENANT}}/apiProducts/{{API_NAME}}_PRODUCT2/apis",
+							"host": [
+								"{{CONNECTOR_BASEURL}}"
+							],
+							"path": [
+								"{{TENANT}}",
+								"apiProducts",
+								"{{API_NAME}}_PRODUCT2",
+								"apis"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create app",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status OK\", function () {",
+									"    pm.response.to.have.status(201);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"name\": \"{{APP_NAME}}\",\n  \"internalName\": \"{{APP_NAME_INTERNAL}}\",    \n  \"displayName\": \"{{APP_NAME}}\",\n  \"expiresIn\": 0,\n  \"apiProducts\": [\n    \"{{API_NAME}}_PRODUCT2\",     \n    \"SayHelloSub_PRODUCTA\",\n    \"SayHelloPub_PRODUCTB\"\n  ],\n  \"credentials\": {\n    \"expiresAt\": -1,\n    \"issuedAt\": 0,\n    \"secret\": {\n      \"consumerKey\": \"{{CONSUMER_KEY}}\",\n      \"consumerSecret\": \"{{CONSUMER_SECRET}}\"\n    }\n  }\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{CONNECTOR_BASEURL}}/{{TENANT}}/teams/{{TEAM_NAME}}/apps",
+							"host": [
+								"{{CONNECTOR_BASEURL}}"
+							],
+							"path": [
+								"{{TENANT}}",
+								"teams",
+								"{{TEAM_NAME}}",
+								"apps"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get app's Async API",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status OK\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{CONNECTOR_BASEURL}}/{{TENANT}}/apps/{{APP_NAME}}/apis/{{API_NAME}}@1.0.0",
+							"host": [
+								"{{CONNECTOR_BASEURL}}"
+							],
+							"path": [
+								"{{TENANT}}",
+								"apps",
+								"{{APP_NAME}}",
+								"apis",
+								"{{API_NAME}}@1.0.0"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get app's api list",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status OK\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"get 3 APIs\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.length).to.eql(3);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{CONNECTOR_BASEURL}}/{{TENANT}}/apps/{{APP_NAME}}/apis",
+							"host": [
+								"{{CONNECTOR_BASEURL}}"
+							],
+							"path": [
+								"{{TENANT}}",
+								"apps",
+								"{{APP_NAME}}",
+								"apis"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Check Broker ACL Present Copy",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"ACL is present\", function () {",
+									"    pm.expect(pm.response.text()).to.include(pm.environment.get(\"APP_NAME_INTERNAL\"));",
+									"});",
+									"pm.test(\"Status code is OK\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "{{BROKER_PASSWORD}}",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "{{BROKER_USER}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{BROKER_BASEURL}}/msgVpns/{{CLOUD_VPN}}/aclProfiles/{{APP_NAME_INTERNAL}}",
+							"host": [
+								"{{BROKER_BASEURL}}"
+							],
+							"path": [
+								"msgVpns",
+								"{{CLOUD_VPN}}",
+								"aclProfiles",
+								"{{APP_NAME_INTERNAL}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Check ACL Pub Exceptions",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"ACL is present\", function () {",
+									"    pm.expect(pm.response.text()).to.include(pm.environment.get(\"APP_NAME_INTERNAL\"));",
+									"});",
+									"pm.test(\"Status code is OK\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Has exception\", function () {",
+									"    pm.expect(pm.response.text()).to.include(\"say/hello\");",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "{{BROKER_PASSWORD}}",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "{{BROKER_USER}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{BROKER_BASEURL}}/msgVpns/{{CLOUD_VPN}}/aclProfiles/{{APP_NAME_INTERNAL}}/publishTopicExceptions",
+							"host": [
+								"{{BROKER_BASEURL}}"
+							],
+							"path": [
+								"msgVpns",
+								"{{CLOUD_VPN}}",
+								"aclProfiles",
+								"{{APP_NAME_INTERNAL}}",
+								"publishTopicExceptions"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Check ACL Sub Exceptions",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"ACL is present\", function () {",
+									"    pm.expect(pm.response.text()).to.include(pm.environment.get(\"APP_NAME_INTERNAL\"));",
+									"});",
+									"pm.test(\"Status code is OK\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Has exception\", function () {",
+									"    pm.expect(pm.response.text()).to.include(\"say/hello\");",
+									"});",
+									"",
+									"pm.test(\"Has exception\", function () {",
+									"    pm.expect(pm.response.text()).to.include(\"traxens/feed\");",
+									"});",
+									"",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "{{BROKER_PASSWORD}}",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "{{BROKER_USER}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{BROKER_BASEURL}}/msgVpns/{{CLOUD_VPN}}/aclProfiles/{{APP_NAME_INTERNAL}}/subscribeTopicExceptions",
+							"host": [
+								"{{BROKER_BASEURL}}"
+							],
+							"path": [
+								"msgVpns",
+								"{{CLOUD_VPN}}",
+								"aclProfiles",
+								"{{APP_NAME_INTERNAL}}",
+								"subscribeTopicExceptions"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Check Prod ACL Sub Exceptions",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"ACL is present\", function () {",
+									"    pm.expect(pm.response.text()).to.include(pm.environment.get(\"APP_NAME_INTERNAL\"));",
+									"});",
+									"pm.test(\"Status code is OK\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Has exception\", function () {",
+									"    pm.expect(pm.response.text()).to.not.include(\"say/hello\");",
+									"});",
+									"",
+									"pm.test(\"Has exception\", function () {",
+									"    pm.expect(pm.response.text()).to.include(\"traxens/feed\");",
+									"});",
+									"",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "{{PROD_BROKER_PASSWORD}}",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "{{PROD_BROKER_USER}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{PROD_BROKER_BASEURL}}/msgVpns/{{PROD_CLOUD_VPN}}/aclProfiles/{{APP_NAME_INTERNAL}}/subscribeTopicExceptions",
+							"host": [
+								"{{PROD_BROKER_BASEURL}}"
+							],
+							"path": [
+								"msgVpns",
+								"{{PROD_CLOUD_VPN}}",
+								"aclProfiles",
+								"{{APP_NAME_INTERNAL}}",
+								"subscribeTopicExceptions"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "PATCH app",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status OK\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PATCH",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"apiProducts\": [\n    \"SayHelloSub_PRODUCTA\",\n    \"SayHelloPub_PRODUCTB\"\n  ]\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{CONNECTOR_BASEURL}}/{{TENANT}}/teams/{{TEAM_NAME}}/apps/{{APP_NAME}}",
+							"host": [
+								"{{CONNECTOR_BASEURL}}"
+							],
+							"path": [
+								"{{TENANT}}",
+								"teams",
+								"{{TEAM_NAME}}",
+								"apps",
+								"{{APP_NAME}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Check Prod ACL Sub Exceptions Copy",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"ACL is deleted\", function () {",
+									"    pm.expect(pm.response.text()).to.include('NOT_FOUND');",
+									"});",
+									"pm.test(\"Status code is OK\", function () {",
+									"    pm.response.to.have.status(400);",
+									"});",
+									"",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "{{PROD_BROKER_PASSWORD}}",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "{{PROD_BROKER_USER}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{PROD_BROKER_BASEURL}}/msgVpns/{{PROD_CLOUD_VPN}}/aclProfiles/{{APP_NAME_INTERNAL}}",
+							"host": [
+								"{{PROD_BROKER_BASEURL}}"
+							],
+							"path": [
+								"msgVpns",
+								"{{PROD_CLOUD_VPN}}",
+								"aclProfiles",
+								"{{APP_NAME_INTERNAL}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Patch API Product3 multi Api versions",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status OK\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PATCH",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"apis\": [\n      \"{{API_NAME}}@1.0.0\",\n      \"{{API_NAME}}@1.1.0\"\n  ]\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{CONNECTOR_BASEURL}}/{{TENANT}}/apiProducts/{{API_NAME}}_PRODUCT2",
+							"host": [
+								"{{CONNECTOR_BASEURL}}"
+							],
+							"path": [
+								"{{TENANT}}",
+								"apiProducts",
+								"{{API_NAME}}_PRODUCT2"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "PATCH app Multi version product",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status OK\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PATCH",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"apiProducts\": [\n    \"{{API_NAME}}_PRODUCT2\"   \n  ]\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{CONNECTOR_BASEURL}}/{{TENANT}}/teams/{{TEAM_NAME}}/apps/{{APP_NAME}}",
+							"host": [
+								"{{CONNECTOR_BASEURL}}"
+							],
+							"path": [
+								"{{TENANT}}",
+								"teams",
+								"{{TEAM_NAME}}",
+								"apps",
+								"{{APP_NAME}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete App",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is OK\", function () {",
+									"    pm.response.to.have.status(204);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{CONNECTOR_BASEURL}}/{{TENANT}}/teams/{{TEAM_NAME}}/apps/{{APP_NAME}}",
+							"host": [
+								"{{CONNECTOR_BASEURL}}"
+							],
+							"path": [
+								"{{TENANT}}",
+								"teams",
+								"{{TEAM_NAME}}",
+								"apps",
+								"{{APP_NAME}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete API Product 1",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is OK\", function () {",
+									"    pm.response.to.have.status(204);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{CONNECTOR_BASEURL}}/{{TENANT}}/apiProducts/SayHelloSub_PRODUCTA",
+							"host": [
+								"{{CONNECTOR_BASEURL}}"
+							],
+							"path": [
+								"{{TENANT}}",
+								"apiProducts",
+								"SayHelloSub_PRODUCTA"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete API Product 2",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is OK\", function () {",
+									"    pm.response.to.have.status(204);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{CONNECTOR_BASEURL}}/{{TENANT}}/apiProducts/SayHelloPub_PRODUCTB",
+							"host": [
+								"{{CONNECTOR_BASEURL}}"
+							],
+							"path": [
+								"{{TENANT}}",
+								"apiProducts",
+								"SayHelloPub_PRODUCTB"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete API Product 3",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is OK\", function () {",
+									"    pm.response.to.have.status(204);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{CONNECTOR_BASEURL}}/{{TENANT}}/apiProducts/{{API_NAME}}_PRODUCT2",
+							"host": [
+								"{{CONNECTOR_BASEURL}}"
+							],
+							"path": [
+								"{{TENANT}}",
+								"apiProducts",
+								"{{API_NAME}}_PRODUCT2"
+							]
+						}
+					},
+					"response": []
 				}
 			]
 		},
