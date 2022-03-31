@@ -1,5 +1,114 @@
 # Release Notes
 
+## Version 0.3.5
+* OpenAPI: 0.7.6
+* API Management Connector Server: 0.3.5
+
+### Features
+* **feat-cors-add-etag-exposed-header**
+  - Expose eTag headers in preflight CORS requests, simplifies usage of API directly from browser
+* **feat-notification-events**
+  - Change events to entities are now emitted from an org to a specified endpoint (webhook).
+  - This is enabled and configured on the organization level
+  - The events that are emitted are described using AsyncAPI, the specifications can be accessed as static files on the Connector
+  - Provider API specification describes all the events that are emitted: http://[connector_host]:[connector_port]/notification-api/producer/api.yml
+  - Consumer events are grouped into different APIs by the `tags` used in the Connerctor's OpenAPI spec, base URL:  `http://[connector_host]:[connector_port]/notification-api/consumer`
+  - Available APIs - apis.yml, administration.yml, apiProducts.yml, app.yml, developers.yml, environments.yml, management.yml, teams.yml  
+* **feat-notification-hub**
+  - Added automatic configuration script for an organization
+  - Template provided sets up a "Notification Hub" org for managing access to the events emitted by the "Notification Events" feature
+  - It uploads the Notification AsyncAPIs and configures a producer application. The apps connection details can be used to configure the notification event webhook in an org.
+  - It also uploads the consumer AsycnAPIs so access to notifications can be managed via the standard API Management functionalit of the Connector.
+
+* **feat-app-product-level-approval**
+  - Introduced approval status on each API Product associated with an app.
+  - Apps still retain an overall approval status that will be set tp pending if any associated API product requires approval
+  - An API product can be associated in two ways: as before by simply using the API Product `name` or as a reference that includes the `name` and an approval status for the API Product
+  - If an API Product is associated via a reference, the resources and permissions associated with the API product will only be provisioned on the refenrece is in status approved.
+
+* **feat-api-products-versioning-number-support**
+  - API Products can now include version information
+  - Introduces a `meta` element with version number, creation and modification date, users who initiated actions
+  - Client can manually add a version number in Semantic Versioning (SemVer) format. Provided version number must be an increment of the previous version
+  - Connector maintains an internal revision number. 
+  - If the revision is set manually the SemVer is returned in any reponse to the `apiProducts` resource, otherwise the internal revision is formatted as a SemVer.
+  - Added resources to retrieve all revision identifiers of an API Product and a specific revision state.
+  - Apps **only**  reference the **latest** version of an API Product
+
+* **feat-api-versioning-support**
+  - APIs now keep a revision log.
+  - The version information is extracted from the Async APIs `info.version` element, which is deinfed as a `string` data type in the Async API specification
+  - Three different formats for the version number are supported: SemVer, integer and free form
+  - The connector maintains an internal revision number (integer) for all APIs
+  - For SemVer values the version in the API supplied to the `PATCH` operation must be higher than the previous version
+  - For integer version numbers the version provided in the API must be higher than the previous version.
+  - For free form (any string) versions the version provided in the API must NOT be equal to the previosu version
+  - In any Async API definition obtained from the connector that contais a free form version the internal revision number is appended to the `inof.version` in the API definition.
+  - Added resources to retrieve all revision identifiers of an API and a specific revision state.
+  - API Producs can reference the latest version of an API by using the `name` of the API. 
+  - API Products can also reference a specific revision by appending the version identifier - `name`@`revision`, e.g. `my-api@1.1.0`
+  - Where app or api product reference specific API versions these are listed with `name`@`revision` and the API specifications can be accessed using this identifier  
+
+* **Automated Testing**
+  - Increased coverage of automated testing (integ tests) on following resources:
+  - Apps, Developer/Apps, Team/Apps
+  - Developers
+  - Administration resources
+  - APIs
+  - Api Products
+  - Environments
+  - Organizations
+  - Teams
+
+### Fixes
+* **fix-org-patch-error-missing-token**
+  - Fixed an error that ocurred when the client request to POST/PATCH `organizations` was missing optional token elements. The endpoint now accepts valid requests.
+* **fix-return-validation-error-from-asyncapi-parser**
+  - Enhanced error reporting when attempting to create or update an API using an invalid AsyncAPI specification. The error message now contains the validation messages from the AsyncAPI parser so the client gets detailed feedback on the errors in the specification.
+* **fix-dont-provision-queues-with-no-subscriptions**
+  - Queues were provisioned for apps even if no subscriptions were attached. Now queues are only created if there are subscriptions present.
+* **fix-mqtt-bindings-generation-tied-to-other-protocols**
+  - MQTT specific bindings in generated Async APIs were erronously tied to other protocols being present. They are now generated correctly if MQTT a sa protocol is enabled for the API Product.
+* **fix-jms-smf-bindings-support-presistent**
+  - In generated Async APIs, the `SUB` operation binding for `jms` and `smf` now incldues the correct delivery mode (persistent/direct) according to the API Product settings.
+* **fix-delete clientInformation-if-not-applicable**
+  - In generated Async APIs, guaranteed messaging related information omitted if there are no subscriptions to attract message into queues.
+* **fix-error-on-app-with-no-api-products**
+  - Fixed issue that caused error when no API Products wewre associated with an App.
+* **fix-org-patch-concurrency**
+  - Fixed an issue where there was a potential for concurrent modifications bypassing the concurrency check. This was due to the concurrency check being executed only after the Solace Cloud Tokens were validated creating a race conidition if the second request is made while the tokens are validated.
+* ** fix-org-service-guard-condition-token-validation**
+  - Fixed an issue omitting optional token lememts led to errors
+  - Fixed issues around validating Solace Cloud Tokens in various combinations (e.g. cloud token provided but no event portal token, one general token provided, general token provided is only authorized for cloud etc).
+* **fix-etag-dont-serialize-strings**
+  - Fixed issue in eTag generation caused by JSON Serialization of plain strings
+* **fix-apiproducts-mandatory-elements**
+  - Some elements in the APIProduct schema (e.g. `environments`, `protocols`) are now marked as mandatory. They were marked optional erronously
+* **fix-always-log-request-id**
+  - Request Ids are now always included in logging regardless of operating mode or log level.
+* **fix issues for environment updates**
+  - `Environments` patch now returns a correct error message if an internal error is encountered.
+* **fix security issue with service(s) cache**
+  - Cached Solace Clud service information is now properly isolated by `organization`
+* **fix concurrency check for update team**
+  - Concurrency check is now executed synchronously
+* **fix-api-name-transformation-import**
+  - On import of APIs cleanse the API Name - replace all disallowed characters in the API name with '-'
+* **add start/end of line anchors for all patterns**
+  - Fixed all the patterns in OpenAPI to include start and end of line matching
+* **fix-improve-logging-cloud-token-validation**
+  - Added more logging to cloud token vlaidation to facilitate debugging of connectivity
+* **fix-guard-against-accessing-optional-element**
+  - Fixed issue where solace cloud client relied on an optional element being present.
+* **fix-dont-auto-approve-apps-no-products**
+  - Apps with no associated API Products are no longer auto provisioned. This is to avoid situations when adding another product that requires manual approval resulted in the broker being provisioned without explicit approval.
+* **fix-error-messages-trimmed-and-proper-case**
+  - Error messages rincluded in error responses are now more uniform
+* **fix-various-responses**
+  - Fixed issues where some responses where not conistent with the OpenAPI Spec
+* **fix-always-include-apiparams-in-apilist**
+  - Now returns the AsyncAPI's Parameters in response to a GET api in `extended` format. These were previously missing 
+
 ## Version 0.3.4
 * OpenAPI: 0.6.5
 * API Management Connector Server: 0.3.4
