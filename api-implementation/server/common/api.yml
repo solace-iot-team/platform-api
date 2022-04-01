@@ -690,7 +690,7 @@ components:
             example:
               'public, private, or internal'
             type: string
-            pattern: "^[a-zA-Z0-9_\\-\\s,\\*]*$"
+            pattern: "^.*$"
             minLength: 1
             maxLength: 1024
         required:

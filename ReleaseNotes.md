@@ -108,6 +108,8 @@
   - Fixed issues where some responses where not conistent with the OpenAPI Spec
 * **fix-always-include-apiparams-in-apilist**
   - Now returns the AsyncAPI's Parameters in response to a GET api in `extended` format. These were previously missing 
+* **fix-attributes-pattern**
+  - Changed the validation pattern for attribute values on apps, api products to allow whitespaces
 
 ## Version 0.3.4
 * OpenAPI: 0.6.5
