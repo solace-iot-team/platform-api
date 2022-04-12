@@ -112,5 +112,55 @@ export class Controller {
       })
       .catch((e) => next(e));
   }
+
+  // webhooks
+  allAppWebHooks(req: Request, res: Response, next: NextFunction): void {
+    DevelopersService.allAppWebHooks(req.params['developer'], req.params['name'])
+      .then((r) => {
+        res.json(r);
+      })
+      .catch((e) => next(e));
+    ;
+  }
+  webHookByName(req: Request, res: Response, next: NextFunction): void {
+    DevelopersService.webHookByName(req.params['developer'], req.params['app'], req.params['name'])
+      .then((r) => {
+        res.json(r);
+      })
+      .catch((e) => next(e));
+    ;
+  }
+
+  createWebHook(req: Request, res: Response, next: NextFunction): void {
+    DevelopersService.createWebHook(req.params['developer'], req.params['name'], req.body)
+      .then((r) => {
+        if (r) {
+          res.status(201).json(r);
+        }
+        else
+          next(new ErrorResponseInternal(500, `No response`));
+      })
+      .catch((e) => next(e));
+  }
+
+  updateWebHook(req: Request, res: Response, next: NextFunction): void {
+    DevelopersService.updateWebHook(req.params['developer'], req.params['app'], req.params['name'], req.body)
+      .then((r) => {
+        if (r) res.json(r);
+        else next(new ErrorResponseInternal(404, `Not found`));
+      })
+      .catch((e) => next(e));
+  }
+
+  deleteWebHook(req: Request, res: Response, next: NextFunction): void {
+    DevelopersService.deleteWebHook(req.params['developer'], req.params['app'], req.params['name'])
+      .then((r) => {
+        res.status(r).send();
+      })
+      .catch((e) => next(e));
+  }
+
+
+
 }
 export default new Controller();

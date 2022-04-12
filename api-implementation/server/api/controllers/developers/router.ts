@@ -11,5 +11,11 @@ export default express
   .post('/:developer/apps', controller.createApp)
   .patch('/:developer/apps/:name', controller.updateApp)
   .delete('/:developer/apps/:name', controller.deleteApp)
-  .get('/:developer/apps/:name', controller.appByName);
+  .get('/:developer/apps/:name', controller.appByName)
+  .get('/:developer/apps/:name/webHooks', controller.allAppWebHooks)
+  .post('/:developer/apps/:name/webHooks', controller.createWebHook)
+  .get('/:developer/apps/:app/webHooks/:name', controller.webHookByName)
+  .patch('/:developer/apps/:app/webHooks/:name', controller.updateWebHook)
+  .delete('/:developer/apps/:app/webHooks/:name', controller.deleteWebHook)
+  ;
 
