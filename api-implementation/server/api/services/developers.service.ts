@@ -251,10 +251,13 @@ export class DevelopersService {
     const name: string = body.name ? body.name : body.uri;
     const app: AppResponse = await this.appByName(developer, appName, 'smf');
     if (app) {
+      let webHook = null;
       try {
-        WebHookHelpers.getWebHookByName(name, app);
-        throw new ErrorResponseInternal(422, `WebHook already exists`)
+        webHook = WebHookHelpers.getWebHookByName(name, app);
+
       } catch (e) {
+
+        L.debug(`WebHook ${name} does not exist, adding it`);
         if (app.webHooks) {
           app.webHooks.push(body);
         } else {
@@ -263,8 +266,11 @@ export class DevelopersService {
         }
         await this.updateAppInternal(developer, appName, app);
       }
+      if (webHook){
+        throw new ErrorResponseInternal(422, `WebHook already exists`);
+      }
     } else {
-        throw new ErrorResponseInternal(404, `Could not find ${appName} for ${developer}`);
+      throw new ErrorResponseInternal(404, `Could not find ${appName} for  ${developer}`);
     }
     return body;
   }
