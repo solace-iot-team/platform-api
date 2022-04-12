@@ -403,7 +403,7 @@ export class AppsService {
         const persistentProduct = appPersistentState.apiProducts.find(a => !isString(a) && (a as AppApiProductsComplex).apiproduct == productName);
 
         const hasPersistentStatus: boolean = (persistentProduct && (persistentProduct as AppApiProductsComplex).status !== undefined);
-        L.error(`${hasPersistentStatus}`);
+        //L.error(`${hasPersistentStatus}`);
         if (!isString(product) && !(product as AppApiProductsComplex).status
         ) {
           if (hasPersistentStatus) {
