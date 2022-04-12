@@ -2,7 +2,7 @@ openapi: 3.0.0
 info:
   title: Solace API Management Connector
   description: 'Solace API Management Connector API. Note: basic authentication security mechanism is deprecated.'
-  version: 0.7.6
+  version: 0.7.7
 servers:
   - url: /v1
 
@@ -93,6 +93,15 @@ components:
         pattern: "^[a-zA-Z0-9_-]*$"
         minLength: 2
         maxLength: 188
+    webhook_name:
+      name: webhook_name
+      in: path
+      required: true
+      schema:
+        type: string
+        pattern: "^.*$"
+        minLength: 2
+        maxLength: 200
     page_size:
      name: pageSize
      in: query
@@ -1949,6 +1958,8 @@ components:
           pattern: "^https?:\\/\\/[A-Za-z\\.:0-9\\-]*.*$"
           minLength: 0
           maxLength: 200
+        name:
+            $ref: "#/components/schemas/CommonName"
         environments:
           type: array
           description: environments that this webhook serves, if absent webhook will be used for all environments
@@ -2074,6 +2085,27 @@ components:
                   payload:
                     type: string
     
+
+    WebHookNameList:
+      description: Name and display name attribute of a webhook
+      type: array
+      minItems: 0
+      maxItems: 32768
+      items:
+        $ref: "#/components/schemas/WebHookNames"
+
+    WebHookNames:
+      description: Name and display name attribute of a webhook
+      type: object
+      properties:
+        uri: 
+          $ref: "#/components/schemas/CommonURL"
+        name: 
+          type: string
+          minLength: 3
+          maxLength: 200
+          pattern: ^.*$
+
     CommonEntityNameList:
       description: Name and display name attribute of an entity
       type: array
@@ -3886,6 +3918,216 @@ paths:
           $ref: '#/components/responses/ServiceUnavailable'
         '504':
           $ref: '#/components/responses/GatewayTimeout'
+
+  /{organization_name}/developers/{developer_username}/apps/{app_name}/webHooks:
+    parameters:
+    - $ref: '#/components/parameters/organization'
+    - $ref: '#/components/parameters/developer_username'
+    - $ref: '#/components/parameters/app_name'
+    get:
+     operationId: listDeveloperAppWebHooks
+     tags:
+     - apps
+     - developers
+     responses:
+        '200':
+          description:  list of webhooks
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WebHookNameList'
+        '400':
+           $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '406':
+          $ref: '#/components/responses/NotAcceptable'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
+        '504':
+          $ref: '#/components/responses/GatewayTimeout'
+    post:
+     operationId: createDeveloperAppWebHook
+     tags:
+     - apps
+     - developers
+     requestBody:
+       description: "new webhook"
+       content:
+         "application/json":
+           schema:
+            "$ref": "#/components/schemas/WebHook"
+     responses:
+        '201':
+          description: new webhook
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WebHook'
+        '400':
+          description: "Bad request, contains information about failed back end calls when the app is  provisioned"
+          content:
+           "application/json":
+            schema:
+             "$ref": "#/components/schemas/ErrorResponse"
+        '412':
+          $ref: '#/components/responses/PreconditionFailed'
+        '422':
+          description: "Duplicate app or invalid object reference e.g. invalid API product name"
+          content:
+           "application/json":
+            schema:
+             "$ref": "#/components/schemas/ErrorResponse"
+        '500':
+          description: "Internal Server error, contains information about failed back end calls when the  app is provisioned"
+          content:
+           "application/json":
+            schema:
+             "$ref": "#/components/schemas/ErrorResponse"
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '406':
+          $ref: '#/components/responses/NotAcceptable'
+        '415':
+          $ref: '#/components/responses/UnsupportedMediaType'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
+        '504':
+          $ref: '#/components/responses/GatewayTimeout'
+
+  /{organization_name}/developers/{developer_username}/apps/{app_name}/webHooks/{webhook_name}:
+    parameters:
+    - $ref: '#/components/parameters/organization'
+    - $ref: '#/components/parameters/developer_username'
+    - $ref: '#/components/parameters/app_name'
+    - $ref: '#/components/parameters/webhook_name'
+    get:
+     operationId: getDeveloperAppWebHook
+     tags:
+     - apps
+     - developers
+     responses:
+        '200':
+          description:  the webhook 
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WebHook'
+        '400':
+           $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '406':
+          $ref: '#/components/responses/NotAcceptable'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
+        '504':
+          $ref: '#/components/responses/GatewayTimeout'
+    patch:
+     operationId: updateDeveloperAppWebHook
+     tags:
+     - apps
+     - developers
+     parameters:
+     - $ref: '#/components/parameters/ifMatchHeader'
+     requestBody:
+       description: webhook
+       content:
+         "application/json":
+           schema:
+            "$ref": "#/components/schemas/WebHook"
+     responses:
+        '200':
+          description: WebHook
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WebHook'
+        '400':
+          description: "Bad request, contains information about failed back end calls when the app is  provisioned"
+          content:
+           "application/json":
+            schema:
+             "$ref": "#/components/schemas/ErrorResponse"
+        '412':
+          $ref: '#/components/responses/PreconditionFailed'
+        '422':
+          description: "Duplicate app or invalid object reference e.g. invalid API product name"
+          content:
+           "application/json":
+            schema:
+             "$ref": "#/components/schemas/ErrorResponse"
+        '500':
+          description: "Internal Server error, contains information about failed back end calls when the  app is provisioned"
+          content:
+           "application/json":
+            schema:
+             "$ref": "#/components/schemas/ErrorResponse"
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '406':
+          $ref: '#/components/responses/NotAcceptable'
+        '415':
+          $ref: '#/components/responses/UnsupportedMediaType'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
+        '504':
+          $ref: '#/components/responses/GatewayTimeout'
+    delete:
+     operationId: deleteDeveloperAppWebHook
+     tags:
+     - apps
+     - developers
+     responses:
+        '204':
+          description: No content
+        '400':
+           $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '406':
+          $ref: '#/components/responses/NotAcceptable'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
+        '504':
+          $ref: '#/components/responses/GatewayTimeout'
+
   /{organization_name}/teams:
     parameters:
     - $ref: '#/components/parameters/organization'
@@ -4264,6 +4506,215 @@ paths:
           $ref: '#/components/responses/GatewayTimeout'
     delete:
      operationId: deleteTeamApp
+     tags:
+     - apps
+     - teams
+     responses:
+        '204':
+          description: No content
+        '400':
+           $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '406':
+          $ref: '#/components/responses/NotAcceptable'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
+        '504':
+          $ref: '#/components/responses/GatewayTimeout'
+
+  /{organization_name}/teams/{team_name}/apps/{app_name}/webHooks:
+    parameters:
+    - $ref: '#/components/parameters/organization'
+    - $ref: '#/components/parameters/team_name'
+    - $ref: '#/components/parameters/app_name'
+    get:
+     operationId: listTeamAppWebHooks
+     tags:
+     - apps
+     - teams
+     responses:
+        '200':
+          description:  list of webhooks
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WebHookNameList'
+        '400':
+           $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '406':
+          $ref: '#/components/responses/NotAcceptable'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
+        '504':
+          $ref: '#/components/responses/GatewayTimeout'
+    post:
+     operationId: createTeamAppWebHook
+     tags:
+     - apps
+     - teams
+     requestBody:
+       description: "new webhook"
+       content:
+         "application/json":
+           schema:
+            "$ref": "#/components/schemas/WebHook"
+     responses:
+        '201':
+          description: new webhook
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WebHook'
+        '400':
+          description: "Bad request, contains information about failed back end calls when the app is  provisioned"
+          content:
+           "application/json":
+            schema:
+             "$ref": "#/components/schemas/ErrorResponse"
+        '412':
+          $ref: '#/components/responses/PreconditionFailed'
+        '422':
+          description: "Duplicate app or invalid object reference e.g. invalid API product name"
+          content:
+           "application/json":
+            schema:
+             "$ref": "#/components/schemas/ErrorResponse"
+        '500':
+          description: "Internal Server error, contains information about failed back end calls when the  app is provisioned"
+          content:
+           "application/json":
+            schema:
+             "$ref": "#/components/schemas/ErrorResponse"
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '406':
+          $ref: '#/components/responses/NotAcceptable'
+        '415':
+          $ref: '#/components/responses/UnsupportedMediaType'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
+        '504':
+          $ref: '#/components/responses/GatewayTimeout'
+
+  /{organization_name}/teams/{team_name}/apps/{app_name}/webHooks/{webhook_name}:
+    parameters:
+    - $ref: '#/components/parameters/organization'
+    - $ref: '#/components/parameters/team_name'
+    - $ref: '#/components/parameters/app_name'
+    - $ref: '#/components/parameters/webhook_name'
+    get:
+     operationId: getTeamAppWebHook
+     tags:
+     - apps
+     - teams
+     responses:
+        '200':
+          description:  the webhook
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WebHook'
+        '400':
+           $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '406':
+          $ref: '#/components/responses/NotAcceptable'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
+        '504':
+          $ref: '#/components/responses/GatewayTimeout'
+    patch:
+     operationId: updateTeamAppWebHook
+     tags:
+     - apps
+     - teams
+     parameters:
+     - $ref: '#/components/parameters/ifMatchHeader'
+     requestBody:
+       description: ""
+       content:
+         "application/json":
+           schema:
+            "$ref": "#/components/schemas/WebHook"
+     responses:
+        '200':
+          description: WebHook
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WebHook'
+        '400':
+          description: "Bad request, contains information about failed back end calls when the app is  provisioned"
+          content:
+           "application/json":
+            schema:
+             "$ref": "#/components/schemas/ErrorResponse"
+        '412':
+          $ref: '#/components/responses/PreconditionFailed'
+        '422':
+          description: "Duplicate app or invalid object reference e.g. invalid API product name"
+          content:
+           "application/json":
+            schema:
+             "$ref": "#/components/schemas/ErrorResponse"
+        '500':
+          description: "Internal Server error, contains information about failed back end calls when the  app is provisioned"
+          content:
+           "application/json":
+            schema:
+             "$ref": "#/components/schemas/ErrorResponse"
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '406':
+          $ref: '#/components/responses/NotAcceptable'
+        '415':
+          $ref: '#/components/responses/UnsupportedMediaType'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
+        '504':
+          $ref: '#/components/responses/GatewayTimeout'
+    delete:
+     operationId: deleteTeamAppWebHook
      tags:
      - apps
      - teams
