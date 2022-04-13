@@ -4,9 +4,12 @@ import App = Components.Schemas.App;
 import AppPatch = Components.Schemas.AppPatch;
 import AppResponse = Components.Schemas.AppResponse;
 import TopicSyntax = Components.Parameters.TopicSyntax.TopicSyntax;
+import WebHookNameList = Components.Schemas.WebHookNameList;
+import WebHook = Components.Schemas.WebHook;
 import AppsService from './apps.service';
 import BrokerService from './broker.service';
 import AppFactory from './apps/appfactory';
+import WebHookHelpers from './apps/webhookhelpers';
 
 import { PersistenceService } from './persistence.service';
 import { ErrorResponseInternal } from '../middlewares/error.handler';
@@ -50,9 +53,9 @@ export class TeamsService {
       throw e;
     }
     const apps = await AppsService.all(query);
-    for (const app of apps){
+    for (const app of apps) {
       await AppFactory.transformToExternalAppRepresentation(app);
-    } 
+    }
     return apps;
   }
 
@@ -174,8 +177,21 @@ export class TeamsService {
     } catch (e) {
       await updateProtectionByObject(await this.appByName(team, name, 'mqtt'));
     }
+
+    return this.updateAppInternal(team, name, body, teamObj);
+  }
+
+  private async updateAppInternal(
+    team: string,
+    name: string,
+    body: AppPatch,
+    teamObj?: Team
+  ): Promise<AppPatch> {
     const app: TeamAppPatch = AppFactory.createTeamAppPatch(team, body);
 
+    if (!teamObj) {
+      teamObj = await this.persistenceService.byName(team);
+    }
     const appPatch: AppPatch = await AppsService.update(
       team,
       name,
@@ -184,8 +200,118 @@ export class TeamsService {
     );
     await AppFactory.transformToExternalAppRepresentation(appPatch);
     return appPatch;
+
+
+  }
+  // webhooks
+  async allAppWebHooks(
+    team: string,
+    name: string,
+  ): Promise<WebHookNameList> {
+    try {
+      const teamObj: Team = await this.persistenceService.byName(team);
+      const app: AppResponse = await AppsService.byNameAndOwnerId(
+        name,
+        team,
+        'smf',
+        teamObj.attributes,
+      );
+      if (app) {
+        return WebHookHelpers.getWebHookListFromApp(app);
+      } else {
+        throw 404;
+      }
+    } catch (e) {
+      throw e;
+    }
   }
 
+  async webHookByName(
+    team: string,
+    appName: string,
+    name: string
+  ): Promise<WebHook> {
+    try {
+      const teamObj: Team = await this.persistenceService.byName(team);
+      const app: AppResponse = await AppsService.byNameAndOwnerId(
+        appName,
+        team,
+        'smf',
+        teamObj.attributes,
+      );
+      if (app) {
+        return WebHookHelpers.getWebHookByName(name, app);
+      } else {
+        throw new ErrorResponseInternal(404, `Could not find ${appName} for team ${team}`);
+      }
+    } catch (e) {
+      throw e;
+    }
+  }
+
+
+  async createWebHook(
+    team: string,
+    appName: string,
+    body: WebHook
+  ): Promise<WebHook> {
+    const name: string = body.name ? body.name : body.uri;
+    const app: AppResponse = await this.appByName(team, appName, 'smf');
+    if (app) {
+      let webHook = null;
+      try {
+        webHook = WebHookHelpers.getWebHookByName(name, app);
+
+      } catch (e) {
+
+        L.debug(`WebHook ${name} does not exist, adding it`);
+        if (app.webHooks) {
+          app.webHooks.push(body);
+        } else {
+          app.webHooks = [body];
+
+        }
+        await this.updateAppInternal(team, appName, app);
+      }
+      if (webHook){
+        throw new ErrorResponseInternal(422, `WebHook already exists`);
+      }
+    } else {
+      throw new ErrorResponseInternal(404, `Could not find ${appName} for team ${team}`);
+    }
+    return body;
+  }
+
+
+  async updateWebHook(
+    team: string,
+    appName: string,
+    name: string,
+    body: WebHook
+  ): Promise<WebHook> {
+
+    const app: AppResponse = await this.appByName(team, appName, 'smf');
+    if (app) {
+      await updateProtectionByObject(WebHookHelpers.getWebHookByName(name, app));
+      WebHookHelpers.patchAppWebHook(name, app, body);
+      await this.updateAppInternal(team, appName, app);
+    }
+    return WebHookHelpers.getWebHookByName(name, app);
+  }
+
+  async deleteWebHook(
+    team: string,
+    appName: string,
+    name: string,
+  ): Promise<number> {
+
+    const app: AppResponse = await this.appByName(team, appName, 'smf');
+    if (app) {
+      WebHookHelpers.deleteAppWebHook(name, app);
+      await this.updateAppInternal(team, appName, app);
+    }
+    return 204;
+  }
   // private methods
   private async canDeleteTeam(name: string): Promise<boolean> {
     const q = {

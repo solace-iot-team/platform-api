@@ -4,7 +4,7 @@ declare namespace Components {
             export type Format = "compact" | "summary" | "extended";
         }
         namespace ApiName {
-            export type ApiName = string; // ^[a-zA-Z0-9_-]*$
+            export type ApiName = Schemas.CommonName; // ^[a-zA-Z0-9_\-]*(@[ |\S]*)?$
         }
         namespace ApiProductName {
             export type ApiProductName = string; // ^[a-zA-Z0-9_-]*$
@@ -36,6 +36,9 @@ declare namespace Components {
         namespace PageSize {
             export type PageSize = number; // int32
         }
+        namespace Semver {
+            export type Semver = Schemas.SemVer; // ^(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)(?:-((?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*)(?:\.(?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?(?:\+([0-9a-zA-Z-]+(?:\.[0-9a-zA-Z-]+)*))?$
+        }
         namespace SortDirection {
             export type SortDirection = "asc" | "desc";
         }
@@ -49,7 +52,10 @@ declare namespace Components {
             export type TopicSyntax = "smf" | "mqtt";
         }
         namespace Version {
-            export type Version = Schemas.SemVer; // ^(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)(?:-((?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*)(?:\.(?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?(?:\+([0-9a-zA-Z-]+(?:\.[0-9a-zA-Z-]+)*))?$
+            export type Version = Schemas.Version; // ^[ |\S]*$
+        }
+        namespace WebhookName {
+            export type WebhookName = string; // ^.*$
         }
     }
     namespace Responses {
@@ -98,7 +104,7 @@ declare namespace Components {
             updatedTime?: CommonTimestampInteger; // int64
             createdBy: CommonUserName; // ^[.a-zA-Z0-9@_-]*$
             description: CommonDescription; // ^[\s\S]*$
-            name: CommonName; // ^[a-zA-Z0-9_-]*$
+            name: CommonName; // ^[a-zA-Z0-9_\-]*(@[ |\S]*)?$
             summary: CommonDescription; // ^[\s\S]*$
             version: CommonVersion; // ^[_\-\S\.]*$
             apiParameters?: APIParameter[];
@@ -129,7 +135,7 @@ declare namespace Components {
              */
             key: string; // ^[a-zA-Z0-9_-]*$
         }
-        export type APIList = CommonName /* ^[a-zA-Z0-9_-]*$ */ [];
+        export type APIList = CommonName /* ^[a-zA-Z0-9_\-]*(@[ |\S]*)?$ */ [];
         export interface APIParameter {
             /**
              * name of the parameter as defined in the AsyncAPI Spec
@@ -164,7 +170,7 @@ declare namespace Components {
              *   "api2"
              * ]
              */
-            apis: CommonName /* ^[a-zA-Z0-9_-]*$ */ [];
+            apis: CommonName /* ^[a-zA-Z0-9_\-]*(@[ |\S]*)?$ */ [];
             /**
              * manual or auto. If manual, credetials will only be activated on manual approval
              */
@@ -175,8 +181,8 @@ declare namespace Components {
             /**
              * An array of environment names in an organization. Requests to environments not listed are rejected.
              */
-            environments: CommonName /* ^[a-zA-Z0-9_-]*$ */ [];
-            name: CommonName; // ^[a-zA-Z0-9_-]*$
+            environments: CommonName /* ^[a-zA-Z0-9_\-]*(@[ |\S]*)?$ */ [];
+            name: CommonName; // ^[a-zA-Z0-9_\-]*(@[ |\S]*)?$
             /**
              * An array of Publish API resources to be bundled in the API Product.
              */
@@ -203,7 +209,7 @@ declare namespace Components {
              *   "api2"
              * ]
              */
-            apis?: CommonName /* ^[a-zA-Z0-9_-]*$ */ [];
+            apis?: CommonName /* ^[a-zA-Z0-9_\-]*(@[ |\S]*)?$ */ [];
             /**
              * manual or auto. If manual, credentials will only be activated on manual approval
              */
@@ -214,7 +220,7 @@ declare namespace Components {
             /**
              * A list of environment name in an organization. Requests to environments not listed are rejected.
              */
-            environments?: CommonName /* ^[a-zA-Z0-9_-]*$ */ [];
+            environments?: CommonName /* ^[a-zA-Z0-9_\-]*(@[ |\S]*)?$ */ [];
             /**
              * A comma separated list of Publish API resources to be bundled in the API Product.
              */
@@ -229,7 +235,7 @@ declare namespace Components {
             meta?: Meta;
         }
         export interface APISummary {
-            name?: CommonName; // ^[a-zA-Z0-9_-]*$
+            name?: CommonName; // ^[a-zA-Z0-9_\-]*(@[ |\S]*)?$
             description?: CommonDescription; // ^[\s\S]*$
             source?: "EventAPIProduct" | "Upload" | "EventPortalLink";
             createdBy?: CommonUserName; // ^[.a-zA-Z0-9@_-]*$
@@ -263,7 +269,7 @@ declare namespace Components {
          * An app associated with an owner (developer, team etc). Associates the app with an API product, and auto-generates an API credentials for the app to use
          */
         export interface App {
-            name: CommonName; // ^[a-zA-Z0-9_-]*$
+            name: CommonName; // ^[a-zA-Z0-9_\-]*(@[ |\S]*)?$
             displayName?: CommonDisplayName; // ^[\/\sa-z.A-z0-9_-]*$
             /**
              * the internal name of the app used within the connector. This name is auto generated by default. Warning - should ONLY be set if a naming convention for broker objects must be imposed. This value can not be updated.
@@ -279,9 +285,9 @@ declare namespace Components {
             webHooks?: WebHook[];
             credentials: Credentials;
         }
-        export type AppApiProducts = (AppApiProductsComplex | CommonName /* ^[a-zA-Z0-9_-]*$ */ )[];
+        export type AppApiProducts = (AppApiProductsComplex | CommonName /* ^[a-zA-Z0-9_\-]*(@[ |\S]*)?$ */ )[];
         export interface AppApiProductsComplex {
-            apiproduct: CommonName; // ^[a-zA-Z0-9_-]*$
+            apiproduct: CommonName; // ^[a-zA-Z0-9_\-]*(@[ |\S]*)?$
             status?: AppStatus;
         }
         export interface AppConnection {
@@ -318,7 +324,7 @@ declare namespace Components {
             environments?: AppEnvironmentStatus[];
         }
         export interface AppEnvironment {
-            name?: CommonName; // ^[a-zA-Z0-9_-]*$
+            name?: CommonName; // ^[a-zA-Z0-9_\-]*(@[ |\S]*)?$
             displayName?: CommonDisplayName; // ^[\/\sa-z.A-z0-9_-]*$
             messagingProtocols?: Endpoint[];
             permissions?: Permissions;
@@ -327,14 +333,14 @@ declare namespace Components {
          * provides status information on the app's connections to the Gateway Broker
          */
         export interface AppEnvironmentStatus {
-            name?: CommonName; // ^[a-zA-Z0-9_-]*$
+            name?: CommonName; // ^[a-zA-Z0-9_\-]*(@[ |\S]*)?$
             displayName?: CommonDisplayName; // ^[\/\sa-z.A-z0-9_-]*$
             connections?: AppConnection[];
             webHooks?: WebHookStatus[];
             queues?: QueueStatus[];
         }
         export interface AppListItem {
-            name?: CommonName; // ^[a-zA-Z0-9_-]*$
+            name?: CommonName; // ^[a-zA-Z0-9_\-]*(@[ |\S]*)?$
             displayName?: CommonDisplayName; // ^[\/\sa-z.A-z0-9_-]*$
             appType?: "developer" | "team";
             /**
@@ -361,7 +367,7 @@ declare namespace Components {
          * App Response Object - includes protocol binding information and app premissions. An app associated with a developer. Associates the app with an API product, and auto-generates an API credentials for the app to use.
          */
         export interface AppResponse {
-            name: CommonName; // ^[a-zA-Z0-9_-]*$
+            name: CommonName; // ^[a-zA-Z0-9_\-]*(@[ |\S]*)?$
             displayName?: CommonDisplayName; // ^[\/\sa-z.A-z0-9_-]*$
             /**
              * the internal name of the app used within the connector. This name is auto generated by default. Warning - should ONLY be set if a naming convention for broker objects must be imposed. This value can not be updated.
@@ -384,7 +390,7 @@ declare namespace Components {
          * App Response Object - includes protocol binding information and app premissions. An app associated with a developer. Associates the app with an API product, and auto-generates an API credentials for the app to use.
          */
         export interface AppResponseGeneric {
-            name: CommonName; // ^[a-zA-Z0-9_-]*$
+            name: CommonName; // ^[a-zA-Z0-9_\-]*(@[ |\S]*)?$
             displayName?: CommonDisplayName; // ^[\/\sa-z.A-z0-9_-]*$
             /**
              * the internal name of the app used within the connector. This name is auto generated by default. Warning - should ONLY be set if a naming convention for broker objects must be imposed. This value can not be updated.
@@ -425,7 +431,7 @@ declare namespace Components {
              * example:
              * public, private, or internal
              */
-            value: string; // ^[a-zA-Z0-9_\-\s,\*]*$
+            value: string; // ^.*$
         }[];
         export interface BasicAuthentication {
             userName: string; // ^.*$
@@ -463,7 +469,7 @@ declare namespace Components {
              * AlAOLG3xxuYCVDpoXl4wKGwWAIURFGuK
              */
             name?: string; // .*
-            apiProduct?: CommonName; // ^[a-zA-Z0-9_-]*$
+            apiProduct?: CommonName; // ^[a-zA-Z0-9_\-]*(@[ |\S]*)?$
             /**
              * access mode for the queue
              * example:
@@ -540,15 +546,15 @@ declare namespace Components {
          * Name and display name attribute of an entity
          */
         export interface CommonEntityNames {
-            name?: CommonName; // ^[a-zA-Z0-9_-]*$
-            displayName?: CommonName; // ^[a-zA-Z0-9_-]*$
+            name?: CommonName; // ^[a-zA-Z0-9_\-]*(@[ |\S]*)?$
+            displayName?: CommonName; // ^[a-zA-Z0-9_\-]*(@[ |\S]*)?$
         }
         /**
          * The internal name of an object. Characters you can use in the name are restricted to: A-Z0-9._-. Once the object is created the internal name can not be changed
          * example:
          * {name}
          */
-        export type CommonName = string; // ^[a-zA-Z0-9_-]*$
+        export type CommonName = string; // ^[a-zA-Z0-9_\-]*(@[ |\S]*)?$
         /**
          * id as used/issued by the back end apis, alphanumeric characters only
          * example:
@@ -640,7 +646,7 @@ declare namespace Components {
          */
         export interface Environment {
             [name: string]: any;
-            name: CommonName; // ^[a-zA-Z0-9_-]*$
+            name: CommonName; // ^[a-zA-Z0-9_\-]*(@[ |\S]*)?$
             displayName?: CommonDisplayName; // ^[\/\sa-z.A-z0-9_-]*$
             description: CommonDescription; // ^[\s\S]*$
             /**
@@ -660,7 +666,7 @@ declare namespace Components {
              * All of the protocols that the broker service exposes
              */
             messagingProtocols?: Endpoint[];
-            name: CommonName; // ^[a-zA-Z0-9_-]*$
+            name: CommonName; // ^[a-zA-Z0-9_\-]*(@[ |\S]*)?$
             displayName?: CommonDisplayName; // ^[\/\sa-z.A-z0-9_-]*$
             description: CommonDescription; // ^[\s\S]*$
             /**
@@ -690,7 +696,7 @@ declare namespace Components {
          * an environment
          */
         export interface EnvironmentResponse {
-            name: CommonName; // ^[a-zA-Z0-9_-]*$
+            name: CommonName; // ^[a-zA-Z0-9_\-]*(@[ |\S]*)?$
             displayName?: CommonDisplayName; // ^[\/\sa-z.A-z0-9_-]*$
             description: CommonDescription; // ^[\s\S]*$
             /**
@@ -823,7 +829,7 @@ declare namespace Components {
         export type MsgVpnName = string; // ^[^*^?]*$
         export interface Organization {
             [name: string]: any;
-            name: CommonName; // ^[a-zA-Z0-9_-]*$
+            name: CommonName; // ^[a-zA-Z0-9_\-]*(@[ |\S]*)?$
             sempV2Authentication?: SempV2Authentication;
             "cloud-token"?: string /* ^[A-Za-z0-9-_=]+\.[A-Za-z0-9-_=]+\.?[A-Za-z0-9-_.+/=]*$ */  | CloudToken;
             integrations?: OrganizationIntegrations;
@@ -841,7 +847,7 @@ declare namespace Components {
         export interface OrganizationResponse {
             [name: string]: any;
             status?: OrganizationStatus;
-            name: CommonName; // ^[a-zA-Z0-9_-]*$
+            name: CommonName; // ^[a-zA-Z0-9_\-]*(@[ |\S]*)?$
             sempV2Authentication?: SempV2Authentication;
             "cloud-token"?: string /* ^[A-Za-z0-9-_=]+\.[A-Za-z0-9-_=]+\.?[A-Za-z0-9-_.+/=]*$ */  | CloudToken;
             integrations?: OrganizationIntegrations;
@@ -924,7 +930,7 @@ declare namespace Components {
             version?: CommonVersion; // ^[_\-\S\.]*$
         }
         export interface QueueStatus {
-            name?: CommonName; // ^[a-zA-Z0-9_-]*$
+            name?: CommonName; // ^[a-zA-Z0-9_\-]*(@[ |\S]*)?$
             consumerCount?: number;
             messagesQueued?: number;
             messagesQueuedMB?: number;
@@ -1020,7 +1026,7 @@ declare namespace Components {
          */
         export interface Team {
             displayName: CommonDisplayName; // ^[\/\sa-z.A-z0-9_-]*$
-            name: CommonName; // ^[a-zA-Z0-9_-]*$
+            name: CommonName; // ^[a-zA-Z0-9_\-]*(@[ |\S]*)?$
             attributes?: Attributes;
         }
         /**
@@ -1034,12 +1040,18 @@ declare namespace Components {
             type: string; // ^[\s\S]*$
             value: string; // ^[\s\S]*$
         }
+        /**
+         * example:
+         * 1.1.0
+         */
+        export type Version = string; // ^[ |\S]*$
         export interface WebHook {
             uri: string; // ^https?:\/\/[A-Za-z\.:0-9\-]*.*$
+            name?: CommonName; // ^[a-zA-Z0-9_\-]*(@[ |\S]*)?$
             /**
              * environments that this webhook serves, if absent webhook will be used for all environments
              */
-            environments?: CommonName /* ^[a-zA-Z0-9_-]*$ */ [];
+            environments?: CommonName /* ^[a-zA-Z0-9_\-]*(@[ |\S]*)?$ */ [];
             method: "POST" | "PUT";
             mode?: "parallel" | "serial";
             authentication?: WebHookAuth;
@@ -1058,6 +1070,17 @@ declare namespace Components {
             authMethod?: "Header";
             headerName: string; // ^[\s\S]*$
             headerValue: string; // ^[\s\S]*$
+        }
+        /**
+         * Name and display name attribute of a webhook
+         */
+        export type WebHookNameList = WebHookNames[];
+        /**
+         * Name and display name attribute of a webhook
+         */
+        export interface WebHookNames {
+            uri?: CommonURL; // ^https?:\/\/[A-Za-z\.:0-9\-]*.*$
+            name?: string; // ^.*$
         }
         export interface WebHookStatus {
             uri?: string; // ^https?:\/\/[A-Za-z\.:0-9\-]*.*$
@@ -1180,6 +1203,24 @@ declare namespace Paths {
             export type $504 = Components.Responses.GatewayTimeout;
         }
     }
+    namespace CreateDeveloperAppWebHook {
+        export type RequestBody = Components.Schemas.WebHook;
+        namespace Responses {
+            export type $200 = Components.Schemas.WebHook;
+            export type $400 = Components.Schemas.ErrorResponse;
+            export type $401 = Components.Responses.Unauthorized;
+            export type $403 = Components.Responses.Forbidden;
+            export type $404 = Components.Responses.NotFound;
+            export type $406 = Components.Responses.NotAcceptable;
+            export type $412 = Components.Responses.PreconditionFailed;
+            export type $415 = Components.Responses.UnsupportedMediaType;
+            export type $422 = Components.Schemas.ErrorResponse;
+            export type $429 = Components.Responses.TooManyRequests;
+            export type $500 = Components.Schemas.ErrorResponse;
+            export type $503 = Components.Responses.ServiceUnavailable;
+            export type $504 = Components.Responses.GatewayTimeout;
+        }
+    }
     namespace CreateEnvironment {
         export type RequestBody = Components.Schemas.Environment;
         namespace Responses {
@@ -1240,6 +1281,24 @@ declare namespace Paths {
             export type $403 = Components.Responses.Forbidden;
             export type $404 = Components.Responses.NotFound;
             export type $406 = Components.Responses.NotAcceptable;
+            export type $415 = Components.Responses.UnsupportedMediaType;
+            export type $422 = Components.Schemas.ErrorResponse;
+            export type $429 = Components.Responses.TooManyRequests;
+            export type $500 = Components.Schemas.ErrorResponse;
+            export type $503 = Components.Responses.ServiceUnavailable;
+            export type $504 = Components.Responses.GatewayTimeout;
+        }
+    }
+    namespace CreateTeamAppWebHook {
+        export type RequestBody = Components.Schemas.WebHook;
+        namespace Responses {
+            export type $200 = Components.Schemas.WebHook;
+            export type $400 = Components.Schemas.ErrorResponse;
+            export type $401 = Components.Responses.Unauthorized;
+            export type $403 = Components.Responses.Forbidden;
+            export type $404 = Components.Responses.NotFound;
+            export type $406 = Components.Responses.NotAcceptable;
+            export type $412 = Components.Responses.PreconditionFailed;
             export type $415 = Components.Responses.UnsupportedMediaType;
             export type $422 = Components.Schemas.ErrorResponse;
             export type $429 = Components.Responses.TooManyRequests;
@@ -1311,6 +1370,21 @@ declare namespace Paths {
             export type $504 = Components.Responses.GatewayTimeout;
         }
     }
+    namespace DeleteDeveloperAppWebHook {
+        namespace Responses {
+            export interface $204 {
+            }
+            export type $400 = Components.Responses.BadRequest;
+            export type $401 = Components.Responses.Unauthorized;
+            export type $403 = Components.Responses.Forbidden;
+            export type $404 = Components.Responses.NotFound;
+            export type $406 = Components.Responses.NotAcceptable;
+            export type $429 = Components.Responses.TooManyRequests;
+            export type $500 = Components.Responses.InternalServerError;
+            export type $503 = Components.Responses.ServiceUnavailable;
+            export type $504 = Components.Responses.GatewayTimeout;
+        }
+    }
     namespace DeleteEnvironment {
         namespace Responses {
             export interface $204 {
@@ -1359,6 +1433,21 @@ declare namespace Paths {
         }
     }
     namespace DeleteTeamApp {
+        namespace Responses {
+            export interface $204 {
+            }
+            export type $400 = Components.Responses.BadRequest;
+            export type $401 = Components.Responses.Unauthorized;
+            export type $403 = Components.Responses.Forbidden;
+            export type $404 = Components.Responses.NotFound;
+            export type $406 = Components.Responses.NotAcceptable;
+            export type $429 = Components.Responses.TooManyRequests;
+            export type $500 = Components.Responses.InternalServerError;
+            export type $503 = Components.Responses.ServiceUnavailable;
+            export type $504 = Components.Responses.GatewayTimeout;
+        }
+    }
+    namespace DeleteTeamAppWebHook {
         namespace Responses {
             export interface $204 {
             }
@@ -1472,6 +1561,27 @@ declare namespace Paths {
             export type $504 = Components.Responses.GatewayTimeout;
         }
     }
+    namespace GetApiRevision {
+        namespace Parameters {
+            export type Format = "application/json" | "application/x-yaml";
+        }
+        export interface QueryParameters {
+            format?: Parameters.Format;
+        }
+        namespace Responses {
+            export interface $200 {
+            }
+            export type $400 = Components.Responses.BadRequest;
+            export type $401 = Components.Responses.Unauthorized;
+            export type $403 = Components.Responses.Forbidden;
+            export type $404 = Components.Responses.NotFound;
+            export type $406 = Components.Responses.NotAcceptable;
+            export type $429 = Components.Responses.TooManyRequests;
+            export type $500 = Components.Responses.InternalServerError;
+            export type $503 = Components.Responses.ServiceUnavailable;
+            export type $504 = Components.Responses.GatewayTimeout;
+        }
+    }
     namespace GetApp {
         namespace Responses {
             export type $200 = Components.Schemas.AppResponseGeneric;
@@ -1539,6 +1649,20 @@ declare namespace Paths {
     namespace GetDeveloperApp {
         namespace Responses {
             export type $200 = Components.Schemas.AppResponse;
+            export type $400 = Components.Responses.BadRequest;
+            export type $401 = Components.Responses.Unauthorized;
+            export type $403 = Components.Responses.Forbidden;
+            export type $404 = Components.Responses.NotFound;
+            export type $406 = Components.Responses.NotAcceptable;
+            export type $429 = Components.Responses.TooManyRequests;
+            export type $500 = Components.Responses.InternalServerError;
+            export type $503 = Components.Responses.ServiceUnavailable;
+            export type $504 = Components.Responses.GatewayTimeout;
+        }
+    }
+    namespace GetDeveloperAppWebHook {
+        namespace Responses {
+            export type $200 = Components.Schemas.WebHook;
             export type $400 = Components.Responses.BadRequest;
             export type $401 = Components.Responses.Unauthorized;
             export type $403 = Components.Responses.Forbidden;
@@ -1678,6 +1802,20 @@ declare namespace Paths {
             export type $504 = Components.Responses.GatewayTimeout;
         }
     }
+    namespace GetTeamAppWebHook {
+        namespace Responses {
+            export type $200 = Components.Schemas.WebHook;
+            export type $400 = Components.Responses.BadRequest;
+            export type $401 = Components.Responses.Unauthorized;
+            export type $403 = Components.Responses.Forbidden;
+            export type $404 = Components.Responses.NotFound;
+            export type $406 = Components.Responses.NotAcceptable;
+            export type $429 = Components.Responses.TooManyRequests;
+            export type $500 = Components.Responses.InternalServerError;
+            export type $503 = Components.Responses.ServiceUnavailable;
+            export type $504 = Components.Responses.GatewayTimeout;
+        }
+    }
     namespace GetToken {
         namespace Responses {
             export type $200 = string; // ^[A-Za-z0-9-_=]+\.[A-Za-z0-9-_=]+\.?[A-Za-z0-9-_.+/=]*$
@@ -1744,7 +1882,7 @@ declare namespace Paths {
     }
     namespace ListApiProductApis {
         namespace Responses {
-            export type $200 = string /* ^[a-zA-Z0-9_-]*$ */ [];
+            export type $200 = Components.Schemas.CommonName /* ^[a-zA-Z0-9_\-]*(@[ |\S]*)?$ */ [];
             export type $400 = Components.Responses.BadRequest;
             export type $401 = Components.Responses.Unauthorized;
             export type $403 = Components.Responses.Forbidden;
@@ -1784,6 +1922,20 @@ declare namespace Paths {
             export type $504 = Components.Responses.GatewayTimeout;
         }
     }
+    namespace ListApiRevisions {
+        namespace Responses {
+            export type $200 = Components.Schemas.CommonVersion /* ^[_\-\S\.]*$ */ [];
+            export type $400 = Components.Responses.BadRequest;
+            export type $401 = Components.Responses.Unauthorized;
+            export type $403 = Components.Responses.Forbidden;
+            export type $404 = Components.Responses.NotFound;
+            export type $406 = Components.Responses.NotAcceptable;
+            export type $429 = Components.Responses.TooManyRequests;
+            export type $500 = Components.Responses.InternalServerError;
+            export type $503 = Components.Responses.ServiceUnavailable;
+            export type $504 = Components.Responses.GatewayTimeout;
+        }
+    }
     namespace ListApis {
         namespace Responses {
             export type $200 = Components.Schemas.APIList | Components.Schemas.APISummaryList | Components.Schemas.APIInfoList;
@@ -1800,7 +1952,7 @@ declare namespace Paths {
     }
     namespace ListAppApiSpecifications {
         namespace Responses {
-            export type $200 = string /* ^[a-zA-Z0-9_-]*$ */ [];
+            export type $200 = Components.Schemas.CommonName /* ^[a-zA-Z0-9_\-]*(@[ |\S]*)?$ */ [];
             export type $400 = Components.Responses.BadRequest;
             export type $401 = Components.Responses.Unauthorized;
             export type $403 = Components.Responses.Forbidden;
@@ -1829,6 +1981,20 @@ declare namespace Paths {
     namespace ListApps {
         namespace Responses {
             export type $200 = Components.Schemas.AppListItem[];
+            export type $400 = Components.Responses.BadRequest;
+            export type $401 = Components.Responses.Unauthorized;
+            export type $403 = Components.Responses.Forbidden;
+            export type $404 = Components.Responses.NotFound;
+            export type $406 = Components.Responses.NotAcceptable;
+            export type $429 = Components.Responses.TooManyRequests;
+            export type $500 = Components.Responses.InternalServerError;
+            export type $503 = Components.Responses.ServiceUnavailable;
+            export type $504 = Components.Responses.GatewayTimeout;
+        }
+    }
+    namespace ListDeveloperAppWebHooks {
+        namespace Responses {
+            export type $200 = Components.Schemas.WebHookNameList;
             export type $400 = Components.Responses.BadRequest;
             export type $401 = Components.Responses.Unauthorized;
             export type $403 = Components.Responses.Forbidden;
@@ -1950,6 +2116,20 @@ declare namespace Paths {
             export type $504 = Components.Responses.GatewayTimeout;
         }
     }
+    namespace ListTeamAppWebHooks {
+        namespace Responses {
+            export type $200 = Components.Schemas.WebHookNameList;
+            export type $400 = Components.Responses.BadRequest;
+            export type $401 = Components.Responses.Unauthorized;
+            export type $403 = Components.Responses.Forbidden;
+            export type $404 = Components.Responses.NotFound;
+            export type $406 = Components.Responses.NotAcceptable;
+            export type $429 = Components.Responses.TooManyRequests;
+            export type $500 = Components.Responses.InternalServerError;
+            export type $503 = Components.Responses.ServiceUnavailable;
+            export type $504 = Components.Responses.GatewayTimeout;
+        }
+    }
     namespace ListTeamApps {
         namespace Parameters {
             export type Status = Components.Schemas.AppStatus;
@@ -1995,6 +2175,7 @@ declare namespace Paths {
             export type $403 = Components.Responses.Forbidden;
             export type $404 = Components.Responses.NotFound;
             export type $406 = Components.Responses.NotAcceptable;
+            export type $409 = Components.Schemas.ErrorResponse;
             export type $412 = Components.Responses.PreconditionFailed;
             export type $415 = Components.Responses.UnsupportedMediaType;
             export type $429 = Components.Responses.TooManyRequests;
@@ -2041,6 +2222,24 @@ declare namespace Paths {
     }
     namespace UpdateDeveloperApp {
         export type RequestBody = Components.Schemas.AppPatch;
+        namespace Responses {
+            export type $200 = Components.Schemas.AppResponse;
+            export type $400 = Components.Schemas.ErrorResponse;
+            export type $401 = Components.Responses.Unauthorized;
+            export type $403 = Components.Responses.Forbidden;
+            export type $404 = Components.Responses.NotFound;
+            export type $406 = Components.Responses.NotAcceptable;
+            export type $412 = Components.Responses.PreconditionFailed;
+            export type $415 = Components.Responses.UnsupportedMediaType;
+            export type $422 = Components.Schemas.ErrorResponse;
+            export type $429 = Components.Responses.TooManyRequests;
+            export type $500 = Components.Schemas.ErrorResponse;
+            export type $503 = Components.Responses.ServiceUnavailable;
+            export type $504 = Components.Responses.GatewayTimeout;
+        }
+    }
+    namespace UpdateDeveloperAppWebHook {
+        export type RequestBody = Components.Schemas.WebHook;
         namespace Responses {
             export type $200 = Components.Schemas.AppResponse;
             export type $400 = Components.Schemas.ErrorResponse;
@@ -2110,6 +2309,24 @@ declare namespace Paths {
     }
     namespace UpdateTeamApp {
         export type RequestBody = Components.Schemas.AppPatch;
+        namespace Responses {
+            export type $200 = Components.Schemas.AppResponse;
+            export type $400 = Components.Schemas.ErrorResponse;
+            export type $401 = Components.Responses.Unauthorized;
+            export type $403 = Components.Responses.Forbidden;
+            export type $404 = Components.Responses.NotFound;
+            export type $406 = Components.Responses.NotAcceptable;
+            export type $412 = Components.Responses.PreconditionFailed;
+            export type $415 = Components.Responses.UnsupportedMediaType;
+            export type $422 = Components.Schemas.ErrorResponse;
+            export type $429 = Components.Responses.TooManyRequests;
+            export type $500 = Components.Schemas.ErrorResponse;
+            export type $503 = Components.Responses.ServiceUnavailable;
+            export type $504 = Components.Responses.GatewayTimeout;
+        }
+    }
+    namespace UpdateTeamAppWebHook {
+        export type RequestBody = Components.Schemas.WebHook;
         namespace Responses {
             export type $200 = Components.Schemas.AppResponse;
             export type $400 = Components.Schemas.ErrorResponse;

@@ -4,8 +4,11 @@ import App = Components.Schemas.App;
 import AppPatch = Components.Schemas.AppPatch;
 import AppResponse = Components.Schemas.AppResponse;
 import TopicSyntax = Components.Parameters.TopicSyntax.TopicSyntax;
+import WebHookNameList = Components.Schemas.WebHookNameList;
+import WebHook = Components.Schemas.WebHook;
 import AppsService from './apps.service';
 import AppFactory from './apps/appfactory';
+import WebHookHelpers from './apps/webhookhelpers';
 import BrokerService from './broker.service';
 
 import { PersistenceService } from './persistence.service';
@@ -162,6 +165,14 @@ export class DevelopersService {
     } catch (e) {
       await updateProtectionByObject(await this.appByName(developer, name, 'mqtt'));
     }
+    return await this.updateAppInternal(developer, name, body);
+  }
+
+  private async updateAppInternal(
+    developer: string,
+    name: string,
+    body: AppPatch
+  ): Promise<AppPatch> {
     let dev = null;
     try {
       dev = await this.persistenceService.byName(developer);
@@ -185,6 +196,115 @@ export class DevelopersService {
     await AppFactory.transformToExternalAppRepresentation(appPatch);
     return appPatch;
   }
+
+  // webhooks
+  async allAppWebHooks(
+    developer: string,
+    name: string
+  ): Promise<WebHookNameList> {
+    try {
+      const dev: Developer = await this.persistenceService.byName(developer);
+      const app: AppResponse = await AppsService.byNameAndOwnerId(
+        name,
+        developer,
+        'smf',
+        dev.attributes,
+      );
+      if (app) {
+        return WebHookHelpers.getWebHookListFromApp(app);
+      } else {
+        throw new ErrorResponseInternal(404, 'No app found');
+      }
+    } catch (e) {
+      throw e;
+    }
+  }
+  async webHookByName(
+    developer: string,
+    appName: string,
+    name: string
+  ): Promise<WebHook> {
+    try {
+      const dev: Developer = await this.persistenceService.byName(developer);
+      const app: AppResponse = await AppsService.byNameAndOwnerId(
+        name,
+        developer,
+        'smf',
+        dev.attributes,
+      );
+      if (app) {
+        return WebHookHelpers.getWebHookByName(name, app);
+      } else {
+        throw new ErrorResponseInternal(404, `Could not find ${appName} for ${developer}`);
+      }
+    } catch (e) {
+      throw e;
+    }
+  }
+
+
+  async createWebHook(
+    developer: string,
+    appName: string,
+    body: WebHook
+  ): Promise<WebHook> {
+    const name: string = body.name ? body.name : body.uri;
+    const app: AppResponse = await this.appByName(developer, appName, 'smf');
+    if (app) {
+      let webHook = null;
+      try {
+        webHook = WebHookHelpers.getWebHookByName(name, app);
+
+      } catch (e) {
+
+        L.debug(`WebHook ${name} does not exist, adding it`);
+        if (app.webHooks) {
+          app.webHooks.push(body);
+        } else {
+          app.webHooks = [body];
+
+        }
+        await this.updateAppInternal(developer, appName, app);
+      }
+      if (webHook){
+        throw new ErrorResponseInternal(422, `WebHook already exists`);
+      }
+    } else {
+      throw new ErrorResponseInternal(404, `Could not find ${appName} for  ${developer}`);
+    }
+    return body;
+  }
+
+
+  async updateWebHook(
+    developer: string,
+    appName: string,
+    name: string,
+    body: WebHook
+  ): Promise<WebHook> {
+
+    const app: AppResponse = await this.appByName(developer, appName, 'smf');
+    if (app) {
+      WebHookHelpers.patchAppWebHook(name, app, body);
+      await this.updateAppInternal(developer, appName, app);
+    }
+    return WebHookHelpers.getWebHookByName(name, app);
+  }
+
+  async deleteWebHook(
+    developer: string,
+    appName: string,
+    name: string,
+  ): Promise<number> {
+
+    const app: AppResponse = await this.appByName(developer, appName, 'smf');
+    if (app) {
+      WebHookHelpers.deleteAppWebHook(name, app);
+      await this.updateAppInternal(developer, appName, app);
+    }
+    return 204;
+  }
+
 
   // private methods
   private async canDeleteDeveloper(name: string): Promise<boolean> {
