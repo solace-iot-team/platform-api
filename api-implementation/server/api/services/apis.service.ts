@@ -122,14 +122,14 @@ export class ApisService {
     }
     const info: APIInfo = {
       createdBy: ns.getStore().get(ContextConstants.AUTHENTICATED_USER),
-      createdTime: api.createdTime,
+      createdTime: api.publishedTime,
       description: api.description,
       name: apiName,
       source: 'EventAPIProduct',
       sourceId: api.id,
       sourceMetadata: api,
       summary: api.summary,
-      updatedTime: api.updatedTime,
+      updatedTime: api.publishedTime,
       version: api.version,
     }
     if (!body.overwrite) {
@@ -201,8 +201,8 @@ export class ApisService {
     if (!Versioning.validateNewVersionString(version, previousVersion)) {
       throw new ErrorResponseInternal(409, `Version supplied in specification is not greater than current version`);
     }
-    if (r.source == 'Upload') {
-      // for internal APIs increase the version number
+    if (r.source != 'EventPortalLink') {
+      // always increase the version number - once imported from Event POrtal API can still be modified
       if (Versioning.isRecognizedVersion(version)) {
         r.version = version;
       } else {
