@@ -568,6 +568,11 @@ declare namespace Components {
         export type CommonTimestampInteger = number; // int64
         /**
          * example:
+         * 1620311683577
+         */
+        export type CommonTimestampIntegerReadOnly = number; // int64
+        /**
+         * example:
          * deliver/*​/enroute/v1/45*​/-75*​/vehicle4*​/>
          */
         export type CommonTopic = string; // ^[a-zA-Z0-9][\S]*[^\/]$
@@ -590,7 +595,7 @@ declare namespace Components {
          * Credentials object associated with an app
          */
         export interface Credentials {
-            expiresAt: number; // int64
+            expiresAt?: number; // int64
             issuedAt?: CommonTimestampInteger; // int64
             secret?: Secret;
         }
@@ -1206,7 +1211,7 @@ declare namespace Paths {
     namespace CreateDeveloperAppWebHook {
         export type RequestBody = Components.Schemas.WebHook;
         namespace Responses {
-            export type $200 = Components.Schemas.WebHook;
+            export type $201 = Components.Schemas.WebHook;
             export type $400 = Components.Schemas.ErrorResponse;
             export type $401 = Components.Responses.Unauthorized;
             export type $403 = Components.Responses.Forbidden;
@@ -1292,7 +1297,7 @@ declare namespace Paths {
     namespace CreateTeamAppWebHook {
         export type RequestBody = Components.Schemas.WebHook;
         namespace Responses {
-            export type $200 = Components.Schemas.WebHook;
+            export type $201 = Components.Schemas.WebHook;
             export type $400 = Components.Schemas.ErrorResponse;
             export type $401 = Components.Responses.Unauthorized;
             export type $403 = Components.Responses.Forbidden;
@@ -2178,6 +2183,7 @@ declare namespace Paths {
             export type $409 = Components.Schemas.ErrorResponse;
             export type $412 = Components.Responses.PreconditionFailed;
             export type $415 = Components.Responses.UnsupportedMediaType;
+            export type $422 = Components.Schemas.ErrorResponse;
             export type $429 = Components.Responses.TooManyRequests;
             export type $500 = Components.Responses.InternalServerError;
             export type $503 = Components.Responses.ServiceUnavailable;
@@ -2241,7 +2247,7 @@ declare namespace Paths {
     namespace UpdateDeveloperAppWebHook {
         export type RequestBody = Components.Schemas.WebHook;
         namespace Responses {
-            export type $200 = Components.Schemas.AppResponse;
+            export type $200 = Components.Schemas.WebHook;
             export type $400 = Components.Schemas.ErrorResponse;
             export type $401 = Components.Responses.Unauthorized;
             export type $403 = Components.Responses.Forbidden;
@@ -2328,7 +2334,7 @@ declare namespace Paths {
     namespace UpdateTeamAppWebHook {
         export type RequestBody = Components.Schemas.WebHook;
         namespace Responses {
-            export type $200 = Components.Schemas.AppResponse;
+            export type $200 = Components.Schemas.WebHook;
             export type $400 = Components.Schemas.ErrorResponse;
             export type $401 = Components.Responses.Unauthorized;
             export type $403 = Components.Responses.Forbidden;

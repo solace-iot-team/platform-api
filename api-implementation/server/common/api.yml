@@ -2,7 +2,7 @@ openapi: 3.0.0
 info:
   title: Solace API Management Connector
   description: 'Solace API Management Connector API. Note: basic authentication security mechanism is deprecated.'
-  version: 0.7.7
+  version: 0.7.8
 servers:
   - url: /v1
 
@@ -1125,8 +1125,6 @@ components:
     Credentials:
       description: Credentials object associated with an app
       type: object
-      required:
-      - expiresAt
       additionalProperties: false
       properties:
         expiresAt:
@@ -2163,6 +2161,13 @@ components:
     CommonTimestampInteger:
       type: integer
       format: int64
+      example: 1620311683577
+      maximum: 9007199254740991
+      minimum: 0
+    CommonTimestampIntegerReadOnly:
+      type: integer
+      format: int64
+      readOnly: true
       example: 1620311683577
       maximum: 9007199254740991
       minimum: 0
