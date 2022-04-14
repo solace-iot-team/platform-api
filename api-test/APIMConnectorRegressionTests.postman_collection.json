@@ -15307,6 +15307,230 @@
 			]
 		},
 		{
+			"name": "37 CredentialsExpiry and Rotation",
+			"item": [
+				{
+					"name": "Create API Product",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status OK\", function () {",
+									"    pm.response.to.have.status(201);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"apis\": [\n      \"{{API_NAME}}\"\n  ],\n  \"approvalType\": \"manual\",\n  \"attributes\": [\n  ],\n  \"description\": \"{{APP_NAME}}_PRODUCT\",\n  \"displayName\": \"{{APP_NAME}}_PRODUCT\",\n  \"environments\": [\n    \"dev\"\n  ],\n  \"name\": \"{{APP_NAME}}_PRODUCT\",\n  \"pubResources\": [\n  ],\n  \"subResources\": [\n  ],\n  \"protocols\": [\n    {\n      \"name\": \"https\",\n      \"version\": \"1.1\"\n    }\n  ]\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{CONNECTOR_BASEURL}}/{{TENANT}}/apiProducts",
+							"host": [
+								"{{CONNECTOR_BASEURL}}"
+							],
+							"path": [
+								"{{TENANT}}",
+								"apiProducts"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create App (with product)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status OK\", function () {",
+									"    pm.response.to.have.status(201);",
+									"});",
+									"",
+									"pm.test(\"Check consumerSecret was generated\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.credentials.secret.consumerSecret.length).to.eql(16);",
+									"    pm.globals.set(\"37_postApp_secret\", jsonData.credentials.secret.consumerSecret);",
+									"});",
+									"",
+									"pm.test(\"Check issuedAt and expiryDate\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.credentials.expiresAt-jsonData.credentials.issuedAt).to.eql(100);",
+									"    pm.globals.set(\"37_postApp_issuedAt\", `${jsonData.credentials.issuedAt}`);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"name\": \"{{APP_NAME}}\",\n  \"internalName\": \"{{APP_NAME_INTERNAL}}\",  \n  \"displayName\": \"{{APP_NAME}}\",\n  \"expiresIn\": 100,\n  \"apiProducts\": [\n    \"{{APP_NAME}}_PRODUCT\"\n  ],\n  \"attributes\": [\n    {\n      \"name\": \"equipmentId\",\n      \"value\": \"E1,E2\"\n    }\n  ],\n  \"webHooks\": [\n    {\n      \"uri\": \"https://mock.com.local/callback\",\n      \"environments\": [\n        \"{{CONNECTOR_ENV}}\"\n      ],\n      \"method\": \"POST\",\n      \"mode\": \"parallel\",\n      \"authentication\": {\n        \"username\": \"donald\",\n        \"password\": \"duck1234\"\n      }\n    }\n  ],\n  \"credentials\": {\n    \"secret\": {\n      \"consumerKey\": \"{{CONSUMER_KEY}}\"\n    }\n  }\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{CONNECTOR_BASEURL}}/{{TENANT}}/teams/{{TEAM_NAME}}/apps",
+							"host": [
+								"{{CONNECTOR_BASEURL}}"
+							],
+							"path": [
+								"{{TENANT}}",
+								"teams",
+								"{{TEAM_NAME}}",
+								"apps"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Regenerate Credentials",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status OK\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Check consumerSecret was generated\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    var oldSecret = pm.globals.get(\"37_postApp_secret\");",
+									"    pm.expect(jsonData.credentials.secret.consumerSecret.length).to.eql(16);",
+									"    pm.expect(jsonData.credentials.secret.consumerSecret).to.not.eql(oldSecret);",
+									"});",
+									"",
+									"pm.test(\"Check issuedAt and expiryDate\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    var oldIssuedAt = parseInt(pm.globals.get(\"37_postApp_issuedAt\"));",
+									"    pm.expect(jsonData.credentials.expiresAt-jsonData.credentials.issuedAt).to.eql(100);",
+									"    pm.expect(jsonData.credentials.issuedAt).to.be.greaterThan(oldIssuedAt);",
+									"    pm.globals.clear();",
+									"});",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PATCH",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"credentials\": {\n    \"secret\": {\n      \"consumerKey\": \"{{CONSUMER_KEY}}\"\n    }\n  }\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{CONNECTOR_BASEURL}}/{{TENANT}}/teams/{{TEAM_NAME}}/apps/{{APP_NAME}}",
+							"host": [
+								"{{CONNECTOR_BASEURL}}"
+							],
+							"path": [
+								"{{TENANT}}",
+								"teams",
+								"{{TEAM_NAME}}",
+								"apps",
+								"{{APP_NAME}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete App",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is OK\", function () {",
+									"    pm.response.to.have.status(204);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{CONNECTOR_BASEURL}}/{{TENANT}}/teams/{{TEAM_NAME}}/apps/{{APP_NAME}}",
+							"host": [
+								"{{CONNECTOR_BASEURL}}"
+							],
+							"path": [
+								"{{TENANT}}",
+								"teams",
+								"{{TEAM_NAME}}",
+								"apps",
+								"{{APP_NAME}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete API Product",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is OK\", function () {",
+									"    pm.response.to.have.status(204);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{CONNECTOR_BASEURL}}/{{TENANT}}/apiProducts/{{APP_NAME}}_PRODUCT",
+							"host": [
+								"{{CONNECTOR_BASEURL}}"
+							],
+							"path": [
+								"{{TENANT}}",
+								"apiProducts",
+								"{{APP_NAME}}_PRODUCT"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
 			"name": "General Tear Down",
 			"item": [
 				{
