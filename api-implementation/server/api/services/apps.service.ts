@@ -156,7 +156,7 @@ export class AppsService {
   }
 
   async create(name: string, newApp: App, ownerAttributes: Attributes): Promise<App> {
-    L.debug(`App create request ${JSON.stringify(newApp)}`);
+    L.error(`App create request ${JSON.stringify(newApp)}`);
     let appExists = null;
     try {
       appExists = await this.persistenceService.byName(name);
@@ -200,10 +200,11 @@ export class AppsService {
           strict: true,
         });
       }
-      // set the issuedAt and calculated expiresAt timestamp
+      // set the issuedAt and calculate expiresAt timestamp
       const now: number = Date.now();
       app.credentials.issuedAt = now;
-      if (app.expiresIn && app.expiresIn > -1) {
+      L.error(`Expires in ${app.expiresIn}`)
+      if (app.expiresIn && app.expiresIn > 0) {
         app.credentials.expiresAt = now + app.expiresIn;
       }
 
@@ -250,6 +251,21 @@ export class AppsService {
     const appNotModified: AppPatch = await this.persistenceService.byName(
       name
     );
+    if (app.credentials && app.credentials.secret && !app.credentials.secret.consumerSecret) {
+      // regenerate a consumerSecret if omitted / partial secret is sent
+      app.credentials.secret.consumerSecret = passwordGenerator.generate({
+        length: 16,
+        numbers: true,
+        strict: true,
+      });
+      // set the issuedAt and calculate expiresAt timestamp
+      const now: number = Date.now();
+      app.credentials.issuedAt = now;
+      if ((appNotModified as App).expiresIn && (appNotModified as App).expiresIn > 0) {
+        app.credentials.expiresAt = now + (appNotModified as App).expiresIn;
+      }
+    }
+
     await this.updateStatus(app as App, appNotModified as App);
     // persist the updated app, need to do this to get the full app object, the patch rerquest contains only the updated properties
     let appPatch: AppPatch = await this.persistenceService.update(
