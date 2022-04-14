@@ -191,6 +191,20 @@ export class AppsService {
           }),
         };
         app.credentials.secret = consumerCredentials;
+      } else if (!app.credentials.secret.consumerSecret) {
+        // this provides the capability to provide a specific key (e.g. matching an OAuth claim or TLS cert CN)
+        // while ensuring a strong secret is set on the app and therefore in the SOlace client username.
+        app.credentials.secret.consumerSecret = passwordGenerator.generate({
+          length: 16,
+          numbers: true,
+          strict: true,
+        });
+      }
+      // set the issuedAt and calculated expiresAt timestamp
+      const now: number = Date.now();
+      app.credentials.issuedAt = now;
+      if (app.expiresIn && app.expiresIn > -1) {
+        app.credentials.expiresAt = now + app.expiresIn;
       }
 
       if (app.status == 'approved') {
