@@ -90,9 +90,8 @@ describe(scriptName, function () {
     const application: App = {
       name: applicationName,
       apiProducts: [],
+      expiresIn: 3600,
       credentials: {
-        expiresAt: new Date().getTime() + 3600,
-        issuedAt: new Date().getTime(),
         secret: {
           consumerKey: "consumer-key",
           consumerSecret: "consumer-secret",
