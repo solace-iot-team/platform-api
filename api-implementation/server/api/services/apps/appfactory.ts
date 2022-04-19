@@ -72,7 +72,10 @@ class AppFactory {
     return app;
   }
 
-  private map(source, target) {
+  private map(source: App, target: App) {
+    if (source.expiresIn){
+      target.expiresIn = source.expiresIn;
+    }
     if (source.attributes) {
       target.attributes = source.attributes;
     }
@@ -107,7 +110,7 @@ class AppFactory {
     if (source.credentials) {
       target.credentials = source.credentials;
     }
-    this.map(source, target);
+    this.map(source as App, target as App);
   }
 
   private mapNewApp(source: App, target: App) {
