@@ -19,6 +19,7 @@ import ApiProductsService from '../apiProducts.service';
 import SempV2ClientFactory from './sempv2clientfactory';
 import brokerutils from './brokerutils';
 import EnvironmentService from '../environments.service';
+import APIProductsTypeHelper from '../../../../src/apiproductstypehelper';
 
 export enum Direction {
   Publish = 'Publish',
@@ -490,7 +491,7 @@ class ACLManager {
       return [];
     } else if ((app.apiProducts.length >= 1)) {
       query['$or'] = [];
-      app.apiProducts.forEach(a => query['$or'].push({ name: a }));
+      app.apiProducts.forEach(a => query['$or'].push({ name: APIProductsTypeHelper.apiProductReferenceToString(a) }));
     }
     const apiProducts = await ApiProductsService.all(query);
     return this.getQueueSubscriptions(app, apiProducts, null);

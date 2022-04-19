@@ -42,13 +42,7 @@ class BrokerService {
     const products: APIProduct[] = [];
     try {
       for (const apiProductReference of app.apiProducts) {
-        let productName: string = null;
-        if (isString(apiProductReference)) {
-          productName = apiProductReference as string;
-        } else {
-          productName = (apiProductReference as AppApiProductsComplex).apiproduct;
-        }
-
+        const productName: string = APIProductsTypeHelper.apiProductReferenceToString(apiProductReference);
         const product = await ApiProductsService.byName(productName);
         products.push(product);
       }
@@ -115,12 +109,7 @@ class BrokerService {
       }
       const apiProductPromises: Promise<APIProduct>[] = [];
       app.apiProducts.forEach((apiProductReference) => {
-        let productName: string = null;
-        if (isString(apiProductReference)) {
-          productName = apiProductReference as string;
-        } else if ((apiProductReference as AppApiProductsComplex).status == 'approved') {
-          productName = (apiProductReference as AppApiProductsComplex).apiproduct;
-        }
+        const productName: string = APIProductsTypeHelper.apiProductReferenceToString(apiProductReference);
         if (productName) {
           L.info(productName);
           apiProductPromises.push(ApiProductsService.byName(productName));
@@ -508,12 +497,8 @@ class BrokerService {
     const appEnvironments: AppEnvironment[] = [];
     const products: APIProduct[] = [];
     for (const apiProductReference of app.apiProducts) {
-      let productName: string = null;
-      if (isString(apiProductReference)) {
-        productName = apiProductReference as string;
-      } else {
-        productName = (apiProductReference as AppApiProductsComplex).apiproduct;
-      } L.info(productName);
+      const productName: string = APIProductsTypeHelper.apiProductReferenceToString(apiProductReference);
+      L.info(productName);
       products.push(await ApiProductsService.byName(productName));
     };
 
