@@ -110,7 +110,7 @@ class BrokerService {
       const apiProductPromises: Promise<APIProduct>[] = [];
       app.apiProducts.forEach((apiProductReference) => {
         const productName: string = APIProductsTypeHelper.apiProductReferenceToString(apiProductReference);
-        if (productName) {
+        if (productName && APIProductsTypeHelper.isApiProductReferenceApproved(apiProductReference)) {
           L.info(productName);
           apiProductPromises.push(ApiProductsService.byName(productName));
         }
