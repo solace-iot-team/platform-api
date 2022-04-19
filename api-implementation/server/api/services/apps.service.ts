@@ -24,6 +24,7 @@ import QueueHelper from './broker/queuehelper';
 import ACLManager from './broker/aclmanager';
 
 import { isString } from '../../../src/typehelpers';
+import APIProductsTypeHelper from '../../../src/apiproductstypehelper';
 
 export interface APISpecification {
   name: string;
@@ -68,7 +69,7 @@ export class AppsService {
     let apiList: string[] = [];
     for (const productName of app.apiProducts) {
       const apiProduct: ApiProduct = await ApiProductsService.byName(
-        productName
+        APIProductsTypeHelper.apiProductReferenceToString(productName)
       );
       apiList = apiList.concat(apiProduct.apis);
     }
@@ -119,12 +120,7 @@ export class AppsService {
         if (requireClientInformation) {
           const clientInformation: ClientInformation[] = [];
           for (const apiProductReference of app.apiProducts) {
-            let productName: string = null;
-            if (isString(apiProductReference)) {
-              productName = apiProductReference as string;
-            } else {
-              productName = (apiProductReference as AppApiProductsComplex).apiproduct;
-            }
+            const productName: string = APIProductsTypeHelper.apiProductReferenceToString(apiProductReference);
             const apiProduct = await ApiProductsService.byName(productName);
             const isSupportedProtocol: boolean = apiProduct.protocols.find(p => p.name.toString().indexOf('smf') > -1
               || p.name.toString().indexOf('jms') > -1) != null;
@@ -382,13 +378,7 @@ export class AppsService {
       return;
     }
     for (const product of app.apiProducts) {
-      let productName: string = null;
-      if (isString(product)) {
-        productName = product as string;
-      } else {
-        productName = (product as AppApiProductsComplex).apiproduct;
-
-      }
+      let productName: string = APIProductsTypeHelper.apiProductReferenceToString(product);
       try {
         const apiProduct = await ApiProductsService.byName(productName);
         let productStatus = 'pending';
@@ -416,12 +406,7 @@ export class AppsService {
       return;
     }
     for (const product of app.apiProducts) {
-      let productName: string = null;
-      if (isString(product)) {
-        productName = product as string;
-      } else {
-        productName = (product as AppApiProductsComplex).apiproduct;
-      }
+      let productName: string = APIProductsTypeHelper.apiProductReferenceToString(product);
       try {
         const apiProduct = await ApiProductsService.byName(productName);
         let productStatus = 'pending';

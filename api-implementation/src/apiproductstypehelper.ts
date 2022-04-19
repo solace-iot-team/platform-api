@@ -28,6 +28,24 @@ export class APIProductsTypeHelper {
       return productName;
 
   }
+
+  public apiProductReferenceStatus(apiProductReference: string | AppApiProductsComplex): string{
+      let status: string = null;
+      if (isString(apiProductReference)) {
+        status = 'approved';
+      } else {
+        status = (apiProductReference as AppApiProductsComplex).status;
+      }
+      return status;
+
+  }
+
+    public isApiProductReferenceApproved(apiProductReference: string | AppApiProductsComplex): boolean{
+      const status: string = this.apiProductReferenceStatus(apiProductReference);
+      return (status == 'approved');
+
+  }
+
 }
 
 export default new APIProductsTypeHelper();
