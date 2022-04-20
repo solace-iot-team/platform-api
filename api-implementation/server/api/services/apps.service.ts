@@ -257,8 +257,20 @@ export class AppsService {
       // set the issuedAt and calculate expiresAt timestamp
       const now: number = Date.now();
       app.credentials.issuedAt = now;
-      if ((appNotModified as App).expiresIn && (appNotModified as App).expiresIn > 0) {
-        app.credentials.expiresAt = now + (appNotModified as App).expiresIn;
+      if (app.expiresIn && app.expiresIn > 0) {
+        app.credentials.expiresAt = now + app.expiresIn;
+      } else if (appNotModified.expiresIn && appNotModified.expiresIn > 0) {
+        app.credentials.expiresAt = now + appNotModified.expiresIn;
+      } else {
+        app.credentials.expiresAt = -1;
+      }
+    } else if (app.expiresIn) {
+      // if expiresIn provided apply it to the prebvious expiration date.
+      app.credentials = appNotModified.credentials;
+      if (app.expiresIn > 0) {
+        app.credentials.expiresAt = app.credentials.issuedAt + app.expiresIn;
+      } else {
+        app.credentials.expiresAt = -1;
       }
     }
 
