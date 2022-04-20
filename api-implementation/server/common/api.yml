@@ -2,7 +2,7 @@ openapi: 3.0.0
 info:
   title: Solace API Management Connector
   description: 'Solace API Management Connector API. Note: basic authentication security mechanism is deprecated.'
-  version: 0.7.9
+  version: 0.7.10
 servers:
   - url: /v1
 
@@ -842,6 +842,12 @@ components:
       properties:
         displayName:
           $ref: '#/components/schemas/CommonDisplayName'
+        expiresIn:
+          type: integer
+          format: int64
+          maximum: 9007199254740991
+          minimum: -1
+          description: A setting, in milliseconds, for the lifetime of the consumer key that will be  generated for the developer app. The default value, -1, indicates an infinite validity period. Once set, the expiration can't be updated.
         apiProducts:
           $ref: '#/components/schemas/AppApiProducts'
         attributes:
@@ -858,6 +864,7 @@ components:
           $ref: '#/components/schemas/Credentials'
         status:
           $ref: '#/components/schemas/AppStatus'
+
     AppStatus:
       type: string
       enum:
