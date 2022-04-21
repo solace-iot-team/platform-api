@@ -356,6 +356,10 @@ declare namespace Components {
          */
         export interface AppPatch {
             displayName?: CommonDisplayName; // ^[\/\sa-z.A-z0-9_-]*$
+            /**
+             * A setting, in milliseconds, for the lifetime of the consumer key that will be  generated for the developer app. The default value, -1, indicates an infinite validity period. Once set, the expiration can't be updated.
+             */
+            expiresIn?: number; // int64
             apiProducts?: AppApiProducts;
             attributes?: Attributes;
             callbackUrl?: CommonURL; // ^https?:\/\/[A-Za-z\.:0-9\-]*.*$
