@@ -227,11 +227,12 @@ export class DevelopersService {
     try {
       const dev: Developer = await this.persistenceService.byName(developer);
       const app: AppResponse = await AppsService.byNameAndOwnerId(
-        name,
+        appName,
         developer,
         'smf',
         dev.attributes,
       );
+      
       if (app) {
         return WebHookHelpers.getWebHookByName(name, app);
       } else {
