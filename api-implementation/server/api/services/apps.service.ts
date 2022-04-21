@@ -152,7 +152,6 @@ export class AppsService {
   }
 
   async create(name: string, newApp: App, ownerAttributes: Attributes): Promise<App> {
-    L.error(`App create request ${JSON.stringify(newApp)}`);
     let appExists = null;
     try {
       appExists = await this.persistenceService.byName(name);
@@ -199,7 +198,6 @@ export class AppsService {
       // set the issuedAt and calculate expiresAt timestamp
       const now: number = Date.now();
       app.credentials.issuedAt = now;
-      L.error(`Expires in ${app.expiresIn}`)
       if (app.expiresIn && app.expiresIn > 0) {
         app.credentials.expiresAt = now + app.expiresIn;
       }
