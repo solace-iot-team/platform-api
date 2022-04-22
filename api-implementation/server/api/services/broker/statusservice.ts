@@ -115,14 +115,15 @@ class StatusService {
         const bindingStatus: MsgVpnRestDeliveryPointQueueBindingResponse = await apiClient.getMsgVpnRestDeliveryPointQueueBinding(service.msgVpnName, app.internalName, app.internalName);
         const q: MsgVpnQueueResponse = await apiClient.getMsgVpnQueue(service.msgVpnName, encodeURIComponent(app.internalName));
         const up: boolean = c.up && (consumerStatus.data && consumerStatus.data.up) && (bindingStatus.data && bindingStatus.data.up);
-
+        const wh: WebHook = this.getWebHook(app, envName);
         const conn: WebHookStatus = {
           up: up,
           failureReason: up ? '' : `${c.lastFailureReason} (${consumerStatus.data.lastConnectionFailureReason})`,
           lastFailureTime: c.lastFailureTime,
           messagesQueued: q.collections.msgs.count,
           messagesQueuedMB: (q.data.msgSpoolUsage / 1048576),
-          uri: this.getWebHookURI(app, envName),
+          uri: wh.uri,
+          name: wh.name?wh.name:wh.uri,
         }
         webHooks.push(conn);
       }
@@ -157,7 +158,7 @@ class StatusService {
     }
   }
 
-  private getWebHookURI(app: App, envName: string): string {
+  private getWebHook(app: App, envName: string): WebHook {
     let wh: WebHook;
     // try to locate specific web hook for this environment
     wh = app.webHooks.find(w => w.environments && w.environments.find(e => e == envName));
@@ -166,9 +167,9 @@ class StatusService {
       wh = app.webHooks.find(w => (w.environments === undefined || w.environments.length == 0));
     }
     if (wh) {
-      return wh.uri;
+      return wh;
     } else {
-      return '';
+      return null;
     }
   }
 }
