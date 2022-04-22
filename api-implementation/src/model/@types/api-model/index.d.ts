@@ -1093,6 +1093,7 @@ declare namespace Components {
         }
         export interface WebHookStatus {
             uri?: string; // ^https?:\/\/[A-Za-z\.:0-9\-]*.*$
+            name?: string; // ^.*$
             /**
              * indicates if the webhook is up and running
              * example:

@@ -1210,6 +1210,11 @@ components:
           pattern: "^https?:\\/\\/[A-Za-z\\.:0-9\\-]*.*$"
           minLength: 0
           maxLength: 200
+        name: 
+          type: string
+          minLength: 3
+          maxLength: 200
+          pattern: ^.*$
         up:
           description: indicates if the webhook is up and running
           type: boolean
