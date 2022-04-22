@@ -1,5 +1,31 @@
 # Release Notes
 
+## Version 0.3.6
+* OpenAPI: 0.7.11
+* API Management Connector Server: 0.3.6
+
+### Features
+* **feat-app-webhooks-resource**
+  - Added a sub resource to teamd and developer apps to manage webhooks
+  - Ability to list all webhooks associated with an app
+  - Ability to manage webhooks individually via POST/GET/PATCH/DELETE
+* **feat-app-credentials-enhancements**
+  - issuedAt and expiresAt attributes are now auto calculated
+  - expiresAt can still be set for backwards compatibility
+  - App's expiresIn attribute is used to calcualte expiresAt when the credentials are generated internally or set via the API
+  - It is now possible to regenearate the client secret when an app is updated (PATCH) by only supplying the current consumer key and omitting the secret in the PATCH request
+  - Allowed an app's expiresIn attriute to be updated and added logic to recalculate expiresAt when expiresIn is updated
+
+### Fixes
+* **fix-apis-imported-increment-version-number-patch**
+  - Fixed an issue with updating APIs where the version number of an API was not incremented if originally imported from Event Portal 
+* **fix-resolve-app-apiproduct-references**
+  - Fixed issues where API Product references in apps were not resolved correctly
+* **fix-provisioning-only-approved-api-products**
+  - Fixed an issue which led to resources for pending API Products associated with an app to be provisioned on the broker. Now only resources for approved products are provisioned.
+* **fix-dependencies**
+  - Updated project dependencies addressing issues identified by security scan
+
 ## Version 0.3.5
 * OpenAPI: 0.7.6
 * API Management Connector Server: 0.3.5
