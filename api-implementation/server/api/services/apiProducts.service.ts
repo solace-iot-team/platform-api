@@ -98,6 +98,9 @@ export class ApiProductsService {
       if (!apiReferenceCheck)
         throw new ErrorResponseInternal(422, `Reference check failed ${apiReferenceCheck}`);
       const currentState: APIProduct = await this.persistenceService.byName(name);
+      if (!currentState.meta){
+        currentState.meta = Versioning.createMeta();
+      }
       if (!Versioning.validateNewVersion(body.meta, currentState.meta)) {
         throw new ErrorResponseInternal(409, `Version supplied in meta element is not greater than current version`);
       }
