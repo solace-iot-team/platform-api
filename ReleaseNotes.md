@@ -1,5 +1,15 @@
 # Release Notes
 
+## Version 0.3.7
+* OpenAPI: 0.7.11
+* API Management Connector Server: 0.3.7
+
+### Fixes
+* **fix-apiproducts-create-default-meta-versioninfo-if-missing**
+  - Fixed an issue with existing API Products that were missing version information. In these cases an update (PATCH) of the APi Product failed. Updates are now possible - the minimum semVer that can be assigned in the update is `1.1.1`.
+* **fix-versioninig-add-guards-previous-version-missing**
+  - Fixed issues where missing version information in an API Product caused PATCH operations to result in null pointer exceptions
+
 ## Version 0.3.6
 * OpenAPI: 0.7.11
 * API Management Connector Server: 0.3.6
