@@ -76,7 +76,7 @@ export class QueueManager {
         newQ.respectTtlEnabled = (clientOptions.guaranteedMessaging.maxTtl > 0);
       } else {
         newQ.accessType = MsgVpnQueue.accessType.EXCLUSIVE;
-        newQ.maxTtl = 86400;
+        newQ.maxTtl = 120;
         newQ.maxMsgSpoolUsage = 50;
         newQ.respectTtlEnabled = true;
       }
