@@ -8,7 +8,6 @@ import App = Components.Schemas.App;
 import APIProduct = Components.Schemas.APIProduct;
 import Attributes = Components.Schemas.Attributes;
 import ClientOptions = Components.Schemas.ClientOptions;
-import AppApiProductsComplex = Components.Schemas.AppApiProductsComplex;
 
 import { Service } from '../../../../src/clients/solacecloud';
 import {
