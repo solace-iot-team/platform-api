@@ -16,13 +16,15 @@ import AppConnectionStatus = Components.Schemas.AppConnectionStatus;
 import ApiProductsService from './apiProducts.service';
 import ACLManager from './broker/aclmanager';
 import QueueManager from './broker/queuemanager';
+import MQTTSessionManager from './broker/mqttsessionmanager';
 import BrokerUtils from './broker/brokerutils';
 import StatusService from './broker/statusservice';
+import ClientProfileManager from './broker/clientprofilemanager';
 
 import { ProtocolMapper } from '../../../src/protocolmapper';
 
 import EnvironmentsService from './environments.service';
-import { Service } from '../../../src/clients/solacecloud';
+import { Service } from '../../../src/clients/solacecloud/models/Service';
 import {
   AllService, MsgVpnClientUsername,
   MsgVpnRestDeliveryPoint,
@@ -32,10 +34,8 @@ import {
 } from '../../../src/clients/sempv2';
 import SolaceCloudFacade from '../../../src/solacecloudfacade';
 import SempV2ClientFactory from './broker/sempv2clientfactory';
-import AppApiProductsComplex = Components.Schemas.AppApiProductsComplex;
 import APIProductsTypeHelper from '../../../src/apiproductstypehelper';
 import { ErrorResponseInternal } from '../middlewares/error.handler';
-import { isString } from '../../../src/typehelpers';
 
 class BrokerService {
   async getPermissions(app: App, ownerAttributes: Attributes, envName: string, syntax: TopicSyntax): Promise<Permissions> {
@@ -65,7 +65,16 @@ class BrokerService {
       let services = await BrokerUtils.getServicesByApp(appUnmodified);
       const r = await this.deleteClientUsernames(appUnmodified, services);
       services = await BrokerUtils.getServicesByApp(appPatch);
-      await this.createClientUsernames(appPatch, services);
+      const products: APIProduct[] = [];
+      for (const apiProductReference of appPatch.apiProducts) {
+        const productName: string = APIProductsTypeHelper.apiProductReferenceToString(apiProductReference);
+        if (productName && APIProductsTypeHelper.isApiProductReferenceApproved(apiProductReference)) {
+          L.info(productName);
+          products.push(await ApiProductsService.byName(productName));
+        }
+      };
+      const clientProfileName: string = await ClientProfileManager.create(appPatch, services, products, ownerAttributes);
+      await this.createClientUsernames(appPatch, services, clientProfileName);
     }
     // need to figure out if environments were removed and deprovision from these environments
     const oldServices: Service[] = await BrokerUtils.getServicesByApp(appUnmodified);
@@ -78,7 +87,7 @@ class BrokerService {
     }
 
     // need to figure out if products were removed and if need to remove associated queues
-    if (appPatch.apiProducts && appUnmodified.apiProducts){
+    if (appPatch.apiProducts && appUnmodified.apiProducts) {
       const previousProductNames: string[] = APIProductsTypeHelper.apiProductReferencesToStringArray(appUnmodified.apiProducts);
       const newProductNames: string[] = APIProductsTypeHelper.apiProductReferencesToStringArray(appPatch.apiProducts);
       const diff: string[] = previousProductNames.filter(x => !newProductNames.includes(x));
@@ -144,7 +153,12 @@ class BrokerService {
 
           resolve();
         } catch (e) {
-          L.error(`Provisioning error ${e}`);
+          if (e.body) {
+            L.error(`Provisioning error ${e.message}, body ${JSON.stringify(e.body)}`);
+          } else {
+            L.error(`Provisioning error ${e}`);
+          }
+
           L.error(e.stack);
           try {
             await this.deprovisionApp(app);
@@ -158,9 +172,12 @@ class BrokerService {
   }
   private async doProvision(app: App, environmentNames: string[], products: APIProduct[], ownerAttributes: Attributes): Promise<void> {
     const services = await BrokerUtils.getServices(environmentNames);
+
+    const clientProfileName: string = await ClientProfileManager.create(app, services, products, ownerAttributes);
+    L.info(`using client profile  ${clientProfileName}`);
     const a = await ACLManager.createACLs(app, services);
     L.info(`created acl profile ${app.name}`);
-    const b = await this.createClientUsernames(app, services);
+    const b = await this.createClientUsernames(app, services, clientProfileName);
     L.info(`created client username ${app.name}`);
     const e = await ACLManager.createAuthorizationGroups(app, services);
     L.info(`created client username ${app.name}`);
@@ -187,6 +204,9 @@ class BrokerService {
       // clean up RDPs
       await this.deleteRDPs(app, services, app.internalName);
     }
+    // set up the MQTT Session
+    await MQTTSessionManager.create(app, services, products);
+    L.info(`created mqtt session ${app.internalName}`);
   }
 
   async deprovisionApp(app: App) {
@@ -218,6 +238,7 @@ class BrokerService {
       await this.deleteRDPs(app, services, objectName);
       await QueueManager.deleteWebHookQueues(app, services, objectName);
       await QueueManager.deleteAPIProductQueues(app, services, objectName);
+      await MQTTSessionManager.delete(app, services);
 
     } catch (err) {
       L.error(`De-Provisioninig error ${err.message}`);
@@ -256,21 +277,24 @@ class BrokerService {
   }
 
 
-  private async createClientUsernames(app: App, services: Service[]): Promise<void> {
+  private async createClientUsernames(app: App, services: Service[], clientProfileName: string): Promise<void> {
     for (const service of services) {
       const apiClient: AllService = SempV2ClientFactory.getSEMPv2Client(service);
       const clientUsername: MsgVpnClientUsername = {
         aclProfileName: app.internalName,
         clientUsername: app.credentials.secret.consumerKey,
         password: app.credentials.secret.consumerSecret,
-        clientProfileName: "default",
+        clientProfileName: clientProfileName,
         msgVpnName: service.msgVpnName,
         enabled: true
       };
       try {
         const getResponse = await apiClient.getMsgVpnClientUsername(service.msgVpnName, app.credentials.secret.consumerKey);
         L.info("Client Username Looked up");
-        const responseUpd = await apiClient.updateMsgVpnClientUsername(service.msgVpnName, app.credentials.secret.consumerKey, clientUsername);
+        clientUsername.enabled = false;
+        const responseUpd1 = await apiClient.updateMsgVpnClientUsername(service.msgVpnName, app.credentials.secret.consumerKey, clientUsername);
+        clientUsername.enabled = true;
+        const responseUpd2 = await apiClient.updateMsgVpnClientUsername(service.msgVpnName, app.credentials.secret.consumerKey, clientUsername);
         L.info("Client Username updated");
       } catch (e) {
 

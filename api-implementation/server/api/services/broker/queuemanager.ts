@@ -9,7 +9,7 @@ import APIProduct = Components.Schemas.APIProduct;
 import Attributes = Components.Schemas.Attributes;
 import ClientOptions = Components.Schemas.ClientOptions;
 
-import { Service } from '../../../../src/clients/solacecloud';
+import { Service } from '../../../../src/clients/solacecloud/models/Service';
 import {
   AllService,
   MsgVpnQueue,
@@ -18,14 +18,16 @@ import {
 
 import SempV2ClientFactory from '../broker/sempv2clientfactory';
 import { ErrorResponseInternal } from '../../middlewares/error.handler';
+import BrokerUtils from './brokerutils';
 import APIProductsTypeHelper from '../../../../src/apiproductstypehelper';
 
 export class QueueManager {
   public async createWebHookQueues(app: App, services: Service[],
     apiProducts: APIProduct[], ownerAttributes: Attributes): Promise<void> {
+    const clientOpts = BrokerUtils.getAppAggregatedClientOptions(apiProducts);
     const webHookServices: Service[] = QueueHelper.filterServicesForWebHook(app, services);
     L.info(`webHookServices ${webHookServices.length}`);
-    await this.createQueues(app, webHookServices, apiProducts, ownerAttributes);
+    await this.createQueues(app, webHookServices, apiProducts, ownerAttributes, undefined, clientOpts);
 
     const noWebHookServices: Service[] = QueueHelper.fiterServicesWithoutWebHook(app, services);
     L.info(`nowebHookServices ${noWebHookServices.length}`);

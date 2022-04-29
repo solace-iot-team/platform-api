@@ -1,6 +1,6 @@
 import APIProduct = Components.Schemas.APIProduct;
 import App = Components.Schemas.App;
-import { Service } from '../../../../src/clients/solacecloud';
+import { Service } from '../../../../src/clients/solacecloud/models/Service';
 
 export class QueueHelper {
   public getAPIProductQueueName(app: App, apiProduct: APIProduct): string {
