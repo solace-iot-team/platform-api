@@ -11,7 +11,7 @@ import Permissions = Components.Schemas.Permissions;
 import TopicSyntax = Components.Parameters.TopicSyntax.TopicSyntax;
 import { TopicWildcards } from '../../../common/constants';
 
-import { Service } from '../../../../src/clients/solacecloud';
+import { Service } from '../../../../src/clients/solacecloud/models/Service';
 import { AllService, MsgVpnAclProfile, MsgVpnAclProfilePublishException, MsgVpnAclProfilePublishExceptionsResponse, MsgVpnAclProfileSubscribeException, MsgVpnAclProfileSubscribeExceptionsResponse, MsgVpnAuthorizationGroup } from "../../../../src/clients/sempv2";
 
 import ApisService from '../apis.service';
@@ -530,7 +530,7 @@ class ACLManager {
       // compile list of event destinations sub / pub separately
       for (const product of apiProducts) {
         for (const env of product.environments) {
-          if (env == envName) {
+          if (env == envName || envName == undefined) {
             publishExceptions = this.getResourcesAsChannelPermissions(product.pubResources).concat(publishExceptions);
             subscribeExceptions = this.getResourcesAsChannelPermissions(product.subResources).concat(subscribeExceptions);
             let strs: {

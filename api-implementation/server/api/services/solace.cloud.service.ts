@@ -1,8 +1,9 @@
 import L from '../../common/logger';
 import SolaceCloudFacade from '../../../src/solacecloudfacade';
-import { Service } from '../../../src/clients/solacecloud';
+import { Service } from '../../../src/clients/solacecloud/models/Service';
 import { ProtocolMapper } from '../../../src/protocolmapper';
 import AccountingLimit = Components.Schemas.AccountingLimit;
+import ServiceClassDisplayedAttributes = Components.Schemas.ServiceClassDisplayedAttributes;
 import Threshold = Components.Schemas.Threshold;
 
 export class SolaceCloudService {
@@ -40,7 +41,7 @@ export class SolaceCloudService {
           });
         }
         const service: Components.Schemas.Service = {
-          accountingLimits: cloudService.accountingLimits,
+          accountingLimits: (cloudService.accountingLimits as AccountingLimit[]),
           adminProgress: cloudService.adminProgress,
           adminState: cloudService.adminState,
           created: cloudService.created,
@@ -54,7 +55,7 @@ export class SolaceCloudService {
           msgVpnAttributes: newMsgVpnAttributes,
           msgVpnName: cloudService.msgVpnName,
           name: cloudService.name,
-          serviceClassDisplayedAttributes: cloudService.serviceClassDisplayedAttributes,
+          serviceClassDisplayedAttributes: (cloudService.serviceClassDisplayedAttributes as ServiceClassDisplayedAttributes),
           serviceClassId: cloudService.serviceClassId,
           serviceId: cloudService.serviceId,
           servicePackageId: cloudService.servicePackageId,
