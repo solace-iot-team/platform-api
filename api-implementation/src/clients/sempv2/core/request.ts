@@ -187,8 +187,8 @@ function catchErrors(options: ApiRequestOptions, result: ApiResult): void {
     }
 
     const error = errors[result.status];
+
     if (error) {
-      L.debug(error);
         throw createApiError(result, error, options);
     }
 
