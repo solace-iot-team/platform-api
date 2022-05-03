@@ -88,18 +88,22 @@ class BrokerUtils {
       if (apiProduct.protocols) {
         if (apiProduct.protocols.filter(e => (
           e.name == 'mqtt' || e.name == 'secure-mqtt' ||
-          e.name == 'ws-mqtt' || e.name == 'wss-mqtt' )
-        ).length == 1) {
-          if (apiProduct.clientOptions && apiProduct.clientOptions.guaranteedMessaging && apiProduct.clientOptions.guaranteedMessaging.requireQueue){
+          e.name == 'ws-mqtt' || e.name == 'wss-mqtt')
+        ).length >= 1) {
+          L.debug(`api product ${apiProduct.name} uses MQTT`);
+          if (apiProduct.clientOptions && apiProduct.clientOptions.guaranteedMessaging && apiProduct.clientOptions.guaranteedMessaging.requireQueue) {
+            L.debug(`api product ${apiProduct.name} uses MQTT-QOS1`);
             return true;
           }
+        } else {
+          L.debug(`api product ${apiProduct.name} does NOT use MQTT`);
         }
       }
     }
     return false;
   }
 
-  public getAppAggregatedClientOptions(apiProducts: APIProduct[]): ClientOptions{
+  public getAppAggregatedClientOptions(apiProducts: APIProduct[]): ClientOptions {
     const clientOpts: ClientOptions = {
       guaranteedMessaging: {
         requireQueue: false,
@@ -108,19 +112,22 @@ class BrokerUtils {
         maxTtl: 3600,
       }
     };
-    for (const apiProduct of apiProducts){
-      if (apiProduct.clientOptions 
-        && apiProduct.clientOptions.guaranteedMessaging 
+    for (const apiProduct of apiProducts) {
+      if (apiProduct.clientOptions
+        && apiProduct.clientOptions.guaranteedMessaging
         && apiProduct.clientOptions.guaranteedMessaging.requireQueue) {
-          const gmOptions = apiProduct.clientOptions.guaranteedMessaging;
+        const gmOptions = apiProduct.clientOptions.guaranteedMessaging;
         clientOpts.guaranteedMessaging.requireQueue = gmOptions.requireQueue;
         clientOpts.guaranteedMessaging.maxMsgSpoolUsage = clientOpts.guaranteedMessaging.maxMsgSpoolUsage + gmOptions.maxMsgSpoolUsage;
-        clientOpts.guaranteedMessaging.maxTtl = clientOpts.guaranteedMessaging.maxTtl>gmOptions.maxTtl?clientOpts.guaranteedMessaging.maxTtl:gmOptions.maxTtl;
+        clientOpts.guaranteedMessaging.maxTtl = clientOpts.guaranteedMessaging.maxTtl > gmOptions.maxTtl ? clientOpts.guaranteedMessaging.maxTtl : gmOptions.maxTtl;
       }
     }
-    if (clientOpts.guaranteedMessaging.maxMsgSpoolUsage>0){
-    return clientOpts;
+    if (clientOpts.guaranteedMessaging.maxMsgSpoolUsage > 0) {
+      if (L.isLevelEnabled('debug'))
+        L.debug(`combined client options ${JSON.stringify(clientOpts)}`);
+      return clientOpts;
     } else {
+      L.info(`no adequate client options could be derived`);
       return null;
     }
   }
