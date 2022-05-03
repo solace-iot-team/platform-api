@@ -88,11 +88,12 @@ class AsyncApiGenerator {
           server.security = [{ userPassword: [] }];
         }
         if (app && protocol.protocol.name.toUpperCase().includes('MQTT')) {
-          if (!server.bindings){
-            server.bindings = [{'mqtt': {'clientId': app.internalName, 'version': '0.1.0'}}];
+          if (!server.bindings) {
+            server.bindings = {};
           }
+          server.bindings['mqtt'] = { 'clientId': app.internalName, 'version': '0.1.0' };
         }
-        
+
         servers[serverKey] = server;
       }
     }
