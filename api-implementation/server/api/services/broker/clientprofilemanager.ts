@@ -124,7 +124,7 @@ class ClientProfileManager implements BrokerResourceManager<string>{
     if (permissions.subscribe !== undefined && permissions.subscribe.length > 0 && this.isSendRequiredForAnyAPIProduct(apiProducts)) {
       sendGM = true;
     }
-    L.warn(`reciveGM: ${receiveGM}, sendGM: ${sendGM}, createEndpoints: ${createEndPoints}`);
+    L.info(`receiveGM: ${receiveGM}, sendGM: ${sendGM}, createEndpoints: ${createEndPoints}`);
     if (receiveGM && createEndPoints && sendGM) {
       clientProfileName = GUARANTEED_MESSAGING_RECEIVE_SEND_CREATE;
     }
