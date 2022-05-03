@@ -8,9 +8,8 @@ import App = Components.Schemas.App;
 import APIProduct = Components.Schemas.APIProduct;
 import Attributes = Components.Schemas.Attributes;
 import ClientOptions = Components.Schemas.ClientOptions;
-import AppApiProductsComplex = Components.Schemas.AppApiProductsComplex;
 
-import { Service } from '../../../../src/clients/solacecloud';
+import { Service } from '../../../../src/clients/solacecloud/models/Service';
 import {
   AllService,
   MsgVpnQueue,
@@ -19,14 +18,16 @@ import {
 
 import SempV2ClientFactory from '../broker/sempv2clientfactory';
 import { ErrorResponseInternal } from '../../middlewares/error.handler';
+import BrokerUtils from './brokerutils';
 import APIProductsTypeHelper from '../../../../src/apiproductstypehelper';
 
 export class QueueManager {
   public async createWebHookQueues(app: App, services: Service[],
     apiProducts: APIProduct[], ownerAttributes: Attributes): Promise<void> {
+    const clientOpts = BrokerUtils.getAppAggregatedClientOptions(apiProducts);
     const webHookServices: Service[] = QueueHelper.filterServicesForWebHook(app, services);
     L.info(`webHookServices ${webHookServices.length}`);
-    await this.createQueues(app, webHookServices, apiProducts, ownerAttributes);
+    await this.createQueues(app, webHookServices, apiProducts, ownerAttributes, undefined, clientOpts);
 
     const noWebHookServices: Service[] = QueueHelper.fiterServicesWithoutWebHook(app, services);
     L.info(`nowebHookServices ${noWebHookServices.length}`);
@@ -76,7 +77,7 @@ export class QueueManager {
         newQ.respectTtlEnabled = (clientOptions.guaranteedMessaging.maxTtl > 0);
       } else {
         newQ.accessType = MsgVpnQueue.accessType.EXCLUSIVE;
-        newQ.maxTtl = 86400;
+        newQ.maxTtl = 120;
         newQ.maxMsgSpoolUsage = 50;
         newQ.respectTtlEnabled = true;
       }

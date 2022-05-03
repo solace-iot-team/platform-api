@@ -1,7 +1,16 @@
 import L from '../server/common/logger';
 import Environment = Components.Schemas.Environment;
-import { OpenAPI, Service, ServicesService, ServiceResponse, ServicesResponse } from "./clients/solacecloud";
+//import { OpenAPI, Service, ServicesService, ServiceResponse, ServicesResponse } from "./clients/solacecloud";
+import { ServicesServiceDefault } from './clients/solacecloud/services/ServicesServiceDefault';
+import { ServicesService } from './clients/solacecloud/services/ServicesService';
 import { ErrorResponseInternal } from '../server/api/middlewares/error.handler';
+import { Service } from './clients/solacecloud/models/Service';
+import { ServiceResponse } from './clients/solacecloud/models/ServiceResponse';
+import { ServicesResponse } from './clients/solacecloud/models/ServicesResponse';
+import { ClientProfileRequest } from './clients/solacecloud/models/ClientProfileRequest';
+import { MsgVpnClientProfile } from './clients/solacecloud/models/MsgVpnClientProfile';
+import { CloudRequestType } from './clients/solacecloud/models/CloudRequestType';
+import { ApiOptions } from './clients/solacecloud/core/ApiOptions';
 import { getCloudBaseUrl, getCloudToken, validateToken, resolve } from './cloudtokenhelper';
 
 import { Cache, CacheContainer } from 'node-ts-cache'
@@ -11,10 +20,14 @@ const serviceCache = new CacheContainer(new MemoryStorage());
 const servicesCache = new CacheContainer(new MemoryStorage());
 
 class SolaceCloudFacade {
-
+  private cloudService: ServicesService;
+  private apiOptions: ApiOptions;
   constructor() {
-    OpenAPI.TOKEN = getCloudToken;
-    OpenAPI.BASE = getCloudBaseUrl;
+    this.apiOptions = {
+      baseUrl: getCloudBaseUrl,
+      token: getCloudToken
+    };
+    this.cloudService = new ServicesServiceDefault(this.apiOptions);
   }
 
   public async getServiceByEnvironment(e: Environment): Promise<Service> {
@@ -28,13 +41,13 @@ class SolaceCloudFacade {
       return cachedService;
     }
     try {
-      const result: ServiceResponse = await ServicesService.getService(id);
+      const result: ServiceResponse = await this.cloudService.getService(id);
       if (result == null || result.data == null) {
         throw new ErrorResponseInternal(404, `Service ${id} does not exist`);
       } else {
-        for (const mp of result.data.messagingProtocols){
-          for (const ep of mp.endPoints){
-            for (let i = 0; i < ep.uris.length; i++){
+        for (const mp of result.data.messagingProtocols) {
+          for (const ep of mp.endPoints) {
+            for (let i = 0; i < ep.uris.length; i++) {
               let u = ep.uris[i].replace('smf://', 'tcp://').replace('smfs://', 'tcps://');
               ep.uris[i] = u;
             }
@@ -56,13 +69,13 @@ class SolaceCloudFacade {
     if (cachedServices) {
       return cachedServices;
     }
-    let services: Service[]  = [];
+    let services: Service[] = [];
     try {
-      const result: ServicesResponse = await ServicesService.listServices();
+      const result: ServicesResponse = await this.cloudService.listServices();
       if (result == null) {
         throw new ErrorResponseInternal(404, `No services found`);
       } else {
-        for (const s of result.data){
+        for (const s of result.data) {
           services.push(await this.getServiceById(s.serviceId))
         }
         await servicesCache.setItem(cacheKey, services, { ttl: 3600 });
@@ -75,8 +88,29 @@ class SolaceCloudFacade {
     }
   }
 
+  public async createClientProfile(service: Service, clientProfile: MsgVpnClientProfile) {
+    const clientProfileRequest: ClientProfileRequest = {
+      clientProfile: clientProfile,
+      operation: CloudRequestType.create
+    };
+    L.warn(`create client profile ${clientProfile.clientProfileName} on service ${service.serviceId}`);
+    L.warn(await getCloudBaseUrl());
+    try {
+      let requestStatus = await this.cloudService.sendClientProfileRequest(service.serviceId, clientProfileRequest);
+      while (requestStatus.data && (!requestStatus.data.adminProgress || requestStatus.data.adminProgress != 'completed')) {
+        L.info(`track client profile ${clientProfile.clientProfileName} progress ${requestStatus.data.adminProgress}`);
+        requestStatus = await this.cloudService.trackCloudRequestStatus(service.serviceId, requestStatus.data.id, true);
+      }
+      L.info(`completed client profile ${clientProfile.clientProfileName} progress ${requestStatus.data.adminProgress}`);
+    } catch (e) {
+      L.error(`error on client profile ${clientProfile.clientProfileName} on service ${service.serviceId}`, e);
+      L.error(e);
+      throw e;
+    }
+  }
+
   public async validate(token: string, baseUrl?: string): Promise<boolean> {
-    let url: string = `${await resolve(OpenAPI.BASE)}/services`;
+    let url: string = `${await resolve(this.apiOptions.baseUrl)}/services`;
     if (baseUrl != null) {
       url = `${baseUrl}/services`;
     }

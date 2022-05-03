@@ -1,15 +1,10 @@
-/* istanbul ignore file */
-/* tslint:disable */
 /* eslint-disable */
 import FormData from 'form-data';
-import { BodyInit, Headers, RequestInit, Response } from 'node-fetch';
-import fetch from 'fetch-with-proxy';
+import fetch, { BodyInit, Headers, RequestInit, Response } from 'node-fetch';
 import { types } from 'util';
 
-import { ApiError } from './ApiError';
 import type { ApiRequestOptions } from './ApiRequestOptions';
 import type { ApiResult } from './ApiResult';
-import { OpenAPI } from './OpenAPI';
 
 function isDefined<T>(value: T | null | undefined): value is Exclude<T, null | undefined> {
     return value !== undefined && value !== null;
@@ -51,8 +46,9 @@ function getQueryString(params: Record<string, any>): string {
 }
 
 async function getUrl(options: ApiRequestOptions): Promise<string> {
+    const base = await resolve(options, options.baseUrl);
+
     const path = options.path.replace(/[:]/g, '_');
-    const base = await resolve(options, OpenAPI.BASE);
     const url = `${base}${path}`;
 
     if (options.query) {
@@ -82,10 +78,10 @@ async function resolve<T>(options: ApiRequestOptions, resolver?: T | Resolver<T>
 }
 
 async function getHeaders(options: ApiRequestOptions): Promise<Headers> {
-    const token = await resolve(options, OpenAPI.TOKEN);
-    const username = await resolve(options, OpenAPI.USERNAME);
-    const password = await resolve(options, OpenAPI.PASSWORD);
-    const defaultHeaders = await resolve(options, OpenAPI.HEADERS);
+    const token = await resolve(options, options.token);
+    const username = await resolve(options, options.username);
+    const password = await resolve(options, options.password);
+    const defaultHeaders = await resolve(options, options.defaultHeaders);
 
     const headers = new Headers({
         Accept: 'application/json',
@@ -103,7 +99,9 @@ async function getHeaders(options: ApiRequestOptions): Promise<Headers> {
     }
 
     if (options.body) {
-        if (isBinary(options.body)) {
+        if (options.mediaType) {
+            headers.append('Content-Type', options.mediaType);
+        } else if (isBinary(options.body)) {
             headers.append('Content-Type', 'application/octet-stream');
         } else if (isString(options.body)) {
             headers.append('Content-Type', 'text/plain');
@@ -119,7 +117,9 @@ function getRequestBody(options: ApiRequestOptions): BodyInit | undefined {
         return getFormData(options.formData);
     }
     if (options.body) {
-        if (isString(options.body) || isBinary(options.body)) {
+        if (options.mediaType?.includes('/json')) {
+            return JSON.stringify(options.body)
+        } else if (isString(options.body) || isBinary(options.body)) {
             return options.body;
         } else {
             return JSON.stringify(options.body);
@@ -134,7 +134,12 @@ async function sendRequest(options: ApiRequestOptions, url: string): Promise<Res
         headers: await getHeaders(options),
         body: getRequestBody(options),
     };
-    return await fetch(url, request);
+
+    try {
+        return await fetch(url, request);
+    } catch(e) {
+        throw createError('failed to fetch: ' + e, options);
+    }
 }
 
 function getResponseHeader(response: Response, responseHeader?: string): string | null {
@@ -147,19 +152,23 @@ function getResponseHeader(response: Response, responseHeader?: string): string 
     return null;
 }
 
-async function getResponseBody(response: Response): Promise<any> {
-    try {
-        const contentType = response.headers.get('Content-Type');
-        if (contentType) {
-            const isJSON = contentType.toLowerCase().startsWith('application/json');
-            if (isJSON) {
+async function getResponseBody(options: ApiRequestOptions, response: Response): Promise<any> {
+    const contentType = response.headers.get('Content-Type');
+    if (contentType) {
+        const isJSON = contentType.toLowerCase().startsWith('application/json');
+        if (isJSON) {
+            try {
                 return await response.json();
-            } else {
+            } catch (e) {
+                throw createError('failed to parse JSON response: ' + e, options);
+            }
+        } else {
+            try {
                 return await response.text();
+            } catch (e) {
+                throw createError('failed to parse text response: ' + e, options);
             }
         }
-    } catch (error) {
-        console.error(error);
     }
     return null;
 }
@@ -178,11 +187,19 @@ function catchErrors(options: ApiRequestOptions, result: ApiResult): void {
 
     const error = errors[result.status];
     if (error) {
-        throw new ApiError(result, error);
+        throw createError(error, options);
     }
 
     if (!result.ok) {
-        throw new ApiError(result, 'Generic Error');
+        throw createError('unhandled service error', options);
+    }
+}
+
+function createError(message: string, options: ApiRequestOptions): Error {
+    if (options.errorFactory) {
+        return options.errorFactory(message, options);
+    } else {
+        return new Error(message);
     }
 }
 
@@ -190,13 +207,13 @@ function catchErrors(options: ApiRequestOptions, result: ApiResult): void {
  * Request using node-fetch client
  * @param options The request options from the the service
  * @returns ApiResult
- * @throws ApiError
  */
 export async function request(options: ApiRequestOptions): Promise<ApiResult> {
     const url = await getUrl(options);
     const response = await sendRequest(options, url);
-    const responseBody = await getResponseBody(response);
+    const responseBody = await getResponseBody(options, response);
     const responseHeader = getResponseHeader(response, options.responseHeader);
+
     const result: ApiResult = {
         url,
         ok: response.ok,
@@ -205,6 +222,6 @@ export async function request(options: ApiRequestOptions): Promise<ApiResult> {
         body: responseHeader || responseBody,
     };
 
-    catchErrors(options, result);
+    await (options.catchErrors ?? catchErrors)(options, result);
     return result;
 }

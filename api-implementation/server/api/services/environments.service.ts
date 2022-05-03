@@ -3,6 +3,7 @@ import Environment = Components.Schemas.Environment;
 import EnvironmentListItem = Components.Schemas.EnvironmentListItem;
 import EnvironmentPatch = Components.Schemas.EnvironmentPatch;
 import EnvironmentResponse = Components.Schemas.EnvironmentResponse;
+import ServiceClassDisplayedAttributes = Components.Schemas.ServiceClassDisplayedAttributes;
 import { PersistenceService } from './persistence.service';
 import { ProtocolMapper } from '../../../src/protocolmapper';
 import SolaceCloudFacade from '../../../src/solacecloudfacade';
@@ -61,7 +62,7 @@ export class EnvironmentsService {
       datacenterId: service.datacenterId,
       datacenterProvider: service.datacenterProvider,
       msgVpnName: service.msgVpnName,
-      serviceClassDisplayedAttributes: service.serviceClassDisplayedAttributes,
+      serviceClassDisplayedAttributes: (service.serviceClassDisplayedAttributes as ServiceClassDisplayedAttributes),
       serviceClassId: service.serviceClassId,
       serviceTypeId: service.serviceTypeId,
       exposedProtocols: env.exposedProtocols,

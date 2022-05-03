@@ -1,24 +1,23 @@
-/* istanbul ignore file */
-/* tslint:disable */
 /* eslint-disable */
+
 
 export type Service = {
     type?: string;
     timestamp?: number;
     userId?: string;
-    serviceId?: string;
+    serviceId: string;
     infrastructureId?: string;
-    name?: string;
-    msgVpnName?: string;
-    datacenterId?: string;
-    datacenterProvider?: string;
-    serviceTypeId?: string;
-    serviceClassId?: string;
-    adminState?: string;
-    adminProgress?: string;
+    name: string;
+    msgVpnName: string;
+    datacenterId: string;
+    datacenterProvider: string;
+    serviceTypeId: string;
+    serviceClassId: string;
+    adminState: string;
+    adminProgress: string;
     created?: number;
-    creationState?: string;
-    messagingProtocols?: Array<{
+    creationState: string;
+    messagingProtocols: Array<{
         name: string,
         username: string,
         password: string,
@@ -29,7 +28,7 @@ export type Service = {
             secured: string,
             compressed: string,
         }>,
-        limits: any,
+        limits?: any,
     }>;
     managementProtocols?: Array<{
         name: string,
@@ -39,49 +38,49 @@ export type Service = {
             name: string,
             uris: Array<string>,
             secured: string,
-            authenticated: string,
+            authenticated?: string,
         }>,
-        limits: any,
+        limits?: any,
     }>;
-    msgVpnAttributes?: {
-        vpnEventLargeMsgThreshold: string,
-        authenticationClientCertValidateDateEnabled: string,
-        vpnMaxConnectionCount: string,
-        vpnAdminUsername: string,
-        vpnMaxTransactedSessionCount: string,
-        subDomainName: string,
-        vmrVersion: string,
-        vpnAdminPassword: string,
-        vpnName: string,
-        vpnMaxTransactionCount: string,
-        vpnMaxMsgSpoolUsage: string,
-        vpnMaxEndpointCount: string,
-        vpnMaxEgressFlowCount: string,
-        vpnMaxSubscriptionCount: string,
+    msgVpnAttributes: {
+        vpnEventLargeMsgThreshold?: string,
+        authenticationClientCertValidateDateEnabled?: string,
+        vpnMaxConnectionCount?: string,
+        vpnAdminUsername?: string,
+        vpnMaxTransactedSessionCount?: string,
+        subDomainName?: string,
+        vmrVersion?: string,
+        vpnAdminPassword?: string,
+        vpnName?: string,
+        vpnMaxTransactionCount?: string,
+        vpnMaxMsgSpoolUsage?: string,
+        vpnMaxEndpointCount?: string,
+        vpnMaxEgressFlowCount?: string,
+        vpnMaxSubscriptionCount?: string,
         authenticationClientCertEnabled: string,
-        vpnEnabled: string,
-        truststoreUri: string,
+        vpnEnabled?: string,
+        truststoreUri?: string,
         authenticationBasicEnabled: string,
-        vpnMaxIngressFlowCount: string,
+        vpnMaxIngressFlowCount?: string,
     };
     locked?: boolean;
-    messagingStorage?: number;
+    messagingStorage: number;
     serviceStage?: string;
     servicePackageId?: string;
-    serviceClassDisplayedAttributes?: {
+    serviceClassDisplayedAttributes: {
         'High Availability': string,
-        'Network Speed': string,
+        'Network Speed'?: string,
         Storage: string,
-        'Message Broker Tenancy': string,
+        'Message Broker Tenancy'?: string,
         Queues: string,
         Clients: string,
-        'Network Usage': string,
+        'Network Usage'?: string,
     };
     accountingLimits?: Array<{
         id: string,
         value: string,
         unit: string,
-        thresholds: Array<{
+        thresholds?: Array<{
             type: string,
             value: string,
         }>,
@@ -89,12 +88,22 @@ export type Service = {
     certificateAuthorities?: Array<string>;
     clientProfiles?: Array<string>;
     cluster?: {
-        name: string,
-        password: string,
-        remoteAddress: string,
-        primaryRouterName: string,
-        supportedAuthenticationMode: Array<string>,
+        name?: string,
+        password?: string,
+        remoteAddress?: string,
+        primaryRouterName?: string,
+        supportedAuthenticationMode?: Array<string>,
     };
     redundancyGroupSslEnabled?: boolean;
     configSyncSslEnabled?: boolean;
+}
+
+export namespace Service {
+
+    /**
+     * the discriminator for the model if required for more complex api's
+     */
+    export const discriminator = 'Service';
+
+
 }

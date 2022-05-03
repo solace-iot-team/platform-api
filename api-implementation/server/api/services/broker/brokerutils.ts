@@ -2,16 +2,16 @@ import L from '../../../common/logger';
 
 import Environment = Components.Schemas.Environment;
 import EnvironmentResponse = Components.Schemas.EnvironmentResponse;
-import AppApiProductsComplex = Components.Schemas.AppApiProductsComplex;
+import APIProduct = Components.Schemas.APIProduct;
 import App = Components.Schemas.App;
-import { Service } from '../../../../src/clients/solacecloud';
+import ClientOptions = Components.Schemas.ClientOptions;
+import { Service } from '../../../../src/clients/solacecloud/models/Service';
 
 import EnvironmentsService from '../environments.service';
 import ApiProductsService from '../apiProducts.service';
 
 import SolaceCloudFacade from '../../../../src/solacecloudfacade';
 
-import { isString } from '../../../../src/typehelpers';
 import APIProductsTypeHelper from '../../../../src/apiproductstypehelper';
 
 class BrokerUtils {
@@ -79,5 +79,51 @@ class BrokerUtils {
     const services: Service[] = await this.getServices(envs);
     return services;
   }
+
+  public isMQTTSessionRequired(apiProducts: APIProduct[]): boolean {
+    if (!apiProducts || apiProducts.length == 0) {
+      return false;
+    }
+    for (const apiProduct of apiProducts) {
+      if (apiProduct.protocols) {
+        if (apiProduct.protocols.filter(e => (
+          e.name == 'mqtt' || e.name == 'secure-mqtt' ||
+          e.name == 'ws-mqtt' || e.name == 'wss-mqtt' )
+        ).length == 1) {
+          if (apiProduct.clientOptions && apiProduct.clientOptions.guaranteedMessaging && apiProduct.clientOptions.guaranteedMessaging.requireQueue){
+            return true;
+          }
+        }
+      }
+    }
+    return false;
+  }
+
+  public getAppAggregatedClientOptions(apiProducts: APIProduct[]): ClientOptions{
+    const clientOpts: ClientOptions = {
+      guaranteedMessaging: {
+        requireQueue: false,
+        accessType: 'exclusive',
+        maxMsgSpoolUsage: 0,
+        maxTtl: 3600,
+      }
+    };
+    for (const apiProduct of apiProducts){
+      if (apiProduct.clientOptions 
+        && apiProduct.clientOptions.guaranteedMessaging 
+        && apiProduct.clientOptions.guaranteedMessaging.requireQueue) {
+          const gmOptions = apiProduct.clientOptions.guaranteedMessaging;
+        clientOpts.guaranteedMessaging.requireQueue = gmOptions.requireQueue;
+        clientOpts.guaranteedMessaging.maxMsgSpoolUsage = clientOpts.guaranteedMessaging.maxMsgSpoolUsage + gmOptions.maxMsgSpoolUsage;
+        clientOpts.guaranteedMessaging.maxTtl = clientOpts.guaranteedMessaging.maxTtl>gmOptions.maxTtl?clientOpts.guaranteedMessaging.maxTtl:gmOptions.maxTtl;
+      }
+    }
+    if (clientOpts.guaranteedMessaging.maxMsgSpoolUsage>0){
+    return clientOpts;
+    } else {
+      return null;
+    }
+  }
+
 }
 export default new BrokerUtils();

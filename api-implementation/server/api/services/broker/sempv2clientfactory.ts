@@ -1,6 +1,6 @@
 import L from '../../../common/logger';
 
-import { Service } from '../../../../src/clients/solacecloud';
+import { Service } from '../../../../src/clients/solacecloud/models/Service';
 import { ns } from '../../middlewares/context.handler';
 import { AllServiceDefault } from '../../../../src/clients/sempv2/services/AllServiceDefault';
 import { ApiOptions } from '../../../../src/clients/sempv2/core/ApiOptions';

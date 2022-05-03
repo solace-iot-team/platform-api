@@ -24,7 +24,7 @@ import { MsgVpnQueueTxFlowsResponse } from '../../../../src/clients/sempv2monito
 import { MsgVpnRestDeliveryPointQueueBindingResponse } from '../../../../src/clients/sempv2monitor/models/MsgVpnRestDeliveryPointQueueBindingResponse';
 
 
-import { Service } from '../../../../src/clients/solacecloud';
+import { Service } from '../../../../src/clients/solacecloud/models/Service';
 
 import SempV2MonitorFactory from '../broker/sempv2monitorfactory';
 

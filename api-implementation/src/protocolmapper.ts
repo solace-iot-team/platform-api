@@ -241,7 +241,7 @@ export class ProtocolMapper {
           }
 
         } else {
-          L.warn(`No mapping for ${protocol.name}`);
+          L.info(`No mapping for ${protocol.name}`);
         }
       }
     }

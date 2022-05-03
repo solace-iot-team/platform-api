@@ -1,6 +1,6 @@
 import APIProduct = Components.Schemas.APIProduct;
 import App = Components.Schemas.App;
-import { Service } from '../../../../src/clients/solacecloud';
+import { Service } from '../../../../src/clients/solacecloud/models/Service';
 
 export class QueueHelper {
   public getAPIProductQueueName(app: App, apiProduct: APIProduct): string {
@@ -12,17 +12,21 @@ export class QueueHelper {
   }
 
   public isAPIProductQueueRequired(apiProduct: APIProduct): boolean {
-    // at the moment we require JMS or SMF protocols
+    // at the moment we require AMQP, JMS or SMF protocols
     if (!apiProduct.protocols) {
       return false;
     }
-    if (apiProduct.protocols.filter(e => (e.name == 'jms' || e.name == 'secure-jms' || e.name == 'smf' || e.name == 'smfs')).length == 0) {
+    if (apiProduct.protocols.filter(e => (
+      e.name == 'amqp' || e.name == 'amqps' ||
+      e.name == 'jms' || e.name == 'secure-jms' ||
+      e.name == 'smf' || e.name == 'smfs')
+    ).length == 0) {
       return false;
     }
     return apiProduct.clientOptions && apiProduct.clientOptions.guaranteedMessaging && apiProduct.clientOptions.guaranteedMessaging.requireQueue;
   }
 
-  public filterServicesForWebHook(app: App, services: Service[]) : Service[]{
+  public filterServicesForWebHook(app: App, services: Service[]): Service[] {
     let envNames = [];
     if (app.webHooks) {
       for (const webHook of app.webHooks) {
