@@ -61,7 +61,7 @@ class AsyncApiGenerator {
 
   private async getServers(app: App): Promise<any> {
     const envs: AppEnvironment[] = await BrokerService.getMessagingProtocols(app);
-    return this.mapServers(envs);
+    return this.mapServers(envs, app);
   }
 
   private async getServersByApiProduct(apiProduct: APIProduct): Promise<any> {
@@ -69,7 +69,7 @@ class AsyncApiGenerator {
     return this.mapServers(envs);
   }
 
-  private mapServers(envs: AppEnvironment[]): any {
+  private mapServers(envs: AppEnvironment[], app?: App): any {
     const servers = {};
     for (const env of envs) {
       for (const protocol of env.messagingProtocols) {
@@ -87,6 +87,12 @@ class AsyncApiGenerator {
         } else {
           server.security = [{ userPassword: [] }];
         }
+        if (app && protocol.protocol.name.toUpperCase().includes('MQTT')) {
+          if (!server.bindings){
+            server.bindings = [{'mqtt': {'clientId': app.internalName, 'version': '0.1.0'}}];
+          }
+        }
+        
         servers[serverKey] = server;
       }
     }
