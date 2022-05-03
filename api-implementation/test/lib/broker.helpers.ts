@@ -1,13 +1,23 @@
-import { OpenAPI, ServicesService } from "../../src/clients/solacecloud";
+import { ServicesServiceDefault } from '../../src/clients/solacecloud/services/ServicesServiceDefault';
+import { ServicesService } from '../../src/clients/solacecloud/services/ServicesService';
+import { ApiOptions as CloudApiOptions } from '../../src/clients/solacecloud/core/ApiOptions';
 import { AllService } from "../../src/clients/sempv2";
 import { ApiOptions } from '../../src/clients/sempv2/core/ApiOptions';
 import { AllServiceDefault } from '../../src/clients/sempv2/services/AllServiceDefault';
+
+
+
 
 /**
  * Helper to create clients to invoke the Solace Cloud API.
  */
 export class SolaceCloudClientFactory {
 
+  private static CLOUD_API_OPTIONS: CloudApiOptions = {
+    baseUrl: '',
+  };
+
+  private static cloudClient: ServicesService = null;
   /**
    * A list of all SEMP v2 clients that have been created.
    */
@@ -20,8 +30,9 @@ export class SolaceCloudClientFactory {
    * @param token The access token.
    */
   public static initialize = (base: string, token: string) => {
-    OpenAPI.BASE = base;
-    OpenAPI.TOKEN = token;
+    SolaceCloudClientFactory.CLOUD_API_OPTIONS.baseUrl = base;
+    SolaceCloudClientFactory.CLOUD_API_OPTIONS.token = token;
+    SolaceCloudClientFactory.cloudClient = new ServicesServiceDefault(SolaceCloudClientFactory.CLOUD_API_OPTIONS);
   }
 
   /**
@@ -35,7 +46,7 @@ export class SolaceCloudClientFactory {
     let client: AllService = SolaceCloudClientFactory.sempV2Clients.get(serviceId);
     if (client == null) {
 
-      await ServicesService.getService(serviceId).then((response) => {
+      await SolaceCloudClientFactory.cloudClient.getService(serviceId).then((response) => {
         const sempProtocol = response.data.managementProtocols.find(i => i.name === "SEMP");
         const options: ApiOptions = {
           baseUrl: sempProtocol.endPoints.find(j => j.name === "Secured SEMP Config").uris[0],
