@@ -4,6 +4,7 @@ import ApisService from '../apis.service';
 import BrokerService from '../broker.service';
 import { AsyncAPIServer } from '../../../../src/model/asyncapiserver';
 import AsyncAPIHelper from '../../../../src/asyncapihelper';
+import ApiProductsTypeHelper from '../../../../src/apiproductstypehelper';
 import BindingsRegistry from './bindingsregistry';
 import { BindingsGenerator } from './bindingsgenerator';
 import ApiProductsService from '../apiProducts.service';
@@ -143,7 +144,8 @@ class AsyncApiGenerator {
   private async findAPIProductsByAPIName(apiName: string, app: App): Promise<APIProduct[]> {
     let apiProducts: APIProduct[] = [];
     for (const productName of app.apiProducts) {
-      const results = await ApiProductsService.all({ name: productName, apis: apiName });
+      const apiProductNameString = ApiProductsTypeHelper.apiProductReferenceToString(productName);
+      const results = await ApiProductsService.all({ name: apiProductNameString, apis: apiName });
       if (results.length > 1) {
         throw new ErrorResponseInternal(500, 'Found multiple matching documents for API Product Name');
       } else if (results.length == 1) {
