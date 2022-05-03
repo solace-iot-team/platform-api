@@ -4,7 +4,7 @@ import { BindingsGenerator } from './bindingsgenerator';
 import SMFBindingsGenerator from './smfbindingsgenerator';
 import JMSBindingsGenerator from './jmsbindingsgenerator';
 import MQTTBindingsGenerator from './mqttbindingsgenerator';
-
+import HTTPBindingsGenerator from './httpbindingsgenerator';
 interface RegisteredGenerators{
   [details: string] : BindingsGenerator;
 }
@@ -13,7 +13,7 @@ export class BindingsRegistry {
 
   }
   constructor(){
-    const generators: BindingsGenerator[] = [SMFBindingsGenerator, JMSBindingsGenerator, MQTTBindingsGenerator];
+    const generators: BindingsGenerator[] = [SMFBindingsGenerator, JMSBindingsGenerator, MQTTBindingsGenerator, HTTPBindingsGenerator];
     for (const generator of generators){
       for (const protocol of generator.getApplicableProtocols()){
         this.registeredGenerators[protocol] = generator;
