@@ -22,6 +22,7 @@ class MQTTSessionManager implements BrokerResourceManager<void> {
     apiProducts: APIProduct[]): Promise<void> {
     const objectName: string = app.internalName;
     if (!BrokerUtils.isMQTTSessionRequired(apiProducts)) {
+      L.info('no mqtt session required');
       return;
     }
     const clientOptions = BrokerUtils.getAppAggregatedClientOptions(apiProducts);
