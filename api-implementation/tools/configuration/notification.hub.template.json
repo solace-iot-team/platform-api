@@ -1,0 +1,38 @@
+{
+  "server": {
+    "baseUrl": "http:/<CONNECTOR_HOST>:<CONNECTOR_PORT>/v1",
+    "admin": {
+      "username": "<CONNECTOR_ADMIN>",
+      "password": "${env:SERVER_ADMIN_PASSWORD}"
+    }
+  },
+  "organization": {
+    "name": "<HUB_ORGANIZATION>",
+    "token": "${env:ORGANIZATION_CLOUD_TOKEN}",
+    "admin": {
+      "username": "<ORG_ADMIN>",
+      "password": "${env:ORGANIZATION_ADMIN_PASSWORD}"
+    }
+  },
+  "services": [
+    "<Solace PS+ Service Name>"
+  ],
+  "apis": {
+    "NotificationProvider": "http://<CONNECTOR_HOST>:<CONNECTOR_PORT>/notification-api/producer/api.yml",
+    "APINotifications": "http://<CONNECTOR_HOST>:<CONNECTOR_PORT>/notification-api/consumer/apis.yml",
+    "APIProductNotifications": "http://<CONNECTOR_HOST>:<CONNECTOR_PORT>/notification-api/consumer/apiProducts.yml",
+    "TeamNotifications": "http://<CONNECTOR_HOST>:<CONNECTOR_PORT>/notification-api/consumer/teams.yml",
+    "DeveloperNotifications": "http://<CONNECTOR_HOST>:<CONNECTOR_PORT>/notification-api/consumer/developers.yml",
+    "AppNotifications": "http://<CONNECTOR_HOST>:<CONNECTOR_PORT>/notification-api/consumer/apps.yml",
+    "EnvironmentNotifications": "http://<CONNECTOR_HOST>:<CONNECTOR_PORT>/notification-api/consumer/environments.yml",
+    "ManagementNotifications": "http://<CONNECTOR_HOST>:<CONNECTOR_PORT>/notification-api/consumer/management.yml"
+  },
+  "application": {
+    "name": "<PROVIDER_APP_NAME>",
+    "owner": "admin",
+    "credentials": {
+      "username": "${env:APPLICATION_CONSUMER_KEY}",
+      "password": "${env:APPLICATION_CONSUMER_SECRET}"
+    }
+  }
+}
