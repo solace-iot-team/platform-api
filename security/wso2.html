@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Configure WSO2 API Manager for use with the API Server &mdash; Solace Async API-M Connector r0.0.2 documentation</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/contentui.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/contentui.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Configure Keycloak for use with the API Server" href="keycloak.html" />
+    <link rel="prev" title="Security / Auth Overview" href="overview.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../index.html" class="icon icon-home"> Solace Async API-M Connector
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Guides</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../quickstart/index.html">Quickstart</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">Security</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="overview.html">Security / Auth Overview</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Configure WSO2 API Manager for use with the API Server</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#add-roles">Add roles</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#add-user">Add user</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#add-organization-association-s">Add organization association(s)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#configure-openid-scope-for-organization">Configure OpenId Scope for organization</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#configure-service-provider-for-the-api-server">Configure Service Provider for the API Server</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#claim-configuration">Claim Configuration</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#oauth-openid-connect-configuration">OAuth/OpenID Connect Configuration</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#obtaining-a-jwt-token">Obtaining a JWT Token</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#example-jwt">Example JWT</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#configure-the-api-server">Configure the API Server</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#properties-for-claim-and-username-extraction">Properties for claim and username extraction:</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#properties-for-jwt-verification">Properties for JWT verification</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#set-the-openid-connect-discovery-url">Set the OpenId Connect Discovery URL</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="keycloak.html">Configure Keycloak for use with the API Server</a></li>
+<li class="toctree-l2"><a class="reference internal" href="okta.html">Configure Okta for use with the API Server</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../notification_hub/index.html">Connector Notification Hub</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../configuration/index.html">Configuration</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">Solace Async API-M Connector</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="index.html">Security</a> &raquo;</li>
+      <li>Configure WSO2 API Manager for use with the API Server</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/security/wso2.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="configure-wso2-api-manager-for-use-with-the-api-server">
+<h1>Configure WSO2 API Manager for use with the API Server<a class="headerlink" href="#configure-wso2-api-manager-for-use-with-the-api-server" title="Permalink to this headline"></a></h1>
+<section id="add-roles">
+<h2>Add roles<a class="headerlink" href="#add-roles" title="Permalink to this headline"></a></h2>
+<p>Navigate to “Users and Roles” -&gt; “Add”. Then click “Add new role”. Add
+both <code class="docutils literal notranslate"><span class="pre">org-admin</span></code> and <code class="docutils literal notranslate"><span class="pre">platform-admin</span></code> roles. <img alt="image2" src="https://user-images.githubusercontent.com/3858485/116539946-6f19c580-a8e1-11eb-856f-aadf1477d551.png" /></p>
+<figure class="align-default" id="id1">
+<img alt="image" src="https://user-images.githubusercontent.com/3858485/116538627-adae8080-a8df-11eb-8b50-0af81678d367.png" />
+<figcaption>
+<p><span class="caption-text">image</span><a class="headerlink" href="#id1" title="Permalink to this image"></a></p>
+</figcaption>
+</figure>
+<figure class="align-default" id="id2">
+<img alt="image" src="https://user-images.githubusercontent.com/3858485/116538736-d3d42080-a8df-11eb-8a29-364ab31f4bb4.png" />
+<figcaption>
+<p><span class="caption-text">image</span><a class="headerlink" href="#id2" title="Permalink to this image"></a></p>
+</figcaption>
+</figure>
+</section>
+<section id="add-user">
+<h2>Add user<a class="headerlink" href="#add-user" title="Permalink to this headline"></a></h2>
+<p>Navigate to “Users and Roles” -&gt; “Add”. Then click “Add new user”.</p>
+<figure class="align-default" id="id3">
+<img alt="image" src="https://user-images.githubusercontent.com/3858485/116539144-5a88fd80-a8e0-11eb-8272-13eb7a2a3332.png" />
+<figcaption>
+<p><span class="caption-text">image</span><a class="headerlink" href="#id3" title="Permalink to this image"></a></p>
+</figcaption>
+</figure>
+<p>In the next step associate roles with the user as required</p>
+<figure class="align-default" id="id4">
+<img alt="image" src="https://user-images.githubusercontent.com/3858485/116539257-7e4c4380-a8e0-11eb-8f47-2f25859eca10.png" />
+<figcaption>
+<p><span class="caption-text">image</span><a class="headerlink" href="#id4" title="Permalink to this image"></a></p>
+</figcaption>
+</figure>
+</section>
+<section id="add-organization-association-s">
+<h2>Add organization association(s)<a class="headerlink" href="#add-organization-association-s" title="Permalink to this headline"></a></h2>
+<p>We will use the <code class="docutils literal notranslate"><span class="pre">organization</span></code> attribute of the user profile to store
+organization membership. The API Server expects a list of orgs separated
+by space character.</p>
+<p>Once the user is created click “User Profile” on your user’s entry in
+the list and click to edit the <code class="docutils literal notranslate"><span class="pre">default</span></code> profile. Add e.g. “my-org” to
+the <code class="docutils literal notranslate"><span class="pre">organization</span></code> attribute:</p>
+<figure class="align-default" id="id5">
+<img alt="image" src="https://user-images.githubusercontent.com/3858485/116539439-b5baf000-a8e0-11eb-93ef-0c19914b70c8.png" />
+<figcaption>
+<p><span class="caption-text">image</span><a class="headerlink" href="#id5" title="Permalink to this image"></a></p>
+</figcaption>
+</figure>
+<figure class="align-default" id="id6">
+<img alt="image" src="https://user-images.githubusercontent.com/3858485/116539654-05012080-a8e1-11eb-89b9-723defe138d0.png" />
+<figcaption>
+<p><span class="caption-text">image</span><a class="headerlink" href="#id6" title="Permalink to this image"></a></p>
+</figcaption>
+</figure>
+</section>
+<section id="configure-openid-scope-for-organization">
+<h2>Configure OpenId Scope for organization<a class="headerlink" href="#configure-openid-scope-for-organization" title="Permalink to this headline"></a></h2>
+<p>This is necessary so the <code class="docutils literal notranslate"><span class="pre">organization</span></code> attribute of the user profile
+is included in the JWT</p>
+<p>Navigate to “OICD Scope” -&gt; “Add”. Set scope name to <code class="docutils literal notranslate"><span class="pre">organization</span></code>
+and then “Add OIDC Claim” <img alt="image2" src="https://user-images.githubusercontent.com/3858485/116539946-6f19c580-a8e1-11eb-856f-aadf1477d551.png" /></p>
+<p>Select <code class="docutils literal notranslate"><span class="pre">organization</span></code> from the drop down list then click “Finish”:
+<img alt="image3" src="https://user-images.githubusercontent.com/3858485/116540173-b4d68e00-a8e1-11eb-8e29-2e5fb643464a.png" /></p>
+</section>
+<section id="configure-service-provider-for-the-api-server">
+<h2>Configure Service Provider for the API Server<a class="headerlink" href="#configure-service-provider-for-the-api-server" title="Permalink to this headline"></a></h2>
+<p>Navigate to “Service Provider” -&gt; “Add”, add a name and register the
+provider: <img alt="image4" src="https://user-images.githubusercontent.com/3858485/116540440-0ed75380-a8e2-11eb-8166-fc9674b6a909.png" /></p>
+<p>Then edit your service provider selecting it in “Service Provider” -&gt;
+“List” <img alt="image5" src="https://user-images.githubusercontent.com/3858485/116540542-35958a00-a8e2-11eb-85bf-0c9f1d939dad.png" /></p>
+<section id="claim-configuration">
+<h3>Claim Configuration<a class="headerlink" href="#claim-configuration" title="Permalink to this headline"></a></h3>
+<p>Ensure the “Claim Configuration” looks similar: <img alt="image6" src="https://user-images.githubusercontent.com/3858485/116552885-73e67580-a8f1-11eb-8ba7-304e4b40c122.png" /></p>
+</section>
+<section id="oauth-openid-connect-configuration">
+<h3>OAuth/OpenID Connect Configuration<a class="headerlink" href="#oauth-openid-connect-configuration" title="Permalink to this headline"></a></h3>
+<p>Open the section “Inbound Authentication Configuration” sub section
+“OAuth/OpenID Connect Configuration” and click “Edit”:</p>
+<figure class="align-default" id="id7">
+<img alt="image" src="https://user-images.githubusercontent.com/3858485/116553584-32a29580-a8f2-11eb-9b74-4b29b442b71e.png" />
+<figcaption>
+<p><span class="caption-text">image</span><a class="headerlink" href="#id7" title="Permalink to this image"></a></p>
+</figcaption>
+</figure>
+<p>Ensure you set the correct callback url. This depends on your deployment
+and how your client app authorizes users and obtains tokens</p>
+<figure class="align-default" id="id8">
+<img alt="image" src="https://user-images.githubusercontent.com/3858485/116553908-84e3b680-a8f2-11eb-96fe-19987e429d39.png" />
+<figcaption>
+<p><span class="caption-text">image</span><a class="headerlink" href="#id8" title="Permalink to this image"></a></p>
+</figcaption>
+</figure>
+<p>Also make sure the service provider is issuing JWT and that you add an
+audience claim. If disabled - enable the “Role based scope validator”</p>
+<figure class="align-default" id="id9">
+<img alt="image" src="https://user-images.githubusercontent.com/3858485/116554183-ce340600-a8f2-11eb-9e01-8e5665283fef.png" />
+<figcaption>
+<p><span class="caption-text">image</span><a class="headerlink" href="#id9" title="Permalink to this image"></a></p>
+</figcaption>
+</figure>
+</section>
+</section>
+<section id="obtaining-a-jwt-token">
+<h2>Obtaining a JWT Token<a class="headerlink" href="#obtaining-a-jwt-token" title="Permalink to this headline"></a></h2>
+<p>The tokens must be requested with the “openid” and “organization” scope.
+The latter is required so that the organization attribute of the user is
+included in the tokens.</p>
+</section>
+<section id="example-jwt">
+<h2>Example JWT<a class="headerlink" href="#example-jwt" title="Permalink to this headline"></a></h2>
+<p>The payload section of a JWT obtained from WSO2 that contains all
+required attributes will look similar to this:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+  <span class="s2">&quot;sub&quot;</span><span class="p">:</span> <span class="s2">&quot;harry&quot;</span><span class="p">,</span>
+  <span class="s2">&quot;aut&quot;</span><span class="p">:</span> <span class="s2">&quot;APPLICATION_USER&quot;</span><span class="p">,</span>
+  <span class="s2">&quot;iss&quot;</span><span class="p">:</span> <span class="s2">&quot;https://localhost:9443/oauth2/token&quot;</span><span class="p">,</span>
+  <span class="s2">&quot;groups&quot;</span><span class="p">:</span> <span class="p">[</span>
+    <span class="s2">&quot;org-admin&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;Internal/everyone&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;platform-admin&quot;</span>
+  <span class="p">],</span>
+  <span class="s2">&quot;given_name&quot;</span><span class="p">:</span> <span class="s2">&quot;Harry&quot;</span><span class="p">,</span>
+  <span class="s2">&quot;aud&quot;</span><span class="p">:</span> <span class="p">[</span>
+    <span class="s2">&quot;hTa_o_7z2lBYrELD9cm3lvVK9IMa&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;platform-api-server&quot;</span>
+  <span class="p">],</span>
+  <span class="s2">&quot;upn&quot;</span><span class="p">:</span> <span class="s2">&quot;harry&quot;</span><span class="p">,</span>
+  <span class="s2">&quot;nbf&quot;</span><span class="p">:</span> <span class="mi">1619702089</span><span class="p">,</span>
+  <span class="s2">&quot;azp&quot;</span><span class="p">:</span> <span class="s2">&quot;hTa_o_7z2lBYrELD9cm3lvVK9IMa&quot;</span><span class="p">,</span>
+  <span class="s2">&quot;scope&quot;</span><span class="p">:</span> <span class="s2">&quot;openid organization&quot;</span><span class="p">,</span>
+  <span class="s2">&quot;organization&quot;</span><span class="p">:</span> <span class="s2">&quot;my-org&quot;</span><span class="p">,</span>
+  <span class="s2">&quot;exp&quot;</span><span class="p">:</span> <span class="mi">1619705689</span><span class="p">,</span>
+  <span class="s2">&quot;iat&quot;</span><span class="p">:</span> <span class="mi">1619702089</span><span class="p">,</span>
+  <span class="s2">&quot;family_name&quot;</span><span class="p">:</span> <span class="s2">&quot;H&quot;</span><span class="p">,</span>
+  <span class="s2">&quot;jti&quot;</span><span class="p">:</span> <span class="s2">&quot;f30911fa-6675-4f30-8d47-19fb3e791888&quot;</span><span class="p">,</span>
+  <span class="s2">&quot;email&quot;</span><span class="p">:</span> <span class="s2">&quot;harry@email.com&quot;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</section>
+<section id="configure-the-api-server">
+<h2>Configure the API Server<a class="headerlink" href="#configure-the-api-server" title="Permalink to this headline"></a></h2>
+<section id="properties-for-claim-and-username-extraction">
+<h3>Properties for claim and username extraction:<a class="headerlink" href="#properties-for-claim-and-username-extraction" title="Permalink to this headline"></a></h3>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>AUTH_EXTRACTION_USER_PRINCIPAL=$.upn
+</pre></div>
+</div>
+<p>Will evaluate to “harry” given the JWT example above.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>AUTH_EXTRACTION_ORGS=$.organization
+</pre></div>
+</div>
+<p>Will evaluate to</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">my</span><span class="o">-</span><span class="n">org</span>
+</pre></div>
+</div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>AUTH_EXTRACTION_ROLES=$.groups
+</pre></div>
+</div>
+<p>Will evaluate to</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">[</span>
+    <span class="s2">&quot;org-admin&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;Internal/everyone&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;platform-admin&quot;</span>
+  <span class="p">]</span>
+</pre></div>
+</div>
+</section>
+<section id="properties-for-jwt-verification">
+<h3>Properties for JWT verification<a class="headerlink" href="#properties-for-jwt-verification" title="Permalink to this headline"></a></h3>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">AUTH_VERIFICATION_AUD</span><span class="o">=</span><span class="n">platform</span><span class="o">-</span><span class="n">api</span><span class="o">-</span><span class="n">server</span>
+</pre></div>
+</div>
+<p>Must match the <code class="docutils literal notranslate"><span class="pre">aud</span></code> property in the JWT token - see example above</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">AUTH_VERIFICATION_ISSUER</span><span class="o">=</span><span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">localhost</span><span class="p">:</span><span class="mi">9443</span><span class="o">/</span><span class="n">oauth2</span><span class="o">/</span><span class="n">token</span>
+</pre></div>
+</div>
+<p>The URL of your wso2 realm.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">AUTH_VERIFICATION_KEY</span><span class="o">=/</span><span class="n">home</span><span class="o">/</span><span class="n">admin</span><span class="o">/</span><span class="n">platform</span><span class="o">-</span><span class="n">api</span><span class="o">-</span><span class="n">tmp</span><span class="o">/</span><span class="n">wso2</span><span class="o">-</span><span class="n">key</span><span class="o">.</span><span class="n">pem</span>
+</pre></div>
+</div>
+<p>You can obtain the public key / cert via the JWKS endpoint (see
+<a class="reference external" href="https://docs.wso2.com/display/IS541/JSON+Web+Key+Set+Endpoint">https://docs.wso2.com/display/IS541/JSON+Web+Key+Set+Endpoint</a>) and you
+then need to convert this to a PEM format. The JWKS URL is at
+<code class="docutils literal notranslate"><span class="pre">https://&lt;IS_HOST&gt;:&lt;IS_HTTPS_PORT&gt;/oauth2/jwks</span></code>. Copy the <code class="docutils literal notranslate"><span class="pre">key</span></code>
+element of the payload as below</p>
+<figure class="align-default" id="id10">
+<img alt="image" src="https://user-images.githubusercontent.com/3858485/116558825-c034b400-a8f7-11eb-95a0-da8bd3e23737.png" />
+<figcaption>
+<p><span class="caption-text">image</span><a class="headerlink" href="#id10" title="Permalink to this image"></a></p>
+</figcaption>
+</figure>
+<p>To convert JWKS to PEM you can for example use this web site -
+<a class="reference external" href="https://8gwifi.org/jwkconvertfunctions.jsp">https://8gwifi.org/jwkconvertfunctions.jsp</a>. Paste the JWK key and hit
+submit, then copy the resulting public key and save it to the local file
+system - in the example above it was saved to
+<code class="docutils literal notranslate"><span class="pre">/home/admin/platform-api-tmp/wso2-key.pem</span></code></p>
+<figure class="align-default" id="id11">
+<img alt="image" src="https://user-images.githubusercontent.com/3858485/116559115-ff630500-a8f7-11eb-96ad-0718ea76c4b1.png" />
+<figcaption>
+<p><span class="caption-text">image</span><a class="headerlink" href="#id11" title="Permalink to this image"></a></p>
+</figcaption>
+</figure>
+</section>
+<section id="set-the-openid-connect-discovery-url">
+<h3>Set the OpenId Connect Discovery URL<a class="headerlink" href="#set-the-openid-connect-discovery-url" title="Permalink to this headline"></a></h3>
+<p>Will be in the format below. Replace host and port with the correct
+values for your deployment:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">AUTH_DISCOVERY_OIDC_URL</span><span class="o">=</span><span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">ec2</span><span class="o">.</span><span class="n">eu</span><span class="o">-</span><span class="n">central</span><span class="o">.</span><span class="n">compute</span><span class="o">.</span><span class="n">amazonaws</span><span class="o">.</span><span class="n">com</span><span class="p">:</span><span class="mi">9443</span><span class="o">/</span><span class="n">oauth2</span><span class="o">/</span><span class="n">oidcdiscovery</span><span class="o">/.</span><span class="n">well</span><span class="o">-</span><span class="n">known</span><span class="o">/</span><span class="n">openid</span><span class="o">-</span><span class="n">configuration</span>
+</pre></div>
+</div>
+</section>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="overview.html" class="btn btn-neutral float-left" title="Security / Auth Overview" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="keycloak.html" class="btn btn-neutral float-right" title="Configure Keycloak for use with the API Server" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, Solace Corporation, Swen-Helge Huber, &lt;swen-helge.huber@solace.com&gt;.
+      <span class="lastupdated">Last updated on 05 May 2022 at 13:37.
+      </span></p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

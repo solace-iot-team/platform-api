@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Security / Auth Overview &mdash; Solace Async API-M Connector r0.0.2 documentation</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/contentui.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/contentui.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Configure WSO2 API Manager for use with the API Server" href="wso2.html" />
+    <link rel="prev" title="Security" href="index.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../index.html" class="icon icon-home"> Solace Async API-M Connector
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Guides</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../quickstart/index.html">Quickstart</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">Security</a><ul class="current">
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Security / Auth Overview</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#file-based-user-registry">File Based User Registry</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#identity-provider-integration">Identity Provider Integration</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#example-idp-configurations">Example IdP Configurations</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#obtaining-a-jwt">Obtaining a JWT</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="wso2.html">Configure WSO2 API Manager for use with the API Server</a></li>
+<li class="toctree-l2"><a class="reference internal" href="keycloak.html">Configure Keycloak for use with the API Server</a></li>
+<li class="toctree-l2"><a class="reference internal" href="okta.html">Configure Okta for use with the API Server</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../notification_hub/index.html">Connector Notification Hub</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../configuration/index.html">Configuration</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">Solace Async API-M Connector</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="index.html">Security</a> &raquo;</li>
+      <li>Security / Auth Overview</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/security/overview.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="security-auth-overview">
+<h1>Security / Auth Overview<a class="headerlink" href="#security-auth-overview" title="Permalink to this headline"></a></h1>
+<p>The API server provides both HTTP Basic Authentication and Bearer
+Token/JWT mechanisms. Either of the mechanisms are sufficient for
+authentication. Basic Authentication is deprecated and only provided for
+backwards compatibility.</p>
+<p>Basic Authentication relies on a simple file based user registry. The
+JWT token is locally validated and multiple Identity Providers were
+tested as a token issuer.</p>
+<p>Users are granted access to organizations (tenants) and privileges
+within the tenant based on the claims that are present in the JWT. Users
+who were authenticated using basic authentication are granted access to
+ALL tenants and provided privileges associated with the user roles.</p>
+<p>Currently there are two roles: * platform-admin: grants access to the
+platform management APIs. * org-admin: grants access to specific
+organizations and privileges for all organization level resources.</p>
+<p>The role model may be refined in subsequent releases.</p>
+<section id="file-based-user-registry">
+<h2>File Based User Registry<a class="headerlink" href="#file-based-user-registry" title="Permalink to this headline"></a></h2>
+<p>Basic authentication uses a file based user registry. It is intended for
+demo/test purposes as it stores passwords in clear text. See below for a
+short example, the repo contains a full example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+  <span class="s2">&quot;tom&quot;</span><span class="p">:</span> <span class="p">{</span>
+    <span class="s2">&quot;password&quot;</span><span class="p">:</span> <span class="s2">&quot;tomspassword&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;roles&quot;</span><span class="p">:</span> <span class="p">[</span>
+      <span class="s2">&quot;org-admin&quot;</span>
+    <span class="p">]</span>
+  <span class="p">},</span>
+    <span class="s2">&quot;dick&quot;</span><span class="p">:</span> <span class="p">{</span>
+    <span class="s2">&quot;password&quot;</span><span class="p">:</span> <span class="s2">&quot;dickspassword&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;roles&quot;</span><span class="p">:</span> <span class="p">[</span>
+      <span class="s2">&quot;org-admin&quot;</span>
+    <span class="p">]</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>Users are configured as properties of the root JSON object. Each user is
+defined by an object with the properties - password: string, user
+password - roles: string array, roles associated with the user.
+Currently supported roles <code class="docutils literal notranslate"><span class="pre">platform-admin</span></code> and <code class="docutils literal notranslate"><span class="pre">org-admin</span></code></p>
+<p>The file based user registry is a JSON file listing users, their
+passwords and roles. The location of the user registry is configurable
+(see “Environment Configuration”)</p>
+</section>
+<section id="identity-provider-integration">
+<h2>Identity Provider Integration<a class="headerlink" href="#identity-provider-integration" title="Permalink to this headline"></a></h2>
+<p>JWT tokens are validated locally, the validation and extraction of user
+roles, groups is configurable (see “Environment Configuration”).</p>
+<p>JWT should be obtained from a suitable IdP and it is validated by
+signature verification and expected values in specific attributes. The
+public key or certificate of the IdP must be provided in PEM format, the
+attributes <code class="docutils literal notranslate"><span class="pre">iss</span></code> (issuer) and <code class="docutils literal notranslate"><span class="pre">aud</span></code> (audience) must match the
+expected values as configured in the API Server.</p>
+<p>The IdP must be configured to include attributes in the JWT that
+describe a user’s name (principal), roles and organization membership.
+These attribute names differ between IdPs and the extraction paths from
+the JWT can be configured accordingly. The <code class="docutils literal notranslate"><span class="pre">principal</span></code> attribute MUST
+be a string. The <code class="docutils literal notranslate"><span class="pre">roles</span></code> and <code class="docutils literal notranslate"><span class="pre">organizations</span></code> attributes can be
+either a string array or a string listing values separated by space
+characters. For example both of these are valid values for these
+attributes:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="s2">&quot;roles&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;org-admin&quot;</span><span class="p">,</span><span class="s2">&quot;platform-admin&quot;</span><span class="p">]</span>
+</pre></div>
+</div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="s2">&quot;roles&quot;</span><span class="p">:</span> <span class="s2">&quot;org-admin platform-admin&quot;</span>
+</pre></div>
+</div>
+<p>Here is an example payload extracted from a JWT Id token obtained from
+Okta: - principal name (user name) is contained in the
+<code class="docutils literal notranslate"><span class="pre">preferred_username</span></code> attribute - roles attribute is <code class="docutils literal notranslate"><span class="pre">groups</span></code> -
+organizations attribute is <code class="docutils literal notranslate"><span class="pre">organization</span></code></p>
+<p>The user authenticated with this token is <code class="docutils literal notranslate"><span class="pre">api1&#64;gmail.com</span></code>, belongs to
+one organization <code class="docutils literal notranslate"><span class="pre">my-org</span></code> and has the <code class="docutils literal notranslate"><span class="pre">org-admin</span></code> role.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+  <span class="s2">&quot;sub&quot;</span><span class="p">:</span> <span class="s2">&quot;00uncii0ixg9gTgie5d6&quot;</span><span class="p">,</span>
+  <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;API user-1&quot;</span><span class="p">,</span>
+  <span class="s2">&quot;ver&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+  <span class="s2">&quot;iss&quot;</span><span class="p">:</span> <span class="s2">&quot;https://dev-12123555.okta.com/oauth2/default&quot;</span><span class="p">,</span>
+  <span class="s2">&quot;aud&quot;</span><span class="p">:</span> <span class="s2">&quot;0oancf26sFegoXz8l5d6&quot;</span><span class="p">,</span>
+  <span class="s2">&quot;iat&quot;</span><span class="p">:</span> <span class="mi">1619616618</span><span class="p">,</span>
+  <span class="s2">&quot;exp&quot;</span><span class="p">:</span> <span class="mi">1619620218</span><span class="p">,</span>
+  <span class="s2">&quot;jti&quot;</span><span class="p">:</span> <span class="s2">&quot;ID.jmgMSJuaYFHqumM1pYQkNdDZxjLYbgt6dGOXgnB3fzs&quot;</span><span class="p">,</span>
+  <span class="s2">&quot;amr&quot;</span><span class="p">:</span> <span class="p">[</span>
+    <span class="s2">&quot;pwd&quot;</span>
+  <span class="p">],</span>
+  <span class="s2">&quot;idp&quot;</span><span class="p">:</span> <span class="s2">&quot;00oncdc53KoJbUvfN5d6&quot;</span><span class="p">,</span>
+  <span class="s2">&quot;preferred_username&quot;</span><span class="p">:</span> <span class="s2">&quot;api1@gmail.com&quot;</span><span class="p">,</span>
+  <span class="s2">&quot;auth_time&quot;</span><span class="p">:</span> <span class="mi">1619616364</span><span class="p">,</span>
+  <span class="s2">&quot;at_hash&quot;</span><span class="p">:</span> <span class="s2">&quot;oc7VLYmJj8TDuwB0zGrl1w&quot;</span><span class="p">,</span>
+  <span class="s2">&quot;organization&quot;</span><span class="p">:</span> <span class="s2">&quot;my-org&quot;</span><span class="p">,</span>
+  <span class="s2">&quot;groups&quot;</span><span class="p">:</span> <span class="p">[</span>
+    <span class="s2">&quot;Everyone&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;org-admin&quot;</span>
+  <span class="p">]</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</section>
+<section id="example-idp-configurations">
+<h2>Example IdP Configurations<a class="headerlink" href="#example-idp-configurations" title="Permalink to this headline"></a></h2>
+<p>Tested with:
+* Keycloak - [[Configure Keycloak for use with the API Server]]
+* WSO2 API Manager (Identity Server) - [[Configure WSO2 API Manager for use with the API Server]]
+* Okta - [[Configure Okta for use with the API Server]]</p>
+</section>
+<section id="obtaining-a-jwt">
+<h2>Obtaining a JWT<a class="headerlink" href="#obtaining-a-jwt" title="Permalink to this headline"></a></h2>
+<p>The API Explorer (Swagger UI) can be used to obtain a token. The API
+definition is configured with a Open Id Connect Discovery URL that the
+API Explorer uses to find out the authorization and token endpoints for
+the IdP that the API Server is configured to use.</p>
+<p>Alternatively you can provide a JWT Id token - that you have obtained
+previously e.g. via postman - as Bearer token in the API Explorer.</p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="index.html" class="btn btn-neutral float-left" title="Security" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="wso2.html" class="btn btn-neutral float-right" title="Configure WSO2 API Manager for use with the API Server" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, Solace Corporation, Swen-Helge Huber, &lt;swen-helge.huber@solace.com&gt;.
+      <span class="lastupdated">Last updated on 05 May 2022 at 13:37.
+      </span></p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

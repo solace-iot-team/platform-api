@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Configure Keycloak for use with the API Server &mdash; Solace Async API-M Connector r0.0.2 documentation</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/contentui.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/contentui.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Configure Okta for use with the API Server" href="okta.html" />
+    <link rel="prev" title="Configure WSO2 API Manager for use with the API Server" href="wso2.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../index.html" class="icon icon-home"> Solace Async API-M Connector
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Guides</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../quickstart/index.html">Quickstart</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">Security</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="overview.html">Security / Auth Overview</a></li>
+<li class="toctree-l2"><a class="reference internal" href="wso2.html">Configure WSO2 API Manager for use with the API Server</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Configure Keycloak for use with the API Server</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#create-a-new-realm">Create a new realm</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#configure-organizations-add-groups">Configure Organizations - Add groups</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#add-a-user">Add a user</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#add-client-configuration-for-the-api-server">Add client configuration for the API Server</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#add-roles-to-the-client">Add roles to the client</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#add-roles-to-user">Add roles to user</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#add-groups-to-user">Add groups to user</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#add-mappers-to-the-client">Add mappers to the client</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#add-groups-organizations-mapper">Add groups (organizations) mapper</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#add-audience-aud-mapper">Add audience (aud) mapper</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#modify-the-client-scope-settings">Modify the Client Scope settings</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#setup-the-client-scopes">Setup the Client Scopes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#preview-the-jwt-token">Preview the JWT token</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#configure-the-api-server">Configure the API Server</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#properties-for-claim-and-username-extraction">Properties for claim and username extraction:</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#properties-for-jwt-verification">Properties for JWT verification</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#set-the-openid-connect-discovery-url">Set the OpenId Connect Discovery URL</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="okta.html">Configure Okta for use with the API Server</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../notification_hub/index.html">Connector Notification Hub</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../configuration/index.html">Configuration</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">Solace Async API-M Connector</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="index.html">Security</a> &raquo;</li>
+      <li>Configure Keycloak for use with the API Server</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/security/keycloak.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="configure-keycloak-for-use-with-the-api-server">
+<h1>Configure Keycloak for use with the API Server<a class="headerlink" href="#configure-keycloak-for-use-with-the-api-server" title="Permalink to this headline"></a></h1>
+<p>Steps to configure a keycloak realm to issue suitable tokens for the API
+Server.</p>
+<section id="create-a-new-realm">
+<h2>Create a new realm<a class="headerlink" href="#create-a-new-realm" title="Permalink to this headline"></a></h2>
+<figure class="align-default" id="id1">
+<img alt="image" src="https://user-images.githubusercontent.com/3858485/116523509-358b8f00-a8ce-11eb-8f01-39e8821806e2.png" />
+<figcaption>
+<p><span class="caption-text">image</span><a class="headerlink" href="#id1" title="Permalink to this image"></a></p>
+</figcaption>
+</figure>
+</section>
+<section id="configure-organizations-add-groups">
+<h2>Configure Organizations - Add groups<a class="headerlink" href="#configure-organizations-add-groups" title="Permalink to this headline"></a></h2>
+<p>Currently organizations are not propagated to the IdP. You need to add
+organizations manually. In Keycloak we use the groups concept to
+represent an organization.</p>
+<p>The example below adds a <code class="docutils literal notranslate"><span class="pre">my-org</span></code> organization:</p>
+<figure class="align-default" id="id2">
+<img alt="image" src="https://user-images.githubusercontent.com/3858485/116524862-c747cc00-a8cf-11eb-9c8f-abe0bce3656a.png" />
+<figcaption>
+<p><span class="caption-text">image</span><a class="headerlink" href="#id2" title="Permalink to this image"></a></p>
+</figcaption>
+</figure>
+<figure class="align-default" id="id3">
+<img alt="image" src="https://user-images.githubusercontent.com/3858485/116524920-dd558c80-a8cf-11eb-8992-180bd98c0e4c.png" />
+<figcaption>
+<p><span class="caption-text">image</span><a class="headerlink" href="#id3" title="Permalink to this image"></a></p>
+</figcaption>
+</figure>
+</section>
+<section id="add-a-user">
+<h2>Add a user<a class="headerlink" href="#add-a-user" title="Permalink to this headline"></a></h2>
+<p>First add a user, then on the newly created user set the password -
+<img alt="image1" src="https://user-images.githubusercontent.com/3858485/116525193-2c9bbd00-a8d0-11eb-9dba-18b13b476023.png" /></p>
+<figure class="align-default" id="id4">
+<img alt="image" src="https://user-images.githubusercontent.com/3858485/116525325-4e953f80-a8d0-11eb-9a39-41d570b0973f.png" />
+<figcaption>
+<p><span class="caption-text">image</span><a class="headerlink" href="#id4" title="Permalink to this image"></a></p>
+</figcaption>
+</figure>
+</section>
+<section id="add-client-configuration-for-the-api-server">
+<h2>Add client configuration for the API Server<a class="headerlink" href="#add-client-configuration-for-the-api-server" title="Permalink to this headline"></a></h2>
+<p>Add a new client and set the callback url and web-origin (for CORS). Use
+the correct host name and port according to your deployment.</p>
+<figure class="align-default" id="id5">
+<img alt="image" src="https://user-images.githubusercontent.com/3858485/116525752-bea3c580-a8d0-11eb-9bf0-e4ad08d54397.png" />
+<figcaption>
+<p><span class="caption-text">image</span><a class="headerlink" href="#id5" title="Permalink to this image"></a></p>
+</figcaption>
+</figure>
+<figure class="align-default" id="id6">
+<img alt="image" src="https://user-images.githubusercontent.com/3858485/116531936-98355880-a8d7-11eb-87bf-0fc6b72035a4.png" />
+<figcaption>
+<p><span class="caption-text">image</span><a class="headerlink" href="#id6" title="Permalink to this image"></a></p>
+</figcaption>
+</figure>
+</section>
+<section id="add-roles-to-the-client">
+<h2>Add roles to the client<a class="headerlink" href="#add-roles-to-the-client" title="Permalink to this headline"></a></h2>
+<p>Now we need to add the roles (org-admin, platform-admin) to the client</p>
+<figure class="align-default" id="id7">
+<img alt="image" src="https://user-images.githubusercontent.com/3858485/116526248-4d184700-a8d1-11eb-8e0c-35c5e3407e36.png" />
+<figcaption>
+<p><span class="caption-text">image</span><a class="headerlink" href="#id7" title="Permalink to this image"></a></p>
+</figcaption>
+</figure>
+<figure class="align-default" id="id8">
+<img alt="image" src="https://user-images.githubusercontent.com/3858485/116527096-38887e80-a8d2-11eb-8b01-ed4c8c92485a.png" />
+<figcaption>
+<p><span class="caption-text">image</span><a class="headerlink" href="#id8" title="Permalink to this image"></a></p>
+</figcaption>
+</figure>
+<figure class="align-default" id="id9">
+<img alt="image" src="https://user-images.githubusercontent.com/3858485/116527183-50f89900-a8d2-11eb-9f38-4b546394b9a8.png" />
+<figcaption>
+<p><span class="caption-text">image</span><a class="headerlink" href="#id9" title="Permalink to this image"></a></p>
+</figcaption>
+</figure>
+</section>
+<section id="add-roles-to-user">
+<h2>Add roles to user<a class="headerlink" href="#add-roles-to-user" title="Permalink to this headline"></a></h2>
+<p>Navigate to the user you created and switch to the role mappings tab -
+then in the “client roles” field select the name of the client you
+created (in the example <code class="docutils literal notranslate"><span class="pre">platform-api-server</span></code>). This will load the
+roles and you can assign both of the roles created previously to the
+user</p>
+<figure class="align-default" id="id10">
+<img alt="image" src="https://user-images.githubusercontent.com/3858485/116527413-8b623600-a8d2-11eb-8831-88ad0aaecf9d.png" />
+<figcaption>
+<p><span class="caption-text">image</span><a class="headerlink" href="#id10" title="Permalink to this image"></a></p>
+</figcaption>
+</figure>
+<figure class="align-default" id="id11">
+<img alt="image" src="https://user-images.githubusercontent.com/3858485/116527637-d2502b80-a8d2-11eb-9d83-e59d33e08a1e.png" />
+<figcaption>
+<p><span class="caption-text">image</span><a class="headerlink" href="#id11" title="Permalink to this image"></a></p>
+</figcaption>
+</figure>
+</section>
+<section id="add-groups-to-user">
+<h2>Add groups to user<a class="headerlink" href="#add-groups-to-user" title="Permalink to this headline"></a></h2>
+<p>Navigate to the user you created and switch to the groups tab. Add the
+<code class="docutils literal notranslate"><span class="pre">my-org</span></code> group to the user:</p>
+<figure class="align-default" id="id12">
+<img alt="image" src="https://user-images.githubusercontent.com/3858485/116529497-f01e9000-a8d4-11eb-8719-4fe68aed2444.png" />
+<figcaption>
+<p><span class="caption-text">image</span><a class="headerlink" href="#id12" title="Permalink to this image"></a></p>
+</figcaption>
+</figure>
+</section>
+<section id="add-mappers-to-the-client">
+<h2>Add mappers to the client<a class="headerlink" href="#add-mappers-to-the-client" title="Permalink to this headline"></a></h2>
+<p>The issued JWT token must include the roles and groups as well as the
+audience (<code class="docutils literal notranslate"><span class="pre">aud</span></code>) claim. We need to set up mappers for these
+attributes.</p>
+<figure class="align-default" id="id13">
+<img alt="image" src="https://user-images.githubusercontent.com/3858485/116528266-88b41080-a8d3-11eb-9da2-5c51b2c04de2.png" />
+<figcaption>
+<p><span class="caption-text">image</span><a class="headerlink" href="#id13" title="Permalink to this image"></a></p>
+</figcaption>
+</figure>
+<section id="add-groups-organizations-mapper">
+<h3>Add groups (organizations) mapper<a class="headerlink" href="#add-groups-organizations-mapper" title="Permalink to this headline"></a></h3>
+<p>Click “Create” to add a new mapper. Set the new mapper up as follows:</p>
+<figure class="align-default" id="id14">
+<img alt="image" src="https://user-images.githubusercontent.com/3858485/116529175-8ef6bc80-a8d4-11eb-8a5a-a4664e71dbc9.png" />
+<figcaption>
+<p><span class="caption-text">image</span><a class="headerlink" href="#id14" title="Permalink to this image"></a></p>
+</figcaption>
+</figure>
+</section>
+<section id="add-audience-aud-mapper">
+<h3>Add audience (aud) mapper<a class="headerlink" href="#add-audience-aud-mapper" title="Permalink to this headline"></a></h3>
+<p>Click “Create” to add a new mapper. Set the new mapper up as follows:
+<img alt="image2" src="https://user-images.githubusercontent.com/3858485/116529816-3bd13980-a8d5-11eb-9675-d3b853f5c855.png" /></p>
+</section>
+</section>
+<section id="modify-the-client-scope-settings">
+<h2>Modify the Client Scope settings<a class="headerlink" href="#modify-the-client-scope-settings" title="Permalink to this headline"></a></h2>
+<p>Disable “Full Scope Allowed”: <img alt="image3" src="https://user-images.githubusercontent.com/3858485/116530151-9b2f4980-a8d5-11eb-8779-88423079278f.png" /></p>
+</section>
+<section id="setup-the-client-scopes">
+<h2>Setup the Client Scopes<a class="headerlink" href="#setup-the-client-scopes" title="Permalink to this headline"></a></h2>
+<p>Go to the “Client Scopes” tab of your client and the sub-tab “Setup”.
+Set the default and optional client scopes as shown below:</p>
+<figure class="align-default" id="id15">
+<img alt="image" src="https://user-images.githubusercontent.com/3858485/116530936-83a49080-a8d6-11eb-9f61-b8c8def5e57e.png" />
+<figcaption>
+<p><span class="caption-text">image</span><a class="headerlink" href="#id15" title="Permalink to this image"></a></p>
+</figcaption>
+</figure>
+</section>
+<section id="preview-the-jwt-token">
+<h2>Preview the JWT token<a class="headerlink" href="#preview-the-jwt-token" title="Permalink to this headline"></a></h2>
+<p>Go to the “Client Scopes” tab of your client and the sub-tab “Evaluate”.
+Select the user you created previously:</p>
+<figure class="align-default" id="id16">
+<img alt="image" src="https://user-images.githubusercontent.com/3858485/116530446-f5c8a580-a8d5-11eb-822e-78c4b06b9c08.png" />
+<figcaption>
+<p><span class="caption-text">image</span><a class="headerlink" href="#id16" title="Permalink to this image"></a></p>
+</figcaption>
+</figure>
+<p>Then you can preview the token, check that it contains the right
+<code class="docutils literal notranslate"><span class="pre">aud</span></code>, <code class="docutils literal notranslate"><span class="pre">resource_access</span> <span class="pre">/</span> <span class="pre">roles</span></code> and <code class="docutils literal notranslate"><span class="pre">organizations</span></code> attributes:</p>
+<figure class="align-default" id="id17">
+<img alt="image" src="https://user-images.githubusercontent.com/3858485/116530797-5526b580-a8d6-11eb-8d82-826907bb00a0.png" />
+<figcaption>
+<p><span class="caption-text">image</span><a class="headerlink" href="#id17" title="Permalink to this image"></a></p>
+</figcaption>
+</figure>
+<p>Here is an example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+  <span class="s2">&quot;exp&quot;</span><span class="p">:</span> <span class="mi">1619689009</span><span class="p">,</span>
+  <span class="s2">&quot;iat&quot;</span><span class="p">:</span> <span class="mi">1619688709</span><span class="p">,</span>
+  <span class="s2">&quot;jti&quot;</span><span class="p">:</span> <span class="s2">&quot;dd8c2095-e96f-4ee8-96c6-f3262b1508f9&quot;</span><span class="p">,</span>
+  <span class="s2">&quot;iss&quot;</span><span class="p">:</span> <span class="s2">&quot;http://localhost:8180/auth/realms/apim-connector&quot;</span><span class="p">,</span>
+  <span class="s2">&quot;aud&quot;</span><span class="p">:</span> <span class="s2">&quot;platform-api-server&quot;</span><span class="p">,</span>
+  <span class="s2">&quot;sub&quot;</span><span class="p">:</span> <span class="s2">&quot;bfd13823-9987-446c-b4f8-5f9793be50bf&quot;</span><span class="p">,</span>
+  <span class="s2">&quot;typ&quot;</span><span class="p">:</span> <span class="s2">&quot;Bearer&quot;</span><span class="p">,</span>
+  <span class="s2">&quot;azp&quot;</span><span class="p">:</span> <span class="s2">&quot;platform-api-server&quot;</span><span class="p">,</span>
+  <span class="s2">&quot;session_state&quot;</span><span class="p">:</span> <span class="s2">&quot;297121ef-77d0-4d3d-85ef-64ab2c9ef208&quot;</span><span class="p">,</span>
+  <span class="s2">&quot;acr&quot;</span><span class="p">:</span> <span class="s2">&quot;1&quot;</span><span class="p">,</span>
+  <span class="s2">&quot;resource_access&quot;</span><span class="p">:</span> <span class="p">{</span>
+    <span class="s2">&quot;platform-api-server&quot;</span><span class="p">:</span> <span class="p">{</span>
+      <span class="s2">&quot;roles&quot;</span><span class="p">:</span> <span class="p">[</span>
+        <span class="s2">&quot;org-admin&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;platform-admin&quot;</span>
+      <span class="p">]</span>
+    <span class="p">}</span>
+  <span class="p">},</span>
+  <span class="s2">&quot;scope&quot;</span><span class="p">:</span> <span class="s2">&quot;openid profile&quot;</span><span class="p">,</span>
+  <span class="s2">&quot;organizations&quot;</span><span class="p">:</span> <span class="p">[</span>
+    <span class="s2">&quot;my-org&quot;</span>
+  <span class="p">],</span>
+  <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;Harry H&quot;</span><span class="p">,</span>
+  <span class="s2">&quot;preferred_username&quot;</span><span class="p">:</span> <span class="s2">&quot;harry&quot;</span><span class="p">,</span>
+  <span class="s2">&quot;given_name&quot;</span><span class="p">:</span> <span class="s2">&quot;Harry&quot;</span><span class="p">,</span>
+  <span class="s2">&quot;family_name&quot;</span><span class="p">:</span> <span class="s2">&quot;H&quot;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</section>
+<section id="configure-the-api-server">
+<h2>Configure the API Server<a class="headerlink" href="#configure-the-api-server" title="Permalink to this headline"></a></h2>
+<section id="properties-for-claim-and-username-extraction">
+<h3>Properties for claim and username extraction:<a class="headerlink" href="#properties-for-claim-and-username-extraction" title="Permalink to this headline"></a></h3>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>AUTH_EXTRACTION_USER_PRINCIPAL=$.preferred_username
+</pre></div>
+</div>
+<p>Will evaluate to “harry” given the JWT example above.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>AUTH_EXTRACTION_ORGS=$.organizations
+</pre></div>
+</div>
+<p>Will evaluate to</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">[</span>
+    <span class="s2">&quot;my-org&quot;</span>
+  <span class="p">]</span>
+</pre></div>
+</div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>AUTH_EXTRACTION_ROLES=$.resource_access[&#39;platform-api-server&#39;].roles
+</pre></div>
+</div>
+<p>Will evaluate to</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">[</span>
+        <span class="s2">&quot;org-admin&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;platform-admin&quot;</span>
+      <span class="p">]</span>
+</pre></div>
+</div>
+</section>
+<section id="properties-for-jwt-verification">
+<h3>Properties for JWT verification<a class="headerlink" href="#properties-for-jwt-verification" title="Permalink to this headline"></a></h3>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">AUTH_VERIFICATION_AUD</span><span class="o">=</span><span class="n">platform</span><span class="o">-</span><span class="n">api</span><span class="o">-</span><span class="n">server</span>
+</pre></div>
+</div>
+<p>Must match the <code class="docutils literal notranslate"><span class="pre">aud</span></code> property in the JWT token - see example above</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">AUTH_VERIFICATION_ISSUER</span><span class="o">=</span><span class="n">http</span><span class="p">:</span><span class="o">//</span><span class="n">localhost</span><span class="p">:</span><span class="mi">8180</span><span class="o">/</span><span class="n">auth</span><span class="o">/</span><span class="n">realms</span><span class="o">/</span><span class="n">apim</span><span class="o">-</span><span class="n">connector</span>
+</pre></div>
+</div>
+<p>The URL of your keycloak realm, <code class="docutils literal notranslate"><span class="pre">apim-connector</span></code> is the realm name.
+Replace if you use another realm.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">AUTH_VERIFICATION_KEY</span><span class="o">=/</span><span class="n">Users</span><span class="o">/</span><span class="n">swenhelge</span><span class="o">/</span><span class="n">platform</span><span class="o">-</span><span class="n">api</span><span class="o">-</span><span class="n">tmp</span><span class="o">/</span><span class="n">keycloak_local_key</span><span class="o">.</span><span class="n">pem</span>
+</pre></div>
+</div>
+<p>The location of public key used by keycloak - you need to download it
+from the “Realm Settings” in keycloak: <img alt="image4" src="https://user-images.githubusercontent.com/3858485/116533161-f4e54300-a8d8-11eb-92d9-8a0544e5cd81.png" /></p>
+</section>
+<section id="set-the-openid-connect-discovery-url">
+<h3>Set the OpenId Connect Discovery URL<a class="headerlink" href="#set-the-openid-connect-discovery-url" title="Permalink to this headline"></a></h3>
+<p>Will be in the format below. Replace host, port and realm
+(<code class="docutils literal notranslate"><span class="pre">apim-connector</span></code> in the example below) with the correct values for
+your deployment:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">AUTH_DISCOVERY_OIDC_URL</span><span class="o">=</span><span class="n">http</span><span class="p">:</span><span class="o">//</span><span class="n">localhost</span><span class="p">:</span><span class="mi">8180</span><span class="o">/</span><span class="n">auth</span><span class="o">/</span><span class="n">realms</span><span class="o">/</span><span class="n">apim</span><span class="o">-</span><span class="n">connector</span><span class="o">/.</span><span class="n">well</span><span class="o">-</span><span class="n">known</span><span class="o">/</span><span class="n">openid</span><span class="o">-</span><span class="n">configuration</span>
+</pre></div>
+</div>
+</section>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="wso2.html" class="btn btn-neutral float-left" title="Configure WSO2 API Manager for use with the API Server" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="okta.html" class="btn btn-neutral float-right" title="Configure Okta for use with the API Server" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, Solace Corporation, Swen-Helge Huber, &lt;swen-helge.huber@solace.com&gt;.
+      <span class="lastupdated">Last updated on 05 May 2022 at 13:37.
+      </span></p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

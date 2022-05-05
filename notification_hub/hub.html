@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Setup and configure a Notification Hub &mdash; Solace Async API-M Connector r0.0.2 documentation</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/contentui.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/contentui.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Enabling Notifications on an Organization" href="organization_notifications.html" />
+    <link rel="prev" title="Overview of Organization Notifications and Notification Hub" href="overview.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../index.html" class="icon icon-home"> Solace Async API-M Connector
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Guides</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../quickstart/index.html">Quickstart</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../security/index.html">Security</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">Connector Notification Hub</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="overview.html">Overview of Organization Notifications and Notification Hub</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Setup and configure a Notification Hub</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#apis-available-for-the-notification-hub">APIs available for the Notification Hub</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#producer-api">Producer API</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#consumer-apis">Consumer APIs</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#create-a-notification-hub-organization">Create a Notification Hub Organization</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#configure-and-manage-the-hub">Configure and manage the Hub</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="organization_notifications.html">Enabling Notifications on an Organization</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../configuration/index.html">Configuration</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">Solace Async API-M Connector</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="index.html">Connector Notification Hub</a> &raquo;</li>
+      <li>Setup and configure a Notification Hub</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/notification_hub/hub.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="setup-and-configure-a-notification-hub">
+<h1>Setup and configure a Notification Hub<a class="headerlink" href="#setup-and-configure-a-notification-hub" title="Permalink to this headline"></a></h1>
+<p>This guide explains how to create a Notification Hub and enable Organization Notifications.
+See below for an explanation of these concepts.</p>
+<section id="apis-available-for-the-notification-hub">
+<h2>APIs available for the Notification Hub<a class="headerlink" href="#apis-available-for-the-notification-hub" title="Permalink to this headline"></a></h2>
+<p>The Hub can provide:</p>
+<ul class="simple">
+<li><p>Producer API</p></li>
+<li><p>Consumer APIs</p></li>
+</ul>
+<section id="producer-api">
+<h3>Producer API<a class="headerlink" href="#producer-api" title="Permalink to this headline"></a></h3>
+<p>Allows to create apps that can act as producers of notifications.</p>
+<p>Includes ability to publish any type of Notification for any resource</p>
+<ul class="simple">
+<li><p>API</p></li>
+<li><p>API Product</p></li>
+<li><p>Apps</p></li>
+<li><p>Environment</p></li>
+<li></li>
+</ul>
+<p>The Async API contract for the producer can be found on your Connector:</p>
+<p><code class="docutils literal notranslate"><span class="pre">http://&lt;CONNECTOR_HOST&gt;:&lt;CONNECTOR_PORT&gt;/notification-api/producer/api.yml</span></code></p>
+<p>Example - event produced on creation of an API:</p>
+<blockquote>
+<div><img alt="../_images/notification_producer_event_example.png" src="../_images/notification_producer_event_example.png" />
+</div></blockquote>
+</section>
+<section id="consumer-apis">
+<h3>Consumer APIs<a class="headerlink" href="#consumer-apis" title="Permalink to this headline"></a></h3>
+<p>There are Async APIs for speparate groups of events. These groups mirrot the groups (tags) used in the Connector’s OpenAPI
+This allows to offer one or more specific sets of notifications as API Products for consuming applications.</p>
+<p>These are the Async APIs available:</p>
+<ul class="simple">
+<li><p>API Resource Notificiations: apis.yml</p></li>
+<li><p>API Product Resource Notifications: apiProducts.yml</p></li>
+<li><p>Teams and team apps Resource Notifications: teams.yml</p></li>
+<li><p>Developers and developer apps Resource Notifications: developers.yml</p></li>
+<li><p>Apps Resource Notifications (including teams and developers apps): apps.yml</p></li>
+<li><p>Environments Resource Notifications: environments.yml</p></li>
+<li><p>Management Resource Notifications: management.yml</p></li>
+</ul>
+<p>All of the above API Contracts are available on the Connector for download at this Base URL:
+<code class="docutils literal notranslate"><span class="pre">http://&lt;CONNECTOR_HOST&gt;:&lt;CONNECTOR_PORT&gt;/notification-api/consumer</span></code></p>
+<ul class="simple">
+<li><p>For example the APIs contract can be found at <code class="docutils literal notranslate"><span class="pre">http://&lt;CONNECTOR_HOST&gt;:&lt;CONNECTOR_PORT&gt;/notification-api/consumer/apis.yml</span></code></p></li>
+</ul>
+<p>Example - event emitted on creation of an API:</p>
+<blockquote>
+<div><img alt="../_images/notification_consumer_event_example.png" src="../_images/notification_consumer_event_example.png" />
+</div></blockquote>
+</section>
+</section>
+<section id="create-a-notification-hub-organization">
+<h2>Create a Notification Hub Organization<a class="headerlink" href="#create-a-notification-hub-organization" title="Permalink to this headline"></a></h2>
+<p>To create the Hub you can use the Connector configuration tool located in <a class="reference external" href="https://github.com/solace-iot-team/platform-api/tree/main/api-implementation/tools">https://github.com/solace-iot-team/platform-api/tree/main/api-implementation/tools</a></p>
+<p>The tool expects a configuraiton file that it applies to generate the required object in the Connector such as Organization, Environments, APIs. The template below can also be found in the same github location (<code class="docutils literal notranslate"><span class="pre">notification.hub.template.json</span></code>). You will need to adjust the values in brackets <code class="docutils literal notranslate"><span class="pre">&lt;&gt;</span></code> and you may want to taylor the list of APIs that should be set up in your Hub. See comments below.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+  <span class="s2">&quot;server&quot;</span><span class="p">:</span> <span class="p">{</span>
+    <span class="s2">&quot;baseUrl&quot;</span><span class="p">:</span> <span class="s2">&quot;http:/&lt;CONNECTOR_HOST&gt;:&lt;CONNECTOR_PORT&gt;/v1&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;admin&quot;</span><span class="p">:</span> <span class="p">{</span>
+      <span class="s2">&quot;username&quot;</span><span class="p">:</span> <span class="s2">&quot;&lt;CONNECTOR_ADMIN&gt;&quot;</span><span class="p">,</span>
+      <span class="s2">&quot;password&quot;</span><span class="p">:</span> <span class="s2">&quot;${env:SERVER_ADMIN_PASSWORD}&quot;</span>
+    <span class="p">}</span>
+  <span class="p">},</span>
+  <span class="s2">&quot;organization&quot;</span><span class="p">:</span> <span class="p">{</span>
+    <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;&lt;HUB_ORGANIZATION&gt;&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;token&quot;</span><span class="p">:</span> <span class="s2">&quot;${env:ORGANIZATION_CLOUD_TOKEN}&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;admin&quot;</span><span class="p">:</span> <span class="p">{</span>
+      <span class="s2">&quot;username&quot;</span><span class="p">:</span> <span class="s2">&quot;&lt;ORG_ADMIN&gt;&quot;</span><span class="p">,</span>
+      <span class="s2">&quot;password&quot;</span><span class="p">:</span> <span class="s2">&quot;${env:ORGANIZATION_ADMIN_PASSWORD}&quot;</span>
+    <span class="p">}</span>
+  <span class="p">},</span>
+  <span class="s2">&quot;services&quot;</span><span class="p">:</span> <span class="p">[</span>
+    <span class="s2">&quot;&lt;Solace PS+ Service Name&gt;&quot;</span>
+  <span class="p">],</span>
+  <span class="s2">&quot;apis&quot;</span><span class="p">:</span> <span class="p">{</span>
+    <span class="s2">&quot;NotificationProvider&quot;</span><span class="p">:</span> <span class="s2">&quot;http://&lt;CONNECTOR_HOST&gt;:&lt;CONNECTOR_PORT&gt;/notification-api/producer/api.yml&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;APINotifications&quot;</span><span class="p">:</span> <span class="s2">&quot;http://&lt;CONNECTOR_HOST&gt;:&lt;CONNECTOR_PORT&gt;/notification-api/consumer/apis.yml&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;APIProductNotifications&quot;</span><span class="p">:</span> <span class="s2">&quot;http://&lt;CONNECTOR_HOST&gt;:&lt;CONNECTOR_PORT&gt;/notification-api/consumer/apiProducts.yml&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;TeamNotifications&quot;</span><span class="p">:</span> <span class="s2">&quot;http://&lt;CONNECTOR_HOST&gt;:&lt;CONNECTOR_PORT&gt;/notification-api/consumer/teams.yml&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;DeveloperNotifications&quot;</span><span class="p">:</span> <span class="s2">&quot;http://&lt;CONNECTOR_HOST&gt;:&lt;CONNECTOR_PORT&gt;/notification-api/consumer/developers.yml&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;AppNotifications&quot;</span><span class="p">:</span> <span class="s2">&quot;http://&lt;CONNECTOR_HOST&gt;:&lt;CONNECTOR_PORT&gt;/notification-api/consumer/apps.yml&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;EnvironmentNotifications&quot;</span><span class="p">:</span> <span class="s2">&quot;http://&lt;CONNECTOR_HOST&gt;:&lt;CONNECTOR_PORT&gt;/notification-api/consumer/environments.yml&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;ManagementNotifications&quot;</span><span class="p">:</span> <span class="s2">&quot;http://&lt;CONNECTOR_HOST&gt;:&lt;CONNECTOR_PORT&gt;/notification-api/consumer/management.yml&quot;</span>
+  <span class="p">},</span>
+  <span class="s2">&quot;application&quot;</span><span class="p">:</span> <span class="p">{</span>
+    <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;&lt;PROVIDER_APP_NAME&gt;&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;owner&quot;</span><span class="p">:</span> <span class="s2">&quot;&lt;DEV_NAME&gt;&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;credentials&quot;</span><span class="p">:</span> <span class="p">{</span>
+      <span class="s2">&quot;username&quot;</span><span class="p">:</span> <span class="s2">&quot;${env:APPLICATION_CONSUMER_KEY}&quot;</span><span class="p">,</span>
+      <span class="s2">&quot;password&quot;</span><span class="p">:</span> <span class="s2">&quot;${env:APPLICATION_CONSUMER_SECRET}&quot;</span>
+    <span class="p">}</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>Let’s look at the detail of this configuration:</p>
+<ul class="simple">
+<li><p>The <code class="docutils literal notranslate"><span class="pre">server</span></code> element contains how the tool should connect.</p>
+<ul>
+<li><p>You need to adjust two values in the element:</p>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">baseUrl</span></code> - replace the <code class="docutils literal notranslate"><span class="pre">&lt;CONNECTOR_HOST&gt;</span></code> and <code class="docutils literal notranslate"><span class="pre">&lt;CONNECTOR_PORT&gt;</span></code> with the values where your Connector is running</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">admin.username</span></code> - replace the value with the admin user of your connector (needs to have <code class="docutils literal notranslate"><span class="pre">platform-admin</span></code> role).</p></li>
+</ul>
+</li>
+<li><p>You also need to provide the server password as an envirohnment variable.</p></li>
+</ul>
+</li>
+<li><p>The <code class="docutils literal notranslate"><span class="pre">organization</span></code> element describes the Hub Organization:</p>
+<ul>
+<li><p>You need to adjust the followig elements:
+* <code class="docutils literal notranslate"><span class="pre">name</span></code> - the name for the Hub Organization</p>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">admin.username</span></code> - the username of an organization admin (needs to have <code class="docutils literal notranslate"><span class="pre">org-admin</span></code> role).</p></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p>The <code class="docutils literal notranslate"><span class="pre">services</span></code> element lists the PS+ Services that should be configured as environments:</p>
+<ul>
+<li><p>You need to list the Service names as shown in Solace Cloud Mission Control</p></li>
+</ul>
+</li>
+<li><p>The <code class="docutils literal notranslate"><span class="pre">apis</span></code> section lists all the Async APIs that should be uploaded into the Hub.</p>
+<ul>
+<li><p>You need to replace the &lt;CONNECTOR_HOST&gt; and &lt;CONNECTOR_PORT&gt; in all the URLs with the values where your Connector is running.</p></li>
+<li><p>You can remove any APIs that you don’t need. You can always upload these APIs later, for example via the Async APIM Portal.</p></li>
+</ul>
+</li>
+<li><p>The <code class="docutils literal notranslate"><span class="pre">application</span></code> section list the information required to set up a default app</p>
+<ul>
+<li><p>Provide an app name in the <code class="docutils literal notranslate"><span class="pre">name</span></code> element. Also replace the <code class="docutils literal notranslate"><span class="pre">owner</span></code> value with a developer name that you would like to use for the owner.</p></li>
+<li><p>The app credentials can be provided in the environment variables.</p></li>
+</ul>
+</li>
+</ul>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>TODO - instructions - To execute the tool setup your environment variables and run …</p>
+</div>
+</section>
+<section id="configure-and-manage-the-hub">
+<h2>Configure and manage the Hub<a class="headerlink" href="#configure-and-manage-the-hub" title="Permalink to this headline"></a></h2>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>TODO - add section</p>
+</div>
+<p>Outline:</p>
+<p>Overview of what was set up</p>
+<p>Obtaining configuration to use the Hub with an organization</p>
+<p>How to set up a target application</p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="overview.html" class="btn btn-neutral float-left" title="Overview of Organization Notifications and Notification Hub" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="organization_notifications.html" class="btn btn-neutral float-right" title="Enabling Notifications on an Organization" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, Solace Corporation, Swen-Helge Huber, &lt;swen-helge.huber@solace.com&gt;.
+      <span class="lastupdated">Last updated on 05 May 2022 at 13:37.
+      </span></p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Setup &mdash; Solace Async API-M Connector r0.0.2 documentation</title>
+  <title>Configuring the APIM Connector using the REST API &mdash; Solace Async API-M Connector r0.0.2 documentation</title>
       <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../_static/contentui.css" type="text/css" />
@@ -20,7 +20,8 @@
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="prev" title="Installation" href="installation.html" /> 
+    <link rel="next" title="Security" href="../security/index.html" />
+    <link rel="prev" title="Installing the API Management Connector" href="installation.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -41,10 +42,37 @@
               <p class="caption" role="heading"><span class="caption-text">Guides</span></p>
 <ul class="current">
 <li class="toctree-l1 current"><a class="reference internal" href="index.html">Quickstart</a><ul class="current">
-<li class="toctree-l2"><a class="reference internal" href="installation.html">Installation</a></li>
-<li class="toctree-l2 current"><a class="current reference internal" href="#">Setup</a></li>
+<li class="toctree-l2"><a class="reference internal" href="prerequisites.html">Prerequisites - Getting Started with PubSub+ Cloud</a></li>
+<li class="toctree-l2"><a class="reference internal" href="installation.html">Installing the API Management Connector</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Configuring the APIM Connector using the REST API</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#conventions">Conventions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#set-up-an-organisation-tenant-in-the-connector">Set up an organisation (tenant) in the connector</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#create-an-environment-register-a-pubsub-broker-as-an-api-gateway">Create an environment - register a PubSub+ broker as an API gateway</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#create-an-api-async-api">Create an API (Async API)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#create-an-api-product">Create an API Product</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#create-a-developer">Create a developer</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#create-an-app">Create an app</a></li>
 </ul>
 </li>
+<li class="toctree-l2"><a class="reference internal" href="#integrating-the-connector-with-api-management-platforms">Integrating the Connector with API Management Platforms</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#wso2-api-management">WSO2 API Management</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#prepare-the-api-management-connector">Prepare the API Management Connector</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#integrating-the-connector-into-wso2-api-management">Integrating the Connector into WSO2 API Management</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#creating-and-deploying-an-api">Creating and deploying an API</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#subscribing-to-an-api">Subscribing to an API</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#invoking-an-api">Invoking an API</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../security/index.html">Security</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../notification_hub/index.html">Connector Notification Hub</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../configuration/index.html">Configuration</a></li>
 </ul>
 
         </div>
@@ -62,7 +90,7 @@
   <ul class="wy-breadcrumbs">
       <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
           <li><a href="index.html">Quickstart</a> &raquo;</li>
-      <li>Setup</li>
+      <li>Configuring the APIM Connector using the REST API</li>
       <li class="wy-breadcrumbs-aside">
             <a href="../_sources/quickstart/setup.rst.txt" rel="nofollow"> View page source</a>
       </li>
@@ -72,26 +100,830 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section id="setup">
-<h1>Setup<a class="headerlink" href="#setup" title="Permalink to this headline"></a></h1>
-<div class="admonition warning">
-<p class="admonition-title">Warning</p>
-<p>UNDER CONSTRUCTION</p>
+  <section id="configuring-the-apim-connector-using-the-rest-api">
+<h1>Configuring the APIM Connector using the REST API<a class="headerlink" href="#configuring-the-apim-connector-using-the-rest-api" title="Permalink to this headline"></a></h1>
+<p>In this section we will configure the connector with a tenant and create
+all the resources required to eventually allow a developer to register
+an app, that provides access to a Solace Event Broker:</p>
+<ol class="arabic simple">
+<li><p>Set up a tenant in the connector</p></li>
+<li><p>Create an environment - register a PubSub+ broker as an API gateway</p></li>
+<li><p>Create an API (Async API)</p></li>
+<li><p>Create an API Product - associating the API with an environment and
+configuring the allowed protocols</p></li>
+<li><p>Create a developer</p></li>
+<li><p>Create an app that is using the API Product</p></li>
+</ol>
+<p>The Connector’s REST API is documented using Open API and you can
+explore the API by browsing to
+<code class="docutils literal notranslate"><span class="pre">http://{connector_host}:{connector_port}/api-explorer</span></code>.</p>
+<section id="conventions">
+<h2>Conventions<a class="headerlink" href="#conventions" title="Permalink to this headline"></a></h2>
+<p>The API call examples below use curl.</p>
+<p>The following place holders are used in the cURL commands, you need to
+replace these with the correct values: * <code class="docutils literal notranslate"><span class="pre">{connector_host}</span></code>: host
+name or IP of the connector server * <code class="docutils literal notranslate"><span class="pre">{connector_port}</span></code>: port of the
+connector server * <code class="docutils literal notranslate"><span class="pre">{org_admin_name}</span></code>: user name of a user with
+org-admin privileges * <code class="docutils literal notranslate"><span class="pre">{org_admin_pwd}</span></code>: password of the user with
+org-admin privileges * <code class="docutils literal notranslate"><span class="pre">{org_name}</span></code>: name of the organisation/tenant
+you want to create</p>
+</section>
+<section id="set-up-an-organisation-tenant-in-the-connector">
+<h2>Set up an organisation (tenant) in the connector<a class="headerlink" href="#set-up-an-organisation-tenant-in-the-connector" title="Permalink to this headline"></a></h2>
+<p>In order to create an organisation the call must be made using
+credentials of a user with <code class="docutils literal notranslate"><span class="pre">platform-admin</span></code> privileges. (refer back to
+the deployment section which outlines how the users are configured).</p>
+<p>In the call below you need to replace the following (in addition to the
+common placeholders documented above): * <code class="docutils literal notranslate"><span class="pre">{connector_admin_name}</span></code>:
+user name of a user with platform-admin privileges *
+<code class="docutils literal notranslate"><span class="pre">{connector_admin_pwd}</span></code>: password of the user with platform-admin
+privileges * <code class="docutils literal notranslate"><span class="pre">{cloud_token}</span></code>: an API token for Solace Cloud - see
+above for how to create this token</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">curl</span> <span class="o">--</span><span class="n">location</span> <span class="o">--</span><span class="n">request</span> <span class="n">POST</span> <span class="s1">&#39;http://</span><span class="si">{connector_host}</span><span class="s1">:</span><span class="si">{connector_port}</span><span class="s1">/v1/organizations&#39;</span> \
+<span class="o">--</span><span class="n">user</span> <span class="p">{</span><span class="n">connector_admin_name</span><span class="p">}:{</span><span class="n">connector_admin_pwd</span><span class="p">}</span><span class="o">&gt;</span> \
+<span class="o">--</span><span class="n">header</span> <span class="s1">&#39;Content-Type: application/json&#39;</span> \
+<span class="o">--</span><span class="n">data</span><span class="o">-</span><span class="n">raw</span> <span class="s1">&#39;{</span>
+  <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;</span><span class="si">{org_name}</span><span class="s2">&quot;</span><span class="p">,</span>
+  <span class="s2">&quot;cloud-token&quot;</span><span class="p">:</span> <span class="s2">&quot;</span><span class="si">{cloud_token}</span><span class="s2">&quot;</span>
+<span class="p">}</span><span class="s1">&#39;</span>
+</pre></div>
 </div>
+</section>
+<section id="create-an-environment-register-a-pubsub-broker-as-an-api-gateway">
+<h2>Create an environment - register a PubSub+ broker as an API gateway<a class="headerlink" href="#create-an-environment-register-a-pubsub-broker-as-an-api-gateway" title="Permalink to this headline"></a></h2>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">{service_id}</span></code>: the id of a PubSub+ broker in your Solace Cloud
+account. You can use the first cURL command below to retrieve a list
+of available services and their service ids.</p></li>
+<li><p>if required adjust the protocols in the request - the Connector
+verifies that these protocols are enabled on the service you specify
+with <code class="docutils literal notranslate"><span class="pre">{service_id}</span></code></p></li>
+</ul>
+<p>Retrieve services in the associated Solace Cloud account:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">curl</span> <span class="s1">&#39;http://localhost:9090/v1/my-org/services&#39;</span> \
+<span class="o">--</span><span class="n">user</span> <span class="p">{</span><span class="n">org_admin_name</span><span class="p">}:{</span><span class="n">org_admin_pwd</span><span class="p">}</span><span class="o">&gt;</span>
+</pre></div>
+</div>
+<p>Create an Environment:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">curl</span> <span class="o">--</span><span class="n">location</span> <span class="o">--</span><span class="n">request</span> <span class="n">POST</span> <span class="s1">&#39;http://</span><span class="si">{connector_host}</span><span class="s1">:</span><span class="si">{connector_port}</span><span class="s1">/v1/</span><span class="si">{org_name}</span><span class="s1">/environments&#39;</span> \
+<span class="o">--</span><span class="n">user</span> <span class="p">{</span><span class="n">org_admin_name</span><span class="p">}:{</span><span class="n">org_admin_pwd</span><span class="p">}</span><span class="o">&gt;</span> \
+<span class="o">--</span><span class="n">header</span> <span class="s1">&#39;Content-Type: application/json&#39;</span> \
+<span class="o">--</span><span class="n">data</span><span class="o">-</span><span class="n">raw</span> <span class="s1">&#39;{</span>
+  <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;dev&quot;</span><span class="p">,</span>
+  <span class="s2">&quot;displayName&quot;</span><span class="p">:</span> <span class="s2">&quot;dev display name&quot;</span><span class="p">,</span>
+  <span class="s2">&quot;description&quot;</span><span class="p">:</span> <span class="s2">&quot;dev environment&quot;</span><span class="p">,</span>
+  <span class="s2">&quot;serviceId&quot;</span><span class="p">:</span> <span class="s2">&quot;</span><span class="si">{service_id}</span><span class="s2">&quot;</span><span class="p">,</span>
+  <span class="s2">&quot;exposedProtocols&quot;</span><span class="p">:</span> <span class="p">[</span>
+    <span class="p">{</span>
+      <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;secure-mqtt&quot;</span><span class="p">,</span>
+      <span class="s2">&quot;version&quot;</span><span class="p">:</span> <span class="s2">&quot;3.1.1&quot;</span>
+    <span class="p">},</span>
+    <span class="p">{</span>
+      <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;https&quot;</span><span class="p">,</span>
+      <span class="s2">&quot;version&quot;</span><span class="p">:</span> <span class="s2">&quot;1.1&quot;</span>
+    <span class="p">}</span>
+  <span class="p">]</span>
+<span class="p">}</span><span class="s1">&#39;</span>
+</pre></div>
+</div>
+</section>
+<section id="create-an-api-async-api">
+<h2>Create an API (Async API)<a class="headerlink" href="#create-an-api-async-api" title="Permalink to this headline"></a></h2>
+<p>The call below uploads and creates an Async API called <code class="docutils literal notranslate"><span class="pre">Test-API</span></code>.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">curl</span> <span class="o">--</span><span class="n">location</span> <span class="o">--</span><span class="n">request</span> <span class="n">PUT</span> <span class="s1">&#39;http://</span><span class="si">{connector_host}</span><span class="s1">:</span><span class="si">{connector_port}</span><span class="s1">/v1/</span><span class="si">{org_name}</span><span class="s1">/apis/Test-API&#39;</span> \
+<span class="o">--</span><span class="n">user</span> <span class="p">{</span><span class="n">org_admin_name</span><span class="p">}:{</span><span class="n">org_admin_pwd</span><span class="p">}</span><span class="o">&gt;</span> \
+<span class="o">--</span><span class="n">header</span> <span class="s1">&#39;Content-Type: text/plain&#39;</span> \
+<span class="o">--</span><span class="n">data</span><span class="o">-</span><span class="n">raw</span> <span class="s1">&#39;{</span>
+  <span class="s2">&quot;components&quot;</span><span class="p">:</span> <span class="p">{</span>
+    <span class="s2">&quot;schemas&quot;</span><span class="p">:</span> <span class="p">{</span>
+      <span class="s2">&quot;SensorEvent&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s2">&quot;$schema&quot;</span><span class="p">:</span> <span class="s2">&quot;http://json-schema.org/draft-04/schema#&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;description&quot;</span><span class="p">:</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;object&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;properties&quot;</span><span class="p">:</span> <span class="p">{</span>
+          <span class="s2">&quot;communicationDate&quot;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;integer&quot;</span>
+          <span class="p">},</span>
+          <span class="s2">&quot;signedCommunication&quot;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;boolean&quot;</span>
+          <span class="p">},</span>
+          <span class="s2">&quot;events&quot;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;array&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;items&quot;</span><span class="p">:</span> <span class="p">[</span>
+              <span class="p">{</span>
+                <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;string&quot;</span>
+              <span class="p">},</span>
+              <span class="p">{</span>
+                <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;array&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;items&quot;</span><span class="p">:</span> <span class="p">[</span>
+                  <span class="p">{</span>
+                    <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;object&quot;</span><span class="p">,</span>
+                    <span class="s2">&quot;properties&quot;</span><span class="p">:</span> <span class="p">{</span>
+                      <span class="s2">&quot;tripPlanId&quot;</span><span class="p">:</span> <span class="p">{</span>
+                        <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;integer&quot;</span>
+                      <span class="p">},</span>
+                      <span class="s2">&quot;sensorName&quot;</span><span class="p">:</span> <span class="p">{</span>
+                        <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;string&quot;</span>
+                      <span class="p">},</span>
+                      <span class="s2">&quot;communicationType&quot;</span><span class="p">:</span> <span class="p">{</span>
+                        <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;string&quot;</span>
+                      <span class="p">},</span>
+                      <span class="s2">&quot;eventType&quot;</span><span class="p">:</span> <span class="p">{</span>
+                        <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;string&quot;</span>
+                      <span class="p">},</span>
+                      <span class="s2">&quot;gps&quot;</span><span class="p">:</span> <span class="p">{</span>
+                        <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;string&quot;</span>
+                      <span class="p">},</span>
+                      <span class="s2">&quot;sensorValues&quot;</span><span class="p">:</span> <span class="p">{</span>
+                        <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;array&quot;</span><span class="p">,</span>
+                        <span class="s2">&quot;items&quot;</span><span class="p">:</span> <span class="p">[</span>
+                          <span class="p">{</span>
+                            <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;string&quot;</span>
+                          <span class="p">},</span>
+                          <span class="p">{</span>
+                            <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;object&quot;</span><span class="p">,</span>
+                            <span class="s2">&quot;properties&quot;</span><span class="p">:</span> <span class="p">{</span>
+                              <span class="s2">&quot;Uncertainty&quot;</span><span class="p">:</span> <span class="p">{</span>
+                                <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;string&quot;</span>
+                              <span class="p">},</span>
+                              <span class="s2">&quot;Compass Direction&quot;</span><span class="p">:</span> <span class="p">{</span>
+                                <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;string&quot;</span>
+                              <span class="p">}</span>
+                            <span class="p">},</span>
+                            <span class="s2">&quot;required&quot;</span><span class="p">:</span> <span class="p">[</span>
+                              <span class="s2">&quot;Uncertainty&quot;</span><span class="p">,</span>
+                              <span class="s2">&quot;Compass Direction&quot;</span>
+                            <span class="p">]</span>
+                          <span class="p">}</span>
+                        <span class="p">]</span>
+                      <span class="p">},</span>
+                      <span class="s2">&quot;sensorValue&quot;</span><span class="p">:</span> <span class="p">{</span>
+                        <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;string&quot;</span>
+                      <span class="p">},</span>
+                      <span class="s2">&quot;deviceSerialNumber&quot;</span><span class="p">:</span> <span class="p">{</span>
+                        <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;string&quot;</span>
+                      <span class="p">},</span>
+                      <span class="s2">&quot;eventDate&quot;</span><span class="p">:</span> <span class="p">{</span>
+                        <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;integer&quot;</span>
+                      <span class="p">},</span>
+                      <span class="s2">&quot;sensorId&quot;</span><span class="p">:</span> <span class="p">{</span>
+                        <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;integer&quot;</span>
+                      <span class="p">}</span>
+                    <span class="p">},</span>
+                    <span class="s2">&quot;required&quot;</span><span class="p">:</span> <span class="p">[</span>
+                      <span class="s2">&quot;deviceSerialNumber&quot;</span><span class="p">,</span>
+                      <span class="s2">&quot;eventDate&quot;</span><span class="p">,</span>
+                      <span class="s2">&quot;eventType&quot;</span><span class="p">,</span>
+                      <span class="s2">&quot;communicationType&quot;</span><span class="p">,</span>
+                      <span class="s2">&quot;gps&quot;</span><span class="p">,</span>
+                      <span class="s2">&quot;sensorName&quot;</span><span class="p">,</span>
+                      <span class="s2">&quot;sensorValue&quot;</span><span class="p">,</span>
+                      <span class="s2">&quot;sensorValues&quot;</span><span class="p">,</span>
+                      <span class="s2">&quot;tripPlanId&quot;</span><span class="p">,</span>
+                      <span class="s2">&quot;sensorId&quot;</span>
+                    <span class="p">]</span>
+                  <span class="p">}</span>
+                <span class="p">]</span>
+              <span class="p">}</span>
+            <span class="p">]</span>
+          <span class="p">},</span>
+          <span class="s2">&quot;deviceSerialNumber&quot;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;string&quot;</span>
+          <span class="p">},</span>
+          <span class="s2">&quot;validatedSignature&quot;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;boolean&quot;</span>
+          <span class="p">}</span>
+        <span class="p">},</span>
+        <span class="s2">&quot;required&quot;</span><span class="p">:</span> <span class="p">[</span>
+          <span class="s2">&quot;events&quot;</span><span class="p">,</span>
+          <span class="s2">&quot;deviceSerialNumber&quot;</span><span class="p">,</span>
+          <span class="s2">&quot;communicationDate&quot;</span><span class="p">,</span>
+          <span class="s2">&quot;signedCommunication&quot;</span><span class="p">,</span>
+          <span class="s2">&quot;validatedSignature&quot;</span>
+        <span class="p">]</span>
+      <span class="p">}</span>
+    <span class="p">},</span>
+    <span class="s2">&quot;messages&quot;</span><span class="p">:</span> <span class="p">{</span>
+      <span class="s2">&quot;GeoSensorEvent&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s2">&quot;payload&quot;</span><span class="p">:</span> <span class="p">{</span>
+          <span class="s2">&quot;$ref&quot;</span><span class="p">:</span> <span class="s2">&quot;#/components/schemas/SensorEvent&quot;</span>
+        <span class="p">},</span>
+        <span class="s2">&quot;description&quot;</span><span class="p">:</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;schemaFormat&quot;</span><span class="p">:</span> <span class="s2">&quot;application/vnd.aai.asyncapi+json;version=2.0.0&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;contentType&quot;</span><span class="p">:</span> <span class="s2">&quot;application/json&quot;</span>
+      <span class="p">},</span>
+      <span class="s2">&quot;SensorEvent&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s2">&quot;payload&quot;</span><span class="p">:</span> <span class="p">{</span>
+          <span class="s2">&quot;$ref&quot;</span><span class="p">:</span> <span class="s2">&quot;#/components/schemas/SensorEvent&quot;</span>
+        <span class="p">},</span>
+        <span class="s2">&quot;description&quot;</span><span class="p">:</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;schemaFormat&quot;</span><span class="p">:</span> <span class="s2">&quot;application/vnd.aai.asyncapi+json;version=2.0.0&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;contentType&quot;</span><span class="p">:</span> <span class="s2">&quot;application/json&quot;</span>
+      <span class="p">}</span>
+    <span class="p">}</span>
+  <span class="p">},</span>
+  <span class="s2">&quot;servers&quot;</span><span class="p">:</span> <span class="p">{},</span>
+  <span class="s2">&quot;channels&quot;</span><span class="p">:</span> <span class="p">{</span>
+    <span class="s2">&quot;traxens/feed/</span><span class="si">{shippingline}</span><span class="s2">/v1/</span><span class="si">{equipmentId}</span><span class="s2">/</span><span class="si">{sensor}</span><span class="s2">/</span><span class="si">{sensorvalue}</span><span class="s2">&quot;</span><span class="p">:</span> <span class="p">{</span>
+      <span class="s2">&quot;publish&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s2">&quot;message&quot;</span><span class="p">:</span> <span class="p">{</span>
+          <span class="s2">&quot;$ref&quot;</span><span class="p">:</span> <span class="s2">&quot;#/components/messages/SensorEvent&quot;</span>
+        <span class="p">}</span>
+      <span class="p">},</span>
+      <span class="s2">&quot;parameters&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s2">&quot;shippingline&quot;</span><span class="p">:</span> <span class="p">{</span>
+          <span class="s2">&quot;schema&quot;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;string&quot;</span>
+          <span class="p">}</span>
+        <span class="p">},</span>
+        <span class="s2">&quot;sensor&quot;</span><span class="p">:</span> <span class="p">{</span>
+          <span class="s2">&quot;schema&quot;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;string&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;enum&quot;</span><span class="p">:</span> <span class="p">[</span>
+              <span class="s2">&quot;HUMIDITY&quot;</span><span class="p">,</span>
+              <span class="s2">&quot;LIGHT&quot;</span><span class="p">,</span>
+              <span class="s2">&quot;DOOR&quot;</span><span class="p">,</span>
+              <span class="s2">&quot;GEOFENCE&quot;</span>
+            <span class="p">]</span>
+          <span class="p">}</span>
+        <span class="p">},</span>
+        <span class="s2">&quot;sensorvalue&quot;</span><span class="p">:</span> <span class="p">{</span>
+          <span class="s2">&quot;schema&quot;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;string&quot;</span>
+          <span class="p">}</span>
+        <span class="p">},</span>
+        <span class="s2">&quot;equipmentId&quot;</span><span class="p">:</span> <span class="p">{</span>
+          <span class="s2">&quot;schema&quot;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;string&quot;</span>
+          <span class="p">}</span>
+        <span class="p">}</span>
+      <span class="p">}</span>
+    <span class="p">},</span>
+    <span class="s2">&quot;traxens/feed/</span><span class="si">{shippingline}</span><span class="s2">/v1/</span><span class="si">{equipmentId}</span><span class="s2">/</span><span class="si">{geosensor}</span><span class="s2">/</span><span class="si">{longitude}</span><span class="s2">&quot;</span><span class="p">:</span> <span class="p">{</span>
+      <span class="s2">&quot;publish&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s2">&quot;message&quot;</span><span class="p">:</span> <span class="p">{</span>
+          <span class="s2">&quot;$ref&quot;</span><span class="p">:</span> <span class="s2">&quot;#/components/messages/GeoSensorEvent&quot;</span>
+        <span class="p">}</span>
+      <span class="p">},</span>
+      <span class="s2">&quot;parameters&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s2">&quot;geosensor&quot;</span><span class="p">:</span> <span class="p">{</span>
+          <span class="s2">&quot;schema&quot;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;string&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;enum&quot;</span><span class="p">:</span> <span class="p">[</span>
+              <span class="s2">&quot;GEOPOSITIONING&quot;</span>
+            <span class="p">]</span>
+          <span class="p">}</span>
+        <span class="p">},</span>
+        <span class="s2">&quot;shippingline&quot;</span><span class="p">:</span> <span class="p">{</span>
+          <span class="s2">&quot;schema&quot;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;string&quot;</span>
+          <span class="p">}</span>
+        <span class="p">},</span>
+        <span class="s2">&quot;equipmentId&quot;</span><span class="p">:</span> <span class="p">{</span>
+          <span class="s2">&quot;schema&quot;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;string&quot;</span>
+          <span class="p">}</span>
+        <span class="p">},</span>
+        <span class="s2">&quot;longitude&quot;</span><span class="p">:</span> <span class="p">{</span>
+          <span class="s2">&quot;schema&quot;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;string&quot;</span>
+          <span class="p">}</span>
+        <span class="p">}</span>
+      <span class="p">}</span>
+    <span class="p">}</span>
+  <span class="p">},</span>
+  <span class="s2">&quot;asyncapi&quot;</span><span class="p">:</span> <span class="s2">&quot;2.0.0&quot;</span><span class="p">,</span>
+  <span class="s2">&quot;info&quot;</span><span class="p">:</span> <span class="p">{</span>
+    <span class="s2">&quot;x-generated-time&quot;</span><span class="p">:</span> <span class="s2">&quot;2021-07-15 15:03 UTC&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;description&quot;</span><span class="p">:</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;title&quot;</span><span class="p">:</span> <span class="s2">&quot;WebSub API&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;x-view&quot;</span><span class="p">:</span> <span class="s2">&quot;provider&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;version&quot;</span><span class="p">:</span> <span class="s2">&quot;1&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;x-origin&quot;</span><span class="p">:</span> <span class="p">{</span>
+      <span class="s2">&quot;vendor&quot;</span><span class="p">:</span> <span class="s2">&quot;solace&quot;</span><span class="p">,</span>
+      <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;event-portal&quot;</span>
+    <span class="p">}</span>
+  <span class="p">}</span>
+<span class="p">}</span><span class="s1">&#39;</span>
+</pre></div>
+</div>
+</section>
+<section id="create-an-api-product">
+<h2>Create an API Product<a class="headerlink" href="#create-an-api-product" title="Permalink to this headline"></a></h2>
+<p>Now let’s package the API - configure which protocols and quotas,
+quality of service apply by using an API product called
+<code class="docutils literal notranslate"><span class="pre">Test-API_PRODUCT</span></code>.</p>
+<p>Note how the requets below references the API we created in the previous
+step:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="s2">&quot;apis&quot;</span><span class="p">:</span> <span class="p">[</span>
+    <span class="s2">&quot;Test-API&quot;</span>
+<span class="p">],</span>
+</pre></div>
+</div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">curl</span> <span class="o">--</span><span class="n">location</span> <span class="o">--</span><span class="n">request</span> <span class="n">POST</span> <span class="s1">&#39;http://</span><span class="si">{connector_host}</span><span class="s1">:</span><span class="si">{connector_port}</span><span class="s1">/v1/</span><span class="si">{org_name}</span><span class="s1">/apiProducts&#39;</span> \
+<span class="o">--</span><span class="n">user</span> <span class="p">{</span><span class="n">org_admin_name</span><span class="p">}:{</span><span class="n">org_admin_pwd</span><span class="p">}</span><span class="o">&gt;</span> \
+<span class="o">--</span><span class="n">header</span> <span class="s1">&#39;Content-Type: application/json&#39;</span> \
+<span class="o">--</span><span class="n">data</span><span class="o">-</span><span class="n">raw</span> <span class="s1">&#39;{</span>
+  <span class="s2">&quot;apis&quot;</span><span class="p">:</span> <span class="p">[</span>
+      <span class="s2">&quot;Test-API&quot;</span>
+  <span class="p">],</span>
+  <span class="s2">&quot;approvalType&quot;</span><span class="p">:</span> <span class="s2">&quot;auto&quot;</span><span class="p">,</span>
+  <span class="s2">&quot;attributes&quot;</span><span class="p">:</span> <span class="p">[</span>
+  <span class="p">],</span>
+  <span class="s2">&quot;description&quot;</span><span class="p">:</span> <span class="s2">&quot;Test-API_PRODUCT&quot;</span><span class="p">,</span>
+  <span class="s2">&quot;displayName&quot;</span><span class="p">:</span> <span class="s2">&quot;Test-API_PRODUCT&quot;</span><span class="p">,</span>
+  <span class="s2">&quot;environments&quot;</span><span class="p">:</span> <span class="p">[</span>
+    <span class="s2">&quot;dev&quot;</span>
+  <span class="p">],</span>
+  <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;Test-API_PRODUCT&quot;</span><span class="p">,</span>
+  <span class="s2">&quot;protocols&quot;</span><span class="p">:</span> <span class="p">[</span>
+    <span class="p">{</span>
+      <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;https&quot;</span><span class="p">,</span>
+      <span class="s2">&quot;version&quot;</span><span class="p">:</span> <span class="s2">&quot;1.1&quot;</span>
+    <span class="p">}</span>
+  <span class="p">],</span>
+  <span class="s2">&quot;clientOptions&quot;</span><span class="p">:</span> <span class="p">{</span>
+    <span class="s2">&quot;guaranteedMessaging&quot;</span><span class="p">:</span> <span class="p">{</span>
+      <span class="s2">&quot;requireQueue&quot;</span><span class="p">:</span> <span class="n">true</span><span class="p">,</span>
+      <span class="s2">&quot;accessType&quot;</span><span class="p">:</span> <span class="s2">&quot;exclusive&quot;</span><span class="p">,</span>
+      <span class="s2">&quot;maxTtl&quot;</span><span class="p">:</span> <span class="mi">3600</span><span class="p">,</span>
+      <span class="s2">&quot;maxMsgSpoolUsage&quot;</span><span class="p">:</span> <span class="mi">50</span>
+    <span class="p">}</span>
+  <span class="p">}</span>
+<span class="p">}</span><span class="s1">&#39;</span>
+</pre></div>
+</div>
+</section>
+<section id="create-a-developer">
+<h2>Create a developer<a class="headerlink" href="#create-a-developer" title="Permalink to this headline"></a></h2>
+<p>Next let’s create a developer, who will be able to register apps in
+order to gain access to APIs. Take a note of the user name, we will need
+it in the call further below to register an application.
+<code class="docutils literal notranslate"><span class="pre">&quot;userName&quot;:</span> <span class="pre">&quot;daisy&quot;</span></code>.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">curl</span> <span class="o">--</span><span class="n">location</span> <span class="o">--</span><span class="n">request</span> <span class="n">POST</span> <span class="s1">&#39;http://</span><span class="si">{connector_host}</span><span class="s1">:</span><span class="si">{connector_port}</span><span class="s1">/v1/</span><span class="si">{org_name}</span><span class="s1">/developers&#39;</span> \
+<span class="o">--</span><span class="n">header</span> <span class="s1">&#39;Content-Type: application/json&#39;</span> \
+<span class="o">--</span><span class="n">user</span> <span class="p">{</span><span class="n">org_admin_name</span><span class="p">}:{</span><span class="n">org_admin_pwd</span><span class="p">}</span><span class="o">&gt;</span> \
+<span class="o">--</span><span class="n">data</span><span class="o">-</span><span class="n">raw</span> <span class="s1">&#39;{</span>
+    <span class="s2">&quot;email&quot;</span><span class="p">:</span> <span class="s2">&quot;daisy@duck.com&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;firstName&quot;</span><span class="p">:</span> <span class="s2">&quot;Daisy&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;lastName&quot;</span><span class="p">:</span> <span class="s2">&quot;Duck&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;userName&quot;</span><span class="p">:</span> <span class="s2">&quot;daisy&quot;</span>
+<span class="p">}</span><span class="s1">&#39;</span>
+</pre></div>
+</div>
+</section>
+<section id="create-an-app">
+<h2>Create an app<a class="headerlink" href="#create-an-app" title="Permalink to this headline"></a></h2>
+<p>The last step is registering an app for the developer (<code class="docutils literal notranslate"><span class="pre">daisy</span></code> in the
+example above). We will also reference the API Product we have created
+before.</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">{app_name}</span></code>: the name of the app we want to create, we can also
+use this later to retrieve app information.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">{developer_name}</span></code>: this is the developer’s username, <code class="docutils literal notranslate"><span class="pre">daisy</span></code> in
+the example above.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">{api_product_name}</span></code>: the API Product name, <code class="docutils literal notranslate"><span class="pre">Test-API_PRODUCT</span></code> in
+the example we used above</p></li>
+</ul>
+<p>Once the app is registered the developer is able to connect to a Solace
+PubSub+ service, see the second call below on how the developer can
+retrieve app details including the connectivity information such as
+protocol, host and port.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">curl</span> <span class="o">--</span><span class="n">location</span> <span class="o">--</span><span class="n">request</span> <span class="n">POST</span> <span class="s1">&#39;http://localhost:9090/v1/</span><span class="si">{org_name}</span><span class="s1">/developers/</span><span class="si">{developer_name}</span><span class="s1">/apps&#39;</span> \
+<span class="o">--</span><span class="n">user</span> <span class="p">{</span><span class="n">org_admin_name</span><span class="p">}:{</span><span class="n">org_admin_pwd</span><span class="p">}</span><span class="o">&gt;</span> \
+<span class="o">--</span><span class="n">header</span> <span class="s1">&#39;Content-Type: application/json&#39;</span> \
+<span class="o">--</span><span class="n">data</span><span class="o">-</span><span class="n">raw</span> <span class="s1">&#39;{</span>
+  <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;</span><span class="si">{app_name}</span><span class="s2">&quot;</span><span class="p">,</span>
+  <span class="s2">&quot;displayName&quot;</span><span class="p">:</span> <span class="s2">&quot;</span><span class="si">{app_name}</span><span class="s2">&quot;</span><span class="p">,</span>
+  <span class="s2">&quot;expiresIn&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+  <span class="s2">&quot;apiProducts&quot;</span><span class="p">:</span> <span class="p">[</span>
+    <span class="s2">&quot;</span><span class="si">{api_product_name}</span><span class="s2">&quot;</span>
+  <span class="p">],</span>
+  <span class="s2">&quot;credentials&quot;</span><span class="p">:</span> <span class="p">{</span>
+  <span class="p">}</span>
+<span class="p">}</span><span class="s1">&#39;</span>
+</pre></div>
+</div>
+<p>Getting the app details:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">curl</span> <span class="o">--</span><span class="n">location</span> <span class="s1">&#39;http://localhost:9090/v1/</span><span class="si">{org_name}</span><span class="s1">/developers/</span><span class="si">{developer_name}</span><span class="s1">/apps/</span><span class="si">{app_name}</span><span class="s1">&#39;</span> \
+<span class="o">--</span><span class="n">user</span> <span class="p">{</span><span class="n">org_admin_name</span><span class="p">}:{</span><span class="n">org_admin_pwd</span><span class="p">}</span><span class="o">&gt;</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="integrating-the-connector-with-api-management-platforms">
+<h1>Integrating the Connector with API Management Platforms<a class="headerlink" href="#integrating-the-connector-with-api-management-platforms" title="Permalink to this headline"></a></h1>
+<section id="wso2-api-management">
+<h2>WSO2 API Management<a class="headerlink" href="#wso2-api-management" title="Permalink to this headline"></a></h2>
+<p>The API Management Connector can be easily integrated with WSO2 API
+Management version 4.1.0 (and above).</p>
+<p>This section describes the initial configuration of the Connector and
+WSO2 API Management and provides a walkthrough of the API life cycle in
+WSO2 API Management.</p>
+<section id="prepare-the-api-management-connector">
+<h3>Prepare the API Management Connector<a class="headerlink" href="#prepare-the-api-management-connector" title="Permalink to this headline"></a></h3>
+<p>An initial configuration of the Connector must be carried out using its
+REST API: * Setting up an Organization * Setting up an Envrionment *
+Setting up a generic developer (TODO - streamline)</p>
+<section id="set-up-an-organisation-tenant-in-the-connector-1">
+<span id="id1"></span><h4>Set up an organisation (tenant) in the connector<a class="headerlink" href="#set-up-an-organisation-tenant-in-the-connector-1" title="Permalink to this headline"></a></h4>
+<p>In order to create an organisation the call must be made using
+credentials of a user with <code class="docutils literal notranslate"><span class="pre">platform-admin</span></code> privileges. (refer back to
+the deployment section which outlines how the users are configured).</p>
+<p>In the call below you need to replace the following (in addition to the
+common placeholders documented above): * <code class="docutils literal notranslate"><span class="pre">{connector_admin_name}</span></code>:
+user name of a user with platform-admin privileges *
+<code class="docutils literal notranslate"><span class="pre">{connector_admin_pwd}</span></code>: password of the user with platform-admin
+privileges * <code class="docutils literal notranslate"><span class="pre">{cloud_token}</span></code>: an API token for Solace Cloud - see
+above for how to create this token * <code class="docutils literal notranslate"><span class="pre">{org_name}</span></code>: the name of the
+tenant you want to create. <strong>Note: remember the ``org_name`` as you need
+it to configure the WSO2 API Management</strong></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">curl</span> <span class="o">--</span><span class="n">location</span> <span class="o">--</span><span class="n">request</span> <span class="n">POST</span> <span class="s1">&#39;http://</span><span class="si">{connector_host}</span><span class="s1">:</span><span class="si">{connector_port}</span><span class="s1">/v1/organizations&#39;</span> \
+<span class="o">--</span><span class="n">user</span> <span class="p">{</span><span class="n">connector_admin_name</span><span class="p">}:{</span><span class="n">connector_admin_pwd</span><span class="p">}</span><span class="o">&gt;</span> \
+<span class="o">--</span><span class="n">header</span> <span class="s1">&#39;Content-Type: application/json&#39;</span> \
+<span class="o">--</span><span class="n">data</span><span class="o">-</span><span class="n">raw</span> <span class="s1">&#39;{</span>
+  <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;</span><span class="si">{org_name}</span><span class="s2">&quot;</span><span class="p">,</span>
+  <span class="s2">&quot;cloud-token&quot;</span><span class="p">:</span> <span class="s2">&quot;</span><span class="si">{cloud_token}</span><span class="s2">&quot;</span>
+<span class="p">}</span><span class="s1">&#39;</span>
+</pre></div>
+</div>
+</section>
+<section id="create-an-environment-register-a-pubsub-broker-as-an-api-gateway-1">
+<span id="id2"></span><h4>Create an environment - register a PubSub+ broker as an API gateway<a class="headerlink" href="#create-an-environment-register-a-pubsub-broker-as-an-api-gateway-1" title="Permalink to this headline"></a></h4>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">{service_id}</span></code>: the id of a PubSub+ broker in your Solace Cloud
+account. You can use the first cURL command below to retrieve a list
+of available services and their service ids.</p></li>
+<li><p>if required adjust the protocols in the request - the Connector
+verifies that these protocols are enabled on the service you specify
+with <code class="docutils literal notranslate"><span class="pre">{service_id}</span></code></p></li>
+</ul>
+<p>Retrieve services in the associated Solace Cloud account:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">curl</span> <span class="s1">&#39;http://localhost:9090/v1/my-org/services&#39;</span> \
+<span class="o">--</span><span class="n">user</span> <span class="p">{</span><span class="n">org_admin_name</span><span class="p">}:{</span><span class="n">org_admin_pwd</span><span class="p">}</span><span class="o">&gt;</span>
+</pre></div>
+</div>
+<p>Locate the service you want to use for your environment in the response
+and take note of its <code class="docutils literal notranslate"><span class="pre">serviceId</span></code>, you need it in the payload of the
+next call to create an environment.</p>
+<p>Also take note of the endpoint URIs for <code class="docutils literal notranslate"><span class="pre">ws-mqtt</span></code>, <code class="docutils literal notranslate"><span class="pre">wss-mqtt</span></code>,
+<code class="docutils literal notranslate"><span class="pre">http</span></code> and <code class="docutils literal notranslate"><span class="pre">https</span></code>. See this partial example response of the REST
+call (the actual response may contain more protocols):</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="s2">&quot;messagingProtocols&quot;</span><span class="p">:</span> <span class="p">[</span>
+  <span class="p">{</span>
+    <span class="s2">&quot;compressed&quot;</span><span class="p">:</span> <span class="s2">&quot;no&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;secure&quot;</span><span class="p">:</span> <span class="s2">&quot;no&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;protocol&quot;</span><span class="p">:</span> <span class="p">{</span>
+      <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;ws-mqtt&quot;</span><span class="p">,</span>
+      <span class="s2">&quot;version&quot;</span><span class="p">:</span> <span class="s2">&quot;3.1.1&quot;</span>
+    <span class="p">},</span>
+    <span class="s2">&quot;transport&quot;</span><span class="p">:</span> <span class="s2">&quot;WS&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;uri&quot;</span><span class="p">:</span> <span class="s2">&quot;ws://</span><span class="si">{service_id}</span><span class="s2">.messaging.solace.cloud:8000&quot;</span>
+  <span class="p">},</span>
+  <span class="p">{</span>
+    <span class="s2">&quot;compressed&quot;</span><span class="p">:</span> <span class="s2">&quot;no&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;secure&quot;</span><span class="p">:</span> <span class="s2">&quot;yes&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;protocol&quot;</span><span class="p">:</span> <span class="p">{</span>
+      <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;wss-mqtt&quot;</span><span class="p">,</span>
+      <span class="s2">&quot;version&quot;</span><span class="p">:</span> <span class="s2">&quot;3.1.1&quot;</span>
+    <span class="p">},</span>
+    <span class="s2">&quot;transport&quot;</span><span class="p">:</span> <span class="s2">&quot;WSS&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;uri&quot;</span><span class="p">:</span> <span class="s2">&quot;wss://</span><span class="si">{service_id}</span><span class="s2">.messaging.solace.cloud:8443&quot;</span>
+  <span class="p">},</span>
+  <span class="p">{</span>
+    <span class="s2">&quot;compressed&quot;</span><span class="p">:</span> <span class="s2">&quot;no&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;secure&quot;</span><span class="p">:</span> <span class="s2">&quot;no&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;protocol&quot;</span><span class="p">:</span> <span class="p">{</span>
+      <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;http&quot;</span><span class="p">,</span>
+      <span class="s2">&quot;version&quot;</span><span class="p">:</span> <span class="s2">&quot;1.1&quot;</span>
+    <span class="p">},</span>
+    <span class="s2">&quot;transport&quot;</span><span class="p">:</span> <span class="s2">&quot;HTTP&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;uri&quot;</span><span class="p">:</span> <span class="s2">&quot;http://</span><span class="si">{service_id}</span><span class="s2">.messaging.solace.cloud:9000&quot;</span>
+  <span class="p">},</span>
+  <span class="p">{</span>
+    <span class="s2">&quot;compressed&quot;</span><span class="p">:</span> <span class="s2">&quot;no&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;secure&quot;</span><span class="p">:</span> <span class="s2">&quot;yes&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;protocol&quot;</span><span class="p">:</span> <span class="p">{</span>
+      <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;https&quot;</span><span class="p">,</span>
+      <span class="s2">&quot;version&quot;</span><span class="p">:</span> <span class="s2">&quot;1.1&quot;</span>
+    <span class="p">},</span>
+    <span class="s2">&quot;transport&quot;</span><span class="p">:</span> <span class="s2">&quot;HTTPS&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;uri&quot;</span><span class="p">:</span> <span class="s2">&quot;https://</span><span class="si">{service_id}</span><span class="s2">.messaging.solace.cloud:9443&quot;</span>
+  <span class="p">}</span>
+<span class="p">],</span>
+</pre></div>
+</div>
+<p>Create an Environment:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">curl</span> <span class="o">--</span><span class="n">location</span> <span class="o">--</span><span class="n">request</span> <span class="n">POST</span> <span class="s1">&#39;http://</span><span class="si">{connector_host}</span><span class="s1">:</span><span class="si">{connector_port}</span><span class="s1">/v1/</span><span class="si">{org_name}</span><span class="s1">/environments&#39;</span> \
+<span class="o">--</span><span class="n">user</span> <span class="p">{</span><span class="n">org_admin_name</span><span class="p">}:{</span><span class="n">org_admin_pwd</span><span class="p">}</span><span class="o">&gt;</span> \
+<span class="o">--</span><span class="n">header</span> <span class="s1">&#39;Content-Type: application/json&#39;</span> \
+<span class="o">--</span><span class="n">data</span><span class="o">-</span><span class="n">raw</span> <span class="s1">&#39;{</span>
+  <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;dev&quot;</span><span class="p">,</span>
+  <span class="s2">&quot;displayName&quot;</span><span class="p">:</span> <span class="s2">&quot;dev display name&quot;</span><span class="p">,</span>
+  <span class="s2">&quot;description&quot;</span><span class="p">:</span> <span class="s2">&quot;dev environment&quot;</span><span class="p">,</span>
+  <span class="s2">&quot;serviceId&quot;</span><span class="p">:</span> <span class="s2">&quot;</span><span class="si">{service_id}</span><span class="s2">&quot;</span><span class="p">,</span>
+  <span class="s2">&quot;exposedProtocols&quot;</span><span class="p">:</span> <span class="p">[</span>
+    <span class="p">{</span>
+      <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;secure-mqtt&quot;</span><span class="p">,</span>
+      <span class="s2">&quot;version&quot;</span><span class="p">:</span> <span class="s2">&quot;3.1.1&quot;</span>
+    <span class="p">},</span>
+    <span class="p">{</span>
+      <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;https&quot;</span><span class="p">,</span>
+      <span class="s2">&quot;version&quot;</span><span class="p">:</span> <span class="s2">&quot;1.1&quot;</span>
+    <span class="p">}</span>
+  <span class="p">]</span>
+<span class="p">}</span><span class="s1">&#39;</span>
+</pre></div>
+</div>
+<p><strong>Note: Remember the environment name</strong></p>
+</section>
+<section id="create-a-developer-1">
+<span id="id3"></span><h4>Create a developer<a class="headerlink" href="#create-a-developer-1" title="Permalink to this headline"></a></h4>
+<p>Next let’s create a generic developer, which will be used by WSO2 API
+Management . Take a note of the user name, we will need it when
+configuring WSO2. <code class="docutils literal notranslate"><span class="pre">&quot;userName&quot;:</span> <span class="pre">&quot;wso2-apim&quot;</span></code>.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">curl</span> <span class="o">--</span><span class="n">location</span> <span class="o">--</span><span class="n">request</span> <span class="n">POST</span> <span class="s1">&#39;http://</span><span class="si">{connector_host}</span><span class="s1">:</span><span class="si">{connector_port}</span><span class="s1">/v1/</span><span class="si">{org_name}</span><span class="s1">/developers&#39;</span> \
+<span class="o">--</span><span class="n">header</span> <span class="s1">&#39;Content-Type: application/json&#39;</span> \
+<span class="o">--</span><span class="n">user</span> <span class="p">{</span><span class="n">org_admin_name</span><span class="p">}:{</span><span class="n">org_admin_pwd</span><span class="p">}</span><span class="o">&gt;</span> \
+<span class="o">--</span><span class="n">data</span><span class="o">-</span><span class="n">raw</span> <span class="s1">&#39;{</span>
+    <span class="s2">&quot;email&quot;</span><span class="p">:</span> <span class="s2">&quot;apim@wso2.org&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;firstName&quot;</span><span class="p">:</span> <span class="s2">&quot;User&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;lastName&quot;</span><span class="p">:</span> <span class="s2">&quot;APIM&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;userName&quot;</span><span class="p">:</span> <span class="s2">&quot;wso2-apim&quot;</span>
+<span class="p">}</span><span class="s1">&#39;</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="integrating-the-connector-into-wso2-api-management">
+<h3>Integrating the Connector into WSO2 API Management<a class="headerlink" href="#integrating-the-connector-into-wso2-api-management" title="Permalink to this headline"></a></h3>
+<p>Open the <code class="docutils literal notranslate"><span class="pre">&lt;API-M_HOME&gt;/repository/conf/deployment.toml</span></code> file and add
+the following according to your account details. Make sure to restart
+the server after adding the configurations.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">[[</span><span class="n">apim</span><span class="o">.</span><span class="n">gateway</span><span class="o">.</span><span class="n">environment</span><span class="p">]]</span>
+<span class="n">name</span> <span class="o">=</span> <span class="o">&lt;</span><span class="n">Name</span> <span class="n">of</span> <span class="n">the</span> <span class="n">Solace</span> <span class="n">Environment</span><span class="o">&gt;</span>
+<span class="n">display_name</span> <span class="o">=</span> <span class="o">&lt;</span><span class="n">Display</span> <span class="n">Name</span> <span class="n">of</span> <span class="n">the</span> <span class="n">Solace</span> <span class="n">Environment</span><span class="o">&gt;</span>
+<span class="nb">type</span> <span class="o">=</span> <span class="o">&lt;</span><span class="n">Type</span> <span class="n">of</span> <span class="n">the</span> <span class="n">Environment</span><span class="o">&gt;</span>
+<span class="n">display_in_api_console</span> <span class="o">=</span> <span class="o">&lt;</span><span class="n">Displays</span> <span class="n">the</span> <span class="n">environment</span> <span class="n">under</span> <span class="s1">&#39;Try it&#39;</span> <span class="ow">in</span> <span class="n">the</span> <span class="n">API</span> <span class="n">Developer</span> <span class="n">Portal</span><span class="p">,</span> <span class="ow">in</span> <span class="n">the</span> <span class="n">API</span> <span class="n">console</span><span class="o">&gt;</span>
+<span class="n">description</span> <span class="o">=</span> <span class="o">&lt;</span><span class="n">Description</span> <span class="n">about</span> <span class="n">Solace</span> <span class="n">Environment</span><span class="o">&gt;</span>
+<span class="n">provider</span> <span class="o">=</span> <span class="o">&lt;</span><span class="n">Vendor</span> <span class="n">name</span> <span class="n">of</span> <span class="n">the</span> <span class="n">environment</span><span class="o">.</span> <span class="p">(</span><span class="n">Must</span> <span class="n">be</span> <span class="s2">&quot;solace&quot;</span><span class="p">)</span><span class="o">&gt;</span>
+<span class="n">service_url</span> <span class="o">=</span> <span class="o">&lt;</span><span class="n">Base</span> <span class="n">URL</span> <span class="n">of</span> <span class="n">the</span> <span class="n">Solace</span> <span class="n">broker</span><span class="o">&gt;</span>
+<span class="n">username</span> <span class="o">=</span> <span class="o">&lt;</span><span class="n">Username</span> <span class="n">of</span> <span class="n">the</span> <span class="n">Solace</span> <span class="n">broker</span> <span class="n">account</span><span class="o">&gt;</span>
+<span class="n">password</span> <span class="o">=</span> <span class="o">&lt;</span><span class="n">Password</span> <span class="n">of</span> <span class="n">the</span> <span class="n">Solace</span> <span class="n">broker</span> <span class="n">account</span><span class="o">&gt;</span>
+<span class="n">ws_endpoint</span> <span class="o">=</span> <span class="o">&lt;</span><span class="n">WS</span> <span class="n">Endpoint</span> <span class="n">of</span> <span class="n">the</span> <span class="n">Solace</span> <span class="n">broker</span> <span class="n">environment</span><span class="o">&gt;</span>
+<span class="n">wss_endpoint</span> <span class="o">=</span> <span class="o">&lt;</span><span class="n">WSS</span> <span class="n">Endpoint</span> <span class="n">of</span> <span class="n">the</span> <span class="n">Solace</span> <span class="n">broker</span> <span class="n">environment</span><span class="o">&gt;</span>
+<span class="n">http_endpoint</span> <span class="o">=</span> <span class="o">&lt;</span><span class="n">HTTP</span> <span class="n">Endpoint</span> <span class="n">of</span> <span class="n">the</span> <span class="n">Solace</span> <span class="n">broker</span> <span class="n">environment</span><span class="o">&gt;</span>
+<span class="n">https_endpoint</span> <span class="o">=</span> <span class="o">&lt;</span><span class="n">HTTPS</span> <span class="n">Endpoint</span> <span class="n">of</span> <span class="n">the</span> <span class="n">Solace</span> <span class="n">broker</span> <span class="n">environment</span><span class="o">&gt;</span>
+<span class="n">show_as_token_endpoint_url</span> <span class="o">=</span> <span class="n">false</span>
+
+<span class="p">[</span><span class="n">apim</span><span class="o">.</span><span class="n">gateway</span><span class="o">.</span><span class="n">environment</span><span class="o">.</span><span class="n">properties</span><span class="p">]</span>
+<span class="n">Organization</span> <span class="o">=</span> <span class="o">&lt;</span><span class="n">Password</span> <span class="n">of</span> <span class="n">the</span> <span class="n">Solace</span> <span class="n">broker</span> <span class="n">account</span><span class="o">&gt;</span>
+<span class="n">DevAccountName</span> <span class="o">=</span> <span class="o">&lt;</span><span class="n">Password</span> <span class="n">of</span> <span class="n">the</span> <span class="n">Solace</span> <span class="n">broker</span> <span class="n">account</span><span class="o">&gt;</span>
+</pre></div>
+</div>
+<p>Note that only all these properties are mandatory, except show_as_token_endpoint_url.</p>
+<p>Use the following values for the properties:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">name</span></code>: the environment name must match the name of the environment that was configured in the Connector (previous step)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">display_name</span></code>: the friendly name of the environment that is displayed in API Management.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">type</span></code>: you can use <code class="docutils literal notranslate"><span class="pre">hybrid</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">display_in_api_console</span></code>: <code class="docutils literal notranslate"><span class="pre">true</span></code> or false</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">description</span></code>: description as displayed in API Management</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">provider</span></code>: must be <code class="docutils literal notranslate"><span class="pre">solace</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">service_url</span></code>: the base URL of the Connector - <code class="docutils literal notranslate"><span class="pre">http://{connector_host}:{connector_port}/v1</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">username</span></code>: the username of an organisation level administrator (org-admin) that is configured in the Connector - <code class="docutils literal notranslate"><span class="pre">{org_admin_name}</span></code> in cURL examples above</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">password</span></code>: the password of the organisation level administrator (org-admin) that is configured in the Connector -<code class="docutils literal notranslate"><span class="pre">{org_admin_pwd}</span></code> in cURL examples above</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">ws_endpoint</span></code>: use the endpoint URI for the <code class="docutils literal notranslate"><span class="pre">ws-mqtt</span></code> protocol as returned by the <code class="docutils literal notranslate"><span class="pre">services</span></code> REST API call in the section above</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">wss_endpoint</span></code>: use the endpoint URI for the <code class="docutils literal notranslate"><span class="pre">wss-mqtt</span></code> protocol as returned by the <code class="docutils literal notranslate"><span class="pre">services</span></code> REST API call in the section above</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">http_endpoint</span></code>: use the endpoint URI for the <code class="docutils literal notranslate"><span class="pre">http</span></code> protocol as returned by the``services`` REST API call in the section above</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">https_endpoint</span></code>: use the endpoint URI for the <code class="docutils literal notranslate"><span class="pre">https</span></code> protocol as returned by the <code class="docutils literal notranslate"><span class="pre">services</span></code> REST API call in the section above</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Organization</span></code>: the organization name as configured in the Connector - <code class="docutils literal notranslate"><span class="pre">{org_name}</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">DevAccountName</span></code>: the name of the developer account - <code class="docutils literal notranslate"><span class="pre">wso2-apim</span></code> in the example configuration in the section above.</p></li>
+</ul>
+<p>The Solace broker gateway is now available in the API Publisher.</p>
+<p><img alt="image7" src="https://apim.docs.wso2.com/en/latest/assets/img/tutorials/solace/view-solace-broker.png" /></p>
+</section>
+<section id="creating-and-deploying-an-api">
+<h3>Creating and deploying an API<a class="headerlink" href="#creating-and-deploying-an-api" title="Permalink to this headline"></a></h3>
+<p>You can use the Async API specification generated from the Solace
+PubSub+ Event Portal or any other source to create APIs in WSO2 API
+Manager.</p>
+<section id="importing-an-async-api">
+<h4>Importing an Async API<a class="headerlink" href="#importing-an-async-api" title="Permalink to this headline"></a></h4>
+<p>Before you begin: Make sure that you have integrated the Solace event
+broker with WSO2 API Manager as shown in the above section.</p>
+<ol class="arabic">
+<li><p>Login to the API Publisher via <strong>https://:9443/publisher</strong></p></li>
+<li><p>Click <strong>CREATE API</strong> and then click <strong>Import AsyncAPI Definition</strong>
+<img alt="image8" src="https://apim.docs.wso2.com/en/latest/assets/img/tutorials/solace/import-asyncapi.png" /></p></li>
+<li><p>The following two options to import the AsynAPI definition appear.</p>
+<ol class="loweralpha simple">
+<li><p>AsyncAPI URL - If you select this option, you need to provide a
+URL of a Solace API Specification.</p></li>
+<li><p>AsyncAPI File - If you select this option, click Browse File to
+Upload and upload a file, which contains a Solace AsyncAPI
+definition. Select your preferred method and click <strong>NEXT</strong>.</p></li>
+</ol>
+<p>Info</p>
+<p>If the Async API specification is a valid Solace Async API
+specification, the portal will display the
+<code class="docutils literal notranslate"><span class="pre">Identified</span> <span class="pre">as</span> <span class="pre">Solace</span> <span class="pre">Event</span> <span class="pre">Portal</span> <span class="pre">API</span></code> tag.</p>
+</li>
+<li><p>Edit the Solace Async API information and click <strong>Create</strong>.</p></li>
+</ol>
+<p><strong>Note</strong></p>
+<p>The Async API definition of the Solace API will contain the specific API
+definition, with the supported protocols, such as HTTP, MQTT, AMQP, that
+the API topics have to use. You do not need to provide the protocol
+information separately</p>
+</section>
+<section id="importing-an-async-api-from-solace-event-portal">
+<h4>Importing an Async API from Solace Event Portal<a class="headerlink" href="#importing-an-async-api-from-solace-event-portal" title="Permalink to this headline"></a></h4>
+<p>When you choose the <code class="docutils literal notranslate"><span class="pre">AsyncAPI</span> <span class="pre">URL</span></code> option during import you can
+provide the URL of the AsyncAPI spec published in Solace Event Portal.</p>
+<p>See <a class="reference external" href="https://docs.solace.com/Cloud/Event-Portal/get-started-event-api-products.htm">Creating and Sharing Event API
+Products</a>
+for details.</p>
+</section>
+<section id="configuring-topics">
+<h4>Configuring Topics<a class="headerlink" href="#configuring-topics" title="Permalink to this headline"></a></h4>
+<ol class="arabic simple">
+<li><p>Click <strong>Topics</strong> to navigate to the topics page.</p></li>
+</ol>
+<p><img alt="image9" src="https://apim.docs.wso2.com/en/latest/assets/img/tutorials/solace/topics.png" /> The topics will be created automatically from the Solace
+AsyncAPI definition provided in the previous step.</p>
+</section>
+<section id="viewing-the-async-api-definition">
+<h4>Viewing the Async API definition<a class="headerlink" href="#viewing-the-async-api-definition" title="Permalink to this headline"></a></h4>
+<ol class="arabic simple">
+<li><p>Go to <strong>API Configurations</strong> and click <strong>AsyncAPI Definition</strong> to see
+the definition of the API you created in the previous step. <img alt="image10" src="https://apim.docs.wso2.com/en/latest/assets/img/tutorials/solace/asyncapi-definition.png" /></p></li>
+</ol>
+<p><strong>Note</strong></p>
+<p>The Solace API specification cannot be edited from the API manager
+Publisher portal. But the specification can be downloaded and changed
+externally to make the required changes.</p>
+<p><strong>Warn</strong></p>
+<p>The current version of WSO2 API Manager <strong>only</strong> supports AsyncUnlimited
+Protocol as the API level subscription policy for Solace APIs. Once a
+subscription is made, that policy will be added automatically.</p>
+</section>
+<section id="deploying-the-api-to-the-solace-pubsub-environment">
+<h4>Deploying the API to the Solace PubSub+ environment<a class="headerlink" href="#deploying-the-api-to-the-solace-pubsub-environment" title="Permalink to this headline"></a></h4>
+<ol class="arabic simple">
+<li><p>Navigate to the <strong>Deploy</strong> section and go to <strong>Deployments</strong>.
+<img alt="image11" src="https://apim.docs.wso2.com/en/latest/assets/img/tutorials/solace/deployments.png" /></p></li>
+<li><p>Select the Deployment environment and click <strong>Deploy</strong>.</p></li>
+<li><p>The API revision will be created. Select the API revision and click
+<strong>Deploy</strong>.</p></li>
+<li><p>The Solace API will be deployed to the Solace Broker environment that
+is user-provided. <img alt="image12" src="https://apim.docs.wso2.com/en/latest/assets/img/tutorials/solace/view-deployments.png" /></p></li>
+</ol>
+</section>
+<section id="publishing-the-api">
+<h4>Publishing the API<a class="headerlink" href="#publishing-the-api" title="Permalink to this headline"></a></h4>
+<p>See <a class="reference external" href="https://apim.docs.wso2.com/en/latest/deploy-and-publish/publish-on-dev-portal/publish-an-api">Publish an
+API</a>
+for instructions on publishing the API created in the previous steps.</p>
+</section>
+</section>
+<section id="subscribing-to-an-api">
+<h3>Subscribing to an API<a class="headerlink" href="#subscribing-to-an-api" title="Permalink to this headline"></a></h3>
+<p>You have to subscribe to a published Solace API before consuming them.
+The subscription process fulfills the authentication process and
+provides you with access tokens that you can use to invoke an API. The
+subscription flow will be controlled by the WSO2 API Manager.</p>
+<p>When the Application is attached with a Solace API Subscription, the
+solace broker will keep a copy of that Application for the
+authentication and validation process of the tokens generated by the
+WSO2 API Manager.</p>
+<p>The following are the two methods available in the Developer Portal to
+subscribe an API to an application.</p>
+<ul class="simple">
+<li><p><strong>Subscribe to an existing application</strong> - You can subscribe to a
+current API by <a class="reference external" href="https://apim.docs.wso2.com/en/latest/consume/manage-subscription/subscribe-to-an-api/#subscribe-to-an-existing-application">selecting an existing
+application</a>.</p></li>
+<li><p><strong>Subscribe to an API using Key Generation Wizard</strong> - You can use the
+<a class="reference external" href="https://apim.docs.wso2.com/en/latest/consume/manage-subscription/subscribe-to-an-api/#subscribe-to-an-api-using-key-generation-wizard">SUBSCRIPTION &amp; KEY GENERATION
+WIZARD</a>
+option to start the subscription process from scratch.</p></li>
+</ul>
+<p><strong>Note</strong> that the artifacts are deployed in the Solace broker, therefore
+API level and application-level throttling will not be supported for the
+Solace API subscriptions.</p>
+</section>
+<section id="invoking-an-api">
+<h3>Invoking an API<a class="headerlink" href="#invoking-an-api" title="Permalink to this headline"></a></h3>
+<p>In this section, you will subscribe to the AsyncAPI through the
+Developer Portal</p>
+<section id="subscribing-to-the-solace-api">
+<h4>Subscribing to the Solace API<a class="headerlink" href="#subscribing-to-the-solace-api" title="Permalink to this headline"></a></h4>
+<ol class="arabic simple">
+<li><p>Log in to the Developer Portal via <code class="docutils literal notranslate"><span class="pre">https://:9443/devportal</span></code></p></li>
+<li><p>Select your Solace API and navigate to the <strong>Overview</strong>.</p></li>
+<li><p>Subscribe to your API using the sample application. You can also
+create a new application for this purpose.</p></li>
+</ol>
+</section>
+<section id="generating-keys">
+<h4>Generating keys<a class="headerlink" href="#generating-keys" title="Permalink to this headline"></a></h4>
+<ol class="arabic simple">
+<li><p>In the sample application, click <strong>Production Keys</strong> and navigate to
+<strong>OAuth2 Tokens</strong>. <img alt="image17" src="https://user-images.githubusercontent.com/3858485/149137984-96f8528d-f4cd-49f4-bf5a-d37b6a23850c.png" /></p></li>
+<li><p>Locate the consumer key and consumer secret, these will be used as
+credentials to connect to the Solace PubSub+ service. For
+instructions on generating keys see, Application Keys.</p></li>
+</ol>
+</section>
+<section id="selecting-the-async-protocol-and-topic">
+<h4>Selecting the Async Protocol and Topic<a class="headerlink" href="#selecting-the-async-protocol-and-topic" title="Permalink to this headline"></a></h4>
+<ol class="arabic simple">
+<li><p>Select the Solace API and click on the <strong>Solace Info</strong> section in the
+left menu. This will render an information page like the following.
+<img alt="image14" src="https://apim.docs.wso2.com/en/latest/assets/img/tutorials/solace/solace-info.png" /></p></li>
+<li><p>Select the <strong>Application</strong>, <strong>Environment</strong>, and <strong>Protocol</strong> from
+the dropdowns of the info page.</p></li>
+</ol>
+<ol class="loweralpha simple">
+<li><p><strong>Application</strong> - Select the required application of the subscribed
+Application of the Solace API.</p></li>
+<li><p><strong>Environment</strong> - Select the deployed Solace broker environment that
+needs to be used.</p></li>
+<li><p><strong>Protocol</strong> - Type of the transport protocol to invoke the Async
+topics with. The topics supported for the selected Application,
+Environment and Protocol will be rendered.</p></li>
+</ol>
+<ol class="arabic simple" start="3">
+<li><p>Copy the <strong>endpoint URL</strong> of the protocol of the selected
+environment. <img alt="image15" src="https://apim.docs.wso2.com/en/latest/assets/img/tutorials/solace/add-endpoint.png" /></p></li>
+<li><p>Copy the topic that needs to be consumed. Click on the <strong>Copy</strong> icon
+in front of the topic. <img alt="image16" src="https://apim.docs.wso2.com/en/latest/assets/img/tutorials/solace/consume-topic.png" /></p></li>
+<li><p>Then use this information to create a request on the desired protocol
+to invoke the topic and consume the topic.</p></li>
+</ol>
+</section>
+<section id="publishing-messages-using-http">
+<h4>Publishing messages using HTTP<a class="headerlink" href="#publishing-messages-using-http" title="Permalink to this headline"></a></h4>
+<p>If your Async API is available via HTTP you can use the information
+gathered above to publish an event using a simple HTTP POST.</p>
+<p>You need the following information: * <code class="docutils literal notranslate"><span class="pre">{endpoint_url}</span></code>: the endpoint
+URL (http or https) * <code class="docutils literal notranslate"><span class="pre">{topic}</span></code>: a topic you wish to publish to *
+<code class="docutils literal notranslate"><span class="pre">{consumer_key}</span></code>: your consumer key for the appropriate environment *
+<code class="docutils literal notranslate"><span class="pre">{consumer_secret}</span></code>: your consumer secret for the appropriate
+environment</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">curl</span> <span class="o">--</span><span class="n">location</span> <span class="o">--</span><span class="n">request</span> <span class="n">POST</span> <span class="s1">&#39;</span><span class="si">{endpoint_url}</span><span class="s1">/</span><span class="si">{topic}</span><span class="s1">&#39;</span> \
+<span class="o">--</span><span class="n">header</span> <span class="s1">&#39;Content-Type: application/json&#39;</span> \
+<span class="o">--</span><span class="n">user</span> <span class="p">{</span><span class="n">consumer_key</span><span class="p">}:{</span><span class="n">consumer_secret</span><span class="p">}</span><span class="o">&gt;</span> \
+<span class="o">--</span><span class="n">data</span><span class="o">-</span><span class="n">raw</span> <span class="s1">&#39;{</span>
+    <span class="s2">&quot;value&quot;</span><span class="p">:</span> <span class="s2">&quot;1&quot;</span>
+<span class="p">}</span><span class="s1">&#39;</span>
+</pre></div>
+</div>
+</section>
+<section id="subscribing-to-messages-using-mqtt">
+<h4>Subscribing to messages using MQTT<a class="headerlink" href="#subscribing-to-messages-using-mqtt" title="Permalink to this headline"></a></h4>
+<p>If your Async API is available via MQTT you can use the information
+gathered above to subscribe to topics using an MQTT client.</p>
+<p>You need the following information: * <code class="docutils literal notranslate"><span class="pre">{endpoint_url}</span></code>: the endpoint
+URL (http or https) * <code class="docutils literal notranslate"><span class="pre">{topic}</span></code>: a topic subscription *
+<code class="docutils literal notranslate"><span class="pre">{consumer_key}</span></code>: your consumer key for the appropriate environment *
+<code class="docutils literal notranslate"><span class="pre">{consumer_secret}</span></code>: your consumer secret for the appropriate
+environment</p>
+<p>In this example we will use an MQTT client called <a class="reference external" href="https://chrome.google.com/webstore/detail/mqttbox/kaajoficamnjijhkeomgfljpicifbkaf">MQTT
+Box</a>
+for demonstration purposes.</p>
+<p>** Note:** MQTT Box is available as a browser plugin or standalone
+application. You can use any other MQTT client that you wish instead.</p>
+<ol class="arabic simple">
+<li><p>Create a connection to the PubSub+ service <img alt="image18" src="https://user-images.githubusercontent.com/3858485/149144155-6d42e641-291d-419c-8ba4-c6a085933cea.png" /></p></li>
+<li><p>Use the hostname and port from the <code class="docutils literal notranslate"><span class="pre">endpoint_url</span></code> as <code class="docutils literal notranslate"><span class="pre">Host</span></code> and
+select the appropriate <code class="docutils literal notranslate"><span class="pre">Protocol</span></code> in the drop down list , the
+screenshot illustrates the settings for the this example
+<code class="docutils literal notranslate"><span class="pre">ws://{service_id}.messaging.solace.cloud:8000</span></code></p></li>
+<li><p>Use your <code class="docutils literal notranslate"><span class="pre">{consumer_key}</span></code> as <code class="docutils literal notranslate"><span class="pre">Username</span></code> and the
+<code class="docutils literal notranslate"><span class="pre">{consumer_secret}</span></code> as <code class="docutils literal notranslate"><span class="pre">Password</span></code> <img alt="image19" src="https://user-images.githubusercontent.com/3858485/149144919-8168c441-c38c-44c5-9e69-9810ddd97bfe.png" /></p></li>
+<li><p>Save the connection, it should now show as connected.</p></li>
+<li><p>Add a subscription in MQTT Box using the <code class="docutils literal notranslate"><span class="pre">{topic}</span></code> that you want to
+subscribe to: <img alt="image20" src="https://user-images.githubusercontent.com/3858485/149146371-3f1428e3-8ec1-4c48-9e3f-8a2ab7058461.png" /></p></li>
+</ol>
+</section>
+</section>
+</section>
 </section>
 
 
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="installation.html" class="btn btn-neutral float-left" title="Installation" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="installation.html" class="btn btn-neutral float-left" title="Installing the API Management Connector" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="../security/index.html" class="btn btn-neutral float-right" title="Security" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>
 
   <div role="contentinfo">
     <p>&#169; Copyright 2022, Solace Corporation, Swen-Helge Huber, &lt;swen-helge.huber@solace.com&gt;.
-      <span class="lastupdated">Last updated on 26 Apr 2022 at 11:07.
+      <span class="lastupdated">Last updated on 05 May 2022 at 13:37.
       </span></p>
   </div>
 

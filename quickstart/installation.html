@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Installation &mdash; Solace Async API-M Connector r0.0.2 documentation</title>
+  <title>Installing the API Management Connector &mdash; Solace Async API-M Connector r0.0.2 documentation</title>
       <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../_static/contentui.css" type="text/css" />
@@ -20,8 +20,8 @@
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Setup" href="setup.html" />
-    <link rel="prev" title="Quickstart" href="index.html" /> 
+    <link rel="next" title="Configuring the APIM Connector using the REST API" href="setup.html" />
+    <link rel="prev" title="Prerequisites - Getting Started with PubSub+ Cloud" href="prerequisites.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -42,10 +42,22 @@
               <p class="caption" role="heading"><span class="caption-text">Guides</span></p>
 <ul class="current">
 <li class="toctree-l1 current"><a class="reference internal" href="index.html">Quickstart</a><ul class="current">
-<li class="toctree-l2 current"><a class="current reference internal" href="#">Installation</a></li>
-<li class="toctree-l2"><a class="reference internal" href="setup.html">Setup</a></li>
+<li class="toctree-l2"><a class="reference internal" href="prerequisites.html">Prerequisites - Getting Started with PubSub+ Cloud</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Installing the API Management Connector</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#environment-variables">Environment Variables</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#docker-based-deployment">Docker based Deployment</a></li>
 </ul>
 </li>
+<li class="toctree-l2"><a class="reference internal" href="setup.html">Configuring the APIM Connector using the REST API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="setup.html#integrating-the-connector-with-api-management-platforms">Integrating the Connector with API Management Platforms</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../security/index.html">Security</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../notification_hub/index.html">Connector Notification Hub</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../configuration/index.html">Configuration</a></li>
 </ul>
 
         </div>
@@ -63,7 +75,7 @@
   <ul class="wy-breadcrumbs">
       <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
           <li><a href="index.html">Quickstart</a> &raquo;</li>
-      <li>Installation</li>
+      <li>Installing the API Management Connector</li>
       <li class="wy-breadcrumbs-aside">
             <a href="../_sources/quickstart/installation.rst.txt" rel="nofollow"> View page source</a>
       </li>
@@ -73,27 +85,54 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section id="installation">
-<h1>Installation<a class="headerlink" href="#installation" title="Permalink to this headline"></a></h1>
-<div class="admonition warning">
-<p class="admonition-title">Warning</p>
-<p>UNDER CONSTRUCTION</p>
-</div>
+  <section id="installing-the-api-management-connector">
+<h1>Installing the API Management Connector<a class="headerlink" href="#installing-the-api-management-connector" title="Permalink to this headline"></a></h1>
+<p>The Connector consists of multiple docker containers. The minimum
+deployment consists of the Connector Server and Mongo DB for data
+storage. We provide a <a class="reference external" href="https://github.com/solace-iot-team/platform-api/tree/main/simple-docker-compose">simple docker compose
+template</a>
+that also deploys a demo API Management portal for Async APIs that is
+useful for debugging and prototype/POC activities.</p>
+<section id="environment-variables">
+<h2>Environment Variables<a class="headerlink" href="#environment-variables" title="Permalink to this headline"></a></h2>
+<p>For the docker deployment you’ll need an environment file and we provide
+a <a class="reference external" href="https://github.com/solace-iot-team/platform-api/blob/main/simple-docker-compose/.env">sample environment configuration
+file</a>.</p>
+<p>The core variables required by the connector are documented
+<a class="reference external" href="../configuration">here</a>.</p>
+</section>
+<section id="docker-based-deployment">
+<h2>Docker based Deployment<a class="headerlink" href="#docker-based-deployment" title="Permalink to this headline"></a></h2>
+<p>The sample docker template sets up all components of the API-Management
+Connector using docker-compose: * Connector Services * Database
+Backend - Mongodb * Sample/Demo Portal Application * Nginx as reverse
+proxy</p>
+<p>The <a class="reference external" href="https://github.com/solace-iot-team/platform-api/blob/main/simple-docker-compose/README.md">README of the simple docker
+template</a>
+contains more detailed information on the files that are part of the
+template:</p>
+<ol class="arabic simple">
+<li><p><a class="reference external" href="https://github.com/solace-iot-team/platform-api/blob/main/simple-docker-compose/README.md#files-on-host-systems">Files on the host system</a></p></li>
+<li><p><a class="reference external" href="https://github.com/solace-iot-team/platform-api/blob/main/simple-docker-compose/README.md#files-on-host-systems">Configuration of the user registry</a></p></li>
+<li><p><a class="reference external" href="https://github.com/solace-iot-team/platform-api/blob/main/simple-docker-compose/README.md#configuring-the-environment-variables">Configuring the environment variables</a></p></li>
+<li><p><a class="reference external" href="https://github.com/solace-iot-team/platform-api/blob/main/simple-docker-compose/README.md#running-docker-compose">Running docker compose</a></p></li>
+</ol>
+</section>
 </section>
 
 
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="index.html" class="btn btn-neutral float-left" title="Quickstart" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="setup.html" class="btn btn-neutral float-right" title="Setup" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="prerequisites.html" class="btn btn-neutral float-left" title="Prerequisites - Getting Started with PubSub+ Cloud" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="setup.html" class="btn btn-neutral float-right" title="Configuring the APIM Connector using the REST API" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>
 
   <div role="contentinfo">
     <p>&#169; Copyright 2022, Solace Corporation, Swen-Helge Huber, &lt;swen-helge.huber@solace.com&gt;.
-      <span class="lastupdated">Last updated on 26 Apr 2022 at 11:07.
+      <span class="lastupdated">Last updated on 05 May 2022 at 13:37.
       </span></p>
   </div>
 
