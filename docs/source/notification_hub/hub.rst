@@ -161,13 +161,18 @@ Let's look at the detail of this configuration:
   * The app credentials can be provided in the environment variables.
 
 
-To execute the tool setup your environment variables and run
+.. warning::
 
-TODO
+  TODO - instructions - To execute the tool setup your environment variables and run ...
+
+
 
 
 Configure and manage the Hub
 ----------------------------
+
+.. warning::
+  TODO - add section
 
 Outline:
 

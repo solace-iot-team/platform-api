@@ -8,4 +8,6 @@ You need url, username and password. Or credentials for an alternative auth meth
 
 Configure the Organization
 --------------------------
-cURL command
+
+.. warning::
+  TODO - cURL command and instructions
