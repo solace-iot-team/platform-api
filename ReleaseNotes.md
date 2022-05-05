@@ -1,5 +1,32 @@
 # Release Notes
 
+## Version 0.3.8
+* OpenAPI: 0.7.11
+* API Management Connector Server: 0.3.8
+
+### Features
+* **feat-webhook-queues-message-expiry**
+  - Changed defaults of queue provisioned for webhook - if client options are present, queue is provisioned with the guaranteed messaging options, if not set default config is applied - TTL 120s, max space 50 MB providing an adequate buffer in case of temporary slow performance of  webhook
+* **feat-provision-amqp-queue**
+  - Now also provision API Product specific queues if AMQP/AMQPS is an exposed protocol of the API Product.
+* **feat-app-client-profile**
+  - A set of client profiles with different privileges are now managed by the connector and assigned to apps based on their Guaranteed Messaging configuration and the protocols exposed by the associated API Products.
+  - If the MQTT protocol is exposed also manages an app specific MQTT Session as this governs the resource allocation e.g. max queue size.
+* **feat-asyncapi-servers-add-mqtt-binding**
+  - For apps with MQTT protocol access the server sectionin the Async API contains a specific MQTT binding with the MQTT clientId to be used when connecting.
+* **feat-asyncapi-operations-add-http-binding**
+  - For apps with HTTP protocol the generated Async API now contains HTTP bindings for operations, specifying the HTTP method to be used.
+
+### Fixes
+* **fix-asyncapigenerator-resolve-apiproducts-by-name**
+  - Fixed incorrect resolution of api product references which led to missing binding sections in generated Async APIs
+* **fix-organization-patch-create-collections-index**
+  - Adds capability to provision missing MongoDB objects (collections, indexes) when an Organization is PATCHed/updated. Useful for migrating existing tenant schemas if required.
+
+## Version 0.3.6
+* OpenAPI: 0.7.11
+* API Management Connector Server: 0.3.6
+
 ## Version 0.3.7
 * OpenAPI: 0.7.11
 * API Management Connector Server: 0.3.7
