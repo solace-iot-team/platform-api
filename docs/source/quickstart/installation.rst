@@ -16,7 +16,7 @@ a `sample environment configuration
 file <https://github.com/solace-iot-team/platform-api/blob/main/simple-docker-compose/.env>`__.
 
 The core variables required by the connector are documented
-`here <./Environment-Configuration-Variables>`__.
+`here <../configuration>`__.
 
 Docker based Deployment
 -----------------------

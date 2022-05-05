@@ -73,10 +73,10 @@ Mission Control provides the following tools:
 
 -  Cluster Manager: You use this tool create, configure, and manage
    event broker services. For more information, see `Cluster
-   Manager <Event-Mesh/Cluster-Manager.htm>`__.
+   Manager <https://docs.solace.com/Cloud/Event-Mesh/Cluster-Manager.htm>`__.
 -  MeshManager: You use this tool to visualize and connect your event
    broker services. For more information, see `MeshManager
-   (Beta) <Event-Mesh/Mesh-Builder.htm>`__.
+   (Beta) <https://docs.solace.com/Cloud/Event-Mesh/Mesh-Builder.htm>`__.
 
 The following illustration shows where Mission Control is located and
 where you can select Cluster Manager and MeshManager:

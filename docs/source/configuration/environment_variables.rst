@@ -141,7 +141,7 @@ Authentication/IdP
 
   * Required: Y  
 
-  * Example: http://localhost/authserver 
+  * Example: ``http://localhost/authserver``
 
 * **AUTH_DISCOVERY_OIDC_URL**
   

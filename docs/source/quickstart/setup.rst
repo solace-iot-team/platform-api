@@ -742,7 +742,7 @@ Publishing the API
 ^^^^^^^^^^^^^^^^^^
 
 See `Publish an
-API <https://apim.docs.wso2.com/en/4.1.0/deploy-and-publish/publish-on-dev-portal/publish-an-api>`__
+API <https://apim.docs.wso2.com/en/latest/deploy-and-publish/publish-on-dev-portal/publish-an-api>`__
 for instructions on publishing the API created in the previous steps.
 
 Subscribing to an API
@@ -763,10 +763,10 @@ subscribe an API to an application.
 
 -  **Subscribe to an existing application** - You can subscribe to a
    current API by `selecting an existing
-   application <https://apim.docs.wso2.com/en/4.1.0/consume/manage-subscription/subscribe-to-an-api/#subscribe-to-an-existing-application>`__.
+   application <https://apim.docs.wso2.com/en/latest/consume/manage-subscription/subscribe-to-an-api/#subscribe-to-an-existing-application>`__.
 -  **Subscribe to an API using Key Generation Wizard** - You can use the
    `SUBSCRIPTION & KEY GENERATION
-   WIZARD <https://apim.docs.wso2.com/en/4.1.0/consume/manage-subscription/subscribe-to-an-api/#subscribe-to-an-api-using-key-generation-wizard>`__
+   WIZARD <https://apim.docs.wso2.com/en/latest/consume/manage-subscription/subscribe-to-an-api/#subscribe-to-an-api-using-key-generation-wizard>`__
    option to start the subscription process from scratch.
 
 **Note** that the artifacts are deployed in the Solace broker, therefore
@@ -782,7 +782,7 @@ Developer Portal
 Subscribing to the Solace API
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-1. Log in to the Developer Portal via https://:9443/devportal
+1. Log in to the Developer Portal via ``https://:9443/devportal``
 2. Select your Solace API and navigate to the **Overview**.
 3. Subscribe to your API using the sample application. You can also
    create a new application for this purpose.
@@ -871,16 +871,16 @@ application. You can use any other MQTT client that you wish instead.
 5. Add a subscription in MQTT Box using the ``{topic}`` that you want to
    subscribe to: |image20|
 
-.. |image7| image:: https://apim.docs.wso2.com/en/4.1.0/assets/img/tutorials/solace/view-solace-broker.png
-.. |image8| image:: https://apim.docs.wso2.com/en/4.1.0/assets/img/tutorials/solace/import-asyncapi.png
-.. |image9| image:: https://apim.docs.wso2.com/en/4.1.0/assets/img/tutorials/solace/topics.png
-.. |image10| image:: https://apim.docs.wso2.com/en/4.1.0/assets/img/tutorials/solace/asyncapi-definition.png
-.. |image11| image:: https://apim.docs.wso2.com/en/4.1.0/assets/img/tutorials/solace/deployments.png
-.. |image12| image:: https://apim.docs.wso2.com/en/4.1.0/assets/img/tutorials/solace/view-deployments.png
+.. |image7| image:: https://apim.docs.wso2.com/en/latest/assets/img/tutorials/solace/view-solace-broker.png
+.. |image8| image:: https://apim.docs.wso2.com/en/latest/assets/img/tutorials/solace/import-asyncapi.png
+.. |image9| image:: https://apim.docs.wso2.com/en/latest/assets/img/tutorials/solace/topics.png
+.. |image10| image:: https://apim.docs.wso2.com/en/latest/assets/img/tutorials/solace/asyncapi-definition.png
+.. |image11| image:: https://apim.docs.wso2.com/en/latest/assets/img/tutorials/solace/deployments.png
+.. |image12| image:: https://apim.docs.wso2.com/en/latest/assets/img/tutorials/solace/view-deployments.png
 .. |image17| image:: https://user-images.githubusercontent.com/3858485/149137984-96f8528d-f4cd-49f4-bf5a-d37b6a23850c.png
-.. |image14| image:: https://apim.docs.wso2.com/en/4.1.0/assets/img/tutorials/solace/solace-info.png
-.. |image15| image:: https://apim.docs.wso2.com/en/4.1.0/assets/img/tutorials/solace/add-endpoint.png
-.. |image16| image:: https://apim.docs.wso2.com/en/4.1.0/assets/img/tutorials/solace/consume-topic.png
+.. |image14| image:: https://apim.docs.wso2.com/en/latest/assets/img/tutorials/solace/solace-info.png
+.. |image15| image:: https://apim.docs.wso2.com/en/latest/assets/img/tutorials/solace/add-endpoint.png
+.. |image16| image:: https://apim.docs.wso2.com/en/latest/assets/img/tutorials/solace/consume-topic.png
 .. |image18| image:: https://user-images.githubusercontent.com/3858485/149144155-6d42e641-291d-419c-8ba4-c6a085933cea.png
 .. |image19| image:: https://user-images.githubusercontent.com/3858485/149144919-8168c441-c38c-44c5-9e69-9810ddd97bfe.png
 .. |image20| image:: https://user-images.githubusercontent.com/3858485/149146371-3f1428e3-8ec1-4c48-9e3f-8a2ab7058461.png
