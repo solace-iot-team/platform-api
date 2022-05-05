@@ -4,7 +4,7 @@
 
 [Issues & Feature Requests](https://github.com/solace-iot-team/platform-api/issues) |
 [Release Notes](./ReleaseNotes.md) | 
-[Documentation](https://solace-iot-team.github.io/async-apim/)
+[Documentation](https://solace-iot-team.github.io/platform-api/)
 
 # Solace API Management Connector
 
