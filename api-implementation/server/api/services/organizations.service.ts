@@ -149,6 +149,7 @@ export class OrganizationsService {
         const org: OrganizationResponse = await this.persistenceService
           .update(name, body) as OrganizationResponse;
         org.status = await this.getOrganizationStatus(org['cloud-token']);
+        DatabaseBootstrapper.emit('added', org.name);
         return org;
       } else {
         throw (

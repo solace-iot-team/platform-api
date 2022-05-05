@@ -22,11 +22,28 @@ export class PersistenceService {
     }
 
     L.debug(`db is ${db}, creating collection ${this.collection}`);
-
+    const persistenceSvc = this;
     databaseaccess.client.db(db).createCollection(this.collection, function (err, collection: Collection) {
+
       if (err) {
         // sometimes the colleciton already exists. it's due to the fact that multipe instances of a persistence service for a specific collection may  exist
-        L.trace(err);
+        L.error(JSON.stringify(err));
+        if (err.code == 48 && err.codeName == 'NamespaceExists') {
+          collection = databaseaccess.client.db(db).collection(persistenceSvc.collection);
+          const idxName: string = `idx_text_${db}_${collection.collectionName}`;
+          L.info(`creating full text index ${collection.collectionName}`);
+          collection.createIndex(
+            { '$**': 'text' },
+            { name: idxName },
+            function (err, s) {
+              L.trace(s);
+              L.trace(err);
+              L.info(`Created index ${idxName}`);
+            }
+          );
+
+        }
+
       } else {
         const idxName: string = `idx_text_${db}_${collection.collectionName}`;
         L.info(`creating full text index ${collection.collectionName}`);
