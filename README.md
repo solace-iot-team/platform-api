@@ -3,7 +3,8 @@
 [![release](https://github.com/solace-iot-team/platform-api/actions/workflows/release.yml/badge.svg)](https://github.com/solace-iot-team/platform-api/actions/workflows/release.yml)
 
 [Issues & Feature Requests](https://github.com/solace-iot-team/platform-api/issues) |
-[Release Notes](./ReleaseNotes.md)
+[Release Notes](./ReleaseNotes.md) | 
+[Documentation](https://solace-iot-team.github.io/async-apim/)
 
 # Solace API Management Connector
 
