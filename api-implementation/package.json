@@ -44,6 +44,7 @@
   "license": "MIT",
   "dependencies": {
     "@asyncapi/parser": "^1.14.1",
+    "@breejs/ts-worker": "^1.1.1",
     "@godaddy/terminus": "^4.9.0",
     "@types/chai-like": "^1.1.1",
     "@types/jsonpath": "^0.2.0",
@@ -52,6 +53,7 @@
     "@types/passport-jwt": "^3.0.5",
     "base-64": "^1.0.0",
     "body-parser": "^1.19.0",
+    "bree": "^8.0.3",
     "cookie-parser": "^1.4.5",
     "cors": "^2.8.5",
     "crypto": "^1.0.1",

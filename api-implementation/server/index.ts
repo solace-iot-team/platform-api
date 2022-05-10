@@ -6,6 +6,9 @@ import { databaseaccess } from '../src/databaseaccess';
 import printEnv from 'print-env';
 import { loadUserRegistry } from './api/middlewares/file.authorizer';
 
+import TaskScheduler from '../src/scheduler/taskscheduler';
+
+const scheduler: TaskScheduler = new TaskScheduler();
 type serverCallback = () => void;
 
 const callback: serverCallback = async () => {
@@ -26,6 +29,7 @@ const callback: serverCallback = async () => {
     try {
       await databaseaccess.connect(dbURL);
       L.info(`Connected to Mongo!`);
+      scheduler.enable();
       isConnected = true;
     } catch (err) {
       L.error(err, `Unable to connect to Mongo, err=${JSON.stringify(err)}. Continue retrying`);
