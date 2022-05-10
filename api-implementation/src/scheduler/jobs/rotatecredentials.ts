@@ -65,7 +65,7 @@ import Organization = Components.Schemas.Organization;
       }
     }
     const end: number = Date.now();
-    L.error(`Duration: ${(end - start)} ms`);
+    L.info(`Duration: ${(end - start)} ms`);
     parentPort?.postMessage('done');
 
 
