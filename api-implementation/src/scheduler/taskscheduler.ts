@@ -74,7 +74,11 @@ export default class TaskScheduler {
       workerData: org,
     };
     job.name = orgName;
+    try {
     this.#scheduler.add(job);
+    } catch(e){
+      
+    }
     this.#scheduler.stop();
     this.#scheduler.start();
 
