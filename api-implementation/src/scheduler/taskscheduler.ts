@@ -11,7 +11,7 @@ const jobTemplate: Bree.JobOptions = {
   name: '',
   path: path.join(__dirname, './jobs/rotatecredentials.ts'),
   timeout: '10s',
-  interval: '10m',
+  interval: '15m',
   worker: {
   }
 };
@@ -20,6 +20,10 @@ const jobs: Bree.JobOptions[] = [];
 export default class TaskScheduler {
   /** The job scheduler. */
   #scheduler: Bree;
+
+  private randomIntFromInterval(min, max) { // min and max included 
+    return Math.floor(Math.random() * (max - min + 1) + min)
+  }
 
   constructor() {
     Bree.extend(require('@breejs/ts-worker'));
@@ -49,13 +53,16 @@ export default class TaskScheduler {
   public async enable() {
     const orgs = await OrganizationService.all();
     L.info(`enabling jobs on ${orgs.length} orgs`);
+    let i = 1;
     orgs.forEach(o => {
       const job = { ...jobTemplate };
       job.worker = {
         workerData: o,
       };
       job.name = o.name;
+      job.timeout = `${(i * this.randomIntFromInterval(30, 120))}s`;
       this.#scheduler.add(job);
+      i++
     });
 
     this.#scheduler.start();
@@ -74,17 +81,20 @@ export default class TaskScheduler {
       workerData: org,
     };
     job.name = orgName;
+    job.timeout = `${this.randomIntFromInterval(60, 180)}s`;
     try {
-    this.#scheduler.add(job);
-    } catch(e){
-      
+      this.#scheduler.add(job);
+      this.#scheduler.start(orgName);
+    } catch (e) {
+
+    } finally {
+
     }
-    this.#scheduler.stop();
-    this.#scheduler.start();
 
   }
   private async onDeleteOrganization(orgName: string) {
     L.info(`deleting job for  org  ${orgName} `);
+    this.#scheduler.stop(orgName);
     this.#scheduler.remove(orgName);
   }
 }
