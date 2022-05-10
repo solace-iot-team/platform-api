@@ -2,7 +2,7 @@ import { TypedEmitter } from 'tiny-typed-emitter';
 
 interface DatabaseBootstrapperEvents {
   'added': (organization: string) => void;
-  'deleted': (deletedCount: number) => void;
+  'deleted': (organization: string) => void;
 }
 class DatabaseBootstrapper extends TypedEmitter<DatabaseBootstrapperEvents> {
   constructor() {
