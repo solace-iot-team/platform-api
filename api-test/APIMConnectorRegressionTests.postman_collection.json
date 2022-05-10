@@ -15480,7 +15480,7 @@
 									"",
 									"pm.test(\"Check issuedAt and expiryDate\", function () {",
 									"    var jsonData = pm.response.json();",
-									"    pm.expect(jsonData.credentials.expiresAt-jsonData.credentials.issuedAt).to.eql(100);",
+									"    pm.expect(jsonData.credentials.expiresAt-jsonData.credentials.issuedAt).to.eql(100*1000);",
 									"    pm.globals.set(\"37_postApp_issuedAt\", `${jsonData.credentials.issuedAt}`);",
 									"});"
 								],
@@ -15536,7 +15536,7 @@
 									"pm.test(\"Check issuedAt and expiryDate\", function () {",
 									"    var jsonData = pm.response.json();",
 									"    var oldIssuedAt = parseInt(pm.globals.get(\"37_postApp_issuedAt\"));",
-									"    pm.expect(jsonData.credentials.expiresAt-jsonData.credentials.issuedAt).to.eql(100);",
+									"    pm.expect(jsonData.credentials.expiresAt-jsonData.credentials.issuedAt).to.eql(100*1000);",
 									"    pm.expect(jsonData.credentials.issuedAt).to.be.greaterThan(oldIssuedAt);",
 									"    pm.globals.clear();",
 									"});",
@@ -16046,7 +16046,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "",
+							"raw": "{\n  \"name\": \"{{TENANT}}\",\n  \"cloud-token\": \"{{CLOUD_TOKEN}}\"\n}",
 							"options": {
 								"raw": {
 									"language": "json"
