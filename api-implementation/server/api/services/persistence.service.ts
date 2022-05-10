@@ -76,7 +76,8 @@ export class PersistenceService {
     }
 
     L.info(`db is ${db}`);
-    const mongoCollection: Collection = databaseaccess.client.db(db).collection(this.collection);
+    const client = databaseaccess.client;
+    const mongoCollection: Collection = client.db(db).collection(this.collection);
     return mongoCollection;
   }
   constructor(collection: string) {
@@ -84,7 +85,7 @@ export class PersistenceService {
     DatabaseBootstrapper.on('added', this.createCollection.bind(this));
   }
 
-  all(query?: object, sort?: object, paging?: Paging, returnIds: boolean = false): Promise<any[]> {
+  async all(query?: object, sort?: object, paging?: Paging, returnIds: boolean = false): Promise<any[]> {
 
     if (query == null) {
       query = {};
@@ -111,29 +112,24 @@ export class PersistenceService {
         L.debug(`paging ${paging}`);
       }
     }
-    return new Promise<any[]>(async (resolve, reject) => {
-      const collection: mongodb.Collection = await this.getCollection();
-      let x: mongodb.Cursor<any> = null;
-      if (paging !== null && paging !== undefined) {
-        x = collection.find(query).sort(sort).skip((paging.pageNumber - 1) * paging.pageSize).limit(paging.pageSize);
-      } else {
-        x = collection.find(query).sort(sort);
+
+    const collection: mongodb.Collection = await this.getCollection();
+    let x: mongodb.Cursor<any> = null;
+    if (paging !== null && paging !== undefined) {
+      x = collection.find(query).sort(sort).skip((paging.pageNumber - 1) * paging.pageSize).limit(paging.pageSize);
+    } else {
+      x = collection.find(query).sort(sort);
+    }
+    L.trace(`executed find on mongodb`);
+    let retVal = await x.toArray();
+
+    retVal.forEach((item) => {
+      if (!returnIds) {
+        delete item._id;
       }
-      x.toArray(
-        (err: MongoError, items) => {
-          if (err) {
-            reject(this.createPublicErrorMessage(err));
-          } else {
-            items.forEach((item) => {
-              if (!returnIds) {
-                delete item._id;
-              }
-            });
-            resolve(items);
-          }
-        }
-      );
     });
+    L.trace(`found ${retVal.length} results`);
+    return retVal;
   }
 
   async byName(name: string, query?: any): Promise<any> {
