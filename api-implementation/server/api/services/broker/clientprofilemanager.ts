@@ -114,7 +114,7 @@ class ClientProfileManager implements BrokerResourceManager<string>{
     let createEndPoints: boolean = false;
     let sendGM: boolean = false;
     let permissions: Permissions = await ACLManager.getClientACLExceptions(app, apiProducts, ownerAttributes, undefined);
-    L.warn(`${this.isQueueRequiredForAnyAPIProduct(apiProducts)} ${JSON.stringify(permissions.publish)}`);
+    L.debug(`${this.isQueueRequiredForAnyAPIProduct(apiProducts)} ${JSON.stringify(permissions.publish)}`);
     if (permissions.publish !== undefined && permissions.publish.length > 0 && this.isQueueRequiredForAnyAPIProduct(apiProducts)) {
       receiveGM = true;
       if (BrokerUtils.isMQTTSessionRequired(apiProducts)) {
