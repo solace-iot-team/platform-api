@@ -69,6 +69,7 @@ export class OrganizationsService {
                 .db(name)
                 .dropDatabase()
                 .then((r) => {
+                  DatabaseBootstrapper.emit('deleted', name);
                   resolve(this.persistenceService.delete(name));
                 })
                 .catch((e) => {

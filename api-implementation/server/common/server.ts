@@ -30,6 +30,7 @@ import { createTerminus, TerminusOptions, HealthCheckMap, HealthCheckError } fro
 
 import audit from 'express-requests-logger';
 
+
 export default class ExpressServer {
   private routes: (app: Application) => void;
   constructor() {
