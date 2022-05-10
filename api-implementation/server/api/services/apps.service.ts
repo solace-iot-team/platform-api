@@ -10,7 +10,7 @@ import AppListItem = Components.Schemas.AppListItem;
 import AppResponse = Components.Schemas.AppResponse;
 import AppPatch = Components.Schemas.AppPatch;
 import AppConnectionStatus = Components.Schemas.AppConnectionStatus;
-import passwordGenerator from 'generate-password';
+
 import ApiProduct = Components.Schemas.APIProduct;
 import AppApiProductsComplex = Components.Schemas.AppApiProductsComplex;
 import AppStatus = Components.Schemas.AppStatus;
@@ -25,6 +25,7 @@ import ACLManager from './broker/aclmanager';
 
 import { isString } from '../../../src/typehelpers';
 import APIProductsTypeHelper from '../../../src/apiproductstypehelper';
+import AppHelper from '../../../src/apphelper';
 
 export interface APISpecification {
   name: string;
@@ -174,33 +175,17 @@ export class AppsService {
 
       if (!app.credentials.secret) {
         const consumerCredentials = {
-          consumerKey: passwordGenerator.generate({
-            length: 32,
-            numbers: true,
-            strict: true,
-          }),
-          consumerSecret: passwordGenerator.generate({
-            length: 16,
-            numbers: true,
-            strict: true,
-          }),
+          consumerKey: AppHelper.generateConsumerKey(),
+          consumerSecret: AppHelper.generateConsumerSecret(),
         };
         app.credentials.secret = consumerCredentials;
       } else if (!app.credentials.secret.consumerSecret) {
         // this provides the capability to provide a specific key (e.g. matching an OAuth claim or TLS cert CN)
         // while ensuring a strong secret is set on the app and therefore in the SOlace client username.
-        app.credentials.secret.consumerSecret = passwordGenerator.generate({
-          length: 16,
-          numbers: true,
-          strict: true,
-        });
+        app.credentials.secret.consumerSecret = AppHelper.generateConsumerSecret();
       }
       // set the issuedAt and calculate expiresAt timestamp
-      const now: number = Date.now();
-      app.credentials.issuedAt = now;
-      if (app.expiresIn && app.expiresIn > 0) {
-        app.credentials.expiresAt = now + app.expiresIn;
-      }
+      AppHelper.resetCredentialsDates(app);
 
       if (app.status == 'approved') {
         L.info(`provisioning app ${app.name}`);
@@ -247,26 +232,22 @@ export class AppsService {
     );
     if (app.credentials && app.credentials.secret && !app.credentials.secret.consumerSecret) {
       // regenerate a consumerSecret if omitted / partial secret is sent
-      app.credentials.secret.consumerSecret = passwordGenerator.generate({
-        length: 16,
-        numbers: true,
-        strict: true,
-      });
+      app.credentials.secret.consumerSecret = AppHelper.generateConsumerSecret();
       // set the issuedAt and calculate expiresAt timestamp
       const now: number = Date.now();
       app.credentials.issuedAt = now;
       if (app.expiresIn && app.expiresIn > 0) {
         app.credentials.expiresAt = now + app.expiresIn;
       } else if (appNotModified.expiresIn && appNotModified.expiresIn > 0) {
-        app.credentials.expiresAt = now + appNotModified.expiresIn;
+        app.credentials.expiresAt = now + (appNotModified.expiresIn*1000);
       } else {
         app.credentials.expiresAt = -1;
       }
     } else if (app.expiresIn) {
-      // if expiresIn provided apply it to the prebvious expiration date.
+      // if expiresIn provided apply it to the previous expiration date.
       app.credentials = appNotModified.credentials;
       if (app.expiresIn > 0) {
-        app.credentials.expiresAt = app.credentials.issuedAt + app.expiresIn;
+        app.credentials.expiresAt = app.credentials.issuedAt + (app.expiresIn*1000);
       } else {
         app.credentials.expiresAt = -1;
       }
