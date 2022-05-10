@@ -30,6 +30,7 @@ import Organization = Components.Schemas.Organization;
   }
 })();
 (async () => {
+  const start: number = Date.now();
   ns.run(new Map(), async () => {
     const org: Organization = workerData.job.worker.workerData as Organization;
     L.info(`Rotate credentials ${workerData.job.worker.workerData}`);
@@ -48,7 +49,7 @@ import Organization = Components.Schemas.Organization;
         const appUpdate: AppPatch = {
           credentials: app.credentials,
         };
-        switch (app['appType']){
+        switch (app['appType']) {
           case 'team': {
             await TeamsService.updateApp(app['ownerId'], app.name, appUpdate);
             break;
@@ -63,7 +64,10 @@ import Organization = Components.Schemas.Organization;
         }
       }
     }
+    const end: number = Date.now();
+    L.error(`Duration: ${(end - start)} ms`);
     parentPort?.postMessage('done');
+
 
   });
 
