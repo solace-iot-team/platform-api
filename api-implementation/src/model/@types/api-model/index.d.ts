@@ -826,7 +826,12 @@ declare namespace Components {
              */
             readonly created?: number;
             createdBy?: CommonUserName; // ^[.a-zA-Z0-9@_-]*$
+            stage?: MetaEntityStage;
         }
+        /**
+         * The lifecycle status of the API Product - from draft to released to deprecated to retired. New API Products are created in 'draft' status. API Products in 'draft' status can not be added to apps. Products can transition from 'draft' to 'released' by providing the new status in an update of the API Product and once 'released' can be added to Apps. Once 'released' an API Product can not go back to 'draft' status. 'released' products can be 'depcrecated' which means existing Apps will continue to function however the product can no longer be added to apps. 'deprecated' status can be moved back to 'released' status. A 'deprecated' can be moved to 'retired' which means the Product will be removed from all Apps that previously used it. 'once' retired the status of the API Product can no longer be changed.
+         */
+        export type MetaEntityStage = "draft" | "released" | "deprecated" | "retired";
         export interface MsgVpnAttributes {
             authenticationClientCertEnabled: string; // ^[\s\S]*$
             authenticationBasicEnabled: string; // ^[\s\S]*$
