@@ -86,7 +86,7 @@ export default class TaskScheduler {
       this.#scheduler.add(job);
       this.#scheduler.start(orgName);
     } catch (e) {
-
+      L.info(`error adding job for ${orgName}`, e);
     } finally {
 
     }
@@ -94,7 +94,13 @@ export default class TaskScheduler {
   }
   private async onDeleteOrganization(orgName: string) {
     L.info(`deleting job for  org  ${orgName} `);
-    this.#scheduler.stop(orgName);
-    this.#scheduler.remove(orgName);
+    try {
+      this.#scheduler.stop(orgName);
+      this.#scheduler.remove(orgName);
+    } catch (e) {
+      L.info(`error deleting job for ${orgName}`, e);
+    } finally {
+
+    }
   }
 }
