@@ -1,6 +1,8 @@
 import semver from 'semver';
 import Meta = Components.Schemas.Meta;
+import MetaEntityStage = Components.Schemas.MetaEntityStage;
 import { ns } from '../api/middlewares/context.handler';
+import L from './logger'
 import { ContextConstants } from './constants';
 
 export class Versioning {
@@ -49,7 +51,7 @@ export class Versioning {
       (previousVersion && previousVersion.version)?previousVersion.version:Versioning.INITIAL_VERSION;
     return Versioning.validateNewVersionString(newVersion.version, semVerPrev);
   }
-  public static createMeta(version?: string): Meta {
+  public static createMeta(version?: string, stage?: MetaEntityStage): Meta {
     const ts: number = Date.now();
     const user: string = ns.getStore().get(ContextConstants.AUTHENTICATED_USER);
     const m: Meta = {
@@ -58,9 +60,13 @@ export class Versioning {
       lastModified: ts,
       createdBy: user,
       lastModifiedBy: user,
+      //stage: 'draft',
 
     };
     m[Versioning.INTERNAL_REVISION] = Versioning.INITIAL_REVISION;
+    if (stage){
+      m.stage = stage;
+    }
     return m;
   }
 
@@ -73,7 +79,7 @@ export class Versioning {
       lastModified: ts,
       createdBy: previousMeta ? previousMeta.createdBy : user,
       lastModifiedBy: user,
-
+      stage: newMeta?newMeta.stage:previousMeta.stage,
     };
     m[Versioning.INTERNAL_REVISION] = Versioning.nextRevision(previousMeta ? previousMeta[Versioning.INTERNAL_REVISION] : Versioning.INITIAL_REVISION as number);
     return m;
@@ -82,6 +88,9 @@ export class Versioning {
   public static toExternalRepresentation(meta: Meta): Meta {
     if (meta && meta.version && meta.version == Versioning.INITIAL_VERSION) {
       meta.version = `1.${meta[Versioning.INTERNAL_REVISION]}.0`
+    }
+    if (meta && !meta.stage){
+      meta.stage = 'released';
     }
     if (meta) {
       delete meta[Versioning.INTERNAL_REVISION];
@@ -92,6 +101,37 @@ export class Versioning {
   public static createRevisionId(name: string, version: string): string {
     const id = `${name}-${version}`;
     return id;
+  }
+
+  // stage management/rules
+  public static validateNewStage(newVersion: Meta, previousVersion: Meta): boolean {
+    if (!newVersion  || !previousVersion || !newVersion.stage || !previousVersion.stage){
+      L.debug('stage information missing from previous or new meta information');
+      return true;
+    }
+    if (newVersion.stage == previousVersion.stage){
+      L.debug('no stage transition required');
+      return true;
+    }
+
+    // check current status released, new status con only be deprecacted
+    if (previousVersion.stage == 'released' && newVersion.stage != 'deprecated'){
+      return false;
+    }
+    // check current status deprecated, new status con only be released or retired
+    if (previousVersion.stage == 'deprecated' && (newVersion.stage =='draft') ){
+      return false;
+    }
+    // check current status retired, new status can only be retired
+    if (previousVersion.stage == 'retired' && (newVersion.stage !='retired') ){
+      return false;
+    }
+
+    if (previousVersion.stage == 'draft' && newVersion.stage != 'released'){
+      return false;
+    }
+
+    return true;
   }
 
 }
