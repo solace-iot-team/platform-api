@@ -225,11 +225,11 @@ export class AppsService {
     ownerAttributes: Attributes
   ): Promise<AppPatch> {
     L.info(`App patch request ${JSON.stringify(app)}`);
-    const validated = await this.validate(app, true);
     // need to hold on to unmodified app so we can roll back if required and can determine changes during reprovisioning
     const appNotModified: AppPatch = await this.persistenceService.byName(
       name
     );
+    const validated = await this.validate(app, true, appNotModified as App);
     if (app.credentials && app.credentials.secret && !app.credentials.secret.consumerSecret) {
       // regenerate a consumerSecret if omitted / partial secret is sent
       app.credentials.secret.consumerSecret = AppHelper.generateConsumerSecret();
@@ -239,7 +239,7 @@ export class AppsService {
       if (app.expiresIn && app.expiresIn > 0) {
         app.credentials.expiresAt = now + app.expiresIn;
       } else if (appNotModified.expiresIn && appNotModified.expiresIn > 0) {
-        app.credentials.expiresAt = now + (appNotModified.expiresIn*1000);
+        app.credentials.expiresAt = now + (appNotModified.expiresIn * 1000);
       } else {
         app.credentials.expiresAt = -1;
       }
@@ -247,7 +247,7 @@ export class AppsService {
       // if expiresIn provided apply it to the previous expiration date.
       app.credentials = appNotModified.credentials;
       if (app.expiresIn > 0) {
-        app.credentials.expiresAt = app.credentials.issuedAt + (app.expiresIn*1000);
+        app.credentials.expiresAt = app.credentials.issuedAt + (app.expiresIn * 1000);
       } else {
         app.credentials.expiresAt = -1;
       }
@@ -288,7 +288,7 @@ export class AppsService {
     }
   }
 
-  async validate(app: any, isUpdate: boolean = false): Promise<boolean> {
+  async validate(app: any, isUpdate: boolean = false, appNotModified?: App): Promise<boolean> {
     let isApproved = true;
     const environments: Set<string> = new Set();
     if ((!app.apiProducts || app.apiProducts.length == 0) && !isUpdate) {
@@ -311,8 +311,32 @@ export class AppsService {
           );
         }
       }
+      let apiProductException: ErrorResponseInternal = null;
       try {
         const apiProduct = await ApiProductsService.byName(productName);
+
+
+        // can only reference products in released and deprecated stage
+        if (apiProduct.meta.stage != 'released' && apiProduct.meta.stage != 'deprecated' && apiProduct.meta.stage) {
+          apiProductException = new ErrorResponseInternal(
+            422,
+            `Referenced API Product ${productName} can not be referenced as it is in stage ${apiProduct.meta.stage}`
+          );
+        }
+        // deprecated products can not be added - so an App create is not allowed at all
+        if (apiProduct.meta.stage == 'deprecated' && !isUpdate) {
+          apiProductException = new ErrorResponseInternal(
+            422,
+            `API Product ${productName} in deprecated stage can not be added to a an App`
+          );
+        }
+        // deprecated api products can only be referenced if they were previsouy referenced by the app
+        if (apiProduct.meta.stage == 'deprecated' && !appNotModified?.apiProducts.find(a=>APIProductsTypeHelper.apiProductReferenceToString(a) == apiProduct.name )) {
+          apiProductException = new ErrorResponseInternal(
+            422,
+            `API Product ${productName} in deprecated stage can not be added to a an App`
+          );
+        }
         apiProduct.environments.forEach((envName) => {
           environments.add(envName);
         });
@@ -321,10 +345,14 @@ export class AppsService {
         }
       } catch (e) {
         L.error(e);
-        throw new ErrorResponseInternal(
+        apiProductException = new ErrorResponseInternal(
           422,
           `Referenced API Product ${productName} does not exist`
         );
+      } finally {
+        if (apiProductException) {
+          throw apiProductException;
+        }
       }
     }
 
