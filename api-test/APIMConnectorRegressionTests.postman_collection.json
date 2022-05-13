@@ -15906,6 +15906,898 @@
 			]
 		},
 		{
+			"name": "39  API Product Stages",
+			"item": [
+				{
+					"name": "Create API Product",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status OK\", function () {",
+									"    pm.response.to.have.status(201);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"apis\": [\n      \"SayHelloPub\"\n  ],\n  \"approvalType\": \"manual\",\n\n  \"description\": \"SayHello_PRODUCT\",\n  \"displayName\": \"SayHello_PRODUCT\",\n  \"environments\": [\n    \"{{CONNECTOR_ENV}}\",\n    \"{{PROD_CONNECTOR_ENV}}\"\n  ],\n  \"name\": \"SayHello_PRODUCT\",\n  \"pubResources\": [\n  ],\n  \"subResources\": [\n  ],\n  \"protocols\": [\n    {\n      \"name\": \"http\",\n      \"version\": \"1.1\"\n    },\n    {\n      \"name\": \"smf\",\n      \"version\": \"smf\"\n    }\n  ],\n  \"clientOptions\": {\n    \"guaranteedMessaging\": {\n      \"requireQueue\": true,\n      \"accessType\": \"exclusive\",\n      \"maxTtl\": 3600,\n      \"maxMsgSpoolUsage\": 50\n    }\n  },\n  \"attributes\": [],\n  \"meta\": {\n      \"version\": \"1.1.0\",\n      \"stage\": \"draft\"\n  }\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{CONNECTOR_BASEURL}}/{{TENANT}}/apiProducts",
+							"host": [
+								"{{CONNECTOR_BASEURL}}"
+							],
+							"path": [
+								"{{TENANT}}",
+								"apiProducts"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Patch API Product - keep draft",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status OK\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PATCH",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"apis\": [\n      \"SayHelloPub\"\n  ],\n   \"displayName\": \"SayHello_PRODUCT\",\n   \"meta\": {\n    \"version\": \"1.2.0\",\n    \"stage\": \"draft\"\n  }\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{CONNECTOR_BASEURL}}/{{TENANT}}/apiProducts/SayHello_PRODUCT",
+							"host": [
+								"{{CONNECTOR_BASEURL}}"
+							],
+							"path": [
+								"{{TENANT}}",
+								"apiProducts",
+								"SayHello_PRODUCT"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Patch API Product - no stage provided success",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status OK\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PATCH",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n   \"displayName\": \"SayHello_App Updated\",\n   \"meta\": {\n    \"version\": \"1.2.5\"\n  }\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{CONNECTOR_BASEURL}}/{{TENANT}}/apiProducts/SayHello_PRODUCT",
+							"host": [
+								"{{CONNECTOR_BASEURL}}"
+							],
+							"path": [
+								"{{TENANT}}",
+								"apiProducts",
+								"SayHello_PRODUCT"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create app fail",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status OK\", function () {",
+									"    pm.response.to.have.status(422);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"name\": \"{{APP_NAME}}\",\n  \"internalName\": \"{{APP_NAME_INTERNAL}}\",    \n  \"displayName\": \"{{APP_NAME}}\",\n  \"expiresIn\": 0,\n  \"apiProducts\": [\n      { \n          \"apiproduct\": \"SayHello_PRODUCT\"\n      },\n      { \n          \"apiproduct\": \"SayHello_PRODUCT2\"\n      }\n  ],\n  \"credentials\": {\n    \"expiresAt\": -1,\n    \"issuedAt\": 0,\n    \"secret\": {\n      \"consumerKey\": \"{{CONSUMER_KEY}}\",\n      \"consumerSecret\": \"{{CONSUMER_SECRET}}\"\n    }\n  }\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{CONNECTOR_BASEURL}}/{{TENANT}}/teams/{{TEAM_NAME}}/apps",
+							"host": [
+								"{{CONNECTOR_BASEURL}}"
+							],
+							"path": [
+								"{{TENANT}}",
+								"teams",
+								"{{TEAM_NAME}}",
+								"apps"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Patch API Product - retire failure",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status OK\", function () {",
+									"    pm.response.to.have.status(409);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PATCH",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"apis\": [\n      \"SayHelloPub\"\n  ],\n   \"displayName\": \"SayHello_PRODUCT\",\n   \"meta\": {\n    \"version\": \"1.3.0\",\n    \"stage\": \"retired\"\n  }\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{CONNECTOR_BASEURL}}/{{TENANT}}/apiProducts/SayHello_PRODUCT",
+							"host": [
+								"{{CONNECTOR_BASEURL}}"
+							],
+							"path": [
+								"{{TENANT}}",
+								"apiProducts",
+								"SayHello_PRODUCT"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Patch API Product - release",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status OK\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PATCH",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"apis\": [\n      \"SayHelloPub\"\n  ],\n   \"displayName\": \"SayHello_PRODUCT\",\n   \"meta\": {\n    \"version\": \"1.3.0\",\n    \"stage\": \"released\"\n  }\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{CONNECTOR_BASEURL}}/{{TENANT}}/apiProducts/SayHello_PRODUCT",
+							"host": [
+								"{{CONNECTOR_BASEURL}}"
+							],
+							"path": [
+								"{{TENANT}}",
+								"apiProducts",
+								"SayHello_PRODUCT"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create app success",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status OK\", function () {",
+									"    pm.response.to.have.status(201);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"name\": \"{{APP_NAME}}\",\n  \"internalName\": \"{{APP_NAME_INTERNAL}}\",    \n  \"displayName\": \"{{APP_NAME}}\",\n  \"expiresIn\": 0,\n  \"apiProducts\": [\n      { \n          \"apiproduct\": \"SayHello_PRODUCT\"\n      }\n  ],\n  \"credentials\": {\n    \"expiresAt\": -1,\n    \"issuedAt\": 0,\n    \"secret\": {\n      \"consumerKey\": \"{{CONSUMER_KEY}}\",\n      \"consumerSecret\": \"{{CONSUMER_SECRET}}\"\n    }\n  }\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{CONNECTOR_BASEURL}}/{{TENANT}}/teams/{{TEAM_NAME}}/apps",
+							"host": [
+								"{{CONNECTOR_BASEURL}}"
+							],
+							"path": [
+								"{{TENANT}}",
+								"teams",
+								"{{TEAM_NAME}}",
+								"apps"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Patch API Product - retire failure",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status OK\", function () {",
+									"    pm.response.to.have.status(409);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PATCH",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"apis\": [\n      \"SayHelloPub\"\n  ],\n   \"displayName\": \"SayHello_PRODUCT\",\n   \"meta\": {\n    \"version\": \"1.4.0\",\n    \"stage\": \"retired\"\n  }\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{CONNECTOR_BASEURL}}/{{TENANT}}/apiProducts/SayHello_PRODUCT",
+							"host": [
+								"{{CONNECTOR_BASEURL}}"
+							],
+							"path": [
+								"{{TENANT}}",
+								"apiProducts",
+								"SayHello_PRODUCT"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Patch API Product - deprecated",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status OK\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PATCH",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"apis\": [\n      \"SayHelloPub\"\n  ],\n   \"displayName\": \"SayHello_PRODUCT\",\n   \"meta\": {\n    \"version\": \"1.4.0\",\n    \"stage\": \"deprecated\"\n  }\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{CONNECTOR_BASEURL}}/{{TENANT}}/apiProducts/SayHello_PRODUCT",
+							"host": [
+								"{{CONNECTOR_BASEURL}}"
+							],
+							"path": [
+								"{{TENANT}}",
+								"apiProducts",
+								"SayHello_PRODUCT"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update app success",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status OK\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PATCH",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{  \n  \"displayName\": \"{{APP_NAME}} Patch\",\n  \"apiProducts\": [\n      { \n          \"apiproduct\": \"SayHello_PRODUCT\"\n      }\n  ]\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{CONNECTOR_BASEURL}}/{{TENANT}}/teams/{{TEAM_NAME}}/apps/{{APP_NAME}}",
+							"host": [
+								"{{CONNECTOR_BASEURL}}"
+							],
+							"path": [
+								"{{TENANT}}",
+								"teams",
+								"{{TEAM_NAME}}",
+								"apps",
+								"{{APP_NAME}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create app failure",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status OK\", function () {",
+									"    pm.response.to.have.status(422);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"name\": \"{{APP_NAME}}2\",\n  \"internalName\": \"{{APP_NAME_INTERNAL}}\",    \n  \"displayName\": \"{{APP_NAME}}\",\n  \"expiresIn\": 0,\n  \"apiProducts\": [\n      { \n          \"apiproduct\": \"SayHello_PRODUCT\"\n      }\n  ],\n  \"credentials\": {\n    \"expiresAt\": -1,\n    \"issuedAt\": 0,\n    \"secret\": {\n      \"consumerKey\": \"{{CONSUMER_KEY}}\",\n      \"consumerSecret\": \"{{CONSUMER_SECRET}}\"\n    }\n  }\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{CONNECTOR_BASEURL}}/{{TENANT}}/teams/{{TEAM_NAME}}/apps",
+							"host": [
+								"{{CONNECTOR_BASEURL}}"
+							],
+							"path": [
+								"{{TENANT}}",
+								"teams",
+								"{{TEAM_NAME}}",
+								"apps"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create app no products",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status OK\", function () {",
+									"    pm.response.to.have.status(201);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"name\": \"{{APP_NAME}}2\",\n  \"internalName\": \"{{APP_NAME_INTERNAL}}\",    \n  \"displayName\": \"{{APP_NAME}}\",\n  \"expiresIn\": 0,\n  \"apiProducts\": [\n  ],\n  \"credentials\": {\n    \"expiresAt\": -1,\n    \"issuedAt\": 0,\n    \"secret\": {\n      \"consumerKey\": \"{{CONSUMER_KEY}}\",\n      \"consumerSecret\": \"{{CONSUMER_SECRET}}\"\n    }\n  }\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{CONNECTOR_BASEURL}}/{{TENANT}}/teams/{{TEAM_NAME}}/apps",
+							"host": [
+								"{{CONNECTOR_BASEURL}}"
+							],
+							"path": [
+								"{{TENANT}}",
+								"teams",
+								"{{TEAM_NAME}}",
+								"apps"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update app failure - add deprecated",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status OK\", function () {",
+									"    pm.response.to.have.status(422);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PATCH",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"apiProducts\": [\n      { \n          \"apiproduct\": \"SayHello_PRODUCT\"\n      }\n  ]\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{CONNECTOR_BASEURL}}/{{TENANT}}/teams/{{TEAM_NAME}}/apps/{{APP_NAME}}2",
+							"host": [
+								"{{CONNECTOR_BASEURL}}"
+							],
+							"path": [
+								"{{TENANT}}",
+								"teams",
+								"{{TEAM_NAME}}",
+								"apps",
+								"{{APP_NAME}}2"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Patch API Product - draft failure",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status OK\", function () {",
+									"    pm.response.to.have.status(409);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PATCH",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"apis\": [\n      \"SayHelloPub\"\n  ],\n   \"displayName\": \"SayHello_PRODUCT\",\n   \"meta\": {\n    \"version\": \"1.4.0\",\n    \"stage\": \"draft\"\n  }\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{CONNECTOR_BASEURL}}/{{TENANT}}/apiProducts/SayHello_PRODUCT",
+							"host": [
+								"{{CONNECTOR_BASEURL}}"
+							],
+							"path": [
+								"{{TENANT}}",
+								"apiProducts",
+								"SayHello_PRODUCT"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Patch API Product - release",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status OK\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PATCH",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"apis\": [\n      \"SayHelloPub\"\n  ],\n   \"displayName\": \"SayHello_PRODUCT\",\n   \"meta\": {\n    \"version\": \"1.5.0\",\n    \"stage\": \"released\"\n  }\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{CONNECTOR_BASEURL}}/{{TENANT}}/apiProducts/SayHello_PRODUCT",
+							"host": [
+								"{{CONNECTOR_BASEURL}}"
+							],
+							"path": [
+								"{{TENANT}}",
+								"apiProducts",
+								"SayHello_PRODUCT"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Patch API Product - deprecated",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status OK\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PATCH",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"apis\": [\n      \"SayHelloPub\"\n  ],\n   \"displayName\": \"SayHello_PRODUCT\",\n   \"meta\": {\n    \"version\": \"1.6.0\",\n    \"stage\": \"deprecated\"\n  }\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{CONNECTOR_BASEURL}}/{{TENANT}}/apiProducts/SayHello_PRODUCT",
+							"host": [
+								"{{CONNECTOR_BASEURL}}"
+							],
+							"path": [
+								"{{TENANT}}",
+								"apiProducts",
+								"SayHello_PRODUCT"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Patch API Product - retired",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status OK\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PATCH",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"apis\": [\n      \"SayHelloPub\"\n  ],\n   \"displayName\": \"SayHello_PRODUCT\",\n   \"meta\": {\n    \"version\": \"1.7.0\",\n    \"stage\": \"retired\"\n  }\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{CONNECTOR_BASEURL}}/{{TENANT}}/apiProducts/SayHello_PRODUCT",
+							"host": [
+								"{{CONNECTOR_BASEURL}}"
+							],
+							"path": [
+								"{{TENANT}}",
+								"apiProducts",
+								"SayHello_PRODUCT"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create app failure Copy",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status OK\", function () {",
+									"    pm.response.to.have.status(422);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"name\": \"{{APP_NAME}}2\",\n  \"internalName\": \"{{APP_NAME_INTERNAL}}\",    \n  \"displayName\": \"{{APP_NAME}}\",\n  \"expiresIn\": 0,\n  \"apiProducts\": [\n      { \n          \"apiproduct\": \"SayHello_PRODUCT\"\n      }\n  ],\n  \"credentials\": {\n    \"expiresAt\": -1,\n    \"issuedAt\": 0,\n    \"secret\": {\n      \"consumerKey\": \"{{CONSUMER_KEY}}\",\n      \"consumerSecret\": \"{{CONSUMER_SECRET}}\"\n    }\n  }\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{CONNECTOR_BASEURL}}/{{TENANT}}/teams/{{TEAM_NAME}}/apps",
+							"host": [
+								"{{CONNECTOR_BASEURL}}"
+							],
+							"path": [
+								"{{TENANT}}",
+								"teams",
+								"{{TEAM_NAME}}",
+								"apps"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Patch API Product - deprecate failure",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status OK\", function () {",
+									"    pm.response.to.have.status(409);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PATCH",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"apis\": [\n      \"SayHelloPub\"\n  ],\n   \"displayName\": \"SayHello_PRODUCT\",\n   \"meta\": {\n    \"version\": \"2.0.0\",\n    \"stage\": \"deprecated\"\n  }\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{CONNECTOR_BASEURL}}/{{TENANT}}/apiProducts/SayHello_PRODUCT",
+							"host": [
+								"{{CONNECTOR_BASEURL}}"
+							],
+							"path": [
+								"{{TENANT}}",
+								"apiProducts",
+								"SayHello_PRODUCT"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete App Copy",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is OK\", function () {",
+									"    pm.response.to.have.status(204);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{CONNECTOR_BASEURL}}/{{TENANT}}/teams/{{TEAM_NAME}}/apps/{{APP_NAME}}",
+							"host": [
+								"{{CONNECTOR_BASEURL}}"
+							],
+							"path": [
+								"{{TENANT}}",
+								"teams",
+								"{{TEAM_NAME}}",
+								"apps",
+								"{{APP_NAME}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete App Copy 2",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is OK\", function () {",
+									"    pm.response.to.have.status(204);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{CONNECTOR_BASEURL}}/{{TENANT}}/teams/{{TEAM_NAME}}/apps/{{APP_NAME}}2",
+							"host": [
+								"{{CONNECTOR_BASEURL}}"
+							],
+							"path": [
+								"{{TENANT}}",
+								"teams",
+								"{{TEAM_NAME}}",
+								"apps",
+								"{{APP_NAME}}2"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete API Product Copy",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is OK\", function () {",
+									"    pm.response.to.have.status(204);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{CONNECTOR_BASEURL}}/{{TENANT}}/apiProducts/SayHello_PRODUCT",
+							"host": [
+								"{{CONNECTOR_BASEURL}}"
+							],
+							"path": [
+								"{{TENANT}}",
+								"apiProducts",
+								"SayHello_PRODUCT"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
 			"name": "General Tear Down",
 			"item": [
 				{
@@ -16453,6 +17345,1312 @@
 							"path": [
 								"organizations",
 								"{{TENANT}}"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Orgs Task Tests",
+			"item": [
+				{
+					"name": "Create Org 01",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status OK\", function () {",
+									"    pm.response.to.have.status(201);",
+									"});",
+									"",
+									"",
+									"pm.test(\"Has etag and save etag\", function() {",
+									"    pm.response.to.have.header('ETag');",
+									"    let headerValue = pm.response.headers.get(\"ETag\");",
+									"    pm.globals.set(\"01_Setup_ETag\", headerValue);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "{{CONNECTOR_ADMIN_PWD}}",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "{{CONNECTOR_ADMIN}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"name\": \"org-01\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{CONNECTOR_BASEURL}}/organizations",
+							"host": [
+								"{{CONNECTOR_BASEURL}}"
+							],
+							"path": [
+								"organizations"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Org 02",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status OK\", function () {",
+									"    pm.response.to.have.status(201);",
+									"});",
+									"",
+									"",
+									"pm.test(\"Has etag and save etag\", function() {",
+									"    pm.response.to.have.header('ETag');",
+									"    let headerValue = pm.response.headers.get(\"ETag\");",
+									"    pm.globals.set(\"01_Setup_ETag\", headerValue);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "{{CONNECTOR_ADMIN_PWD}}",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "{{CONNECTOR_ADMIN}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"name\": \"org-02\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{CONNECTOR_BASEURL}}/organizations",
+							"host": [
+								"{{CONNECTOR_BASEURL}}"
+							],
+							"path": [
+								"organizations"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Org 03",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status OK\", function () {",
+									"    pm.response.to.have.status(201);",
+									"});",
+									"",
+									"",
+									"pm.test(\"Has etag and save etag\", function() {",
+									"    pm.response.to.have.header('ETag');",
+									"    let headerValue = pm.response.headers.get(\"ETag\");",
+									"    pm.globals.set(\"01_Setup_ETag\", headerValue);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "{{CONNECTOR_ADMIN_PWD}}",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "{{CONNECTOR_ADMIN}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"name\": \"org-03\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{CONNECTOR_BASEURL}}/organizations",
+							"host": [
+								"{{CONNECTOR_BASEURL}}"
+							],
+							"path": [
+								"organizations"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Org 04",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status OK\", function () {",
+									"    pm.response.to.have.status(201);",
+									"});",
+									"",
+									"",
+									"pm.test(\"Has etag and save etag\", function() {",
+									"    pm.response.to.have.header('ETag');",
+									"    let headerValue = pm.response.headers.get(\"ETag\");",
+									"    pm.globals.set(\"01_Setup_ETag\", headerValue);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "{{CONNECTOR_ADMIN_PWD}}",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "{{CONNECTOR_ADMIN}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"name\": \"org-04\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{CONNECTOR_BASEURL}}/organizations",
+							"host": [
+								"{{CONNECTOR_BASEURL}}"
+							],
+							"path": [
+								"organizations"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Org 05",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status OK\", function () {",
+									"    pm.response.to.have.status(201);",
+									"});",
+									"",
+									"",
+									"pm.test(\"Has etag and save etag\", function() {",
+									"    pm.response.to.have.header('ETag');",
+									"    let headerValue = pm.response.headers.get(\"ETag\");",
+									"    pm.globals.set(\"01_Setup_ETag\", headerValue);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "{{CONNECTOR_ADMIN_PWD}}",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "{{CONNECTOR_ADMIN}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"name\": \"org-05\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{CONNECTOR_BASEURL}}/organizations",
+							"host": [
+								"{{CONNECTOR_BASEURL}}"
+							],
+							"path": [
+								"organizations"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Org 06",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status OK\", function () {",
+									"    pm.response.to.have.status(201);",
+									"});",
+									"",
+									"",
+									"pm.test(\"Has etag and save etag\", function() {",
+									"    pm.response.to.have.header('ETag');",
+									"    let headerValue = pm.response.headers.get(\"ETag\");",
+									"    pm.globals.set(\"01_Setup_ETag\", headerValue);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "{{CONNECTOR_ADMIN_PWD}}",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "{{CONNECTOR_ADMIN}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"name\": \"org-06\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{CONNECTOR_BASEURL}}/organizations",
+							"host": [
+								"{{CONNECTOR_BASEURL}}"
+							],
+							"path": [
+								"organizations"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Org 07",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status OK\", function () {",
+									"    pm.response.to.have.status(201);",
+									"});",
+									"",
+									"",
+									"pm.test(\"Has etag and save etag\", function() {",
+									"    pm.response.to.have.header('ETag');",
+									"    let headerValue = pm.response.headers.get(\"ETag\");",
+									"    pm.globals.set(\"01_Setup_ETag\", headerValue);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "{{CONNECTOR_ADMIN_PWD}}",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "{{CONNECTOR_ADMIN}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"name\": \"org-07\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{CONNECTOR_BASEURL}}/organizations",
+							"host": [
+								"{{CONNECTOR_BASEURL}}"
+							],
+							"path": [
+								"organizations"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Org 08",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status OK\", function () {",
+									"    pm.response.to.have.status(201);",
+									"});",
+									"",
+									"",
+									"pm.test(\"Has etag and save etag\", function() {",
+									"    pm.response.to.have.header('ETag');",
+									"    let headerValue = pm.response.headers.get(\"ETag\");",
+									"    pm.globals.set(\"01_Setup_ETag\", headerValue);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "{{CONNECTOR_ADMIN_PWD}}",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "{{CONNECTOR_ADMIN}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"name\": \"org-08\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{CONNECTOR_BASEURL}}/organizations",
+							"host": [
+								"{{CONNECTOR_BASEURL}}"
+							],
+							"path": [
+								"organizations"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Org 09",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status OK\", function () {",
+									"    pm.response.to.have.status(201);",
+									"});",
+									"",
+									"",
+									"pm.test(\"Has etag and save etag\", function() {",
+									"    pm.response.to.have.header('ETag');",
+									"    let headerValue = pm.response.headers.get(\"ETag\");",
+									"    pm.globals.set(\"01_Setup_ETag\", headerValue);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "{{CONNECTOR_ADMIN_PWD}}",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "{{CONNECTOR_ADMIN}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"name\": \"org-09\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{CONNECTOR_BASEURL}}/organizations",
+							"host": [
+								"{{CONNECTOR_BASEURL}}"
+							],
+							"path": [
+								"organizations"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Org 10",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status OK\", function () {",
+									"    pm.response.to.have.status(201);",
+									"});",
+									"",
+									"",
+									"pm.test(\"Has etag and save etag\", function() {",
+									"    pm.response.to.have.header('ETag');",
+									"    let headerValue = pm.response.headers.get(\"ETag\");",
+									"    pm.globals.set(\"01_Setup_ETag\", headerValue);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "{{CONNECTOR_ADMIN_PWD}}",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "{{CONNECTOR_ADMIN}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"name\": \"org-10\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{CONNECTOR_BASEURL}}/organizations",
+							"host": [
+								"{{CONNECTOR_BASEURL}}"
+							],
+							"path": [
+								"organizations"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Org 11",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status OK\", function () {",
+									"    pm.response.to.have.status(201);",
+									"});",
+									"",
+									"",
+									"pm.test(\"Has etag and save etag\", function() {",
+									"    pm.response.to.have.header('ETag');",
+									"    let headerValue = pm.response.headers.get(\"ETag\");",
+									"    pm.globals.set(\"01_Setup_ETag\", headerValue);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "{{CONNECTOR_ADMIN_PWD}}",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "{{CONNECTOR_ADMIN}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"name\": \"org-11\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{CONNECTOR_BASEURL}}/organizations",
+							"host": [
+								"{{CONNECTOR_BASEURL}}"
+							],
+							"path": [
+								"organizations"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Org 12",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status OK\", function () {",
+									"    pm.response.to.have.status(201);",
+									"});",
+									"",
+									"",
+									"pm.test(\"Has etag and save etag\", function() {",
+									"    pm.response.to.have.header('ETag');",
+									"    let headerValue = pm.response.headers.get(\"ETag\");",
+									"    pm.globals.set(\"01_Setup_ETag\", headerValue);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "{{CONNECTOR_ADMIN_PWD}}",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "{{CONNECTOR_ADMIN}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"name\": \"org-12\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{CONNECTOR_BASEURL}}/organizations",
+							"host": [
+								"{{CONNECTOR_BASEURL}}"
+							],
+							"path": [
+								"organizations"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Org Deletes",
+			"item": [
+				{
+					"name": "Delete org01",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status OK\", function () {",
+									"    pm.response.to.have.status(204);",
+									"});",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "{{CONNECTOR_ADMIN_PWD}}",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "{{CONNECTOR_ADMIN}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{CONNECTOR_BASEURL}}/organizations/org-01",
+							"host": [
+								"{{CONNECTOR_BASEURL}}"
+							],
+							"path": [
+								"organizations",
+								"org-01"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete org02",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status OK\", function () {",
+									"    pm.response.to.have.status(204);",
+									"});",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "{{CONNECTOR_ADMIN_PWD}}",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "{{CONNECTOR_ADMIN}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{CONNECTOR_BASEURL}}/organizations/org-02",
+							"host": [
+								"{{CONNECTOR_BASEURL}}"
+							],
+							"path": [
+								"organizations",
+								"org-02"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete org03",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status OK\", function () {",
+									"    pm.response.to.have.status(204);",
+									"});",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "{{CONNECTOR_ADMIN_PWD}}",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "{{CONNECTOR_ADMIN}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{CONNECTOR_BASEURL}}/organizations/org-03",
+							"host": [
+								"{{CONNECTOR_BASEURL}}"
+							],
+							"path": [
+								"organizations",
+								"org-03"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete org04",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status OK\", function () {",
+									"    pm.response.to.have.status(204);",
+									"});",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "{{CONNECTOR_ADMIN_PWD}}",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "{{CONNECTOR_ADMIN}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{CONNECTOR_BASEURL}}/organizations/org-04",
+							"host": [
+								"{{CONNECTOR_BASEURL}}"
+							],
+							"path": [
+								"organizations",
+								"org-04"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete org05",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status OK\", function () {",
+									"    pm.response.to.have.status(204);",
+									"});",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "{{CONNECTOR_ADMIN_PWD}}",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "{{CONNECTOR_ADMIN}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{CONNECTOR_BASEURL}}/organizations/org-05",
+							"host": [
+								"{{CONNECTOR_BASEURL}}"
+							],
+							"path": [
+								"organizations",
+								"org-05"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete org06",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status OK\", function () {",
+									"    pm.response.to.have.status(204);",
+									"});",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "{{CONNECTOR_ADMIN_PWD}}",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "{{CONNECTOR_ADMIN}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{CONNECTOR_BASEURL}}/organizations/org-06",
+							"host": [
+								"{{CONNECTOR_BASEURL}}"
+							],
+							"path": [
+								"organizations",
+								"org-06"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete org07",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status OK\", function () {",
+									"    pm.response.to.have.status(204);",
+									"});",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "{{CONNECTOR_ADMIN_PWD}}",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "{{CONNECTOR_ADMIN}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{CONNECTOR_BASEURL}}/organizations/org-07",
+							"host": [
+								"{{CONNECTOR_BASEURL}}"
+							],
+							"path": [
+								"organizations",
+								"org-07"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete org08",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status OK\", function () {",
+									"    pm.response.to.have.status(204);",
+									"});",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "{{CONNECTOR_ADMIN_PWD}}",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "{{CONNECTOR_ADMIN}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{CONNECTOR_BASEURL}}/organizations/org-08",
+							"host": [
+								"{{CONNECTOR_BASEURL}}"
+							],
+							"path": [
+								"organizations",
+								"org-08"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete org09",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status OK\", function () {",
+									"    pm.response.to.have.status(204);",
+									"});",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "{{CONNECTOR_ADMIN_PWD}}",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "{{CONNECTOR_ADMIN}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{CONNECTOR_BASEURL}}/organizations/org-09",
+							"host": [
+								"{{CONNECTOR_BASEURL}}"
+							],
+							"path": [
+								"organizations",
+								"org-09"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete org10",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status OK\", function () {",
+									"    pm.response.to.have.status(204);",
+									"});",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "{{CONNECTOR_ADMIN_PWD}}",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "{{CONNECTOR_ADMIN}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{CONNECTOR_BASEURL}}/organizations/org-10",
+							"host": [
+								"{{CONNECTOR_BASEURL}}"
+							],
+							"path": [
+								"organizations",
+								"org-10"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete org11",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status OK\", function () {",
+									"    pm.response.to.have.status(204);",
+									"});",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "{{CONNECTOR_ADMIN_PWD}}",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "{{CONNECTOR_ADMIN}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{CONNECTOR_BASEURL}}/organizations/org-11",
+							"host": [
+								"{{CONNECTOR_BASEURL}}"
+							],
+							"path": [
+								"organizations",
+								"org-11"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete org12",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status OK\", function () {",
+									"    pm.response.to.have.status(204);",
+									"});",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "{{CONNECTOR_ADMIN_PWD}}",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "{{CONNECTOR_ADMIN}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{CONNECTOR_BASEURL}}/organizations/org-12",
+							"host": [
+								"{{CONNECTOR_BASEURL}}"
+							],
+							"path": [
+								"organizations",
+								"org-12"
 							]
 						}
 					},

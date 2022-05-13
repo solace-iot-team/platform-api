@@ -2,7 +2,7 @@ openapi: 3.0.0
 info:
   title: Solace API Management Connector
   description: 'Solace API Management Connector API. Note: basic authentication security mechanism is deprecated.'
-  version: 0.7.11
+  version: 0.7.12
 servers:
   - url: /v1
 
@@ -600,7 +600,7 @@ components:
       - private
       - public
       default: public
-    
+
     Developer:
       description: "A profile for a developer. After the developer is created, they can register an app and receive API credentials"
       type: object
@@ -2235,11 +2235,23 @@ components:
           description: The date and time the object was last modified
         createdBy: 
           $ref: "#/components/schemas/CommonUserName"
+        stage: 
+          $ref: "#/components/schemas/MetaEntityStage"          
     SemVer:
       type: string
       description: a version number in semver (Semantic Versioning) format
       example: 1.0.1
       pattern: "^(0|[1-9]\\d*)\\.(0|[1-9]\\d*)\\.(0|[1-9]\\d*)(?:-((?:0|[1-9]\\d*|\\d*[a-zA-Z-][0-9a-zA-Z-]*)(?:\\.(?:0|[1-9]\\d*|\\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?(?:\\+([0-9a-zA-Z-]+(?:\\.[0-9a-zA-Z-]+)*))?$"
+
+    MetaEntityStage:
+      type: string
+      description: The lifecycle stage of the entity - from draft to released to deprecated to retired. New entities default to 'released' stage if the stage is omitted. Entitites in 'draft' stage can not be referenced by other entities. Entities can transition from 'draft' to 'released' by providing the new stage in an update and once 'released' can be referenced by other entities. Once 'released' an entity can not go back to 'draft' stage. 'released' entities can be 'depcrecated' which means existing references are still valid however new referenceds to this entity can not be created. 'deprecated' stage can be moved back to 'released' stage. An entity in 'deprecated' stagecan be moved to 'retired' which means all references to this entity will be removed. 'once' retired the stage of the entity can no longer be changed.
+      enum:
+      - draft
+      - released
+      - deprecated
+      - retired
+      default: draft
         
 security:
   - OpenId: []

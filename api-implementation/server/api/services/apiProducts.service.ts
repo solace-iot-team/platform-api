@@ -64,7 +64,7 @@ export class ApiProductsService {
         if (!body.meta) {
           body.meta = Versioning.createMeta();
         } else {
-          body.meta = Versioning.createMeta(body.meta.version);
+          body.meta = Versioning.createMeta(body.meta.version, body.meta.stage);
         }
         this.persistenceService.create(body.name, body).then(async (p) => {
           await this.saveRevision(body);
@@ -98,19 +98,23 @@ export class ApiProductsService {
       if (!apiReferenceCheck)
         throw new ErrorResponseInternal(422, `Reference check failed ${apiReferenceCheck}`);
       const currentState: APIProduct = await this.persistenceService.byName(name);
-      if (!currentState.meta){
+      if (!currentState.meta) {
         currentState.meta = Versioning.createMeta();
+      }
+
+      if (!Versioning.validateNewStage(body.meta, currentState.meta)) {
+        throw new ErrorResponseInternal(409, `Stage transition is not allowed, requested transition: ${currentState.meta.stage}=>${body.meta.stage}`);
       }
       if (!Versioning.validateNewVersion(body.meta, currentState.meta)) {
         throw new ErrorResponseInternal(409, `Version supplied in meta element is not greater than current version`);
       }
+
       if (!body.meta) {
         body.meta = Versioning.update(currentState.meta);
       } else {
         body.meta = Versioning.update(currentState.meta, body.meta);
       }
       L.info(JSON.stringify(currentState.meta));
-      // todo check semver against current state
 
       const p = await this.persistenceService.update(name, body);
       if (p != null) {
@@ -208,7 +212,7 @@ export class ApiProductsService {
         try {
           let api: string;
           const ref: string[] = apiName.split('@');
-          if (ref.length==2) {
+          if (ref.length == 2) {
             api = (await ApisService.revisionByVersion(ref[0], ref[1]));
           } else {
             api = (await ApisService.byName(apiName));
