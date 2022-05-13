@@ -47,8 +47,8 @@ export class Versioning {
       return true;
     }
     let semVerPrev = (previousVersion && previousVersion.version == Versioning.INITIAL_VERSION) ?
-      `1.${previousVersion[Versioning.INTERNAL_REVISION]}.0` : 
-      (previousVersion && previousVersion.version)?previousVersion.version:Versioning.INITIAL_VERSION;
+      `1.${previousVersion[Versioning.INTERNAL_REVISION]}.0` :
+      (previousVersion && previousVersion.version) ? previousVersion.version : Versioning.INITIAL_VERSION;
     return Versioning.validateNewVersionString(newVersion.version, semVerPrev);
   }
   public static createMeta(version?: string, stage?: MetaEntityStage): Meta {
@@ -64,7 +64,7 @@ export class Versioning {
 
     };
     m[Versioning.INTERNAL_REVISION] = Versioning.INITIAL_REVISION;
-    if (stage){
+    if (stage) {
       m.stage = stage;
     }
     return m;
@@ -73,13 +73,14 @@ export class Versioning {
   public static update(previousMeta: Meta, newMeta?: Meta): Meta {
     const ts: number = Date.now();
     const user: string = ns.getStore().get(ContextConstants.AUTHENTICATED_USER);
+
     const m: Meta = {
       version: (newMeta && newMeta.version) ? newMeta.version : Versioning.INITIAL_VERSION,
       created: previousMeta ? previousMeta.created : ts,
       lastModified: ts,
       createdBy: previousMeta ? previousMeta.createdBy : user,
       lastModifiedBy: user,
-      stage: newMeta?newMeta.stage:previousMeta.stage,
+      stage: (newMeta && newMeta.stage) ? newMeta.stage : previousMeta.stage,
     };
     m[Versioning.INTERNAL_REVISION] = Versioning.nextRevision(previousMeta ? previousMeta[Versioning.INTERNAL_REVISION] : Versioning.INITIAL_REVISION as number);
     return m;
@@ -89,7 +90,7 @@ export class Versioning {
     if (meta && meta.version && meta.version == Versioning.INITIAL_VERSION) {
       meta.version = `1.${meta[Versioning.INTERNAL_REVISION]}.0`
     }
-    if (meta && !meta.stage){
+    if (meta && !meta.stage) {
       meta.stage = 'released';
     }
     if (meta) {
@@ -105,29 +106,29 @@ export class Versioning {
 
   // stage management/rules
   public static validateNewStage(newVersion: Meta, previousVersion: Meta): boolean {
-    if (!newVersion  || !previousVersion || !newVersion.stage || !previousVersion.stage){
+    if (!newVersion || !previousVersion || !newVersion.stage || !previousVersion.stage) {
       L.debug('stage information missing from previous or new meta information');
       return true;
     }
-    if (newVersion.stage == previousVersion.stage){
+    if (newVersion.stage == previousVersion.stage) {
       L.debug('no stage transition required');
       return true;
     }
 
     // check current status released, new status con only be deprecacted
-    if (previousVersion.stage == 'released' && newVersion.stage != 'deprecated'){
+    if (previousVersion.stage == 'released' && newVersion.stage != 'deprecated') {
       return false;
     }
     // check current status deprecated, new status con only be released or retired
-    if (previousVersion.stage == 'deprecated' && (newVersion.stage =='draft') ){
+    if (previousVersion.stage == 'deprecated' && (newVersion.stage == 'draft')) {
       return false;
     }
     // check current status retired, new status can only be retired
-    if (previousVersion.stage == 'retired' && (newVersion.stage !='retired') ){
+    if (previousVersion.stage == 'retired' && (newVersion.stage != 'retired')) {
       return false;
     }
 
-    if (previousVersion.stage == 'draft' && newVersion.stage != 'released'){
+    if (previousVersion.stage == 'draft' && newVersion.stage != 'released') {
       return false;
     }
 
