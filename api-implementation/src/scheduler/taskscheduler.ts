@@ -96,7 +96,7 @@ export default class TaskScheduler {
     L.info(`deleting job for  org  ${orgName} `);
     try {
       await this.#scheduler.stop(orgName);
-      this.#scheduler.remove(orgName);
+      await this.#scheduler.remove(orgName);
     } catch (e) {
       L.info(`error deleting job for ${orgName}`, e);
     } finally {
