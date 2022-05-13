@@ -15990,6 +15990,47 @@
 					"response": []
 				},
 				{
+					"name": "Patch API Product - no stage provided success",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status OK\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PATCH",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n   \"displayName\": \"SayHello_App Updated\",\n   \"meta\": {\n    \"version\": \"1.2.5\"\n  }\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{CONNECTOR_BASEURL}}/{{TENANT}}/apiProducts/SayHello_PRODUCT",
+							"host": [
+								"{{CONNECTOR_BASEURL}}"
+							],
+							"path": [
+								"{{TENANT}}",
+								"apiProducts",
+								"SayHello_PRODUCT"
+							]
+						}
+					},
+					"response": []
+				},
+				{
 					"name": "Create app fail",
 					"event": [
 						{
