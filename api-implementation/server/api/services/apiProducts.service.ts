@@ -8,7 +8,7 @@ import { PersistenceService } from './persistence.service';
 import EnvironmentsService from './environments.service';
 import AppsService from './apps.service';
 
-import ApisService, { APISpecification } from './apis.service';
+import ApisService from './apis.service';
 import { ErrorResponseInternal } from '../middlewares/error.handler';
 import { Versioning } from '../../common/versioning';
 import asyncapigenerator from './asyncapi/asyncapigenerator';
@@ -193,11 +193,22 @@ export class ApiProductsService {
 
   private async listAppsReferencingProduct(name: string): Promise<AppListitem[]> {
     const q: any = {
-      apiProducts: {
-        $elemMatch: {
-          $eq: name
+      $or: [
+        {
+          apiProducts: {
+            $elemMatch: {
+              $eq: name
+            }
+          }
+        },
+        {
+          apiProducts: {
+            $elemMatch: {
+              apiproduct: name
+            }
+          }
         }
-      }
+      ]
     }
     L.info(q);
     const apps = await AppsService.list(q);
