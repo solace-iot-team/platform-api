@@ -69,8 +69,8 @@ export default class TaskScheduler {
     L.info(`TaskScheduler is enabled`);
   }
 
-  public disable() {
-    this.#scheduler.stop();
+  public async disable() {
+    await this.#scheduler.stop();
   }
 
   private async onNewOrganization(orgName: string) {
@@ -95,7 +95,7 @@ export default class TaskScheduler {
   private async onDeleteOrganization(orgName: string) {
     L.info(`deleting job for  org  ${orgName} `);
     try {
-      this.#scheduler.stop(orgName);
+      await this.#scheduler.stop(orgName);
       this.#scheduler.remove(orgName);
     } catch (e) {
       L.info(`error deleting job for ${orgName}`, e);
