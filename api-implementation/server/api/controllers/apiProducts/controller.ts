@@ -70,6 +70,26 @@ export class Controller {
         next(e);
       });
   };
+
+  derivedByName(req: Request, res: Response, next: NextFunction): void {
+    ApiProductsService.derivedByName(req.params['name'])
+      .then((r) => res.json(r))
+      .catch((e) => {
+        L.error(e);
+        next(e);
+      });
+  };
+
+  createDerived(req: Request, res: Response, next: NextFunction): void {
+    ApiProductsService.createDerived(req.params['name'], req.body).then((r) => {
+      if (r) {
+        res.status(201).json(r);
+      }
+      else
+        next(new ErrorResponseInternal(500, `No response`));
+    }).catch((e) => next(e));
+  }
+
   allRevisions(req: Request, res: Response, next: NextFunction): void {
     ApiProductsService.revisionList(req.params['name'])
       .then((r) => res.json(r))

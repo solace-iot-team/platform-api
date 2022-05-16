@@ -3,6 +3,7 @@ import APIProduct = Components.Schemas.APIProduct;
 import AppListitem = Components.Schemas.AppListItem;
 import CommonEntityNameList = Components.Schemas.CommonEntityNameList;
 import CommonEntityNames = Components.Schemas.CommonEntityNames;
+import MetaEntityReference = Components.Schemas.MetaEntityReference;
 import { PersistenceService } from './persistence.service';
 
 import EnvironmentsService from './environments.service';
@@ -155,6 +156,44 @@ export class ApiProductsService {
     }
     return names;
   }
+
+  async derivedByName(name: string): Promise<CommonEntityNameList> {
+    await this.byName(name);
+    const derivedProducts: APIProduct[] = await this.persistenceService.all({
+      'meta.derivedFrom.name': name
+    });
+    const names: CommonEntityNameList = [];
+    for (const p of derivedProducts) {
+      const name: CommonEntityNames = {
+        displayName: p.displayName,
+        name: p.name,
+      };
+      names.push(name);
+    }
+    return names;
+  }
+
+  async createDerived(name: string, body: CommonEntityNames): Promise<APIProduct> {
+
+    try {
+      const apiProduct: APIProduct = await this.persistenceService.byName(name);
+      const derivedFrom: MetaEntityReference = {
+        name : apiProduct.name,
+        revision: apiProduct.meta[Versioning.INTERNAL_REVISION]
+      };
+      apiProduct.name = body.name;
+      apiProduct.displayName = body.displayName;
+      apiProduct.meta = Versioning.createMeta();
+      apiProduct.meta.derivedFrom =derivedFrom;
+      const p = await this.persistenceService.create(body.name, apiProduct);
+      return await this.byName(body.name);
+
+    } catch (e) {
+      L.error(`APIProductsService.create failure  ${e}`);
+      throw (e);
+    }
+  }
+
 
   async revisionList(apiProductName: string): Promise<string[]> {
     const products: APIProduct[] = await this.revisionPersistenceService.all({ name: apiProductName });
