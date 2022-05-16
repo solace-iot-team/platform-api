@@ -2,7 +2,7 @@ openapi: 3.0.0
 info:
   title: Solace API Management Connector
   description: 'Solace API Management Connector API. Note: basic authentication security mechanism is deprecated.'
-  version: 0.7.12
+  version: 0.7.13
 servers:
   - url: /v1
 
@@ -2236,7 +2236,10 @@ components:
         createdBy: 
           $ref: "#/components/schemas/CommonUserName"
         stage: 
-          $ref: "#/components/schemas/MetaEntityStage"          
+          $ref: "#/components/schemas/MetaEntityStage"    
+        derivedFrom:
+          $ref: "#/components/schemas/MetaEntityReference" 
+          
     SemVer:
       type: string
       description: a version number in semver (Semantic Versioning) format
@@ -2252,7 +2255,27 @@ components:
       - deprecated
       - retired
       default: draft
-        
+    
+    MetaEntityReference:
+      type: object
+      additionalProperties: false
+      properties:
+        name: 
+          readOnly: true
+          example:
+            '{name}'
+          type: string
+          pattern: "^[a-zA-Z0-9_\\-]*(@[ |\\S]*)?$"
+          minLength: 2
+          maxLength: 188
+        revision: 
+          readOnly: true
+          type: integer
+          format: int64
+          example: 1
+          maximum: 99999
+          minimum: 1
+    
 security:
   - OpenId: []
   - BasicAuth: []
@@ -3371,6 +3394,91 @@ paths:
                 maxItems: 32768
                 items:
                  $ref: "#/components/schemas/CommonName"
+        '400':
+           $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '406':
+          $ref: '#/components/responses/NotAcceptable'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
+        '504':
+          $ref: '#/components/responses/GatewayTimeout'
+  /{organization_name}/apiProducts/{api_product_name}/derived:
+    parameters:
+    - $ref: '#/components/parameters/organization'
+    - $ref: '#/components/parameters/api_product_name'
+    post:
+      operationId: createDerivedApiProduct
+      tags:
+      - apiProducts
+      requestBody:
+         description: "Name and display name of the derived API Product"
+         content:
+           "application/json":
+             schema:
+              "$ref": "#/components/schemas/CommonEntityNames"
+      responses:
+          '201':
+            description: Derived API Product
+            content:
+              application/json:
+                schema:
+                  $ref: '#/components/schemas/APIProduct'
+          '422':
+            description: "Duplicate API Product name or display name provided"
+            content:
+             "application/json":
+              schema:
+               "$ref": "#/components/schemas/ErrorResponse"
+          '400':
+             $ref: '#/components/responses/BadRequest'
+          '401':
+            $ref: '#/components/responses/Unauthorized'
+          '403':
+            $ref: '#/components/responses/Forbidden'
+          '404':
+            $ref: '#/components/responses/NotFound'
+          '406':
+            $ref: '#/components/responses/NotAcceptable'
+          '415':
+             $ref: '#/components/responses/UnsupportedMediaType'
+          '429':
+             $ref: '#/components/responses/TooManyRequests'
+          '500':
+            $ref: '#/components/responses/InternalServerError'
+          '503':
+            $ref: '#/components/responses/ServiceUnavailable'
+          '504':
+            $ref: '#/components/responses/GatewayTimeout'
+    get:
+     operationId: listDerivedApiProducts
+     tags:
+     - apiProducts
+     parameters:
+     - $ref: '#/components/parameters/page_size'
+     - $ref: '#/components/parameters/page_number'
+     - $ref: '#/components/parameters/sort_field_name'
+     - $ref: '#/components/parameters/sort_direction'
+     responses:
+        '200':
+          description:  other api products derived from the api product
+          content:
+            application/json:
+              schema:
+                type: array
+                minItems: 0
+                maxItems: 32768
+                items:
+                 $ref: "#/components/schemas/CommonEntityNames"
         '400':
            $ref: '#/components/responses/BadRequest'
         '401':

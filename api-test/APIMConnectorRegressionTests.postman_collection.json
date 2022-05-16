@@ -16836,6 +16836,393 @@
 			]
 		},
 		{
+			"name": "40 Derived API Product",
+			"item": [
+				{
+					"name": "Create API Product",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status OK\", function () {",
+									"    pm.response.to.have.status(201);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"apis\": [\n      \"SayHelloPub\"\n  ],\n  \"approvalType\": \"manual\",\n\n  \"description\": \"SayHello_PRODUCT\",\n  \"displayName\": \"SayHello_PRODUCT\",\n  \"environments\": [\n    \"{{CONNECTOR_ENV}}\",\n    \"{{PROD_CONNECTOR_ENV}}\"\n  ],\n  \"name\": \"SayHello_PRODUCT\",\n  \"pubResources\": [\n  ],\n  \"subResources\": [\n  ],\n  \"protocols\": [\n    {\n      \"name\": \"http\",\n      \"version\": \"1.1\"\n    },\n    {\n      \"name\": \"smf\",\n      \"version\": \"smf\"\n    }\n  ],\n  \"clientOptions\": {\n    \"guaranteedMessaging\": {\n      \"requireQueue\": true,\n      \"accessType\": \"exclusive\",\n      \"maxTtl\": 3600,\n      \"maxMsgSpoolUsage\": 50\n    }\n  },\n  \"attributes\": [],\n  \"meta\": {\n      \"version\": \"1.1.0\",\n      \"stage\": \"draft\"\n  }\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{CONNECTOR_BASEURL}}/{{TENANT}}/apiProducts",
+							"host": [
+								"{{CONNECTOR_BASEURL}}"
+							],
+							"path": [
+								"{{TENANT}}",
+								"apiProducts"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Clone API Product",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status OK\", function () {",
+									"    pm.response.to.have.status(201);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"displayName\": \"SayHello_PRODUCT_2022\",\n  \"name\": \"SayHello_PRODUCT_2022\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{CONNECTOR_BASEURL}}/{{TENANT}}/apiProducts/SayHello_PRODUCT/derived",
+							"host": [
+								"{{CONNECTOR_BASEURL}}"
+							],
+							"path": [
+								"{{TENANT}}",
+								"apiProducts",
+								"SayHello_PRODUCT",
+								"derived"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "GET Clone",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status OK\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Check derivedfrom is set\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.meta.derivedFrom.name).to.eql('SayHello_PRODUCT');",
+									"    pm.expect(jsonData.meta.derivedFrom.revision).to.eql(1);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"displayName\": \"SayHello_PRODUCT 2022\",\n  \"name\": \"SayHello_PRODUCT_2022\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{CONNECTOR_BASEURL}}/{{TENANT}}/apiProducts/SayHello_PRODUCT_2022",
+							"host": [
+								"{{CONNECTOR_BASEURL}}"
+							],
+							"path": [
+								"{{TENANT}}",
+								"apiProducts",
+								"SayHello_PRODUCT_2022"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "GET All Derived By Parent",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status OK\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Check derived object is present\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.length).to.eql(1);",
+									"    pm.expect(jsonData[0].name).to.eql('SayHello_PRODUCT_2022');",
+									"    pm.expect(jsonData[0].displayName).to.eql('SayHello_PRODUCT_2022');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{CONNECTOR_BASEURL}}/{{TENANT}}/apiProducts/SayHello_PRODUCT/derived",
+							"host": [
+								"{{CONNECTOR_BASEURL}}"
+							],
+							"path": [
+								"{{TENANT}}",
+								"apiProducts",
+								"SayHello_PRODUCT",
+								"derived"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete derived API Product",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is OK\", function () {",
+									"    pm.response.to.have.status(204);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{CONNECTOR_BASEURL}}/{{TENANT}}/apiProducts/SayHello_PRODUCT_2022",
+							"host": [
+								"{{CONNECTOR_BASEURL}}"
+							],
+							"path": [
+								"{{TENANT}}",
+								"apiProducts",
+								"SayHello_PRODUCT_2022"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "GET All Derived By Parent After delete",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status OK\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Check derived object is deleted\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.length).to.eql(0);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{CONNECTOR_BASEURL}}/{{TENANT}}/apiProducts/SayHello_PRODUCT/derived",
+							"host": [
+								"{{CONNECTOR_BASEURL}}"
+							],
+							"path": [
+								"{{TENANT}}",
+								"apiProducts",
+								"SayHello_PRODUCT",
+								"derived"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Clone API Product Copy",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status OK\", function () {",
+									"    pm.response.to.have.status(201);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"displayName\": \"SayHello_PRODUCT_2022\",\n  \"name\": \"SayHello_PRODUCT_2022\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{CONNECTOR_BASEURL}}/{{TENANT}}/apiProducts/SayHello_PRODUCT/derived",
+							"host": [
+								"{{CONNECTOR_BASEURL}}"
+							],
+							"path": [
+								"{{TENANT}}",
+								"apiProducts",
+								"SayHello_PRODUCT",
+								"derived"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete API Product",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is OK\", function () {",
+									"    pm.response.to.have.status(204);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{CONNECTOR_BASEURL}}/{{TENANT}}/apiProducts/SayHello_PRODUCT",
+							"host": [
+								"{{CONNECTOR_BASEURL}}"
+							],
+							"path": [
+								"{{TENANT}}",
+								"apiProducts",
+								"SayHello_PRODUCT"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "GET All Derived By Parent After delete",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status not found\", function () {",
+									"    pm.response.to.have.status(404);",
+									"});",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{CONNECTOR_BASEURL}}/{{TENANT}}/apiProducts/SayHello_PRODUCT/derived",
+							"host": [
+								"{{CONNECTOR_BASEURL}}"
+							],
+							"path": [
+								"{{TENANT}}",
+								"apiProducts",
+								"SayHello_PRODUCT",
+								"derived"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete derived API Product Copy",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is OK\", function () {",
+									"    pm.response.to.have.status(204);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{CONNECTOR_BASEURL}}/{{TENANT}}/apiProducts/SayHello_PRODUCT_2022",
+							"host": [
+								"{{CONNECTOR_BASEURL}}"
+							],
+							"path": [
+								"{{TENANT}}",
+								"apiProducts",
+								"SayHello_PRODUCT_2022"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
 			"name": "General Tear Down",
 			"item": [
 				{

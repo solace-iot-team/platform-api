@@ -827,9 +827,22 @@ declare namespace Components {
             readonly created?: number;
             createdBy?: CommonUserName; // ^[.a-zA-Z0-9@_-]*$
             stage?: MetaEntityStage;
+            derivedFrom?: MetaEntityReference;
+        }
+        export interface MetaEntityReference {
+            /**
+             * example:
+             * {name}
+             */
+            readonly name?: string; // ^[a-zA-Z0-9_\-]*(@[ |\S]*)?$
+            /**
+             * example:
+             * 1
+             */
+            readonly revision?: number; // int64
         }
         /**
-         * The lifecycle status of the API Product - from draft to released to deprecated to retired. New API Products are created in 'draft' status. API Products in 'draft' status can not be added to apps. Products can transition from 'draft' to 'released' by providing the new status in an update of the API Product and once 'released' can be added to Apps. Once 'released' an API Product can not go back to 'draft' status. 'released' products can be 'depcrecated' which means existing Apps will continue to function however the product can no longer be added to apps. 'deprecated' status can be moved back to 'released' status. A 'deprecated' can be moved to 'retired' which means the Product will be removed from all Apps that previously used it. 'once' retired the status of the API Product can no longer be changed.
+         * The lifecycle stage of the entity - from draft to released to deprecated to retired. New entities default to 'released' stage if the stage is omitted. Entitites in 'draft' stage can not be referenced by other entities. Entities can transition from 'draft' to 'released' by providing the new stage in an update and once 'released' can be referenced by other entities. Once 'released' an entity can not go back to 'draft' stage. 'released' entities can be 'depcrecated' which means existing references are still valid however new referenceds to this entity can not be created. 'deprecated' stage can be moved back to 'released' stage. An entity in 'deprecated' stagecan be moved to 'retired' which means all references to this entity will be removed. 'once' retired the stage of the entity can no longer be changed.
          */
         export type MetaEntityStage = "draft" | "released" | "deprecated" | "retired";
         export interface MsgVpnAttributes {
@@ -1170,6 +1183,23 @@ declare namespace Paths {
     }
     namespace CreateApiProduct {
         export type RequestBody = Components.Schemas.APIProduct;
+        namespace Responses {
+            export type $201 = Components.Schemas.APIProduct;
+            export type $400 = Components.Responses.BadRequest;
+            export type $401 = Components.Responses.Unauthorized;
+            export type $403 = Components.Responses.Forbidden;
+            export type $404 = Components.Responses.NotFound;
+            export type $406 = Components.Responses.NotAcceptable;
+            export type $415 = Components.Responses.UnsupportedMediaType;
+            export type $422 = Components.Schemas.ErrorResponse;
+            export type $429 = Components.Responses.TooManyRequests;
+            export type $500 = Components.Responses.InternalServerError;
+            export type $503 = Components.Responses.ServiceUnavailable;
+            export type $504 = Components.Responses.GatewayTimeout;
+        }
+    }
+    namespace CreateDerivedApiProduct {
+        export type RequestBody = Components.Schemas.CommonEntityNames;
         namespace Responses {
             export type $201 = Components.Schemas.APIProduct;
             export type $400 = Components.Responses.BadRequest;
@@ -1996,6 +2026,20 @@ declare namespace Paths {
     namespace ListApps {
         namespace Responses {
             export type $200 = Components.Schemas.AppListItem[];
+            export type $400 = Components.Responses.BadRequest;
+            export type $401 = Components.Responses.Unauthorized;
+            export type $403 = Components.Responses.Forbidden;
+            export type $404 = Components.Responses.NotFound;
+            export type $406 = Components.Responses.NotAcceptable;
+            export type $429 = Components.Responses.TooManyRequests;
+            export type $500 = Components.Responses.InternalServerError;
+            export type $503 = Components.Responses.ServiceUnavailable;
+            export type $504 = Components.Responses.GatewayTimeout;
+        }
+    }
+    namespace ListDerivedApiProducts {
+        namespace Responses {
+            export type $200 = Components.Schemas.CommonEntityNames[];
             export type $400 = Components.Responses.BadRequest;
             export type $401 = Components.Responses.Unauthorized;
             export type $403 = Components.Responses.Forbidden;
