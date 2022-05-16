@@ -81,8 +81,12 @@ export class Versioning {
       createdBy: previousMeta ? previousMeta.createdBy : user,
       lastModifiedBy: user,
       stage: (newMeta && newMeta.stage) ? newMeta.stage : previousMeta.stage,
-      derivedFrom : newMeta.derivedFrom?newMeta.derivedFrom:previousMeta.derivedFrom,
     };
+
+    const derivedFrom = (newMeta && newMeta.derivedFrom)?newMeta.derivedFrom:(previousMeta.derivedFrom?previousMeta.derivedFrom:null);
+    if (derivedFrom){
+      m.derivedFrom = derivedFrom;
+    }
     m[Versioning.INTERNAL_REVISION] = Versioning.nextRevision(previousMeta ? previousMeta[Versioning.INTERNAL_REVISION] : Versioning.INITIAL_REVISION as number);
     return m;
   }
