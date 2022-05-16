@@ -2,7 +2,7 @@ openapi: 3.0.0
 info:
   title: Solace API Management Connector
   description: 'Solace API Management Connector API. Note: basic authentication security mechanism is deprecated.'
-  version: 0.7.13
+  version: 0.7.14
 servers:
   - url: /v1
 
@@ -600,6 +600,18 @@ components:
       - private
       - public
       default: public
+
+    EntityDeriveRequest:
+      type: object
+      description: "Request to derive a new entity from an existing entity (clone). Meta object allows to pass in current user name to override the logged in user context in the Connector"
+      additionalProperties: false
+      required:
+      - names
+      properties:
+          names:
+            $ref: '#/components/schemas/CommonEntityNames'
+          meta:
+            $ref: '#/components/schemas/Meta'
 
     Developer:
       description: "A profile for a developer. After the developer is created, they can register an app and receive API credentials"
@@ -2218,8 +2230,6 @@ components:
       type: object
       description: meta information of an object. Will be returned by some resources. Can be set when patching or creating an object. Auto generated if not set.
       additionalProperties: false
-      required:
-      - version
       properties:
         version:
           $ref: "#/components/schemas/SemVer"
@@ -3425,7 +3435,7 @@ paths:
          content:
            "application/json":
              schema:
-              "$ref": "#/components/schemas/CommonEntityNames"
+              "$ref": "#/components/schemas/EntityDeriveRequest"
       responses:
           '201':
             description: Derived API Product

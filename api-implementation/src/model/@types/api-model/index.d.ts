@@ -651,6 +651,13 @@ declare namespace Components {
             uri?: string; // ^[a-zA-Z0-9\.\-+]*:\/\/[A-Za-z\.:0-9\-]*.*$
         }
         /**
+         * Request to derive a new entity from an existing entity (clone). Meta object allows to pass in current user name to override the logged in user context in the Connector
+         */
+        export interface EntityDeriveRequest {
+            names: CommonEntityNames;
+            meta?: Meta;
+        }
+        /**
          * an environment
          */
         export interface Environment {
@@ -815,7 +822,7 @@ declare namespace Components {
          * meta information of an object. Will be returned by some resources. Can be set when patching or creating an object. Auto generated if not set.
          */
         export interface Meta {
-            version: SemVer; // ^(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)(?:-((?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*)(?:\.(?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?(?:\+([0-9a-zA-Z-]+(?:\.[0-9a-zA-Z-]+)*))?$
+            version?: SemVer; // ^(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)(?:-((?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*)(?:\.(?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?(?:\+([0-9a-zA-Z-]+(?:\.[0-9a-zA-Z-]+)*))?$
             /**
              * The date and time the object was last modified
              */
@@ -1199,7 +1206,7 @@ declare namespace Paths {
         }
     }
     namespace CreateDerivedApiProduct {
-        export type RequestBody = Components.Schemas.CommonEntityNames;
+        export type RequestBody = Components.Schemas.EntityDeriveRequest;
         namespace Responses {
             export type $201 = Components.Schemas.APIProduct;
             export type $400 = Components.Responses.BadRequest;

@@ -16898,7 +16898,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n  \"displayName\": \"SayHello_PRODUCT_2022\",\n  \"name\": \"SayHello_PRODUCT_2022\"\n}",
+							"raw": "{ \"names\":{\n  \"displayName\": \"SayHello_PRODUCT_2022\",\n  \"name\": \"SayHello_PRODUCT_2022\"\n}}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -17100,7 +17100,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n  \"displayName\": \"SayHello_PRODUCT_2022\",\n  \"name\": \"SayHello_PRODUCT_2022\"\n}",
+							"raw": "{ \"names\":{\n  \"displayName\": \"SayHello_PRODUCT_2022\",\n  \"name\": \"SayHello_PRODUCT_2022\"\n}}",
 							"options": {
 								"raw": {
 									"language": "json"
