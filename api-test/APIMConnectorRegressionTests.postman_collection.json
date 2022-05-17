@@ -16847,6 +16847,12 @@
 								"exec": [
 									"pm.test(\"Status OK\", function () {",
 									"    pm.response.to.have.status(201);",
+									"});",
+									"",
+									"pm.test(\"Check meta\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.meta.createdBy).to.eql('elmo');",
+									"    pm.expect(jsonData.meta.lastModifiedBy).to.eql('elmo');",
 									"});"
 								],
 								"type": "text/javascript"
@@ -16858,7 +16864,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n  \"apis\": [\n      \"SayHelloPub\"\n  ],\n  \"approvalType\": \"manual\",\n\n  \"description\": \"SayHello_PRODUCT\",\n  \"displayName\": \"SayHello_PRODUCT\",\n  \"environments\": [\n    \"{{CONNECTOR_ENV}}\",\n    \"{{PROD_CONNECTOR_ENV}}\"\n  ],\n  \"name\": \"SayHello_PRODUCT\",\n  \"pubResources\": [\n  ],\n  \"subResources\": [\n  ],\n  \"protocols\": [\n    {\n      \"name\": \"http\",\n      \"version\": \"1.1\"\n    },\n    {\n      \"name\": \"smf\",\n      \"version\": \"smf\"\n    }\n  ],\n  \"clientOptions\": {\n    \"guaranteedMessaging\": {\n      \"requireQueue\": true,\n      \"accessType\": \"exclusive\",\n      \"maxTtl\": 3600,\n      \"maxMsgSpoolUsage\": 50\n    }\n  },\n  \"attributes\": [],\n  \"meta\": {\n      \"version\": \"1.1.0\",\n      \"stage\": \"draft\"\n  }\n}",
+							"raw": "{\n  \"apis\": [\n      \"SayHelloPub\"\n  ],\n  \"approvalType\": \"manual\",\n\n  \"description\": \"SayHello_PRODUCT\",\n  \"displayName\": \"SayHello_PRODUCT\",\n  \"environments\": [\n    \"{{CONNECTOR_ENV}}\",\n    \"{{PROD_CONNECTOR_ENV}}\"\n  ],\n  \"name\": \"SayHello_PRODUCT\",\n  \"pubResources\": [\n  ],\n  \"subResources\": [\n  ],\n  \"protocols\": [\n    {\n      \"name\": \"http\",\n      \"version\": \"1.1\"\n    },\n    {\n      \"name\": \"smf\",\n      \"version\": \"smf\"\n    }\n  ],\n  \"clientOptions\": {\n    \"guaranteedMessaging\": {\n      \"requireQueue\": true,\n      \"accessType\": \"exclusive\",\n      \"maxTtl\": 3600,\n      \"maxMsgSpoolUsage\": 50\n    }\n  },\n  \"attributes\": [],\n  \"meta\": {\n      \"version\": \"1.1.0\",\n      \"stage\": \"draft\",\n      \"createdBy\": \"elmo\"\n  }\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -16887,6 +16893,12 @@
 								"exec": [
 									"pm.test(\"Status OK\", function () {",
 									"    pm.response.to.have.status(201);",
+									"});",
+									"",
+									"pm.test(\"Check meta\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.meta.createdBy).to.eql('ernie');",
+									"    pm.expect(jsonData.meta.lastModifiedBy).to.eql('bert');",
 									"});"
 								],
 								"type": "text/javascript"
@@ -16898,7 +16910,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{ \"names\":{\n  \"displayName\": \"SayHello_PRODUCT_2022\",\n  \"name\": \"SayHello_PRODUCT_2022\"\n}}",
+							"raw": "{ \"names\":{\n  \"displayName\": \"SayHello_PRODUCT_2022\",\n  \"name\": \"SayHello_PRODUCT_2022\"\n },\n  \"meta\": {\n      \"createdBy\": \"ernie\",\n      \"lastModifiedBy\": \"bert\"\n  }\n}",
 							"options": {
 								"raw": {
 									"language": "json"
