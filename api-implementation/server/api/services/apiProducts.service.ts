@@ -175,7 +175,7 @@ export class ApiProductsService {
   }
 
   async createDerived(name: string, body: EntityDeriveRequest): Promise<APIProduct> {
-
+    L.warn(body);
     try {
       const apiProduct: APIProduct = await this.persistenceService.byName(name);
       const derivedFrom: MetaEntityReference = {
@@ -184,8 +184,8 @@ export class ApiProductsService {
       };
       apiProduct.name = body.names.name;
       apiProduct.displayName = body.names.displayName;
-      apiProduct.meta = Versioning.createMeta();
-      apiProduct.meta = Versioning.update(apiProduct.meta, body.meta);
+      apiProduct.meta = Versioning.createMetaFromRequest(body.meta);
+      //apiProduct.meta = Versioning.update(apiProduct.meta, body.meta);
       apiProduct.meta.derivedFrom = derivedFrom;
       apiProduct.meta.stage = 'draft';
       const p = await this.persistenceService.create(body.names.name, apiProduct);
