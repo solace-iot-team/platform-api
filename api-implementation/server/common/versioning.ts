@@ -74,8 +74,8 @@ export class Versioning {
     const m: Meta = Versioning.createMeta(newMeta.version, newMeta.stage);
     if (newMeta.lastModifiedBy) {
       m.lastModifiedBy;
-    } else if (m.createdBy) {
-      m.lastModifiedBy = m.createdBy;
+    } else if (newMeta.createdBy) {
+      m.lastModifiedBy = newMeta.createdBy;
     }
     if (newMeta.createdBy) {
       m.createdBy = newMeta.createdBy;
