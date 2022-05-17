@@ -70,16 +70,21 @@ export class Versioning {
   }
 
   public static createMetaFromRequest(newMeta: Meta): Meta {
+    L.warn(newMeta);
+    if (!newMeta){
+      return Versioning.createMeta();
+    }
     // the request can contain - stage, version, createdBy,  modifiedBy
     const m: Meta = Versioning.createMeta(newMeta.version, newMeta.stage);
     if (newMeta.lastModifiedBy) {
-      m.lastModifiedBy;
+      m.lastModifiedBy = newMeta.lastModifiedBy;
     } else if (newMeta.createdBy) {
       m.lastModifiedBy = newMeta.createdBy;
     }
     if (newMeta.createdBy) {
       m.createdBy = newMeta.createdBy;
     }
+    L.warn(m);
     return m;
   }
 
@@ -121,6 +126,7 @@ export class Versioning {
         }
       } catch (e) {
         L.warn(`Could not resolve display name of ${meta.derivedFrom.name} at revision ${meta.derivedFrom.revision}`);
+        meta.derivedFrom.displayName = meta.derivedFrom.name;
       }
     }
 
