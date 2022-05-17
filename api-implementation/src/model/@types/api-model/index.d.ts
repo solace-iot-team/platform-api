@@ -543,6 +543,12 @@ declare namespace Components {
          */
         export type CommonDisplayName = string; // ^[\/\sa-z.A-z0-9_-]*$
         /**
+         * Friendly name of an object for display in UIs, Developer Portals. Can be changed after object creation
+         * example:
+         * A new IoT API / v2.0
+         */
+        export type CommonDisplayNameReadOnly = string; // ^[\/\sa-z.A-z0-9_-]*$
+        /**
          * Name and display name attribute of an entity
          */
         export type CommonEntityNameList = CommonEntityNames[];
@@ -551,7 +557,7 @@ declare namespace Components {
          */
         export interface CommonEntityNames {
             name?: CommonName; // ^[a-zA-Z0-9_\-]*(@[ |\S]*)?$
-            displayName?: CommonName; // ^[a-zA-Z0-9_\-]*(@[ |\S]*)?$
+            displayName?: CommonDisplayName; // ^[\/\sa-z.A-z0-9_-]*$
         }
         /**
          * The internal name of an object. Characters you can use in the name are restricted to: A-Z0-9._-. Once the object is created the internal name can not be changed
@@ -842,11 +848,8 @@ declare namespace Components {
              * {name}
              */
             readonly name?: string; // ^[a-zA-Z0-9_\-]*(@[ |\S]*)?$
-            /**
-             * example:
-             * 1
-             */
-            readonly revision?: number; // int64
+            displayName?: CommonDisplayNameReadOnly; // ^[\/\sa-z.A-z0-9_-]*$
+            revision?: SemVerReadOnly; // ^(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)(?:-((?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*)(?:\.(?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?(?:\+([0-9a-zA-Z-]+(?:\.[0-9a-zA-Z-]+)*))?$
         }
         /**
          * The lifecycle stage of the entity - from draft to released to deprecated to retired. New entities default to 'released' stage if the stage is omitted. Entitites in 'draft' stage can not be referenced by other entities. Entities can transition from 'draft' to 'released' by providing the new stage in an update and once 'released' can be referenced by other entities. Once 'released' an entity can not go back to 'draft' stage. 'released' entities can be 'depcrecated' which means existing references are still valid however new referenceds to this entity can not be created. 'deprecated' stage can be moved back to 'released' stage. An entity in 'deprecated' stagecan be moved to 'retired' which means all references to this entity will be removed. 'once' retired the stage of the entity can no longer be changed.
@@ -979,6 +982,12 @@ declare namespace Components {
          * 1.0.1
          */
         export type SemVer = string; // ^(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)(?:-((?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*)(?:\.(?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?(?:\+([0-9a-zA-Z-]+(?:\.[0-9a-zA-Z-]+)*))?$
+        /**
+         * a version number in semver (Semantic Versioning) format
+         * example:
+         * 1.0.1
+         */
+        export type SemVerReadOnly = string; // ^(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)(?:-((?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*)(?:\.(?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?(?:\+([0-9a-zA-Z-]+(?:\.[0-9a-zA-Z-]+)*))?$
         /**
          * Specifies how requests to the SEMPv2 Management API are authenticated, defaults to BasicAuth. If APIKey is specified the username returned in the Services/Environments response is used as API Key.
          */
