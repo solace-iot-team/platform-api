@@ -493,7 +493,7 @@ class ACLManager {
       query['$or'] = [];
       app.apiProducts.forEach(a => query['$or'].push({ name: APIProductsTypeHelper.apiProductReferenceToString(a) }));
     }
-    const apiProducts = await ApiProductsService.all(query);
+    const apiProducts = (await ApiProductsService.all(query)).filter(product=>(product.meta && (!product.meta.stage || product.meta.stage != 'retired')));
     return this.getQueueSubscriptions(app, apiProducts, null);
   }
 
