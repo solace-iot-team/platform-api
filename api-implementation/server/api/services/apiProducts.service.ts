@@ -30,14 +30,14 @@ export class ApiProductsService {
   async all(query?: any): Promise<APIProduct[]> {
     const results: APIProduct[] = await this.persistenceService.all(query);
     for (const p of results) {
-      p.meta = Versioning.toExternalRepresentation(p.meta);
+      p.meta = await Versioning.toExternalRepresentation(p.meta, this.revisionPersistenceService);
     }
     return results;
   }
 
   async byName(name: string): Promise<APIProduct> {
     const p: APIProduct = await this.persistenceService.byName(name);
-    p.meta = Versioning.toExternalRepresentation(p.meta);
+    p.meta = await Versioning.toExternalRepresentation(p.meta, this.revisionPersistenceService);
     return p;
   }
 
@@ -66,7 +66,7 @@ export class ApiProductsService {
         if (!body.meta) {
           body.meta = Versioning.createMeta();
         } else {
-          body.meta = Versioning.createMeta(body.meta.version, body.meta.stage);
+          body.meta = Versioning.createMetaFromRequest(body.meta);
         }
         this.persistenceService.create(body.name, body).then(async (p) => {
           await this.saveRevision(body);
@@ -180,14 +180,16 @@ export class ApiProductsService {
       const apiProduct: APIProduct = await this.persistenceService.byName(name);
       const derivedFrom: MetaEntityReference = {
         name : apiProduct.name,
-        revision: apiProduct.meta[Versioning.INTERNAL_REVISION]
+        revision: Versioning.toExternalVersion(apiProduct.meta),
       };
       apiProduct.name = body.names.name;
       apiProduct.displayName = body.names.displayName;
       apiProduct.meta = Versioning.createMeta();
       apiProduct.meta = Versioning.update(apiProduct.meta, body.meta);
       apiProduct.meta.derivedFrom = derivedFrom;
+      apiProduct.meta.stage = 'draft';
       const p = await this.persistenceService.create(body.names.name, apiProduct);
+      await this.saveRevision(p);
       return await this.byName(body.names.name);
 
     } catch (e) {
@@ -201,7 +203,7 @@ export class ApiProductsService {
     const products: APIProduct[] = await this.revisionPersistenceService.all({ name: apiProductName });
     const revisions: string[] = [];
     for (const p of products) {
-      const m = Versioning.toExternalRepresentation(p.meta);
+      const m = await Versioning.toExternalRepresentation(p.meta, this.revisionPersistenceService);
       revisions.push(m.version);
     }
     return revisions;
@@ -322,7 +324,7 @@ export class ApiProductsService {
   }
 
   private async saveRevision(product: APIProduct): Promise<void> {
-    const meta = Versioning.toExternalRepresentation(product.meta);
+    const meta = await Versioning.toExternalRepresentation(product.meta, this.revisionPersistenceService);
     const id = Versioning.createRevisionId(product.name, meta.version);
     await this.revisionPersistenceService.create(id, product);
   }

@@ -2,7 +2,7 @@ openapi: 3.0.0
 info:
   title: Solace API Management Connector
   description: 'Solace API Management Connector API. Note: basic authentication security mechanism is deprecated.'
-  version: 0.7.14
+  version: 0.7.15
 servers:
   - url: /v1
 
@@ -2142,7 +2142,7 @@ components:
         name: 
           $ref: "#/components/schemas/CommonName"
         displayName: 
-          $ref: "#/components/schemas/CommonName"
+          $ref: "#/components/schemas/CommonDisplayName"
     CommonDisplayName:
       description: Friendly name of an object for display in UIs, Developer Portals. Can be changed after object creation
       example: 'A new IoT API / v2.0'
@@ -2150,6 +2150,14 @@ components:
       minLength: 1
       maxLength: 256
       pattern: "^[\\/\\sa-z.A-z0-9_-]*$"
+    CommonDisplayNameReadOnly:
+      description: Friendly name of an object for display in UIs, Developer Portals. Can be changed after object creation
+      readOnly: true
+      example: 'A new IoT API / v2.0'
+      type: string
+      minLength: 1
+      maxLength: 256
+      pattern: "^[\\/\\sa-z.A-z0-9_-]*$"      
     CommonName:
       description: 'The internal name of an object. Characters you can use in the name are restricted to: A-Z0-9._-. Once the object is created the internal name can not be changed'
       example:
@@ -2256,6 +2264,13 @@ components:
       example: 1.0.1
       pattern: "^(0|[1-9]\\d*)\\.(0|[1-9]\\d*)\\.(0|[1-9]\\d*)(?:-((?:0|[1-9]\\d*|\\d*[a-zA-Z-][0-9a-zA-Z-]*)(?:\\.(?:0|[1-9]\\d*|\\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?(?:\\+([0-9a-zA-Z-]+(?:\\.[0-9a-zA-Z-]+)*))?$"
 
+    SemVerReadOnly:
+      type: string
+      readOnly: true
+      description: a version number in semver (Semantic Versioning) format
+      example: 1.0.1
+      pattern: "^(0|[1-9]\\d*)\\.(0|[1-9]\\d*)\\.(0|[1-9]\\d*)(?:-((?:0|[1-9]\\d*|\\d*[a-zA-Z-][0-9a-zA-Z-]*)(?:\\.(?:0|[1-9]\\d*|\\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?(?:\\+([0-9a-zA-Z-]+(?:\\.[0-9a-zA-Z-]+)*))?$"
+
     MetaEntityStage:
       type: string
       description: The lifecycle stage of the entity - from draft to released to deprecated to retired. New entities default to 'released' stage if the stage is omitted. Entitites in 'draft' stage can not be referenced by other entities. Entities can transition from 'draft' to 'released' by providing the new stage in an update and once 'released' can be referenced by other entities. Once 'released' an entity can not go back to 'draft' stage. 'released' entities can be 'depcrecated' which means existing references are still valid however new referenceds to this entity can not be created. 'deprecated' stage can be moved back to 'released' stage. An entity in 'deprecated' stagecan be moved to 'retired' which means all references to this entity will be removed. 'once' retired the stage of the entity can no longer be changed.
@@ -2278,13 +2293,10 @@ components:
           pattern: "^[a-zA-Z0-9_\\-]*(@[ |\\S]*)?$"
           minLength: 2
           maxLength: 188
+        displayName: 
+          $ref: "#/components/schemas/CommonDisplayNameReadOnly"
         revision: 
-          readOnly: true
-          type: integer
-          format: int64
-          example: 1
-          maximum: 99999
-          minimum: 1
+          $ref: "#/components/schemas/SemVerReadOnly"
     
 security:
   - OpenId: []

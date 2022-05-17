@@ -4,6 +4,7 @@ import MetaEntityStage = Components.Schemas.MetaEntityStage;
 import { ns } from '../api/middlewares/context.handler';
 import L from './logger'
 import { ContextConstants } from './constants';
+import { PersistenceService } from '../api/services/persistence.service';
 
 export class Versioning {
   public static INTERNAL_REVISION = 'internalRevision';
@@ -60,12 +61,24 @@ export class Versioning {
       lastModified: ts,
       createdBy: user,
       lastModifiedBy: user,
-      //stage: 'draft',
-
     };
     m[Versioning.INTERNAL_REVISION] = Versioning.INITIAL_REVISION;
     if (stage) {
       m.stage = stage;
+    }
+    return m;
+  }
+
+  public static createMetaFromRequest(newMeta: Meta): Meta {
+    // the request can contain - stage, version, createdBy,  modifiedBy
+    const m: Meta = Versioning.createMeta(newMeta.version, newMeta.stage);
+    if (newMeta.lastModifiedBy) {
+      m.lastModifiedBy;
+    } else if (m.createdBy) {
+      m.lastModifiedBy = m.createdBy;
+    }
+    if (newMeta.createdBy) {
+      m.createdBy = newMeta.createdBy;
     }
     return m;
   }
@@ -79,29 +92,46 @@ export class Versioning {
       created: previousMeta ? previousMeta.created : ts,
       lastModified: ts,
       createdBy: previousMeta ? previousMeta.createdBy : user,
-      lastModifiedBy: user,
+      lastModifiedBy: (newMeta && newMeta.lastModifiedBy) ? newMeta.lastModifiedBy : user,
       stage: (newMeta && newMeta.stage) ? newMeta.stage : previousMeta.stage,
     };
 
-    const derivedFrom = (newMeta && newMeta.derivedFrom)?newMeta.derivedFrom:(previousMeta.derivedFrom?previousMeta.derivedFrom:null);
-    if (derivedFrom){
+    const derivedFrom = (newMeta && newMeta.derivedFrom) ? newMeta.derivedFrom : (previousMeta.derivedFrom ? previousMeta.derivedFrom : null);
+    if (derivedFrom) {
       m.derivedFrom = derivedFrom;
     }
     m[Versioning.INTERNAL_REVISION] = Versioning.nextRevision(previousMeta ? previousMeta[Versioning.INTERNAL_REVISION] : Versioning.INITIAL_REVISION as number);
     return m;
   }
 
-  public static toExternalRepresentation(meta: Meta): Meta {
+  public static async toExternalRepresentation(meta: Meta, persistenceService?: PersistenceService): Promise<Meta> {
     if (meta && meta.version && meta.version == Versioning.INITIAL_VERSION) {
-      meta.version = `1.${meta[Versioning.INTERNAL_REVISION]}.0`
+      meta.version = Versioning.toExternalVersion(meta);
     }
     if (meta && !meta.stage) {
       meta.stage = 'released';
     }
+
+    if (persistenceService && meta && meta.derivedFrom && meta.derivedFrom.name && meta.derivedFrom.revision) {
+      try {
+        const id = Versioning.createRevisionId(meta.derivedFrom.name, meta.derivedFrom.revision);
+        const entity = await persistenceService.byName(id);
+        if (entity.displayName) {
+          meta.derivedFrom.displayName = entity.displayName;
+        }
+      } catch (e) {
+        L.warn(`Could not resolve display name of ${meta.derivedFrom.name} at revision ${meta.derivedFrom.revision}`);
+      }
+    }
+
     if (meta) {
       delete meta[Versioning.INTERNAL_REVISION];
     }
     return meta;
+  }
+
+  public static toExternalVersion(meta: Meta): string {
+    return meta.version = `1.${meta[Versioning.INTERNAL_REVISION]}.0`;
   }
 
   public static createRevisionId(name: string, version: string): string {

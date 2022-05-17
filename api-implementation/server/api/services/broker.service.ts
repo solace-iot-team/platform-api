@@ -1,6 +1,7 @@
 import L from '../../common/logger';
 
 import App = Components.Schemas.App;
+import AppApiProducts = Components.Schemas.AppApiProducts;
 import APIProduct = Components.Schemas.APIProduct;
 import Environment = Components.Schemas.Environment;
 import Attributes = Components.Schemas.Attributes;
@@ -37,15 +38,11 @@ import SempV2ClientFactory from './broker/sempv2clientfactory';
 import APIProductsTypeHelper from '../../../src/apiproductstypehelper';
 import { ErrorResponseInternal } from '../middlewares/error.handler';
 
+
 class BrokerService {
   async getPermissions(app: App, ownerAttributes: Attributes, envName: string, syntax: TopicSyntax): Promise<Permissions> {
-    const products: APIProduct[] = [];
     try {
-      for (const apiProductReference of app.apiProducts) {
-        const productName: string = APIProductsTypeHelper.apiProductReferenceToString(apiProductReference);
-        const product = await ApiProductsService.byName(productName);
-        products.push(product);
-      }
+      const products: APIProduct[] = await this.getAPIProducts(app.apiProducts);
       const permissions: Permissions = await ACLManager.getClientACLExceptions(app, products, ownerAttributes, envName, syntax);
       return permissions;
     } catch (err) {
@@ -65,14 +62,7 @@ class BrokerService {
       let services = await BrokerUtils.getServicesByApp(appUnmodified);
       const r = await this.deleteClientUsernames(appUnmodified, services);
       services = await BrokerUtils.getServicesByApp(appPatch);
-      const products: APIProduct[] = [];
-      for (const apiProductReference of appPatch.apiProducts) {
-        const productName: string = APIProductsTypeHelper.apiProductReferenceToString(apiProductReference);
-        if (productName && APIProductsTypeHelper.isApiProductReferenceApproved(apiProductReference)) {
-          L.info(productName);
-          products.push(await ApiProductsService.byName(productName));
-        }
-      };
+      const products: APIProduct[] = await this.getAPIProducts(appPatch.apiProducts);
       const clientProfileName: string = await ClientProfileManager.create(appPatch, services, products, ownerAttributes);
       await this.createClientUsernames(appPatch, services, clientProfileName);
     }
@@ -112,63 +102,51 @@ class BrokerService {
 
   }
   async provisionApp(app: App, ownerAttributes: Attributes, isUpdate?: boolean): Promise<void> {
-    return new Promise<void>(async (resolve, reject) => {
-      if (await this.provisionedByConsumerKey(app)) {
-        await this.doDeprovisionApp(app, app.credentials.secret.consumerKey);
+
+    if (await this.provisionedByConsumerKey(app)) {
+      await this.doDeprovisionApp(app, app.credentials.secret.consumerKey);
+    }
+    const productResults: APIProduct[] = await this.getAPIProducts(app.apiProducts);
+    L.info(`API Products looked up, processing provisioning`);
+    L.trace(productResults);
+    try {
+      if (productResults && productResults.length > 0) {
+        const products: APIProduct[] = [];
+        let environmentNames: string[] = [];
+        for (const product of productResults) {
+          product.environments.forEach((e: string) => {
+            environmentNames.push(e);
+          })
+          L.info(`env: ${JSON.stringify(product.environments)}`);
+          products.push(product);
+        }
+        environmentNames = Array.from(new Set(environmentNames));
+        await this.doProvision(app, environmentNames, products, ownerAttributes);
       }
-      const apiProductPromises: Promise<APIProduct>[] = [];
-      app.apiProducts.forEach((apiProductReference) => {
-        const productName: string = APIProductsTypeHelper.apiProductReferenceToString(apiProductReference);
-        if (productName && APIProductsTypeHelper.isApiProductReferenceApproved(apiProductReference)) {
-          L.info(productName);
-          apiProductPromises.push(ApiProductsService.byName(productName));
-        }
-      });
+      if ((!productResults || productResults.length == 0) && isUpdate) {
+        L.info(`No API Products present, updating Broker`);
+        const environmentNames = await BrokerUtils.getEnvironments(app);
+        const products: APIProduct[] = [];
+        await this.doProvision(app, environmentNames, products, ownerAttributes);
+      } else {
+        L.debug(`No update requested or no API Products present.`);
+      }
+    } catch (e) {
+      if (e.body) {
+        L.error(`Provisioning error ${e.message}, body ${JSON.stringify(e.body)}`);
+      } else {
+        L.error(`Provisioning error ${e}`);
+      }
 
-      Promise.all(apiProductPromises).then(async (productResults: APIProduct[]) => {
-        L.info(`API Products looked up, processing provisioning`);
-        L.debug(productResults);
-        try {
-          if (productResults && productResults.length > 0) {
-            const products: APIProduct[] = [];
-            let environmentNames: string[] = [];
-            for (const product of productResults) {
-              product.environments.forEach((e: string) => {
-                environmentNames.push(e);
-              })
-              L.info(`env: ${JSON.stringify(product.environments)}`);
-              products.push(product);
-            }
-            environmentNames = Array.from(new Set(environmentNames));
-            await this.doProvision(app, environmentNames, products, ownerAttributes);
-          }
-          if ((!productResults || productResults.length == 0) && isUpdate) {
-            L.info(`No API Products present, updating Broker`);
-            const environmentNames = await BrokerUtils.getEnvironments(app);
-            const products: APIProduct[] = [];
-            await this.doProvision(app, environmentNames, products, ownerAttributes);
-          } else {
-            L.debug(`No update requested or no API Products present.`);
-          }
+      L.error(e.stack);
+      try {
+        await this.deprovisionApp(app);
+      } catch (e) {
+        // things may go wrong here, that's fine. we are just trying to clean up
+      }
+      throw new ErrorResponseInternal(500, e);
+    }
 
-          resolve();
-        } catch (e) {
-          if (e.body) {
-            L.error(`Provisioning error ${e.message}, body ${JSON.stringify(e.body)}`);
-          } else {
-            L.error(`Provisioning error ${e}`);
-          }
-
-          L.error(e.stack);
-          try {
-            await this.deprovisionApp(app);
-          } catch (e) {
-            // things may go wrong here, that's fine. we are just trying to clean up
-          }
-          reject(new ErrorResponseInternal(500, e));
-        }
-      });
-    });
   }
   private async doProvision(app: App, environmentNames: string[], products: APIProduct[], ownerAttributes: Attributes): Promise<void> {
     const services = await BrokerUtils.getServices(environmentNames);
@@ -519,13 +497,7 @@ class BrokerService {
 
   public async getMessagingProtocols(app: App): Promise<AppEnvironment[]> {
     const appEnvironments: AppEnvironment[] = [];
-    const products: APIProduct[] = [];
-    for (const apiProductReference of app.apiProducts) {
-      const productName: string = APIProductsTypeHelper.apiProductReferenceToString(apiProductReference);
-      L.info(productName);
-      products.push(await ApiProductsService.byName(productName));
-    };
-
+    const products: APIProduct[] = await this.getAPIProducts(app.apiProducts);
     try {
       for (const product of products) {
         await this.processMessagingProtocolsInternal(product, appEnvironments);
@@ -601,6 +573,21 @@ class BrokerService {
   private async provisionedByConsumerKey(app: App): Promise<boolean> {
     const services: Service[] = await BrokerUtils.getServicesByApp(app);
     return await ACLManager.hasConsumerKeyACLs(app, services);
+  }
+
+  private async getAPIProducts(apiProducts: AppApiProducts): Promise<APIProduct[]> {
+    const products: APIProduct[] = [];
+
+    for (const apiProductReference of apiProducts) {
+      const productName: string = APIProductsTypeHelper.apiProductReferenceToString(apiProductReference);
+      const product = await ApiProductsService.byName(productName);
+      if ((product.meta && (!product.meta.stage || product.meta.stage != 'retired')) &&
+        APIProductsTypeHelper.isApiProductReferenceApproved(apiProductReference)) {
+        products.push(product);
+      }
+    }
+    return products;
+
   }
 }
 export default new BrokerService();
