@@ -16933,8 +16933,9 @@
 									"",
 									"pm.test(\"Check derivedfrom is set\", function () {",
 									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.meta.derivedFrom.displayName).to.eql('SayHello_PRODUCT');",
 									"    pm.expect(jsonData.meta.derivedFrom.name).to.eql('SayHello_PRODUCT');",
-									"    pm.expect(jsonData.meta.derivedFrom.revision).to.eql(1);",
+									"    pm.expect(jsonData.meta.derivedFrom.revision).to.eql('1.1.0');",
 									"});"
 								],
 								"type": "text/javascript"
