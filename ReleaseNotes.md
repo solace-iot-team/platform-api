@@ -1,5 +1,29 @@
 # Release Notes
 
+## Version 0.3.9
+* OpenAPI: 0.7.15
+* API Management Connector Server: 0.3.9
+
+### Features
+* **feat-app-credential-rotation**
+  - Added feature to re-generate the app's secret when it expires.
+  - The expiry time is calculated from the time the secret was issued at by adding the `expiresIn` element (number of seconds) of the app
+  - If `expiresAt` is -1 or `expiresIn` is -1 the secret never expires
+* **feat-api-products-lifecycle-tag**
+  - Added a lifescycle stage to the `Meta` object in the API Product.
+  - Ahe lifecycle stage of the entity - from draft to released to deprecated to retired. New entities default to 'released' stage if the stage is omitted. Entitites in 'draft' stage can not be referenced by other entities. Entities can transition from 'draft' to 'released' by providing the new stage in an update and once 'released' can be referenced by other entities. Once 'released' an entity can not go back to 'draft' stage. 'released' entities can be 'depcrecated' which means existing references are still valid however new referenceds to this entity can not be created. 'deprecated' stage can be moved back to 'released' stage. An entity in 'deprecated' stagec an be moved to 'retired' which means all references to this entity will be removed. 'once' retired the stage of the entity can no longer be changed.
+* **feat-apiproducts-cloning**
+  - Added ability to clone (derive) a new APi Product from an existing API Product - `/{organization_name}/apiProducts/{api_product_name}/derived`
+  - The new API Product includes a reference to the original product.
+  - The `derived` resource also provides a list of products derived from a given API Product
+
+### Fixes
+* **fix-regression-find-apiproducts-referencedbyapps-query**
+  - Fixed issue when retrieving the apps associated with an API product (`GET /{organization_name}/apiProducts/{api_product_name}/apps`)where references to the API Product where not resolved if useing product level approval.
+* **fix-apiproducts-mapping-fix-createdBy-mapping**
+  - Fixed an issue which led to `createdBy` and `lastModifiedBy` of the APi Product's `Meta` object where not set from the POST or PATCH request to the `apiProducts` resource. 
+
+
 ## Version 0.3.8
 * OpenAPI: 0.7.11
 * API Management Connector Server: 0.3.8
