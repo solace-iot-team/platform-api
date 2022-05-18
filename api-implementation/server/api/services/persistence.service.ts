@@ -253,7 +253,7 @@ export class PersistenceService {
       });
       Promise.all(results).then((r) => { resolve(true) }).catch((e) => {
         L.info(e);
-        (new ErrorResponseInternal(422, e));
+        reject(new ErrorResponseInternal(422, e));
       });
 
     }
