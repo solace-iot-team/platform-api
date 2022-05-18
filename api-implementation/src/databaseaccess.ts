@@ -1,8 +1,8 @@
-import mongo from 'mongodb';
+import { MongoClient } from 'mongodb';
 import L from '../server/common/logger';
 
 export class databaseaccess {
-  public static client: mongo.MongoClient;
+  public static client: MongoClient;
   constructor() {
 
   }
@@ -12,13 +12,10 @@ export class databaseaccess {
         url = databaseaccess.validateUrl(url);
         L.info(`Attempting to connect to [${url}]`);
         
-        databaseaccess.client = new mongo.MongoClient(url, {
-          useNewUrlParser: true, 
-          useUnifiedTopology: true,
+        databaseaccess.client = new MongoClient(url, {
           serverSelectionTimeoutMS: 3000,
           connectTimeoutMS: 1000, 
           socketTimeoutMS: 5000,
-          poolSize: 10,
           minPoolSize: 5,
         });
         await databaseaccess.client.connect();

@@ -1,7 +1,7 @@
 import L from '../../common/logger';
 import { PlatformConstants, ContextConstants } from '../../common/constants';
 import { databaseaccess } from '../../../src/databaseaccess';
-import mongodb, { DeleteWriteOpResultObject, MongoError, CollectionInsertOneOptions, UpdateOneOptions, Collection } from 'mongodb';
+import mongodb, { MongoError, Collection, Sort, DeleteResult, InsertOneResult, UpdateResult } from 'mongodb';
 
 import { ErrorResponseInternal } from '../middlewares/error.handler';
 import { ns } from '../middlewares/context.handler';
@@ -114,11 +114,11 @@ export class PersistenceService {
     }
 
     const collection: mongodb.Collection = await this.getCollection();
-    let x: mongodb.Cursor<any> = null;
+    let x: mongodb.FindCursor<any> = null;
     if (paging !== null && paging !== undefined) {
-      x = collection.find(query).sort(sort).skip((paging.pageNumber - 1) * paging.pageSize).limit(paging.pageSize);
+      x = collection.find(query).sort(sort as Sort).skip((paging.pageNumber - 1) * paging.pageSize).limit(paging.pageSize);
     } else {
-      x = collection.find(query).sort(sort);
+      x = collection.find(query).sort(sort as Sort);
     }
     L.trace(`executed find on mongodb`);
     let retVal = await x.toArray();
@@ -142,7 +142,7 @@ export class PersistenceService {
     }
     L.debug(`PersistenceService.byName the query ${JSON.stringify(q)}, ${collection.collectionName}, ${collection.namespace}`);
     try {
-      const item = await collection.findOne(q);
+      const item = (await collection.findOne(q)) as any;
       L.trace(item);
       if (item == null) {
         const msg = `Object ${name} not found`;
@@ -169,7 +169,7 @@ export class PersistenceService {
     }
     L.info(q);
     try {
-      const item: DeleteWriteOpResultObject = await collection.deleteOne(q);
+      const item: DeleteResult = await collection.deleteOne(q);
       L.debug(`Deleted count: ${item.deletedCount}`);
       if (item.deletedCount == 1) {
         retVal = 204;
@@ -187,12 +187,12 @@ export class PersistenceService {
     L.info(`adding ${this.collection} with _id ${_id}`);
     const collection: mongodb.Collection = await this.getCollection();
     body._id = _id;
-    let opts: CollectionInsertOneOptions = {
-      w: 1,
-      j: true
-    };
+    // let opts: CollectionInsertOneOptions = {
+    //   w: 1,
+    //   j: true
+    // };
     try {
-      const y: mongodb.InsertOneWriteOpResult<any> = await collection.insertOne(body, opts);
+      const y: InsertOneResult = await collection.insertOne(body);
       delete body._id;
       return body;
     } catch (e) {
@@ -221,12 +221,12 @@ export class PersistenceService {
     } else {
       q = { _id: _id };
     }
-    const opts: UpdateOneOptions = {
-      w: 1,
-      j: true
-    };
+    // const opts: UpdateOneOptions = {
+    //   w: 1,
+    //   j: true
+    // };
     try {
-      const v: mongodb.UpdateWriteOpResult = await collection.updateOne(q, { $set: body }, opts);
+      const v = await collection.updateOne(q, { $set: body });
       if (v.matchedCount == 0) {
         throw new ErrorResponseInternal(404, `No entity ${_id} found `);
       }
