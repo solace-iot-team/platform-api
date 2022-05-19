@@ -19,7 +19,7 @@ import EventAPIProduct = Components.Schemas.EventAPIProduct;
 import { updateProtectionByObject } from './persistence/preconditionhelper';
 import asyncapihelper from '../../../src/asyncapihelper';
 import { Versioning } from '../../common/versioning';
-
+import AppUpdateEventEmitter from './apiProducts/appUpdateEventEmitter';
 export interface APISpecification {
   name: string;
   specification: string;
@@ -57,7 +57,9 @@ export class ApisService {
   }
 
   async apiProductsByName(name: string): Promise<CommonEntityNameList> {
-    const apiProducts: APIProduct[] = await APIProductsService.all({ apis: name });
+    const re = `^${name}.*`;
+    const apiProducts: APIProduct[] = await APIProductsService.all({ apis: { "$regex": re } });
+    //const apiProducts: APIProduct[] = await APIProductsService.all({ apis: name });
     const names: CommonEntityNameList = [];
     for (const apiProduct of apiProducts) {
       const name: CommonEntityNames = {
@@ -236,6 +238,10 @@ export class ApisService {
             .update(info.name, spec)
             .then(async (spec: APISpecification) => {
               await this.saveRevision(spec, info, isImport);
+              if (ns != null && ns.getStore() && ns.getStore().get(ContextConstants.ORG_NAME)) {
+                const org = ns.getStore().get(ContextConstants.ORG_NAME);
+                AppUpdateEventEmitter.emit('apiUpdate', org, spec.name);
+              }
               resolve(spec.specification);
             })
             .catch((e) => {

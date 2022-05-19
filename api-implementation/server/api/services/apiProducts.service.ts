@@ -16,6 +16,10 @@ import { Versioning } from '../../common/versioning';
 import asyncapigenerator from './asyncapi/asyncapigenerator';
 import preconditionCheck from './persistence/preconditionhelper';
 
+import AppUpdateEventEmitter from './apiProducts/appUpdateEventEmitter';
+import { ns } from '../middlewares/context.handler';
+import { ContextConstants } from '../../common/constants';
+
 export class ApiProductsService {
 
   private persistenceService: PersistenceService;
@@ -121,6 +125,11 @@ export class ApiProductsService {
       const p = await this.persistenceService.update(name, body);
       if (p != null) {
         await this.saveRevision(p);
+        if (ns != null && ns.getStore() && ns.getStore().get(ContextConstants.ORG_NAME)) {
+          const org = ns.getStore().get(ContextConstants.ORG_NAME);
+          AppUpdateEventEmitter.emit('apiProductUpdate', org, name);
+        }
+
         return await this.byName(name);
       } else {
         throw new ErrorResponseInternal(500, `Could not update object`);
@@ -179,7 +188,7 @@ export class ApiProductsService {
     try {
       const apiProduct: APIProduct = await this.persistenceService.byName(name);
       const derivedFrom: MetaEntityReference = {
-        name : apiProduct.name,
+        name: apiProduct.name,
         revision: Versioning.toExternalVersion(apiProduct.meta),
       };
       apiProduct.name = body.names.name;
