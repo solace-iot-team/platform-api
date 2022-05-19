@@ -2325,6 +2325,26 @@
 					"response": []
 				},
 				{
+					"name": "Wait for async app provisioning",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "https://postman-echo.com/delay/10",
+							"protocol": "https",
+							"host": [
+								"postman-echo",
+								"com"
+							],
+							"path": [
+								"delay",
+								"10"
+							]
+						}
+					},
+					"response": []
+				},
+				{
 					"name": "Verify Queue name missing in app response",
 					"event": [
 						{
@@ -12005,6 +12025,26 @@
 								"{{TEAM_NAME}}",
 								"apps",
 								"{{APP_NAME}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Wait for async app provisioning Copy",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "https://postman-echo.com/delay/10",
+							"protocol": "https",
+							"host": [
+								"postman-echo",
+								"com"
+							],
+							"path": [
+								"delay",
+								"10"
 							]
 						}
 					},
