@@ -27,6 +27,10 @@ import { isString } from '../../../src/typehelpers';
 import APIProductsTypeHelper from '../../../src/apiproductstypehelper';
 import AppHelper from '../../../src/apphelper';
 
+import { scheduler } from '../../index';
+import { ns } from '../middlewares/context.handler';
+import { ContextConstants } from '../../common/constants';
+
 export interface APISpecification {
   name: string;
   specification: string;
@@ -202,7 +206,7 @@ export class AppsService {
         throw (e);
       }
     } catch (e) {
-      L.error(e);
+      L.info(e);
       throw e;
     }
   }
@@ -260,7 +264,13 @@ export class AppsService {
       app
     );
     // we only take action if the app is in approved status
-    if (appPatch.status == 'approved') {
+    let org: string = null;
+    if (ns != null && ns.getStore() && ns.getStore().get(ContextConstants.ORG_NAME)) {
+      org = ns.getStore().get(ContextConstants.ORG_NAME);
+    }
+    L.debug(`is a job queued for ${org} ${name}, blocking app provisioning ${await scheduler.isJobQueued(org, name)}`)
+
+    if (appPatch.status == 'approved' && !(await scheduler.isJobQueued(org, name))) {
       const result: boolean = await BrokerService.reProvisionApp(appPatch as App, appNotModified as App, ownerAttributes);
       // roll back database changes
       if (!result) {
@@ -331,7 +341,7 @@ export class AppsService {
           );
         }
         // deprecated api products can only be referenced if they were previsouy referenced by the app
-        if (apiProduct.meta.stage == 'deprecated' && !appNotModified?.apiProducts.find(a=>APIProductsTypeHelper.apiProductReferenceToString(a) == apiProduct.name )) {
+        if (apiProduct.meta.stage == 'deprecated' && !appNotModified?.apiProducts.find(a => APIProductsTypeHelper.apiProductReferenceToString(a) == apiProduct.name)) {
           apiProductException = new ErrorResponseInternal(
             422,
             `API Product ${productName} in deprecated stage can not be added to a an App`
