@@ -1,6 +1,7 @@
 import L from '../../common/logger';
 
 import App = Components.Schemas.App;
+import AppPatch = Components.Schemas.AppPatch;
 import AppApiProducts = Components.Schemas.AppApiProducts;
 import APIProduct = Components.Schemas.APIProduct;
 import Environment = Components.Schemas.Environment;
@@ -52,6 +53,11 @@ class BrokerService {
   }
 
   async reProvisionApp(appPatch: App, appUnmodified: App, ownerAttributes: Attributes): Promise<boolean> {
+    L.debug(`Attempting to reprovision ${appPatch.name}`);
+    if ((appPatch as AppPatch).status != 'approved'){
+      L.debug(`App ${appPatch.name} is not approved`);
+      return false;
+    }
     // check if credentials were changed. this triggers a nem change of broker resources such as client name, password
     let areCredentialsUpdated: boolean = false;
     if (appPatch.credentials && appPatch.credentials.secret.consumerKey != appUnmodified.credentials.secret.consumerKey) {
