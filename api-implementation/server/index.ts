@@ -7,8 +7,11 @@ import printEnv from 'print-env';
 import { loadUserRegistry } from './api/middlewares/file.authorizer';
 
 import TaskScheduler from '../src/scheduler/taskscheduler';
+import AppUpdateHandler from './api/services/apiProducts/appupdatehandler';
 
-const scheduler: TaskScheduler = new TaskScheduler();
+export const scheduler: TaskScheduler = new TaskScheduler();
+export const appUpdateHandler: AppUpdateHandler = new AppUpdateHandler();
+
 type serverCallback = () => void;
 
 const callback: serverCallback = async () => {
