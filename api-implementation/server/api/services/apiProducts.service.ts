@@ -233,6 +233,17 @@ export class ApiProductsService {
     }
   }
 
+  async byReference( apiProductRef: string): Promise<APIProduct> {
+    let p: APIProduct;
+    const ref: string[] = apiProductRef.split('@');
+    if (ref.length == 2) {
+      p = (await this.revisionByVersion(ref[0], ref[1]));
+    } else {
+      p = (await this.byName(apiProductRef));
+    }
+    return p;    
+  }
+
 
   private async canDelete(name: string): Promise<boolean> {
     const apps = await this.listAppsReferencingProduct(name);
@@ -273,13 +284,7 @@ export class ApiProductsService {
       for (const apiName of product.apis) {
         const errMsg = `Referenced API ${apiName} does not exist`;
         try {
-          let api: string;
-          const ref: string[] = apiName.split('@');
-          if (ref.length == 2) {
-            api = (await ApisService.revisionByVersion(ref[0], ref[1]));
-          } else {
-            api = (await ApisService.byName(apiName));
-          }
+          const api: string = await ApisService.byApiReference(apiName);
           if (api == null) {
             throw new ErrorResponseInternal(422, errMsg);
           }

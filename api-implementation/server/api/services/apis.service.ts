@@ -279,6 +279,18 @@ export class ApisService {
     }
   }
 
+  async byApiReference(apiReference: string): Promise<string> {
+    let spec: string;
+    const ref: string[] = apiReference.split('@');
+    if (ref.length == 2) {
+      spec = (await this.revisionByVersion(ref[0], ref[1]));
+    } else {
+      spec = (await this.byName(apiReference));
+    }
+    return spec;
+
+  }
+
 
   private async canDelete(name: string): Promise<boolean> {
     const q = {
