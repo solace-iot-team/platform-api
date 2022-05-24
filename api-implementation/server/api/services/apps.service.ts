@@ -28,8 +28,7 @@ import APIProductsTypeHelper from '../../../src/apiproductstypehelper';
 import AppHelper from '../../../src/apphelper';
 
 import { scheduler } from '../../index';
-import { ns } from '../middlewares/context.handler';
-import { ContextConstants } from '../../common/constants';
+
 
 export interface APISpecification {
   name: string;
@@ -228,11 +227,18 @@ export class AppsService {
     app: AppPatch,
     ownerAttributes: Attributes
   ): Promise<AppPatch> {
-    L.info(`App patch request ${JSON.stringify(app)}`);
+    // reject request if app is being reprovisioned
+    const isJobRunning: boolean = await scheduler.isJobQueued(name);
+    if (isJobRunning) {
+      L.debug(`is a job queued for ${name}, blocking app provisioning ${isJobRunning}`);
+      throw new ErrorResponseInternal(412, `An update on this app is currently processing, please try again later`);
+    }
+    L.debug(`App patch request ${JSON.stringify(app)}`);
     // need to hold on to unmodified app so we can roll back if required and can determine changes during reprovisioning
     const appNotModified: AppPatch = await this.persistenceService.byName(
       name
     );
+
     const validated = await this.validate(app, true, appNotModified as App);
     if (app.credentials && app.credentials.secret && !app.credentials.secret.consumerSecret) {
       // regenerate a consumerSecret if omitted / partial secret is sent
@@ -264,13 +270,8 @@ export class AppsService {
       app
     );
     // we only take action if the app is in approved status
-    let org: string = null;
-    if (ns != null && ns.getStore() && ns.getStore().get(ContextConstants.ORG_NAME)) {
-      org = ns.getStore().get(ContextConstants.ORG_NAME);
-    }
-    L.debug(`is a job queued for ${org} ${name}, blocking app provisioning ${await scheduler.isJobQueued(org, name)}`)
 
-    if (appPatch.status == 'approved' && !(await scheduler.isJobQueued(org, name))) {
+    if (appPatch.status == 'approved') {
       const result: boolean = await BrokerService.reProvisionApp(appPatch as App, appNotModified as App, ownerAttributes);
       // roll back database changes
       if (!result) {
