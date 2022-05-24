@@ -12,13 +12,17 @@ import { ContextConstants } from '../../../common/constants';
 import CommonEntitiNamesList = Components.Schemas.CommonEntityNameList;
 import Organization = Components.Schemas.Organization;
 import Attributes = Components.Schemas.Attributes;
+import AppApiProductsComplex = Components.Schemas.AppApiProductsComplex;
 import ContextRunner from '../../../../src/scheduler/contextrunner';
-
-
+import apiProductsService from '../apiProducts.service';
+import SemVerSorter from 'semver-sort';
+import _ from 'lodash';
+import APIProductsTypeHelper from '../../../../src/apiproductstypehelper';
 interface TaskData {
   organization: string,
   name: string,
-  org: Organization
+  org: Organization,
+  requiresAPIProductDelta: boolean
 }
 
 export default class AppUpdateHandler {
@@ -41,6 +45,7 @@ export default class AppUpdateHandler {
     L.debug(`got event for ${organization} API Product: ${name}`);
     try {
       const data: TaskData = AppUpdateHandler.getTaskData(organization, name);
+      data.requiresAPIProductDelta = true;
       await ContextRunner(data.org, AppUpdateHandler.doProcessApiProductUpdate, data);
     } catch (e) {
       L.error(e);
@@ -83,6 +88,7 @@ export default class AppUpdateHandler {
         }
       }
 
+
       jobSpec.data = {
         app: app,
         name: app.name,
@@ -91,6 +97,31 @@ export default class AppUpdateHandler {
         ownerAttributes: attributes,
       };
       jobSpec.orgName = data.organization;
+      if (data.requiresAPIProductDelta) {
+        // we need to provide a version of the app referencing the previous revision of the api product
+        const apiProductName = data.name;
+        //find out the previous revision number of the product, if there is only one revision we don;t have a previous revision to refer to
+        const revisions: string[] = await apiProductsService.revisionList(apiProductName);
+       
+        if (revisions.length > 1) {
+          const sortedRevisions = SemVerSorter.desc(revisions);
+          const previousRevision = sortedRevisions[1];
+          // clone the app object
+          const previousApp = _.cloneDeep(app);
+          let apiProductReference = previousApp.apiProducts.find(productReference => apiProductName == APIProductsTypeHelper.apiProductReferenceToString(productReference));
+          // adjust the reference to add in the revision
+          const newAPIProductName = `${APIProductsTypeHelper.apiProductReferenceToString(apiProductReference)}@${previousRevision}`;
+
+          
+          apiProductReference = APIProductsTypeHelper.setApiProductReferenceName(apiProductReference, newAPIProductName);
+          //L.error(`${JSON.stringify(apiProductReference)}`);
+          // add the modified app to the job spec
+          const apiProducts = previousApp.apiProducts.filter(productReference => apiProductName != APIProductsTypeHelper.apiProductReferenceToString(productReference));
+          apiProducts.push(apiProductReference);
+          previousApp.apiProducts = apiProducts;
+          jobSpec.data.appPrevious = previousApp;
+        }
+      }
       await scheduler.queueJob(jobSpec);
     }
 
@@ -101,7 +132,8 @@ export default class AppUpdateHandler {
     const data: TaskData = {
       name: name,
       org: org,
-      organization: organization
+      organization: organization,
+      requiresAPIProductDelta: false,
     }
     return data;
   }
