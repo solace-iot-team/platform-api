@@ -18,7 +18,11 @@ describe(scriptName, function () {
   setup.addBeforeHooks(this);
 
   afterEach(async function () {
+    try {
     await AdministrationService.deleteOrganization({ organizationName: organizationName }).catch(() => { });
+    } catch (e){
+      // ok to ignore any exceptions
+    }
   });
 
   setup.addAfterHooks(this);
