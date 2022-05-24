@@ -25,12 +25,13 @@ describe(scriptName, function () {
     await AdministrationService.createOrganization({ requestBody: organization });
   });
 
-  afterEach(function (done) {
-    setTimeout(function () {
-      done();
-    }, 2000);
+  afterEach(async function () {
     PlatformAPIClient.setManagementUser();
-    AdministrationService.deleteOrganization({ organizationName: organizationName }).catch(() => { });
+    try {
+      AdministrationService.deleteOrganization({ organizationName: organizationName }).catch(() => { });
+    } catch (e) {
+
+    }
   });
 
   setup.addAfterHooks(this);
