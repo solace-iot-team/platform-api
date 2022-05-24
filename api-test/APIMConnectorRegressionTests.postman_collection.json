@@ -2303,6 +2303,26 @@
 					"response": []
 				},
 				{
+					"name": "Wait for async app provisioning Copy",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "https://postman-echo.com/delay/10",
+							"protocol": "https",
+							"host": [
+								"postman-echo",
+								"com"
+							],
+							"path": [
+								"delay",
+								"10"
+							]
+						}
+					},
+					"response": []
+				},
+				{
 					"name": "Patch App (with product) Copy",
 					"event": [
 						{
@@ -12033,6 +12053,26 @@
 				},
 				{
 					"name": "Wait for async app provisioning Copy",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "https://postman-echo.com/delay/10",
+							"protocol": "https",
+							"host": [
+								"postman-echo",
+								"com"
+							],
+							"path": [
+								"delay",
+								"10"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Wait for async app provisioning Copy 2",
 					"request": {
 						"method": "GET",
 						"header": [],
