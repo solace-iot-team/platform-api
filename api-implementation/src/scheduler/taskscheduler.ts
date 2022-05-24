@@ -9,6 +9,9 @@ import { Agenda } from "agenda";
 import { databaseaccess } from '../databaseaccess';
 import { AppProvisioningJob } from './jobs/appprovisioningjob';
 
+import { ns } from '../../server/api/middlewares/context.handler';
+import { ContextConstants } from '../../server/common/constants';
+
 import Organization = Components.Schemas.Organization;
 
 const jobDir = path.join(__dirname, './jobs');
@@ -126,36 +129,43 @@ export default class TaskScheduler {
     const agenda: Agenda = this.#agendas.get(spec.orgName);
     const inFlight: boolean = await this.isJobAlreadyQueued(spec);
     L.debug(`Job ${spec.jobName} for ${spec.orgName} ${spec.data.name} in flight ${inFlight}`);
-    if (agenda && !inFlight) {
+    // if a job is in flight for a specific name/org combo schedule the next job to give previous job 
+    const delay: number = inFlight?30000:5;
+    if (agenda) {
       const job = agenda.create(spec.jobName, spec.data);
-      await job.schedule('in a tenth of a second').save();
-      //await agenda.now(spec.jobName, spec.data);
-    } else if (!agenda){
+      const runAt = new Date();
+      runAt.setMilliseconds(runAt.getMilliseconds()+delay);
+      await job.schedule(runAt).save();
+    } else if (!agenda) {
       L.error(`No agenda for ${spec.orgName}, could not queue job`);
     }
   }
 
   public async isJobAlreadyQueued(spec: AgendaJobSpec): Promise<boolean> {
-    return await this.isJobQueued(spec.data.orgName, spec.data.name);
+    return await this.isJobQueued(spec.data.name, spec.data.orgName);
   }
 
-  public async isJobQueued(organization: string, name: string): Promise<boolean> {
-    if (this.#agendas.get(organization)) {
-      const agenda: Agenda = this.#agendas.get(organization);
+  public async isJobQueued(name: string, organization?: string): Promise<boolean> {
+    let org = organization;
+    if (!org && ns != null && ns.getStore() && ns.getStore().get(ContextConstants.ORG_NAME)) {
+      org = ns.getStore().get(ContextConstants.ORG_NAME);
+    }
+    if (this.#agendas.get(org)) {
+      const agenda: Agenda = this.#agendas.get(org);
       const matchingJobs = await agenda.jobs({
         'data.name': name,
-        'data.orgName': organization,
+        'data.orgName': org,
         lastFinishedAt: null
       });
       if (matchingJobs.length > 0) {
-        L.debug(`Job already in flight for ${name} in ${organization}`);
+        L.debug(`Job already in flight for ${name} in ${org}`);
         return true;
       } else {
         return false;
       }
 
     } else {
-      L.error(`No agenda found for ${organization}`);
+      L.error(`No agenda found for ${org}`);
       return false;
     }
 
@@ -182,7 +192,7 @@ export default class TaskScheduler {
       name: orgName,
       processEvery: '1 minute',
     });
-    agenda.define('reprovisionApp', { shouldSaveResult: true,  },AppProvisioningJob.provision);
+    agenda.define('reprovisionApp', { shouldSaveResult: true, }, AppProvisioningJob.provision);
     await agenda.start();
     return agenda;
   }
