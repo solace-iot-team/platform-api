@@ -21,23 +21,16 @@ describe(scriptName, function () {
 
   setup.addBeforeHooks(this);
 
-  beforeEach(async function (done) {
+  beforeEach(async function () {
     await AdministrationService.createOrganization({ requestBody: organization });
-    setTimeout(function () {
-      done();
-    }, 2000);
   });
 
-  afterEach(async function (done) {
+  afterEach(function (done) {
     setTimeout(function () {
       done();
     }, 2000);
     PlatformAPIClient.setManagementUser();
-    await AdministrationService.deleteOrganization({ organizationName: organizationName }).catch(() => { });
-        setTimeout(function () {
-      done();
-    }, 2000);
-
+    AdministrationService.deleteOrganization({ organizationName: organizationName }).catch(() => { });
   });
 
   setup.addAfterHooks(this);
