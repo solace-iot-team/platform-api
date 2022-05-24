@@ -20,7 +20,7 @@ export class QueueHelper {
         return true;
       }
     }
-    L.error(`app doesn't require queues`);
+    L.debug(`app doesn't require queues`);
     return false;
   }
 

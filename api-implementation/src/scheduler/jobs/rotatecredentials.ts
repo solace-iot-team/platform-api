@@ -77,7 +77,7 @@ export class OrganizationAppsRotateCredentials {
   static async rotateCredentials(job: Job) {
     const data: AgendaJobData = job.attrs.data as AgendaJobData;
 
-    L.error(`rotating credentials in ${data.orgName}`);
+    L.info(`rotating credentials in ${data.orgName}`);
     const org: Organization = data.org;
     await ContextRunner(org, OrganizationAppsRotateCredentials.doRotateCredentials);
 
