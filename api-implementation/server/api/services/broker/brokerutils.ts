@@ -20,7 +20,7 @@ class BrokerUtils {
     let environmentNames: string[] = [];
     for (const apiProductReference of app.apiProducts) {
       const productName: string = APIProductsTypeHelper.apiProductReferenceToString(apiProductReference);
-      let product = await ApiProductsService.byName(productName);
+      let product = await ApiProductsService.byReference(productName);
       environmentNames = environmentNames.concat(product.environments);
 
     }

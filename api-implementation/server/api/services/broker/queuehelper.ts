@@ -1,3 +1,4 @@
+import L from '../../../common/logger';
 import APIProduct = Components.Schemas.APIProduct;
 import App = Components.Schemas.App;
 import { Service } from '../../../../src/clients/solacecloud/models/Service';
@@ -9,6 +10,18 @@ export class QueueHelper {
     } else {
       return `${apiProduct.name}`;
     }
+  }
+
+
+  public areAppQueuesRequired(apiProducts: APIProduct[]): boolean {
+    for (const apiProduct of apiProducts){
+      if (this.isAPIProductQueueRequired(apiProduct)){
+        L.debug(`API Product ${apiProduct.name} requires a queue`)
+        return true;
+      }
+    }
+    L.error(`app doesn't require queues`);
+    return false;
   }
 
   public isAPIProductQueueRequired(apiProduct: APIProduct): boolean {
