@@ -16,14 +16,7 @@ import { ErrorResponseInternal } from '../../middlewares/error.handler';
 
 class AsyncApiGenerator {
   public async getSpecificationByApp(apiName: string, app: App): Promise<string> {
-    let spec: string;
-    const ref: string[] = apiName.split('@');
-    if (ref.length == 2) {
-      spec = (await ApisService.revisionByVersion(ref[0], ref[1]));
-    } else {
-      spec = (await ApisService.byName(apiName));
-    }
-    // parse the spec - try to treat as JSON, if fails treat as YAML
+    const spec: string = (await ApisService.byApiReference(apiName));
     let specModel = null;
     try {
       specModel = JSON.parse(spec);
@@ -38,13 +31,7 @@ class AsyncApiGenerator {
   }
 
   public async getSpecificationByApiProduct(apiName: string, apiProduct: APIProduct): Promise<string> {
-    let spec: string;
-    const ref: string[] = apiName.split('@');
-    if (ref.length == 2) {
-      spec = (await ApisService.revisionByVersion(ref[0], ref[1]));
-    } else {
-      spec = (await ApisService.byName(apiName));
-    }
+    const spec: string = (await ApisService.byApiReference(apiName));
 
     // parse the spec - try to treat as JSON, if fails treat as YAML
     let specModel = null;

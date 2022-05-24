@@ -2,7 +2,8 @@
 	"info": {
 		"_postman_id": "27d6a9b3-d711-47cf-9137-e2a2a44b724d",
 		"name": "APIM Connector Regression Tests",
-		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "1386967"
 	},
 	"item": [
 		{
@@ -1786,7 +1787,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n  \"name\": \"{{PROD_CONNECTOR_ENV}}\",\n  \"description\": \"{{PROD_CONNECTOR_ENV}} environment\",\n  \"serviceId\": \"{{PROD_BROKER_ID}}\",\n  \"exposedProtocols\": [\n    {\n      \"name\": \"secure-mqtt\",\n      \"version\": \"3.1.1\"\n    },\n    {\n      \"name\": \"mqtt\",\n      \"version\": \"3.1.1\"\n    },\n    {\n      \"name\": \"http\",\n      \"version\": \"1.1\"\n    },\n    {\n      \"name\": \"https\",\n      \"version\": \"1.1\"\n    },\n    {\n      \"name\": \"jms\",\n      \"version\": \"1.1\"\n   },\n    {\n      \"name\": \"smf\",\n      \"version\": \"smf\"\n    }\n  ]\n}",
+							"raw": "{\n  \"name\": \"{{PROD_CONNECTOR_ENV}}\",\n  \"description\": \"{{PROD_CONNECTOR_ENV}} environment\",\n  \"serviceId\": \"{{PROD_BROKER_ID}}\",\n  \"exposedProtocols\": [\n    {\n      \"name\": \"secure-mqtt\",\n      \"version\": \"3.1.1\"\n    },\n    {\n      \"name\": \"mqtt\",\n      \"version\": \"3.1.1\"\n    },\n    {\n      \"name\": \"http\",\n      \"version\": \"1.1\"\n    },\n    {\n      \"name\": \"https\",\n      \"version\": \"1.1\"\n    },\n    {\n      \"name\": \"jms\",\n      \"version\": \"1.1\"\n   },\n    {\n      \"name\": \"smf\",\n      \"version\": \"smf\"\n    },\n    {\n      \"name\": \"secure-jms\",\n      \"version\": \"1.1\"\n   },\n    {\n      \"name\": \"smfs\",\n      \"version\": \"smfs\"\n    }\n  ]\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -2276,6 +2277,46 @@
 								"{{TENANT}}",
 								"apiProducts",
 								"{{API_NAME}}_PRODUCT"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Wait for async app provisioning",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "https://postman-echo.com/delay/10",
+							"protocol": "https",
+							"host": [
+								"postman-echo",
+								"com"
+							],
+							"path": [
+								"delay",
+								"10"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Wait for async app provisioning Copy",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "https://postman-echo.com/delay/10",
+							"protocol": "https",
+							"host": [
+								"postman-echo",
+								"com"
+							],
+							"path": [
+								"delay",
+								"10"
 							]
 						}
 					},
@@ -11973,8 +12014,8 @@
 							"listen": "test",
 							"script": {
 								"exec": [
-									"pm.test(\"Status OK\", function () {",
-									"    pm.response.to.have.status(200);",
+									"pm.test(\"Status 412\", function () {",
+									"    pm.response.to.have.status(412);",
 									"});",
 									""
 								],
@@ -12005,6 +12046,46 @@
 								"{{TEAM_NAME}}",
 								"apps",
 								"{{APP_NAME}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Wait for async app provisioning Copy",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "https://postman-echo.com/delay/10",
+							"protocol": "https",
+							"host": [
+								"postman-echo",
+								"com"
+							],
+							"path": [
+								"delay",
+								"10"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Wait for async app provisioning Copy 2",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "https://postman-echo.com/delay/10",
+							"protocol": "https",
+							"host": [
+								"postman-echo",
+								"com"
+							],
+							"path": [
+								"delay",
+								"10"
 							]
 						}
 					},
@@ -17236,6 +17317,1161 @@
 			]
 		},
 		{
+			"name": "41 Cascading App Updates",
+			"item": [
+				{
+					"name": "Patch Dev Env Protocols",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status OK\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "{{CONNECTOR_PASSWORD}}",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "{{CONNECTOR_USERNAME}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PATCH",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"exposedProtocols\": [\n    {\n      \"name\": \"secure-mqtt\",\n      \"version\": \"3.1.1\"\n    },\n    {\n      \"name\": \"mqtt\",\n      \"version\": \"3.1.1\"\n    },\n    {\n      \"name\": \"http\",\n      \"version\": \"1.1\"\n    },\n    {\n      \"name\": \"https\",\n      \"version\": \"1.1\"\n    },\n    {\n      \"name\": \"jms\",\n      \"version\": \"1.1\"\n   },\n    {\n      \"name\": \"secure-jms\",\n      \"version\": \"1.1\"\n   },\n    {\n      \"name\": \"smf\",\n      \"version\": \"smf\"\n   },\n    {\n      \"name\": \"smfs\",\n      \"version\": \"smfs\"\n    }\n  ]\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{CONNECTOR_BASEURL}}/{{TENANT}}/environments/{{CONNECTOR_ENV}}",
+							"host": [
+								"{{CONNECTOR_BASEURL}}"
+							],
+							"path": [
+								"{{TENANT}}",
+								"environments",
+								"{{CONNECTOR_ENV}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create API Product",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status OK\", function () {",
+									"    pm.response.to.have.status(201);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"apis\": [\n      \"SayHello\",\n      \"SayHelloPub\"\n  ],\n  \"approvalType\": \"auto\",\n  \"attributes\": [\n  ],\n  \"description\": \"{{API_NAME}}_PRODUCT\",\n  \"displayName\": \"{{API_NAME}}_PRODUCT\",\n  \"environments\": [\n    \"dev\",\n    \"prod\"\n  ],\n  \"name\": \"{{API_NAME}}_PRODUCT2\",\n  \"pubResources\": [\n  ],\n  \"subResources\": [\n  ],\n  \"protocols\": [\n    {\n      \"name\": \"smfs\",\n      \"version\": \"smfs\"\n    },\n        {\n      \"name\": \"secure-jms\",\n      \"version\": \"1.1\"\n    }\n  ],\n  \"clientOptions\": {\n    \"guaranteedMessaging\": {\n      \"requireQueue\": true,\n      \"accessType\": \"exclusive\",\n      \"maxTtl\": 600,\n      \"maxMsgSpoolUsage\": 50\n    }\n  }\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{CONNECTOR_BASEURL}}/{{TENANT}}/apiProducts",
+							"host": [
+								"{{CONNECTOR_BASEURL}}"
+							],
+							"path": [
+								"{{TENANT}}",
+								"apiProducts"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create App (with product)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status OK\", function () {",
+									"    pm.response.to.have.status(201);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"name\": \"{{APP_NAME}}\",\n  \"internalName\": \"{{APP_NAME_INTERNAL}}\",    \n  \"displayName\": \"{{APP_NAME}}\",\n  \"expiresIn\": 0,\n  \"apiProducts\": [\n    \"{{API_NAME}}_PRODUCT2\"\n  ],\n  \"attributes\": [\n    {\n      \"name\": \"equipmentId\",\n      \"value\": \"E1,E2\"\n    }\n  ],\n  \"credentials\": {\n    \"expiresAt\": -1,\n    \"issuedAt\": 0,\n    \"secret\": {\n      \"consumerKey\": \"{{CONSUMER_KEY}}\",\n      \"consumerSecret\": \"{{CONSUMER_SECRET}}\"\n    }\n  }\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{CONNECTOR_BASEURL}}/{{TENANT}}/teams/{{TEAM_NAME}}/apps",
+							"host": [
+								"{{CONNECTOR_BASEURL}}"
+							],
+							"path": [
+								"{{TENANT}}",
+								"teams",
+								"{{TEAM_NAME}}",
+								"apps"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create App (with product) 1",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status OK\", function () {",
+									"    pm.response.to.have.status(201);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"name\": \"{{APP_NAME}}1\",\n  \"internalName\": \"{{APP_NAME_INTERNAL}}1\",    \n  \"displayName\": \"{{APP_NAME}}1\",\n  \"expiresIn\": 0,\n  \"apiProducts\": [\n    \"{{API_NAME}}_PRODUCT2\"\n  ],\n  \"attributes\": [\n    {\n      \"name\": \"equipmentId\",\n      \"value\": \"E1,E2\"\n    }\n  ],\n  \"credentials\": {\n    \"expiresAt\": -1,\n    \"issuedAt\": 0,\n    \"secret\": {\n      \"consumerKey\": \"{{CONSUMER_KEY}}1\",\n      \"consumerSecret\": \"{{CONSUMER_SECRET}}\"\n    }\n  }\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{CONNECTOR_BASEURL}}/{{TENANT}}/teams/{{TEAM_NAME}}/apps",
+							"host": [
+								"{{CONNECTOR_BASEURL}}"
+							],
+							"path": [
+								"{{TENANT}}",
+								"teams",
+								"{{TEAM_NAME}}",
+								"apps"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create App (with product) 2",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status OK\", function () {",
+									"    pm.response.to.have.status(201);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"name\": \"{{APP_NAME}}2\",\n  \"internalName\": \"{{APP_NAME_INTERNAL}}2\",    \n  \"displayName\": \"{{APP_NAME}}2\",\n  \"expiresIn\": 0,\n  \"apiProducts\": [\n    \"{{API_NAME}}_PRODUCT2\"\n  ],\n  \"attributes\": [\n    {\n      \"name\": \"equipmentId\",\n      \"value\": \"E1,E2\"\n    }\n  ],\n  \"credentials\": {\n    \"expiresAt\": -1,\n    \"issuedAt\": 0,\n    \"secret\": {\n      \"consumerKey\": \"{{CONSUMER_KEY}}2\",\n      \"consumerSecret\": \"{{CONSUMER_SECRET}}\"\n    }\n  }\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{CONNECTOR_BASEURL}}/{{TENANT}}/teams/{{TEAM_NAME}}/apps",
+							"host": [
+								"{{CONNECTOR_BASEURL}}"
+							],
+							"path": [
+								"{{TENANT}}",
+								"teams",
+								"{{TEAM_NAME}}",
+								"apps"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create App (with product) 3",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status OK\", function () {",
+									"    pm.response.to.have.status(201);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"name\": \"{{APP_NAME}}3\",\n  \"internalName\": \"{{APP_NAME_INTERNAL}}3\",    \n  \"displayName\": \"{{APP_NAME}}3\",\n  \"expiresIn\": 0,\n  \"apiProducts\": [\n    \"{{API_NAME}}_PRODUCT2\"\n  ],\n  \"attributes\": [\n    {\n      \"name\": \"equipmentId\",\n      \"value\": \"E1,E2\"\n    }\n  ],\n  \"credentials\": {\n    \"expiresAt\": -1,\n    \"issuedAt\": 0,\n    \"secret\": {\n      \"consumerKey\": \"{{CONSUMER_KEY}}3\",\n      \"consumerSecret\": \"{{CONSUMER_SECRET}}\"\n    }\n  }\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{CONNECTOR_BASEURL}}/{{TENANT}}/teams/{{TEAM_NAME}}/apps",
+							"host": [
+								"{{CONNECTOR_BASEURL}}"
+							],
+							"path": [
+								"{{TENANT}}",
+								"teams",
+								"{{TEAM_NAME}}",
+								"apps"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create App (with product) 4",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status OK\", function () {",
+									"    pm.response.to.have.status(201);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"name\": \"{{APP_NAME}}4\",\n  \"internalName\": \"{{APP_NAME_INTERNAL}}4\",    \n  \"displayName\": \"{{APP_NAME}}4\",\n  \"expiresIn\": 0,\n  \"apiProducts\": [\n    \"{{API_NAME}}_PRODUCT2\"\n  ],\n  \"attributes\": [\n    {\n      \"name\": \"equipmentId\",\n      \"value\": \"E1,E2\"\n    }\n  ],\n  \"credentials\": {\n    \"expiresAt\": -1,\n    \"issuedAt\": 0,\n    \"secret\": {\n      \"consumerKey\": \"{{CONSUMER_KEY}}4\",\n      \"consumerSecret\": \"{{CONSUMER_SECRET}}\"\n    }\n  }\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{CONNECTOR_BASEURL}}/{{TENANT}}/teams/{{TEAM_NAME}}/apps",
+							"host": [
+								"{{CONNECTOR_BASEURL}}"
+							],
+							"path": [
+								"{{TENANT}}",
+								"teams",
+								"{{TEAM_NAME}}",
+								"apps"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "GET App Copy",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status OK\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Has clientInformation\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.clientInformation).to.not.eql(undefined);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{CONNECTOR_BASEURL}}/{{TENANT}}/teams/{{TEAM_NAME}}/apps/{{APP_NAME}}",
+							"host": [
+								"{{CONNECTOR_BASEURL}}"
+							],
+							"path": [
+								"{{TENANT}}",
+								"teams",
+								"{{TEAM_NAME}}",
+								"apps",
+								"{{APP_NAME}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get App AsyncAPI",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status OK\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Contains queue info\", function () {",
+									"    pm.expect(pm.response.text()).to.include(\"queue:\");",
+									"    let qName = pm.environment.get(\"APP_NAME_INTERNAL\") + '-' + pm.environment.get(\"API_NAME\") + '_PRODUCT2';",
+									"    pm.expect(pm.response.text()).to.include(qName);",
+									"});",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{CONNECTOR_BASEURL}}/{{TENANT}}/apps/{{APP_NAME}}/apis/SayHelloPub?format=application%2Fx-yaml",
+							"host": [
+								"{{CONNECTOR_BASEURL}}"
+							],
+							"path": [
+								"{{TENANT}}",
+								"apps",
+								"{{APP_NAME}}",
+								"apis",
+								"SayHelloPub"
+							],
+							"query": [
+								{
+									"key": "format",
+									"value": "application%2Fx-yaml"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get APi Product AsyncAPI",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status OK\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Contains no queue info\", function () {",
+									"    pm.expect(pm.response.text()).not.to.include(\"queue.name\");",
+									"});",
+									"",
+									"pm.test(\"Contains deliveryMode persistent\", function () {",
+									"    pm.expect(pm.response.text()).to.include(\"deliveryMode: persistent\");",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{CONNECTOR_BASEURL}}/{{TENANT}}/apiProducts/{{API_NAME}}_PRODUCT2/apis/SayHello?format=application%2Fx-yaml",
+							"host": [
+								"{{CONNECTOR_BASEURL}}"
+							],
+							"path": [
+								"{{TENANT}}",
+								"apiProducts",
+								"{{API_NAME}}_PRODUCT2",
+								"apis",
+								"SayHello"
+							],
+							"query": [
+								{
+									"key": "format",
+									"value": "application%2Fx-yaml"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get APi Product AsyncAPI Copy",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status OK\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Contains queue info\", function () {",
+									"    pm.expect(pm.response.text()).to.include(\"queue:\");",
+									"    let qName = pm.environment.get(\"API_NAME\") + '_PRODUCT2';",
+									"    pm.expect(pm.response.text()).to.include(qName);",
+									"});",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{CONNECTOR_BASEURL}}/{{TENANT}}/apiProducts/{{API_NAME}}_PRODUCT2/apis/SayHelloPub?format=application%2Fx-yaml",
+							"host": [
+								"{{CONNECTOR_BASEURL}}"
+							],
+							"path": [
+								"{{TENANT}}",
+								"apiProducts",
+								"{{API_NAME}}_PRODUCT2",
+								"apis",
+								"SayHelloPub"
+							],
+							"query": [
+								{
+									"key": "format",
+									"value": "application%2Fx-yaml"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Check Broker Queue Created",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Queue is found\", function () {",
+									"    pm.expect(pm.response.text()).to.include(\"PRODUCT2\");",
+									"});",
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "{{BROKER_PASSWORD}}",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "{{BROKER_USER}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{BROKER_BASEURL}}/msgVpns/{{CLOUD_VPN}}/queues/{{APP_NAME_INTERNAL}}-{{API_NAME}}_PRODUCT2",
+							"host": [
+								"{{BROKER_BASEURL}}"
+							],
+							"path": [
+								"msgVpns",
+								"{{CLOUD_VPN}}",
+								"queues",
+								"{{APP_NAME_INTERNAL}}-{{API_NAME}}_PRODUCT2"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Check subscriptions",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"pm.test(\"Has subscrioption\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.data[0].subscriptionTopic).to.eql('say/hello');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "{{BROKER_PASSWORD}}",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "{{BROKER_USER}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{BROKER_BASEURL}}/msgVpns/{{CLOUD_VPN}}/queues/{{APP_NAME_INTERNAL}}-{{API_NAME}}_PRODUCT2/subscriptions",
+							"host": [
+								"{{BROKER_BASEURL}}"
+							],
+							"path": [
+								"msgVpns",
+								"{{CLOUD_VPN}}",
+								"queues",
+								"{{APP_NAME_INTERNAL}}-{{API_NAME}}_PRODUCT2",
+								"subscriptions"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Remove API from  API Product",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status OK\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PATCH",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"apis\": [\n      \"SayHello\"\n  ],\n    \"environments\": [\n    \"dev\"\n  ]\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{CONNECTOR_BASEURL}}/{{TENANT}}/apiProducts/{{API_NAME}}_PRODUCT2",
+							"host": [
+								"{{CONNECTOR_BASEURL}}"
+							],
+							"path": [
+								"{{TENANT}}",
+								"apiProducts",
+								"{{API_NAME}}_PRODUCT2"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Reprovision App",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status 412\", function () {",
+									"    pm.response.to.have.status(412);",
+									"});",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PATCH",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"displayName\": \"{{APP_NAME}}\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{CONNECTOR_BASEURL}}/{{TENANT}}/teams/{{TEAM_NAME}}/apps/{{APP_NAME}}",
+							"host": [
+								"{{CONNECTOR_BASEURL}}"
+							],
+							"path": [
+								"{{TENANT}}",
+								"teams",
+								"{{TEAM_NAME}}",
+								"apps",
+								"{{APP_NAME}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Wait for async app provisioning Copy",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "https://postman-echo.com/delay/10",
+							"protocol": "https",
+							"host": [
+								"postman-echo",
+								"com"
+							],
+							"path": [
+								"delay",
+								"10"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "GET App",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status OK\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"No clientInformation\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.clientInformation).to.eql(undefined);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{CONNECTOR_BASEURL}}/{{TENANT}}/teams/{{TEAM_NAME}}/apps/{{APP_NAME}}",
+							"host": [
+								"{{CONNECTOR_BASEURL}}"
+							],
+							"path": [
+								"{{TENANT}}",
+								"teams",
+								"{{TEAM_NAME}}",
+								"apps",
+								"{{APP_NAME}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get App AsyncAPI",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status OK\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Contains no queue info\", function () {",
+									"    pm.expect(pm.response.text()).not.to.include(\"queue.name\");",
+									"});",
+									"",
+									"pm.test(\"Contains deliveryMode persistent\", function () {",
+									"    pm.expect(pm.response.text()).to.include(\"deliveryMode: persistent\");",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{CONNECTOR_BASEURL}}/{{TENANT}}/apps/{{APP_NAME}}/apis/SayHello?format=application%2Fx-yaml",
+							"host": [
+								"{{CONNECTOR_BASEURL}}"
+							],
+							"path": [
+								"{{TENANT}}",
+								"apps",
+								"{{APP_NAME}}",
+								"apis",
+								"SayHello"
+							],
+							"query": [
+								{
+									"key": "format",
+									"value": "application%2Fx-yaml"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Not Found APi Product AsyncAPI Copy 2",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status 404\", function () {",
+									"    pm.response.to.have.status(404);",
+									"});",
+									"",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{CONNECTOR_BASEURL}}/{{TENANT}}/apiProducts/{{API_NAME}}_PRODUCT2/apis/SayHelloPub?format=application%2Fx-yaml",
+							"host": [
+								"{{CONNECTOR_BASEURL}}"
+							],
+							"path": [
+								"{{TENANT}}",
+								"apiProducts",
+								"{{API_NAME}}_PRODUCT2",
+								"apis",
+								"SayHelloPub"
+							],
+							"query": [
+								{
+									"key": "format",
+									"value": "application%2Fx-yaml"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Check ACL removed prod",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 400\", function () {",
+									"    pm.response.to.have.status(400);",
+									"});",
+									"pm.test(\"Has subscrioption\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.meta.error.status).to.eql('NOT_FOUND');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "{{PROD_BROKER_PASSWORD}}",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "{{PROD_BROKER_USER}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{PROD_BROKER_BASEURL}}/msgVpns/{{PROD_CLOUD_VPN}}/aclProfiles/{{APP_NAME_INTERNAL}}",
+							"host": [
+								"{{PROD_BROKER_BASEURL}}"
+							],
+							"path": [
+								"msgVpns",
+								"{{PROD_CLOUD_VPN}}",
+								"aclProfiles",
+								"{{APP_NAME_INTERNAL}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Check Broker Queue Not Created",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Queue is not found\", function () {",
+									"    pm.expect(pm.response.text()).to.include(\"NOT_FOUND\");",
+									"});",
+									"pm.test(\"Status code is 400\", function () {",
+									"    pm.response.to.have.status(400);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "{{BROKER_PASSWORD}}",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "{{BROKER_USER}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{BROKER_BASEURL}}/msgVpns/{{CLOUD_VPN}}/queues/{{APP_NAME_INTERNAL}}-{{API_NAME}}_PRODUCT2",
+							"host": [
+								"{{BROKER_BASEURL}}"
+							],
+							"path": [
+								"msgVpns",
+								"{{CLOUD_VPN}}",
+								"queues",
+								"{{APP_NAME_INTERNAL}}-{{API_NAME}}_PRODUCT2"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Wait for async app provisioning Copy 2",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "https://postman-echo.com/delay/10",
+							"protocol": "https",
+							"host": [
+								"postman-echo",
+								"com"
+							],
+							"path": [
+								"delay",
+								"10"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete App",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is OK\", function () {",
+									"    pm.response.to.have.status(204);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{CONNECTOR_BASEURL}}/{{TENANT}}/teams/{{TEAM_NAME}}/apps/{{APP_NAME}}",
+							"host": [
+								"{{CONNECTOR_BASEURL}}"
+							],
+							"path": [
+								"{{TENANT}}",
+								"teams",
+								"{{TEAM_NAME}}",
+								"apps",
+								"{{APP_NAME}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete App 1",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is OK\", function () {",
+									"    pm.response.to.have.status(204);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{CONNECTOR_BASEURL}}/{{TENANT}}/teams/{{TEAM_NAME}}/apps/{{APP_NAME}}1",
+							"host": [
+								"{{CONNECTOR_BASEURL}}"
+							],
+							"path": [
+								"{{TENANT}}",
+								"teams",
+								"{{TEAM_NAME}}",
+								"apps",
+								"{{APP_NAME}}1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete App 2",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is OK\", function () {",
+									"    pm.response.to.have.status(204);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{CONNECTOR_BASEURL}}/{{TENANT}}/teams/{{TEAM_NAME}}/apps/{{APP_NAME}}2",
+							"host": [
+								"{{CONNECTOR_BASEURL}}"
+							],
+							"path": [
+								"{{TENANT}}",
+								"teams",
+								"{{TEAM_NAME}}",
+								"apps",
+								"{{APP_NAME}}2"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete App 3",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is OK\", function () {",
+									"    pm.response.to.have.status(204);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{CONNECTOR_BASEURL}}/{{TENANT}}/teams/{{TEAM_NAME}}/apps/{{APP_NAME}}3",
+							"host": [
+								"{{CONNECTOR_BASEURL}}"
+							],
+							"path": [
+								"{{TENANT}}",
+								"teams",
+								"{{TEAM_NAME}}",
+								"apps",
+								"{{APP_NAME}}3"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete App 4",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is OK\", function () {",
+									"    pm.response.to.have.status(204);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{CONNECTOR_BASEURL}}/{{TENANT}}/teams/{{TEAM_NAME}}/apps/{{APP_NAME}}4",
+							"host": [
+								"{{CONNECTOR_BASEURL}}"
+							],
+							"path": [
+								"{{TENANT}}",
+								"teams",
+								"{{TEAM_NAME}}",
+								"apps",
+								"{{APP_NAME}}4"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete API Product",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is OK\", function () {",
+									"    pm.response.to.have.status(204);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{CONNECTOR_BASEURL}}/{{TENANT}}/apiProducts/{{API_NAME}}_PRODUCT2",
+							"host": [
+								"{{CONNECTOR_BASEURL}}"
+							],
+							"path": [
+								"{{TENANT}}",
+								"apiProducts",
+								"{{API_NAME}}_PRODUCT2"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
 			"name": "General Tear Down",
 			"item": [
 				{
@@ -19093,6 +20329,87 @@
 						}
 					},
 					"response": []
+				}
+			]
+		},
+		{
+			"name": "Create Apps Loop",
+			"item": [
+				{
+					"name": "Create App (with product) Copy",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"var value = pm.environment.get(\"app_count\");",
+									"",
+									"if( !value) {",
+									"    pm.environment.set(\"app_count\", 1);",
+									"} else {",
+									"    var value = pm.environment.get(\"app_count\");",
+									"    pm.environment.set(\"app_count\", value+1);",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"name\": \"{{APP_NAME}}{{app_count}}\",\n  \"internalName\": \"{{APP_NAME_INTERNAL}}{{app_count}}\",    \n  \"displayName\": \"{{APP_NAME}}{{app_count}}\",\n  \"expiresIn\": 0,\n  \"apiProducts\": [\n    \"{{API_NAME}}_PRODUCT2\"\n  ],\n  \"attributes\": [\n    {\n      \"name\": \"equipmentId\",\n      \"value\": \"E1,E2\"\n    }\n  ],\n  \"credentials\": {\n    \"expiresAt\": -1,\n    \"issuedAt\": 0,\n    \"secret\": {\n      \"consumerKey\": \"{{CONSUMER_KEY}}{{app_count}}\",\n      \"consumerSecret\": \"{{CONSUMER_SECRET}}\"\n    }\n  }\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{CONNECTOR_BASEURL}}/{{TENANT}}/teams/{{TEAM_NAME}}/apps",
+							"host": [
+								"{{CONNECTOR_BASEURL}}"
+							],
+							"path": [
+								"{{TENANT}}",
+								"teams",
+								"{{TEAM_NAME}}",
+								"apps"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
 				}
 			]
 		}

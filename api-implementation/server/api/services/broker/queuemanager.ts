@@ -120,7 +120,7 @@ export class QueueManager {
 
     for (const apiProductReference of app.apiProducts) {
       const productName: string = APIProductsTypeHelper.apiProductReferenceToString(apiProductReference);
-      const apiProduct: APIProduct = await ApiProductsService.byName(productName);
+      const apiProduct: APIProduct = await ApiProductsService.byReference(productName);
       if (QueueHelper.isAPIProductQueueRequired(apiProduct)) {
         const queueName: string = QueueHelper.getAPIProductQueueName(app, apiProduct);
         await this.deleteQueues(services, queueName);

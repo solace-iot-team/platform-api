@@ -1,6 +1,7 @@
 import L from '../../common/logger';
 
 import App = Components.Schemas.App;
+import AppPatch = Components.Schemas.AppPatch;
 import AppApiProducts = Components.Schemas.AppApiProducts;
 import APIProduct = Components.Schemas.APIProduct;
 import Environment = Components.Schemas.Environment;
@@ -37,6 +38,7 @@ import SolaceCloudFacade from '../../../src/solacecloudfacade';
 import SempV2ClientFactory from './broker/sempv2clientfactory';
 import APIProductsTypeHelper from '../../../src/apiproductstypehelper';
 import { ErrorResponseInternal } from '../middlewares/error.handler';
+import QueueHelper from './broker/queuehelper';
 
 
 class BrokerService {
@@ -52,17 +54,23 @@ class BrokerService {
   }
 
   async reProvisionApp(appPatch: App, appUnmodified: App, ownerAttributes: Attributes): Promise<boolean> {
+    L.debug(`Attempting to reprovision ${appPatch.name}`);
+    if ((appPatch as AppPatch).status != 'approved') {
+      L.debug(`App ${appPatch.name} is not approved`);
+      return false;
+    }
     // check if credentials were changed. this triggers a nem change of broker resources such as client name, password
     let areCredentialsUpdated: boolean = false;
     if (appPatch.credentials && appPatch.credentials.secret.consumerKey != appUnmodified.credentials.secret.consumerKey) {
       areCredentialsUpdated = true;
     }
     // credentials change triggers a deprovision action. Too drastic as credentioals change merely impact the client username
+    const products: APIProduct[] = await this.getAPIProducts(appPatch.apiProducts);
     if (areCredentialsUpdated) {
       let services = await BrokerUtils.getServicesByApp(appUnmodified);
       const r = await this.deleteClientUsernames(appUnmodified, services);
       services = await BrokerUtils.getServicesByApp(appPatch);
-      const products: APIProduct[] = await this.getAPIProducts(appPatch.apiProducts);
+
       const clientProfileName: string = await ClientProfileManager.create(appPatch, services, products, ownerAttributes);
       await this.createClientUsernames(appPatch, services, clientProfileName);
     }
@@ -70,7 +78,7 @@ class BrokerService {
     const oldServices: Service[] = await BrokerUtils.getServicesByApp(appUnmodified);
     const newServices: Service[] = await BrokerUtils.getServicesByApp(appPatch);
     const deProvisionServices = oldServices.filter(s => !newServices.includes(s));
-    L.info(`updated app references less environments, deprovision from services ${JSON.stringify(deProvisionServices)}`)
+    L.trace(`updated app references fewer environments, deprovision from services ${JSON.stringify(deProvisionServices)}`)
     L.info(`provisioning app ${appPatch.name}`);
     if (deProvisionServices && deProvisionServices.length > 0) {
       await this.doDeprovisionAppByEnvironments(appUnmodified, appUnmodified.internalName, deProvisionServices);
@@ -81,13 +89,19 @@ class BrokerService {
       const previousProductNames: string[] = APIProductsTypeHelper.apiProductReferencesToStringArray(appUnmodified.apiProducts);
       const newProductNames: string[] = APIProductsTypeHelper.apiProductReferencesToStringArray(appPatch.apiProducts);
       const diff: string[] = previousProductNames.filter(x => !newProductNames.includes(x));
+      L.trace(diff);
       const tempApp: App = {
         internalName: appPatch.internalName,
         name: appPatch.name,
         apiProducts: diff,
         credentials: null,
       }
-      QueueManager.deleteAPIProductQueues(tempApp, newServices, tempApp.internalName);
+      await QueueManager.deleteAPIProductQueues(tempApp, newServices, tempApp.internalName);
+    }
+    // also  queues may no longe be required
+    if (!QueueHelper.areAppQueuesRequired(products) || (await ACLManager.getQueueSubscriptionsByApp(appPatch)).length==0) {
+      L.debug('make sure to remove queues');
+      await QueueManager.deleteAPIProductQueues(appPatch, newServices, appPatch.internalName);
     }
 
     // try to provision the modified app, if it fails roll back to previous version and provision the previous version
@@ -580,7 +594,7 @@ class BrokerService {
 
     for (const apiProductReference of apiProducts) {
       const productName: string = APIProductsTypeHelper.apiProductReferenceToString(apiProductReference);
-      const product = await ApiProductsService.byName(productName);
+      const product = await ApiProductsService.byReference(productName);
       if ((product.meta && (!product.meta.stage || product.meta.stage != 'retired')) &&
         APIProductsTypeHelper.isApiProductReferenceApproved(apiProductReference)) {
         products.push(product);

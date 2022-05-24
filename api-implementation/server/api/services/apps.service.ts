@@ -27,6 +27,9 @@ import { isString } from '../../../src/typehelpers';
 import APIProductsTypeHelper from '../../../src/apiproductstypehelper';
 import AppHelper from '../../../src/apphelper';
 
+import { scheduler } from '../../index';
+
+
 export interface APISpecification {
   name: string;
   specification: string;
@@ -202,7 +205,7 @@ export class AppsService {
         throw (e);
       }
     } catch (e) {
-      L.error(e);
+      L.info(e);
       throw e;
     }
   }
@@ -224,11 +227,18 @@ export class AppsService {
     app: AppPatch,
     ownerAttributes: Attributes
   ): Promise<AppPatch> {
-    L.info(`App patch request ${JSON.stringify(app)}`);
+    // reject request if app is being reprovisioned
+    const isJobRunning: boolean = await scheduler.isJobQueued(name);
+    if (isJobRunning) {
+      L.debug(`is a job queued for ${name}, blocking app provisioning ${isJobRunning}`);
+      throw new ErrorResponseInternal(412, `An update on this app is currently processing, please try again later`);
+    }
+    L.debug(`App patch request ${JSON.stringify(app)}`);
     // need to hold on to unmodified app so we can roll back if required and can determine changes during reprovisioning
     const appNotModified: AppPatch = await this.persistenceService.byName(
       name
     );
+
     const validated = await this.validate(app, true, appNotModified as App);
     if (app.credentials && app.credentials.secret && !app.credentials.secret.consumerSecret) {
       // regenerate a consumerSecret if omitted / partial secret is sent
@@ -260,6 +270,7 @@ export class AppsService {
       app
     );
     // we only take action if the app is in approved status
+
     if (appPatch.status == 'approved') {
       const result: boolean = await BrokerService.reProvisionApp(appPatch as App, appNotModified as App, ownerAttributes);
       // roll back database changes
@@ -331,7 +342,7 @@ export class AppsService {
           );
         }
         // deprecated api products can only be referenced if they were previsouy referenced by the app
-        if (apiProduct.meta.stage == 'deprecated' && !appNotModified?.apiProducts.find(a=>APIProductsTypeHelper.apiProductReferenceToString(a) == apiProduct.name )) {
+        if (apiProduct.meta.stage == 'deprecated' && !appNotModified?.apiProducts.find(a => APIProductsTypeHelper.apiProductReferenceToString(a) == apiProduct.name)) {
           apiProductException = new ErrorResponseInternal(
             422,
             `API Product ${productName} in deprecated stage can not be added to a an App`

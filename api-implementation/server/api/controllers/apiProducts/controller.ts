@@ -46,7 +46,7 @@ export class Controller {
     ApiProductsService.apiList(req.params['name'])
       .then((r) => res.json(r))
       .catch(e => {
-        L.error(e);
+        L.info(e);
         next(e);
       });
   }
@@ -57,7 +57,7 @@ export class Controller {
         AsyncAPIHelper.handleResponse(r, req, res, next);
       })
       .catch((e) => {
-        L.error(e);
+        L.info(e);
         next(e);
       });
   };
@@ -66,7 +66,7 @@ export class Controller {
     ApiProductsService.appsByName(req.params['name'])
       .then((r) => res.json(r))
       .catch((e) => {
-        L.error(e);
+        L.info(e);
         next(e);
       });
   };
@@ -75,7 +75,7 @@ export class Controller {
     ApiProductsService.derivedByName(req.params['name'])
       .then((r) => res.json(r))
       .catch((e) => {
-        L.error(e);
+        L.info(e);
         next(e);
       });
   };
@@ -94,7 +94,7 @@ export class Controller {
     ApiProductsService.revisionList(req.params['name'])
       .then((r) => res.json(r))
       .catch(e => {
-        L.error(e);
+        L.info(e);
         next(e);
       });
   }
@@ -102,7 +102,7 @@ export class Controller {
     ApiProductsService.revisionByVersion(req.params['name'], req.params['semver'])
       .then((r) => res.json(r))
       .catch((e) => {
-        L.error(e);
+        L.info(e);
         next(e);
       });
   };

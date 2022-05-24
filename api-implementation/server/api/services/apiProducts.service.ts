@@ -16,6 +16,10 @@ import { Versioning } from '../../common/versioning';
 import asyncapigenerator from './asyncapi/asyncapigenerator';
 import preconditionCheck from './persistence/preconditionhelper';
 
+import AppUpdateEventEmitter from './apiProducts/appUpdateEventEmitter';
+import { ns } from '../middlewares/context.handler';
+import { ContextConstants } from '../../common/constants';
+
 export class ApiProductsService {
 
   private persistenceService: PersistenceService;
@@ -121,6 +125,11 @@ export class ApiProductsService {
       const p = await this.persistenceService.update(name, body);
       if (p != null) {
         await this.saveRevision(p);
+        if (ns != null && ns.getStore() && ns.getStore().get(ContextConstants.ORG_NAME)) {
+          const org = ns.getStore().get(ContextConstants.ORG_NAME);
+          AppUpdateEventEmitter.emit('apiProductUpdate', org, name);
+        }
+
         return await this.byName(name);
       } else {
         throw new ErrorResponseInternal(500, `Could not update object`);
@@ -179,7 +188,7 @@ export class ApiProductsService {
     try {
       const apiProduct: APIProduct = await this.persistenceService.byName(name);
       const derivedFrom: MetaEntityReference = {
-        name : apiProduct.name,
+        name: apiProduct.name,
         revision: Versioning.toExternalVersion(apiProduct.meta),
       };
       apiProduct.name = body.names.name;
@@ -224,6 +233,17 @@ export class ApiProductsService {
     }
   }
 
+  async byReference( apiProductRef: string): Promise<APIProduct> {
+    let p: APIProduct;
+    const ref: string[] = apiProductRef.split('@');
+    if (ref.length == 2) {
+      p = (await this.revisionByVersion(ref[0], ref[1]));
+    } else {
+      p = (await this.byName(apiProductRef));
+    }
+    return p;    
+  }
+
 
   private async canDelete(name: string): Promise<boolean> {
     const apps = await this.listAppsReferencingProduct(name);
@@ -264,13 +284,7 @@ export class ApiProductsService {
       for (const apiName of product.apis) {
         const errMsg = `Referenced API ${apiName} does not exist`;
         try {
-          let api: string;
-          const ref: string[] = apiName.split('@');
-          if (ref.length == 2) {
-            api = (await ApisService.revisionByVersion(ref[0], ref[1]));
-          } else {
-            api = (await ApisService.byName(apiName));
-          }
+          const api: string = await ApisService.byApiReference(apiName);
           if (api == null) {
             throw new ErrorResponseInternal(422, errMsg);
           }
