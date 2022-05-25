@@ -10,6 +10,10 @@ export default express
   .put('/:name', controller.create)
   .patch('/:name', controller.update)
   .delete('/:name', controller.delete)
+  .patch('/:name/info', controller.updateInfo)
   .get('/:name/revisions', controller.allRevisions)
   .get('/:name/revisions/:version', controller.revisionByVersion)
+  .get('/:name/revisions/:version/info', controller.infoByVersion)
+  .patch('/:name/revisions/:version/info', controller.updateInfoByVersion)
+  .get('/:name/revisions/:version/apiProducts', controller.apiProductsByVersion)
   ;

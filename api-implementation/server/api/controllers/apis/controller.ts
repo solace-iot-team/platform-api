@@ -40,6 +40,15 @@ export class Controller {
       });
   };
 
+  apiProductsByVersion(req: Request, res: Response, next: NextFunction): void {
+    ApisService.apiProductsByVersion(req.params['name'], req.params['version'])
+      .then((r) => res.json(r))
+      .catch((e) => {
+        L.error(e);
+        next(e);
+      });
+  };
+
   create(req: Request, res: Response, next: NextFunction): void {
     ApisService.create(req.params['name'], req.body)
       .then((r) => {
@@ -60,6 +69,14 @@ export class Controller {
     ApisService.update(req.params['name'], req.body)
       .then((r) => {
         AsyncAPIHelper.handleResponse(r, req, res, next);
+      })
+      .catch((e) => next(e));
+  }
+
+  updateInfo(req: Request, res: Response, next: NextFunction): void {
+    ApisService.updateInfo(req.params['name'], req.body)
+      .then((r) => {
+        res.json(r);
       })
       .catch((e) => next(e));
   }
@@ -90,6 +107,27 @@ export class Controller {
       });
   };
 
+  infoByVersion(req: Request, res: Response, next: NextFunction): void {
+    ApisService.infoByVersion(req.params['name'], req.params['version'])
+      .then((r) => {
+        res.json(r);
+      })
+      .catch((e) => {
+        L.error(e);
+        next(e);
+      });
+  };
+
+  updateInfoByVersion(req: Request, res: Response, next: NextFunction): void {
+    ApisService.updateVersionInfo(req.params['name'], req.params['version'], req.body)
+      .then((r) => {
+        res.json(r);
+      })
+      .catch((e) => {
+        L.error(e);
+        next(e);
+      });
+  };
 
 }
 export default new Controller();
