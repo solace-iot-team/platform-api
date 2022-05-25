@@ -93,6 +93,9 @@ export class ApisService {
       delete info.meta.stage;
       const metaUpdate = Versioning.update(oldInfo.meta, info.meta);
       metaUpdate.version = oldInfo.meta.version;
+      if (info.deprecated){
+        metaUpdate.stage = 'deprecated';        
+      }
       oldInfo.meta = metaUpdate;
     }
     delete oldInfo.name;
