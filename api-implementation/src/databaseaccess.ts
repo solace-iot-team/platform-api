@@ -18,7 +18,9 @@ export class databaseaccess {
           socketTimeoutMS: 5000,
           minPoolSize: 5,
         });
-        await databaseaccess.client.connect();
+        const cl = await databaseaccess.client.connect();
+        databaseaccess.client = cl;
+        databaseaccess.client.on('error', databaseaccess.connectionEventHandler);
         resolve("");
       } catch (e) {
         reject(e);
@@ -47,6 +49,11 @@ export class databaseaccess {
     url = url.trim().replace(/^[\'\"]|[\'\"]$/g, '');
     const v = new URL(url);
     return url;
+  }
+
+  public static connectionEventHandler(event: Error){
+    L.warn(event.message);
+    L.warn(event);
   }
 }
 

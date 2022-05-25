@@ -27,11 +27,7 @@ describe(scriptName, function () {
 
   afterEach(async function () {
     PlatformAPIClient.setManagementUser();
-    try {
-      AdministrationService.deleteOrganization({ organizationName: organizationName }).catch(() => { });
-    } catch (e) {
-
-    }
+    AdministrationService.deleteOrganization({ organizationName: organizationName }).catch(() => { });
   });
 
   setup.addAfterHooks(this);

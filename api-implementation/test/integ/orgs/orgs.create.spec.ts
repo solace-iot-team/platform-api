@@ -18,17 +18,7 @@ describe(scriptName, function () {
   setup.addBeforeHooks(this);
 
   afterEach(async function () {
-    try {
-      await AdministrationService.deleteOrganization({ organizationName: organizationName }).catch(() => { });
-    } catch (e) {
-
-    }
-  });
-
-  beforeEach(function (done) {
-    setTimeout(function () {
-      done();
-    }, 2000);
+    await AdministrationService.deleteOrganization({ organizationName: organizationName }).catch(() => { });
   });
 
   setup.addAfterHooks(this);
