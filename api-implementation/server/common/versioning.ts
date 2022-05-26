@@ -84,7 +84,7 @@ export class Versioning {
     if (newMeta.createdBy) {
       m.createdBy = newMeta.createdBy;
     }
-    L.warn(m);
+    L.debug(m);
     return m;
   }
 

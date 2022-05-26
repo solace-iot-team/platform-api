@@ -10,13 +10,13 @@ import AppsService from './apps.service';
 import BrokerService from './broker.service';
 import SolaceCloudFacade from '../../../src/solacecloudfacade';
 import EventPortalFacade from '../../../src/eventportalfacade';
-import { ns } from '../middlewares/context.handler';
 import { isString } from '../../../src/typehelpers';
 import preconditionCheck from './persistence/preconditionhelper';
 import DatabaseBootstrapper from './persistence/databasebootstrapper';
 
 import { Cache, CacheContainer } from 'node-ts-cache';
 import { MemoryStorage } from 'node-ts-cache-storage-memory';
+import ContextRunner from '../../../src/scheduler/contextrunner';
 
 const statusCache = new CacheContainer(new MemoryStorage());
 
@@ -50,47 +50,19 @@ export class OrganizationsService {
       throw new ErrorResponseInternal(404, `Organization not found`);
     }
 
-    const p = new Promise<number>((resolve, reject) => {
-      ns.getStore().set(ContextConstants.ORG_OBJECT, org);
-      ns.getStore().set(ContextConstants.ORG_NAME, name);
-      ns.getStore().set(ContextConstants.CLOUD_TOKEN, org[ContextConstants.CLOUD_TOKEN]);
-      AppsService.all()
-        .then((apps) => {
-          const deprovisionPromises: Promise<any>[] = [];
-          L.info(`cleaning up apps ${apps.length}`);
-          apps.forEach(async (app) => {
-            L.info(app);
-            deprovisionPromises.push(BrokerService.deprovisionApp(app));
-          });
-          Promise.all(deprovisionPromises)
-            .then((res) => {
-              ns.getStore().set(ContextConstants.ORG_NAME, null);
-              databaseaccess.client
-                .db(name)
-                .dropDatabase()
-                .then((r) => {
-                  DatabaseBootstrapper.emit('deleted', name);
-                  resolve(this.persistenceService.delete(name));
-                })
-                .catch((e) => {
-                  L.error(e);
-                  reject(
-                    new ErrorResponseInternal(404, `Organization not found`)
-                  );
-                });
-            })
-            .catch((e) => {
-              L.info(e);
-              reject(e);
-            });
-        })
-        .catch((e) => {
-          L.info(e);
-          reject(e);
-        });
 
-    });
-    return p;
+    try {
+      await ContextRunner(org, OrganizationsService.onDeleteDeprovisionApps);
+      await OrganizationsService.delay(1000);
+      await databaseaccess.client
+        .db(name)
+        .dropDatabase();
+      DatabaseBootstrapper.emit('deleted', name);
+      return (await this.persistenceService.delete(name));
+    } catch (e) {
+      L.error(e);
+      throw new ErrorResponseInternal(404, `Organization not found`);
+    }
   }
 
   async create(body: Organization): Promise<OrganizationResponse> {
@@ -210,6 +182,21 @@ export class OrganizationsService {
     }
 
     return status;
+  }
+
+  static async onDeleteDeprovisionApps() {
+    const apps = await AppsService.all();
+    L.info(`cleaning up apps ${apps.length}`);
+    for (const app of apps) {
+      L.error(`deprovisioning ${app.name}`);
+      await BrokerService.deprovisionApp(app);
+    }
+  }
+
+  static delay(ms: number): Promise<void> {
+    return new Promise((resolve) => {
+      setTimeout(resolve, ms);
+    });
   }
 }
 
