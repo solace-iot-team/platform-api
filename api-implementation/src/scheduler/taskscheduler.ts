@@ -216,16 +216,21 @@ export default class TaskScheduler {
   }
 
   private async createAgenda(orgName: string): Promise<Agenda> {
-    // create an agenda per org
-    const agenda = new Agenda({
-      mongo: databaseaccess.client.db(orgName),
-      name: orgName,
-      processEvery: DEFAULT_JOB_INTERVAL,
-    });
-    
-    agenda.define('reprovisionApp', { shouldSaveResult: true, }, AppProvisioningJob.provision);
-    agenda.define((new AppRotateCredentialsJobSpec()).jobName, { shouldSaveResult: true, }, OrganizationAppsRotateCredentials.rotateCredentials);
-    await agenda.start();
-    return agenda;
+    try {
+      // create an agenda per org
+      const agenda = new Agenda({
+        mongo: databaseaccess.client.db(orgName),
+        name: orgName,
+        processEvery: DEFAULT_JOB_INTERVAL,
+      });
+
+      agenda.define('reprovisionApp', { shouldSaveResult: true, }, AppProvisioningJob.provision);
+      agenda.define((new AppRotateCredentialsJobSpec()).jobName, { shouldSaveResult: true, }, OrganizationAppsRotateCredentials.rotateCredentials);
+      await agenda.start();
+      return agenda;
+    } catch (e) { 
+      L.error(`could not create agenda ${orgName}`);
+      return null;
+    }
   }
 }
