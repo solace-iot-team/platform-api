@@ -144,7 +144,6 @@ export class TeamsService {
 
       return await this.appByName(team, app.name, 'smf');
     } catch (e) {
-      L.warn(e);
       throw e;
     }
   }

@@ -397,7 +397,7 @@ class ACLManager {
           const getResponse = await apiClient.getMsgVpnAclProfileSubscribeException(service.msgVpnName, objectName, MsgVpnAclProfileSubscribeException.topicSyntax.SMF, encodeURIComponent(exception));
           L.debug("addSubscribeTopicExceptions: exception exists");
         } catch (e) {
-          L.warn(`addSubscribeTopicExceptions lookup  failed ${JSON.stringify(e)}`);
+          L.info(`addSubscribeTopicExceptions lookup  failed ${JSON.stringify(e)}`);
           try {
             const response = await apiClient.createMsgVpnAclProfileSubscribeException(service.msgVpnName, objectName, aclException);
             L.debug("created SubscribeException");
