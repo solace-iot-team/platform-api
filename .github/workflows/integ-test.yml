@@ -76,6 +76,7 @@ jobs:
           export PLATFORM_API_TEST_PLATFORM_ADMIN_USER=${{ secrets.PLATFORM_ADMIN_USER }}
           export PLATFORM_API_TEST_PLATFORM_ADMIN_PASSWORD=${{ secrets.PLATFORM_ADMIN_PASSWORD }}
           export PLATFORM_API_PROJECT_HOME="${{ github.workspace }}/platform-api"
+          export NODE_ENV=development
           $TEST_DIRECTORY/integ/run.sh
 
       - name: Archive logs
