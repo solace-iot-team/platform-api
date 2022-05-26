@@ -107,6 +107,13 @@ declare namespace Components {
             name: CommonName; // ^[a-zA-Z0-9_\-]*(@[ |\S]*)?$
             summary: CommonDescription; // ^[\s\S]*$
             version: CommonVersion; // ^[_\-\S\.]*$
+            attributes?: Attributes;
+            meta?: Meta;
+            /**
+             * indicates that this API is marked as deprecated
+             */
+            deprecated?: boolean;
+            deprecatedDescription?: CommonDescription; // ^[\s\S]*$
             apiParameters?: APIParameter[];
             /**
              * any metadata as returned by the external System (if applicable)
@@ -116,6 +123,10 @@ declare namespace Components {
             };
         }
         export type APIInfoList = APIInfo[];
+        export interface APIInfoPatch {
+            attributes?: Attributes;
+            meta?: Meta;
+        }
         export interface APIKeyAuthentication {
             /**
              * example:
@@ -241,6 +252,14 @@ declare namespace Components {
             createdBy?: CommonUserName; // ^[.a-zA-Z0-9@_-]*$
         }
         export type APISummaryList = APISummary[];
+        export interface APIVersionInfoPatch {
+            /**
+             * indicates that this API is marked as deprecated
+             */
+            deprecated?: boolean;
+            deprecatedDescription?: CommonDescription; // ^[\s\S]*$
+            meta?: Meta;
+        }
         export interface About {
             /**
              * indicates if the Connector is running in Proxy Mode. In this mode all published Event API Products in Event Portal are automatically available as APIs in the connector
@@ -531,8 +550,6 @@ declare namespace Components {
          * An overview of the object. Include key information about the object that is not captured by other fields..
          * example:
          * Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed ac laoreet libero. Maecenas lacus urna, dignissim sollicitudin nisi nec, mollis finibus tortor. Mauris ipsum dolor, eleifend eu bibendum iaculis, pulvinar sit amet justo. Curabitur vestibulum quis quam at pretium. Fusce a nulla non diam dapibus pretium. Phasellus vehicula interdum ex at dapibus. Cras non pretium metus. Nulla auctor nibh non lacus gravida, vitae molestie leo ultricies. Nunc tempor eros tempor dapibus vulputate.
-         * 
-         * Vivamus eget vulputate ipsum, vel ornare nulla. Aenean hendrerit, magna id mollis elementum, enim purus convallis arcu, eget eleifend metus ipsum vitae felis. Cras condimentum feugiat fringilla. Etiam ligula dui, malesuada ut finibus imperdiet, bibendum tristique velit. Phasellus consectetur venenatis augue ac ornare. Ut vel sem in lorem fermentum porttitor. Pellentesque eget fermentum enim. Suspendisse risus elit, imperdiet facilisis volutpat in, congue ac ligula. Aenean mollis sagittis finibus. Vestibulum viverra metus magna, ut volutpat dui imperdiet ultricies.
          * 
          */
         export type CommonDescription = string; // ^[\s\S]*$
@@ -828,7 +845,7 @@ declare namespace Components {
          * meta information of an object. Will be returned by some resources. Can be set when patching or creating an object. Auto generated if not set.
          */
         export interface Meta {
-            version?: SemVer; // ^(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)(?:-((?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*)(?:\.(?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?(?:\+([0-9a-zA-Z-]+(?:\.[0-9a-zA-Z-]+)*))?$
+            version?: CommonVersion; // ^[_\-\S\.]*$
             /**
              * The date and time the object was last modified
              */
@@ -1643,6 +1660,34 @@ declare namespace Paths {
             export type $504 = Components.Responses.GatewayTimeout;
         }
     }
+    namespace GetApiRevisionAPIProductReferences {
+        namespace Responses {
+            export type $200 = Components.Schemas.CommonEntityNameList;
+            export type $400 = Components.Responses.BadRequest;
+            export type $401 = Components.Responses.Unauthorized;
+            export type $403 = Components.Responses.Forbidden;
+            export type $404 = Components.Responses.NotFound;
+            export type $406 = Components.Responses.NotAcceptable;
+            export type $429 = Components.Responses.TooManyRequests;
+            export type $500 = Components.Responses.InternalServerError;
+            export type $503 = Components.Responses.ServiceUnavailable;
+            export type $504 = Components.Responses.GatewayTimeout;
+        }
+    }
+    namespace GetApiVersionInfo {
+        namespace Responses {
+            export type $200 = Components.Schemas.APIInfo;
+            export type $400 = Components.Responses.BadRequest;
+            export type $401 = Components.Responses.Unauthorized;
+            export type $403 = Components.Responses.Forbidden;
+            export type $404 = Components.Responses.NotFound;
+            export type $406 = Components.Responses.NotAcceptable;
+            export type $429 = Components.Responses.TooManyRequests;
+            export type $500 = Components.Responses.InternalServerError;
+            export type $503 = Components.Responses.ServiceUnavailable;
+            export type $504 = Components.Responses.GatewayTimeout;
+        }
+    }
     namespace GetApp {
         namespace Responses {
             export type $200 = Components.Schemas.AppResponseGeneric;
@@ -2260,6 +2305,24 @@ declare namespace Paths {
             export type $504 = Components.Responses.GatewayTimeout;
         }
     }
+    namespace UpdateApiInfo {
+        export type RequestBody = Components.Schemas.APIInfoPatch;
+        namespace Responses {
+            export type $200 = Components.Schemas.APIInfo;
+            export type $400 = Components.Schemas.ErrorResponse;
+            export type $401 = Components.Responses.Unauthorized;
+            export type $403 = Components.Responses.Forbidden;
+            export type $404 = Components.Responses.NotFound;
+            export type $406 = Components.Responses.NotAcceptable;
+            export type $409 = Components.Schemas.ErrorResponse;
+            export type $412 = Components.Responses.PreconditionFailed;
+            export type $415 = Components.Responses.UnsupportedMediaType;
+            export type $429 = Components.Responses.TooManyRequests;
+            export type $500 = Components.Responses.InternalServerError;
+            export type $503 = Components.Responses.ServiceUnavailable;
+            export type $504 = Components.Responses.GatewayTimeout;
+        }
+    }
     namespace UpdateApiProduct {
         export type RequestBody = Components.Schemas.APIProductPatch;
         namespace Responses {
@@ -2273,6 +2336,24 @@ declare namespace Paths {
             export type $412 = Components.Responses.PreconditionFailed;
             export type $415 = Components.Responses.UnsupportedMediaType;
             export type $422 = Components.Schemas.ErrorResponse;
+            export type $429 = Components.Responses.TooManyRequests;
+            export type $500 = Components.Responses.InternalServerError;
+            export type $503 = Components.Responses.ServiceUnavailable;
+            export type $504 = Components.Responses.GatewayTimeout;
+        }
+    }
+    namespace UpdateApiVersionInfo {
+        export type RequestBody = Components.Schemas.APIVersionInfoPatch;
+        namespace Responses {
+            export type $200 = Components.Schemas.APIInfo;
+            export type $400 = Components.Schemas.ErrorResponse;
+            export type $401 = Components.Responses.Unauthorized;
+            export type $403 = Components.Responses.Forbidden;
+            export type $404 = Components.Responses.NotFound;
+            export type $406 = Components.Responses.NotAcceptable;
+            export type $409 = Components.Schemas.ErrorResponse;
+            export type $412 = Components.Responses.PreconditionFailed;
+            export type $415 = Components.Responses.UnsupportedMediaType;
             export type $429 = Components.Responses.TooManyRequests;
             export type $500 = Components.Responses.InternalServerError;
             export type $503 = Components.Responses.ServiceUnavailable;

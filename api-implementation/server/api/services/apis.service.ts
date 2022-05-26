@@ -16,10 +16,16 @@ import CommonEntityNameList = Components.Schemas.CommonEntityNameList;
 import CommonEntityNames = Components.Schemas.CommonEntityNames;
 import APIProduct = Components.Schemas.APIProduct;
 import EventAPIProduct = Components.Schemas.EventAPIProduct;
+import APIInfoPatch = Components.Schemas.APIInfoPatch;
+import APIVersionInfoPatch = Components.Schemas.APIVersionInfoPatch;
 import { updateProtectionByObject } from './persistence/preconditionhelper';
 import asyncapihelper from '../../../src/asyncapihelper';
 import { Versioning } from '../../common/versioning';
 import AppUpdateEventEmitter from './apiProducts/appUpdateEventEmitter';
+
+
+const DEPRECATED_TAG = 'deprecated';
+
 export interface APISpecification {
   name: string;
   specification: string;
@@ -28,6 +34,7 @@ export interface APISpecification {
 export class ApisService {
   private persistenceService: PersistenceService;
   private apiInfoPersistenceService: PersistenceService;
+  private apiInfoRevisionPersistenceService: PersistenceService;
   private revisionPersistenceService: PersistenceService;
   private readStrategy: ApisReadStrategy;
 
@@ -35,6 +42,7 @@ export class ApisService {
     this.persistenceService = new PersistenceService('apis');
     this.revisionPersistenceService = new PersistenceService('apis_revisions');
     this.apiInfoPersistenceService = new PersistenceService('apisInfo');
+    this.apiInfoRevisionPersistenceService = new PersistenceService('apisInfo_revisions')
     this.readStrategy = ApisReadStrategyFactory.getReadStrategy();
   }
 
@@ -53,7 +61,59 @@ export class ApisService {
     if (params) {
       apiInfo.apiParameters = params;
     }
+    delete apiInfo.meta['internalRevision'];
     return apiInfo;
+  }
+
+  async updateInfo(name: string, info: APIInfoPatch) {
+    const oldInfo: APIInfo = await this.apiInfoPersistenceService.byName(name);
+    if (info.attributes) {
+      oldInfo.attributes = info.attributes;
+    }
+    if (info.meta) {
+      delete info.meta.version;
+      delete info.meta.stage;
+      const metaUpdate = Versioning.update(oldInfo.meta, info.meta);
+      metaUpdate.version = oldInfo.meta.version;
+      oldInfo.meta = metaUpdate;
+    }
+    const updatedInfo = await this.apiInfoPersistenceService.update(name, oldInfo);
+    delete updatedInfo.meta['internalRevision'];
+    return updatedInfo;
+  }
+
+  async updateVersionInfo(apiName: string, version: string, info: APIVersionInfoPatch) {
+    const oldInfo: APIInfo = await this.apiInfoRevisionPersistenceService.byName(Versioning.createRevisionId(apiName, version));
+    if (info.deprecated){
+      oldInfo.deprecated = info.deprecated;
+      oldInfo.deprecatedDescription = info.deprecatedDescription;
+    }
+    if (info.meta) {
+      delete info.meta.version;
+      delete info.meta.stage;
+      const metaUpdate = Versioning.update(oldInfo.meta, info.meta);
+      metaUpdate.version = oldInfo.meta.version;
+      oldInfo.meta = metaUpdate;
+    }
+    delete oldInfo.name;
+    const updatedInfo = await this.apiInfoRevisionPersistenceService.update(Versioning.createRevisionId(apiName, version), oldInfo);
+    delete updatedInfo.meta['internalRevision'];
+    return updatedInfo;
+  }
+
+  async apiProductsByVersion(apiName: string, version: string): Promise<CommonEntityNameList> {
+    const re = `${apiName}@${version}`;
+    const apiProducts: APIProduct[] = await APIProductsService.all({ apis: re });
+    //const apiProducts: APIProduct[] = await APIProductsService.all({ apis: name });
+    const names: CommonEntityNameList = [];
+    for (const apiProduct of apiProducts) {
+      const name: CommonEntityNames = {
+        displayName: apiProduct.displayName,
+        name: apiProduct.name,
+      };
+      names.push(name);
+    }
+    return names;
   }
 
   async apiProductsByName(name: string): Promise<CommonEntityNameList> {
@@ -76,6 +136,7 @@ export class ApisService {
       const revisions: string[] = await this.revisionList(name);
       for (const r of revisions) {
         await this.revisionPersistenceService.delete(Versioning.createRevisionId(name, r));
+        await this.apiInfoRevisionPersistenceService.delete(Versioning.createRevisionId(name, r));
       }
       await this.apiInfoPersistenceService.delete(name);
       return this.persistenceService.delete(name);
@@ -158,6 +219,13 @@ export class ApisService {
         if (Versioning.isRecognizedVersion(version)) {
           info.version = version;
         }
+        if (d.hasTag(DEPRECATED_TAG)) {
+          info.deprecated = true;
+          info.deprecatedDescription = d.tag(DEPRECATED_TAG).description();
+        } else {
+          info.deprecated = false;
+        }
+        info.meta = Versioning.createMeta(version, 'released');
         const spec: APISpecification = {
           name: info.name,
           specification: this.convertAPISpec(asyncapi),
@@ -199,6 +267,12 @@ export class ApisService {
     const previousSpec: AsyncAPIDocument = await parser.parse(a.specification);
     const previousSpecVersion = previousSpec.info().version();
     const previousVersion = Versioning.isRecognizedVersion(version) ? r.version : previousSpecVersion;
+    if (d.hasTag(DEPRECATED_TAG)) {
+      r.deprecated = true;
+      r.deprecatedDescription = d.tag(DEPRECATED_TAG).description();
+    } else {
+      r.deprecated = false;
+    }
 
     if (!Versioning.validateNewVersionString(version, previousVersion)) {
       throw new ErrorResponseInternal(409, `Version supplied in specification is not greater than current version`);
@@ -233,7 +307,7 @@ export class ApisService {
           } catch (e) {
             reject(new ErrorResponseInternal(400, e));
           }
-
+          info.meta = Versioning.createMetaFromRequest(info.meta);
           this.persistenceService
             .update(info.name, spec)
             .then(async (spec: APISpecification) => {
@@ -278,7 +352,22 @@ export class ApisService {
       throw new ErrorResponseInternal(404, `Version ${version} of API [${apiName}] does not exist`);
     }
   }
+  
+  async infoByVersion(apiName: string, version: string): Promise<APIInfo> {
+    const revisionList = await this.revisionList(apiName);
+    if (revisionList.find(n => n == version)) {
+      const id = Versioning.createRevisionId(apiName, version);
 
+      const apiInfo: APIInfo = await this.apiInfoRevisionPersistenceService.byName(id);
+      if (!apiInfo) {
+        throw new ErrorResponseInternal(404, `Version ${version} of API [${apiName}] does not exist`);
+      }
+      delete apiInfo.meta['internalRevision'];
+      return apiInfo;
+    } else {
+      throw new ErrorResponseInternal(404, `Version ${version} of API [${apiName}] does not exist`);
+    }
+  }
   async byApiReference(apiReference: string): Promise<string> {
     let spec: string;
     const ref: string[] = apiReference.split('@');
@@ -361,6 +450,7 @@ export class ApisService {
     const id = Versioning.createRevisionId(spec.name, version);
     try {
       await this.revisionPersistenceService.create(id, spec);
+      await this.apiInfoRevisionPersistenceService.create(id, info);
     } catch (e) {
       if (!isImport || (e as ErrorResponseInternal).statusCode != 422) {
         throw e;

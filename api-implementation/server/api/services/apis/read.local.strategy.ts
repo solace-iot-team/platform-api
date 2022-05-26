@@ -38,15 +38,22 @@ class ApisReadLocalStrategy implements ApisReadStrategy {
               delete apiInfo.updatedTime;
               delete apiInfo.version;
               delete apiInfo.apiParameters;
+              delete apiInfo.deprecated;
+              delete apiInfo.meta;
+              delete apiInfo.deprecatedDescription;
             });
             resolve(apiInfos);
           } else {
             const apiInfos: APIInfo[] = await this.apiInfoPersistenceService.all();
-            for (const info of apiInfos){
-              if (!info.apiParameters){
+            for (const info of apiInfos) {
+              if (!info.apiParameters) {
                 const spec: string = (await this.persistenceService.byName(info.name)).specification;
                 info.apiParameters = await AsyncAPIHelper.getAsyncAPIParameters(spec);
+
               }
+              delete info.deprecated;
+              delete info.meta;
+              delete info.deprecatedDescription;
             }
             resolve(apiInfos);
           }
