@@ -53,7 +53,7 @@ export class OrganizationsService {
 
     try {
       await ContextRunner(org, OrganizationsService.onDeleteDeprovisionApps);
-      await OrganizationsService.delay(5000);
+      await OrganizationsService.delay(1000);
       await databaseaccess.client
         .db(name)
         .dropDatabase();
