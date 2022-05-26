@@ -49,7 +49,7 @@ describe(scriptName, function () {
       AdministrationService.deleteOrganization({ organizationName: organization1.name }),
       AdministrationService.deleteOrganization({ organizationName: organization2.name }),
       AdministrationService.deleteOrganization({ organizationName: organization3.name }),
-    ]);
+    ]).catch(e => {console.log(e)});
   });
 
   setup.addAfterHooks(this);
