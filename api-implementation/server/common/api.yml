@@ -2,7 +2,7 @@ openapi: 3.0.0
 info:
   title: Solace API Management Connector
   description: 'Solace API Management Connector API. Note: basic authentication security mechanism is deprecated.'
-  version: 0.7.15
+  version: 0.7.16
 servers:
   - url: /v1
 
@@ -428,6 +428,16 @@ components:
           $ref: "#/components/schemas/CommonDescription"
         version:
           $ref: "#/components/schemas/CommonVersion"
+        attributes:
+          $ref: "#/components/schemas/attributes"
+        meta:
+          $ref: "#/components/schemas/Meta"
+        deprecated:
+          type: boolean
+          default: false
+          description: indicates that this API is marked as deprecated
+        deprecatedDescription: 
+          $ref: "#/components/schemas/CommonDescription"
         apiParameters:
           type: array
           minItems: 0
@@ -438,6 +448,28 @@ components:
           description: any metadata as returned by the external System (if applicable)
           type: object
           additionalProperties: true
+
+    APIInfoPatch:
+      type: object
+      additionalProperties: false
+      properties:
+        attributes:
+          $ref: "#/components/schemas/attributes"
+        meta:
+          $ref: "#/components/schemas/Meta"
+
+    APIVersionInfoPatch:
+      type: object
+      additionalProperties: false
+      properties:
+        deprecated:
+          type: boolean
+          default: false
+          description: indicates that this API is marked as deprecated
+        deprecatedDescription: 
+          $ref: "#/components/schemas/CommonDescription"
+        meta:
+          $ref: "#/components/schemas/Meta"
 
     APIImport:
       type: object
@@ -2176,8 +2208,6 @@ components:
       description: An overview of the object. Include key information about the object that is not captured by other fields..
       example: |
         Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed ac laoreet libero. Maecenas lacus urna, dignissim sollicitudin nisi nec, mollis finibus tortor. Mauris ipsum dolor, eleifend eu bibendum iaculis, pulvinar sit amet justo. Curabitur vestibulum quis quam at pretium. Fusce a nulla non diam dapibus pretium. Phasellus vehicula interdum ex at dapibus. Cras non pretium metus. Nulla auctor nibh non lacus gravida, vitae molestie leo ultricies. Nunc tempor eros tempor dapibus vulputate.
-
-        Vivamus eget vulputate ipsum, vel ornare nulla. Aenean hendrerit, magna id mollis elementum, enim purus convallis arcu, eget eleifend metus ipsum vitae felis. Cras condimentum feugiat fringilla. Etiam ligula dui, malesuada ut finibus imperdiet, bibendum tristique velit. Phasellus consectetur venenatis augue ac ornare. Ut vel sem in lorem fermentum porttitor. Pellentesque eget fermentum enim. Suspendisse risus elit, imperdiet facilisis volutpat in, congue ac ligula. Aenean mollis sagittis finibus. Vestibulum viverra metus magna, ut volutpat dui imperdiet ultricies.
       type: string
       minLength: 0
       maxLength: 4096
@@ -2240,7 +2270,7 @@ components:
       additionalProperties: false
       properties:
         version:
-          $ref: "#/components/schemas/SemVer"
+          $ref: "#/components/schemas/CommonVersion"
         lastModified: 
           type: number
           readOnly: true
@@ -3067,6 +3097,58 @@ paths:
           $ref: '#/components/responses/ServiceUnavailable'
         '504':
           $ref: '#/components/responses/GatewayTimeout'
+    patch:
+     operationId: updateApiInfo
+     tags:
+     - apis
+     parameters:
+     - $ref: '#/components/parameters/ifMatchHeader'
+     requestBody:
+       description: "update to an API Info, only attributes and meta information can be changed. The only elements of the Meta Object that will be updated are the lastModifiedBy and createdBy attributes."
+       content:
+         "application/json":
+           schema:
+            $ref: "#/components/schemas/APIInfoPatch"
+     responses:
+        '200':
+          description: updated API Info
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/APIInfo"
+        '400':
+          description: "Invalid API Info provided"
+          content:
+           "application/json":
+            schema:
+             "$ref": "#/components/schemas/ErrorResponse"
+        '409':
+          description: "Invalid API Info provided"
+          content:
+           "application/json":
+            schema:
+             "$ref": "#/components/schemas/ErrorResponse"
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '406':
+          $ref: '#/components/responses/NotAcceptable'
+        '412':
+          $ref: '#/components/responses/PreconditionFailed'
+        '415':
+          $ref: '#/components/responses/UnsupportedMediaType'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
+        '504':
+          $ref: '#/components/responses/GatewayTimeout'
+          
   /{organization_name}/apis/{api_name}/revisions:
     parameters:
     - $ref: '#/components/parameters/organization'
@@ -3136,6 +3218,127 @@ paths:
             application/x-yaml:
               schema:
                 $ref: "#/components/schemas/String2MB"
+        '400':
+           $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '406':
+          $ref: '#/components/responses/NotAcceptable'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
+        '504':
+          $ref: '#/components/responses/GatewayTimeout'
+
+  /{organization_name}/apis/{api_name}/revisions/{version}/info:
+    parameters:
+    - $ref: '#/components/parameters/organization'
+    - $ref: '#/components/parameters/api_name'
+    - $ref: '#/components/parameters/version'
+    get:
+     operationId: getApiVersionInfo
+     tags:
+     - apis
+     responses:
+        '200':
+          description: API meta information
+          content:
+            "application/json":
+             schema:
+               "$ref": "#/components/schemas/APIInfo"
+        '400':
+           $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '406':
+          $ref: '#/components/responses/NotAcceptable'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
+        '504':
+          $ref: '#/components/responses/GatewayTimeout'
+    patch:
+     operationId: updateApiVersionInfo
+     tags:
+     - apis
+     parameters:
+     - $ref: '#/components/parameters/ifMatchHeader'
+     requestBody:
+       description: "update to an API Info, only attributes and meta information can be changed. The only elements of the Meta Object that will be updated are the lastModifiedBy and createdBy attributes."
+       content:
+         "application/json":
+           schema:
+            $ref: "#/components/schemas/APIVersionInfoPatch"
+     responses:
+        '200':
+          description: updated API Info
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/APIInfo"
+        '400':
+          description: "Invalid API Info provided"
+          content:
+           "application/json":
+            schema:
+             "$ref": "#/components/schemas/ErrorResponse"
+        '409':
+          description: "Invalid API Info provided"
+          content:
+           "application/json":
+            schema:
+             "$ref": "#/components/schemas/ErrorResponse"
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '406':
+          $ref: '#/components/responses/NotAcceptable'
+        '412':
+          $ref: '#/components/responses/PreconditionFailed'
+        '415':
+          $ref: '#/components/responses/UnsupportedMediaType'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
+        '504':
+          $ref: '#/components/responses/GatewayTimeout'
+
+  /{organization_name}/apis/{api_name}/revisions/{version}/apiProducts:
+    parameters:
+    - $ref: '#/components/parameters/organization'
+    - $ref: '#/components/parameters/api_name'
+    - $ref: '#/components/parameters/version'
+    get:
+     operationId: getApiRevisionAPIProductReferences
+     tags:
+     - apis
+     responses:
+        '200':
+          description: API Products that reference this API revision
+          content:
+            "application/json":
+             schema:
+               "$ref": "#/components/schemas/CommonEntityNameList"
         '400':
            $ref: '#/components/responses/BadRequest'
         '401':

@@ -23,7 +23,7 @@ jobs:
     runs-on: ubuntu-18.04
     strategy:
       matrix:
-        node-version: [ '14.x', '16.x' ]
+        node-version: [ '16.x' ]
     env:
       TEST_DIRECTORY: "test"
     defaults:
