@@ -19,10 +19,13 @@ const callback: serverCallback = async () => {
   printEnv(function (s: string) {
     L.info.apply(L, [s]);
   });
-  if (L.isLevelEnabled('debug') || L.isLevelEnabled('trace')) {
-    L.info('Activating unhandled promise logger');
+  if (L.isLevelEnabled('debug') || L.isLevelEnabled('trace') || process.env.NODE_ENV == 'development') {
+    L.warn('Activating unhandled promise logger');
     process.on('unhandledRejection', error => {
       L.error(error, `unhandled rejection ${JSON.stringify(error)}`);
+    });
+    process.on('uncaughtException', error => {
+      L.error(error, `uncaughtException ${JSON.stringify(error)}`);
     });
   }
   loadUserRegistry();
