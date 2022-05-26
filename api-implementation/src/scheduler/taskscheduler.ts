@@ -2,8 +2,6 @@ import L from '../../server/common/logger';
 
 import OrganizationService from '../../server/api/services/organizations.service';
 import DatabaseBootstrapper from '../../server/api/services/persistence/databasebootstrapper';
-//import Bree from 'bree';
-//import path from 'node:path';
 
 import { Agenda } from "agenda";
 import { databaseaccess } from '../databaseaccess';
@@ -14,19 +12,8 @@ import { ContextConstants } from '../../server/common/constants';
 
 import Organization = Components.Schemas.Organization;
 
-//const jobDir = path.join(__dirname, './jobs');
 
-// const jobTemplate: Bree.JobOptions = {
-//   name: '',
-//   path: path.join(__dirname, './jobs/rotatecredentials.ts'),
-//   timeout: '10s',
-//   interval: '15m',
-//   worker: {
-//   }
-// };
-// const jobs: Bree.JobOptions[] = [];
-
-const DEFAULT_JOB_INTERVAL = `1 minute`;
+const DEFAULT_JOB_INTERVAL = `15 minutes`;
 
 export interface AgendaJobSpec {
   jobName: string,
@@ -41,8 +28,6 @@ export interface AgendaJobData {
 }
 
 export default class TaskScheduler {
-  /** The job scheduler. */
-  //#scheduler: Bree;
 
   #agendas: Map<string, Agenda> = new Map();
 
@@ -51,25 +36,6 @@ export default class TaskScheduler {
   }
 
   constructor() {
-    // Bree.extend(require('@breejs/ts-worker'));
-
-
-    // this.#scheduler = new Bree({
-    //   root: jobDir,
-    //   defaultExtension: process.env.TS_NODE ? 'ts' : 'js',
-    //   jobs: jobs,
-    //   logger: false,
-    //   worker: {
-    //     workerData: {},
-    //   },
-    //   outputWorkerMetadata: false,
-    //   workerMessageHandler: (message: any, workerMetadata?: any): void => {
-    //     if (message.message === 'done') {
-    //       L.info(`Worker for job '${message.name}' signaled completion`);
-    //     }
-    //   },
-    //   silenceRootCheckError: true,
-    // });
     L.info(`TaskScheduler is created`);
     DatabaseBootstrapper.on('added', this.onNewOrganization.bind(this));
     DatabaseBootstrapper.on('deleted', this.onDeleteOrganization.bind(this));
@@ -81,13 +47,6 @@ export default class TaskScheduler {
     let i = 1;
     for (const o of orgs) {
 
-      // const job = { ...jobTemplate };
-      // job.worker = {
-      //   workerData: o,
-      // };
-      // job.name = o.name;
-      // job.timeout = `${(i * this.randomIntFromInterval(30, 120))}s`;
-      //this.#scheduler.add(job);
       const orgAgenda: Agenda = await this.createAgenda(o.name);
       this.#agendas.set(o.name, orgAgenda);
 
@@ -111,7 +70,6 @@ export default class TaskScheduler {
       }
     }
 
-    //this.#scheduler.start();
     L.info(`TaskScheduler is enabled`);
   }
 
@@ -138,20 +96,7 @@ export default class TaskScheduler {
     const job = orgAgenda.create(jobSpec.jobName, jobSpec.data);
     job.repeatEvery(DEFAULT_JOB_INTERVAL, { skipImmediate: true, startDate: startAt });
     await job.save();
-    // job.worker = {
-    //   workerData: org,
-    // };
-    // job.name = orgName;
-    // job.timeout = `${this.randomIntFromInterval(60, 180)}s`;
-    // try {
-    //   this.#scheduler.add(job);
-    //   this.#scheduler.start(orgName);
-    //   this.#agendas.set(orgName, await this.createAgenda(orgName));
-    // } catch (e) {
-    //   L.info(`error adding job for ${orgName}`, e);
-    // } finally {
 
-    // }
   }
 
   public async queueJob(spec: AgendaJobSpec) {
@@ -203,8 +148,7 @@ export default class TaskScheduler {
   private async onDeleteOrganization(orgName: string) {
     L.info(`deleting job for  org  ${orgName} `);
     try {
-      // await this.#scheduler.stop(orgName);
-      // await this.#scheduler.remove(orgName);
+
       const agenda = this.#agendas.get(orgName);
       await agenda.stop();
       this.#agendas.delete(orgName);
