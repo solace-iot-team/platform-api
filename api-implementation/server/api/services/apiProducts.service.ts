@@ -184,7 +184,6 @@ export class ApiProductsService {
   }
 
   async createDerived(name: string, body: EntityDeriveRequest): Promise<APIProduct> {
-    L.warn(body);
     try {
       const apiProduct: APIProduct = await this.persistenceService.byName(name);
       const derivedFrom: MetaEntityReference = {
