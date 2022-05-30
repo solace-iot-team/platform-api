@@ -124,6 +124,11 @@ declare namespace Components {
         }
         export type APIInfoList = APIInfo[];
         export interface APIInfoPatch {
+            /**
+             * indicates that this API is marked as deprecated
+             */
+            deprecated?: boolean;
+            deprecatedDescription?: CommonDescription; // ^[\s\S]*$
             attributes?: Attributes;
             meta?: Meta;
         }
