@@ -18497,7 +18497,7 @@
 									"",
 									"pm.test(\"Unsupported meta elements are ignored\", function () {",
 									"    var jsonData = pm.response.json();",
-									"    pm.expect(jsonData.meta.version).to.eql('1.0.0');",
+									"    pm.expect(jsonData.meta.version).to.eql('1.1.0');",
 									"    pm.expect(jsonData.meta.stage).to.eql('released');",
 									"});",
 									"",
