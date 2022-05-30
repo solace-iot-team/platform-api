@@ -3571,7 +3571,7 @@
 							"listen": "test",
 							"script": {
 								"exec": [
-									"pm.test(\"Not allowed to patch API with same version number\", function () {",
+									"pm.test(\"SNot allowed to patch API with same version number\", function () {",
 									"    pm.response.to.have.status(409);",
 									"});"
 								],
@@ -13527,7 +13527,7 @@
 									"",
 									"pm.test(\"Your test name\", function () {",
 									"    var jsonData = pm.response.json();",
-									"    pm.expect(jsonData.info.version).to.eql(\"v144 (1.2.0)\");",
+									"    pm.expect(jsonData.info.version).to.eql(\"v144 (2)\");",
 									"});",
 									"",
 									""
@@ -13691,7 +13691,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n  \"apis\": [\n      \"SayHello@1.1.0-v1\"\n  ],\n  \"approvalType\": \"auto\",\n\n  \"description\": \"SayHelloSub_PRODUCT\",\n  \"displayName\": \"SayHelloSub_PRODUCT\",\n  \"environments\": [\n    \"{{CONNECTOR_ENV}}\"\n  ],\n  \"name\": \"SayHelloSub_PRODUCTA\",\n  \"pubResources\": [\n  ],\n  \"subResources\": [\n  ],\n  \"protocols\": [\n    {\n      \"name\": \"http\",\n      \"version\": \"1.1\"\n    },\n    {\n      \"name\": \"smf\",\n      \"version\": \"smf\"\n    }\n  ],\n  \"clientOptions\": {\n    \"guaranteedMessaging\": {\n      \"requireQueue\": true,\n      \"accessType\": \"exclusive\",\n      \"maxTtl\": 3600,\n      \"maxMsgSpoolUsage\": 50\n    }\n  },\n  \"attributes\": [],\n  \"accessLevel\": \"internal\"\n\n}",
+							"raw": "{\n  \"apis\": [\n      \"SayHello@v1\"\n  ],\n  \"approvalType\": \"auto\",\n\n  \"description\": \"SayHelloSub_PRODUCT\",\n  \"displayName\": \"SayHelloSub_PRODUCT\",\n  \"environments\": [\n    \"{{CONNECTOR_ENV}}\"\n  ],\n  \"name\": \"SayHelloSub_PRODUCTA\",\n  \"pubResources\": [\n  ],\n  \"subResources\": [\n  ],\n  \"protocols\": [\n    {\n      \"name\": \"http\",\n      \"version\": \"1.1\"\n    },\n    {\n      \"name\": \"smf\",\n      \"version\": \"smf\"\n    }\n  ],\n  \"clientOptions\": {\n    \"guaranteedMessaging\": {\n      \"requireQueue\": true,\n      \"accessType\": \"exclusive\",\n      \"maxTtl\": 3600,\n      \"maxMsgSpoolUsage\": 50\n    }\n  },\n  \"attributes\": [],\n  \"accessLevel\": \"internal\"\n\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -18472,89 +18472,6 @@
 			]
 		},
 		{
-			"name": "42 API Info Updates",
-			"item": [
-				{
-					"name": "Patch API - Attributes",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"exec": [
-									"pm.test(\"Status code is 200\", function () {",
-									"    pm.response.to.have.status(200);",
-									"});",
-									"",
-									"pm.test(\"Modified by updated\", function () {",
-									"    var jsonData = pm.response.json();",
-									"    pm.expect(jsonData.meta.lastModifiedBy).to.eql('harry');",
-									"});",
-									"",
-									"pm.test(\"Is deprecated\", function () {",
-									"    var jsonData = pm.response.json();",
-									"    pm.expect(jsonData.deprecated).to.eql(true);",
-									"});",
-									"",
-									"pm.test(\"Unsupported meta elements are ignored\", function () {",
-									"    var jsonData = pm.response.json();",
-									"    pm.expect(jsonData.meta.version).to.eql('1.0.0');",
-									"    pm.expect(jsonData.meta.stage).to.eql('released');",
-									"});",
-									"",
-									"pm.test(\"Attributes were saved\", function () {",
-									"    var jsonData = pm.response.json();",
-									"    pm.expect(jsonData.attributes.length).to.eql(1);",
-									"});"
-								],
-								"type": "text/javascript"
-							}
-						}
-					],
-					"request": {
-						"auth": {
-							"type": "basic",
-							"basic": [
-								{
-									"key": "password",
-									"value": "{{CONNECTOR_PASSWORD}}",
-									"type": "string"
-								},
-								{
-									"key": "username",
-									"value": "{{CONNECTOR_USERNAME}}",
-									"type": "string"
-								}
-							]
-						},
-						"method": "PATCH",
-						"header": [],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n  \"attributes\": [\n    {\n      \"name\": \"access\",\n      \"value\": \"public\"\n    }\n  ], \n  \"meta\": {\n        \"version\": \"10.0.0\",\n        \"createdBy\": \"tom\",\n        \"lastModifiedBy\": \"harry\",\n        \"stage\": \"retired\"\n    }\n    ,\n    \"deprecated\": true,\n    \"deprecatedDescription\": \"payloads retired\"\n\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "{{CONNECTOR_BASEURL}}/{{TENANT}}/apis/{{API_NAME}}/info",
-							"host": [
-								"{{CONNECTOR_BASEURL}}"
-							],
-							"path": [
-								"{{TENANT}}",
-								"apis",
-								"{{API_NAME}}",
-								"info"
-							]
-						}
-					},
-					"response": []
-				}
-			]
-		},
-		{
 			"name": "General Tear Down",
 			"item": [
 				{
@@ -20493,119 +20410,6 @@
 							""
 						]
 					}
-				}
-			]
-		},
-		{
-			"name": "Org Loop",
-			"item": [
-				{
-					"name": "Create Org 01 Copy",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"exec": [
-									"pm.test(\"Status OK\", function () {",
-									"    pm.response.to.have.status(201);",
-									"});",
-									"",
-									"",
-									"pm.test(\"Has etag and save etag\", function() {",
-									"    pm.response.to.have.header('ETag');",
-									"    let headerValue = pm.response.headers.get(\"ETag\");",
-									"    pm.globals.set(\"01_Setup_ETag\", headerValue);",
-									"});"
-								],
-								"type": "text/javascript"
-							}
-						}
-					],
-					"request": {
-						"auth": {
-							"type": "basic",
-							"basic": [
-								{
-									"key": "password",
-									"value": "{{CONNECTOR_ADMIN_PWD}}",
-									"type": "string"
-								},
-								{
-									"key": "username",
-									"value": "{{CONNECTOR_ADMIN}}",
-									"type": "string"
-								}
-							]
-						},
-						"method": "POST",
-						"header": [],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n  \"name\": \"org-01\"\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "{{CONNECTOR_BASEURL}}/organizations",
-							"host": [
-								"{{CONNECTOR_BASEURL}}"
-							],
-							"path": [
-								"organizations"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Delete org01 Copy",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"exec": [
-									"pm.test(\"Status OK\", function () {",
-									"    pm.response.to.have.status(204);",
-									"});",
-									""
-								],
-								"type": "text/javascript"
-							}
-						}
-					],
-					"request": {
-						"auth": {
-							"type": "basic",
-							"basic": [
-								{
-									"key": "password",
-									"value": "{{CONNECTOR_ADMIN_PWD}}",
-									"type": "string"
-								},
-								{
-									"key": "username",
-									"value": "{{CONNECTOR_ADMIN}}",
-									"type": "string"
-								}
-							]
-						},
-						"method": "DELETE",
-						"header": [],
-						"url": {
-							"raw": "{{CONNECTOR_BASEURL}}/organizations/org-01",
-							"host": [
-								"{{CONNECTOR_BASEURL}}"
-							],
-							"path": [
-								"organizations",
-								"org-01"
-							]
-						}
-					},
-					"response": []
 				}
 			]
 		}
