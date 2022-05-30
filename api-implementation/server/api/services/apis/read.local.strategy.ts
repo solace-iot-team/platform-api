@@ -78,7 +78,7 @@ class ApisReadLocalStrategy implements ApisReadStrategy {
             const d = JSON.parse(spec.specification);
             if (!Versioning.isRecognizedVersion(d.info.version)) {
               const info = await this.infoByName(name);
-              d.info.version = `${d.info.version} (${info.version})`;
+              d.info.version = `${d.info.version} (1.${info.version}.0)`;
               spec.specification = JSON.stringify(d);
             }
             resolve(spec.specification);
