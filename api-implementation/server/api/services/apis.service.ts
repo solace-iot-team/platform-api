@@ -62,7 +62,7 @@ export class ApisService {
       apiInfo.apiParameters = params;
     }
     if (apiInfo.meta) {
-      delete apiInfo.meta['internalRevision'];
+      apiInfo.meta = await Versioning.toExternalRepresentation(apiInfo.meta, null);
     }
     return apiInfo;
   }
@@ -78,6 +78,10 @@ export class ApisService {
       const metaUpdate = Versioning.update(oldInfo.meta, info.meta);
       metaUpdate.version = oldInfo.meta.version;
       oldInfo.meta = metaUpdate;
+    }
+    if (info.deprecated){
+      oldInfo.deprecated = true;
+      oldInfo.deprecatedDescription = info.deprecatedDescription;
     }
     const updatedInfo = await this.apiInfoPersistenceService.update(name, oldInfo);
     if (updatedInfo.meta) {
@@ -221,10 +225,8 @@ export class ApisService {
       } else {
         info.apiParameters = await AsyncAPIHelper.getAsyncAPIParameters(asyncapi);
         const d: AsyncAPIDocument = await parser.parse(asyncapi);
-        const version = d.info().version();
-        if (Versioning.isRecognizedVersion(version)) {
-          info.version = version;
-        }
+        const version = (await this.getVersionFromApiSpec(asyncapi, info));
+        
         if (d.hasTag(DEPRECATED_TAG)) {
           info.deprecated = true;
           info.deprecatedDescription = d.tag(DEPRECATED_TAG).description();
@@ -232,6 +234,7 @@ export class ApisService {
           info.deprecated = false;
         }
         info.meta = Versioning.createMeta(version, 'released');
+        info.meta.version = version;
         const spec: APISpecification = {
           name: info.name,
           specification: this.convertAPISpec(asyncapi),
@@ -269,10 +272,10 @@ export class ApisService {
       throw new ErrorResponseInternal(400, `AsyncAPI document is not valid, ${validationMessage}`);
     }
     const d: AsyncAPIDocument = await parser.parse(body);
-    const version = d.info().version();
-    const previousSpec: AsyncAPIDocument = await parser.parse(a.specification);
-    const previousSpecVersion = previousSpec.info().version();
-    const previousVersion = Versioning.isRecognizedVersion(version) ? r.version : previousSpecVersion;
+    const version = await this.getSemVerFromApiSpec(body, r);
+    const previousSpecVersion = await this.getSemVerFromApiSpec(a.specification, r);
+    L.debug(`${version} - ${previousSpecVersion}`);
+    const previousVersion = previousSpecVersion;
     if (d.hasTag(DEPRECATED_TAG)) {
       r.deprecated = true;
       r.deprecatedDescription = d.tag(DEPRECATED_TAG).description();
@@ -285,8 +288,8 @@ export class ApisService {
     }
     if (r.source != 'EventPortalLink') {
       // always increase the version number - once imported from Event POrtal API can still be modified
-      if (Versioning.isRecognizedVersion(version)) {
-        r.version = version;
+      if (Versioning.isRecognizedVersion(await this.getVersionFromApiSpec(body, r))) {
+        r.version = await this.getVersionFromApiSpec(body, r);
       } else {
         r.version = Versioning.nextRevision(Number(r.version)).toString();
       }
@@ -308,12 +311,14 @@ export class ApisService {
             specification: this.convertAPISpec(body),
           };
           info.apiParameters = await AsyncAPIHelper.getAsyncAPIParameters(body);
+          info.meta = Versioning.createMetaFromRequest(info.meta);
+          info.meta.version = (await this.getSemVerFromApiSpec(body, info));
           try {
             const r = await this.apiInfoPersistenceService.update(info.name, info);
           } catch (e) {
             reject(new ErrorResponseInternal(400, e));
           }
-          info.meta = Versioning.createMetaFromRequest(info.meta);
+
           this.persistenceService
             .update(info.name, spec)
             .then(async (spec: APISpecification) => {
@@ -322,7 +327,7 @@ export class ApisService {
                 const org = ns.getStore().get(ContextConstants.ORG_NAME);
                 AppUpdateEventEmitter.emit('apiUpdate', org, spec.name);
               }
-              resolve(spec.specification);
+              resolve(this.byName(info.name));
             })
             .catch((e) => {
               reject(e);
@@ -351,11 +356,21 @@ export class ApisService {
 
       const api: APISpecification = await this.revisionPersistenceService.byName(id);
       if (!api) {
-        throw new ErrorResponseInternal(404, `Version ${version} of API [${apiName}] does not exist`);
+        throw new ErrorResponseInternal(404, `Version ${version} of API [${apiName}] does not exist (byQuery)`);
       }
+
       return api.specification;
     } else {
-      throw new ErrorResponseInternal(404, `Version ${version} of API [${apiName}] does not exist`);
+      const latestApi = await this.byName(apiName);
+      const latestApiInfo = await this.infoByName(apiName);
+      L.error(`${latestApiInfo.meta.version} = ${version}`);
+      if ((latestApiInfo.meta && latestApiInfo.meta.version == version) ||
+        version == `1.${latestApiInfo.version}.0`
+      ) {
+        return latestApi;
+      } else {
+        throw new ErrorResponseInternal(404, `Version ${version} of API [${apiName}] does not exist`);
+      }
     }
   }
 
@@ -364,16 +379,30 @@ export class ApisService {
     if (revisionList.find(n => n == version)) {
       const id = Versioning.createRevisionId(apiName, version);
 
-      const apiInfo: APIInfo = await this.apiInfoRevisionPersistenceService.byName(id);
+      let apiInfo: APIInfo = await this.apiInfoRevisionPersistenceService.byName(id);
       if (!apiInfo) {
-        throw new ErrorResponseInternal(404, `Version ${version} of API [${apiName}] does not exist`);
+        // fall back to main object - backwards compatibility
+        const latestApiInfo = await this.infoByName(apiName);
+        if (latestApiInfo.version == version) {
+          apiInfo = latestApiInfo;
+        } else {
+          throw new ErrorResponseInternal(404, `Version ${version} of API [${apiName}] does not exist`);
+        }
       }
       if (apiInfo.meta) {
         delete apiInfo.meta['internalRevision'];
       }
       return apiInfo;
     } else {
-      throw new ErrorResponseInternal(404, `Version ${version} of API [${apiName}] does not exist`);
+      const latestApiInfo = await this.infoByName(apiName);
+      L.error(`${latestApiInfo.meta.version} = ${version}`);
+      if ((latestApiInfo.meta && latestApiInfo.meta.version == version) ||
+        version == `1.${latestApiInfo.version}.0`
+      ) {
+        return latestApiInfo;
+      } else {
+        throw new ErrorResponseInternal(404, `Version ${version} of API [${apiName}] does not exist`);
+      }
     }
   }
   async byApiReference(apiReference: string): Promise<string> {
@@ -448,13 +477,8 @@ export class ApisService {
     spec.info['x-origin'] = origin;
   }
   private async saveRevision(spec: APISpecification, info: APIInfo, isImport: boolean = false): Promise<void> {
-    const d = JSON.parse(spec.specification);
-    let version: string = info.version;
-    if (!Versioning.isRecognizedVersion(d.info.version)) {
-      version = d.info.version;
-      d.info.version = `${d.info.version} (${info.version})`;
-      spec.specification = JSON.stringify(d);
-    }
+    let version: string = await this.getSemVerFromApiSpec(spec.specification, info);
+    //version = (await Versioning.toExternalRepresentation(info.meta)).version;
     const id = Versioning.createRevisionId(spec.name, version);
     try {
       await this.revisionPersistenceService.create(id, spec);
@@ -465,6 +489,19 @@ export class ApisService {
       }
     }
 
+  }
+
+  private async getSemVerFromApiSpec(asyncapi: string, info: APIInfo): Promise<string> {
+    const d: AsyncAPIDocument = await parser.parse(asyncapi);
+    const version = d.info().version();
+    const internalRevision = info.meta?info.meta[Versioning.INTERNAL_REVISION]:1;
+    return Versioning.createSemver(version, internalRevision);
+  }
+
+    private async getVersionFromApiSpec(asyncapi: string, info: APIInfo): Promise<string> {
+    const d: AsyncAPIDocument = await parser.parse(asyncapi);
+    const version = d.info().version();
+    return version;
   }
 }
 

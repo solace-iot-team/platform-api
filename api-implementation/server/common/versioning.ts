@@ -20,6 +20,24 @@ export class Versioning {
     return isSemVer || isInteger;
   }
 
+  public static createSemver(version: string, revisionNumber?: number): string {
+    const isSemVer: boolean = semver.parse(version) != null;
+    const isInteger: boolean = !isNaN(version as any);
+    if (isSemVer) {
+      return version;
+    } else if (isInteger) {
+      return Versioning.numericToSemVer(version);
+    } else {
+      if (revisionNumber){
+        return `${Versioning.numericToSemVer(revisionNumber.toString())}-${version}`;
+      } else {
+        return `1.0.0-${version}`;
+      }
+    }
+  }
+
+
+
   public static validateNewVersionString(newVersion: string, previousVersion: string): boolean {
     // version is mandatory, do not accept null values
     if (!previousVersion || !newVersion) {
@@ -70,12 +88,17 @@ export class Versioning {
   }
 
   public static createMetaFromRequest(newMeta: Meta): Meta {
-    L.warn(newMeta);
-    if (!newMeta){
+    if (!newMeta) {
       return Versioning.createMeta();
     }
+
+    // chekc if we have an internal revision number and preserve it
+    const internalRevision = newMeta[Versioning.INTERNAL_REVISION];
     // the request can contain - stage, version, createdBy,  modifiedBy
     const m: Meta = Versioning.createMeta(newMeta.version, newMeta.stage);
+    if (internalRevision){
+      m[Versioning.INTERNAL_REVISION] = Versioning.nextRevision(internalRevision);
+    }
     if (newMeta.lastModifiedBy) {
       m.lastModifiedBy = newMeta.lastModifiedBy;
     } else if (newMeta.createdBy) {
@@ -112,6 +135,11 @@ export class Versioning {
   public static async toExternalRepresentation(meta: Meta, persistenceService?: PersistenceService): Promise<Meta> {
     if (meta && meta.version && meta.version == Versioning.INITIAL_VERSION) {
       meta.version = Versioning.toExternalVersion(meta);
+    } else if (meta && meta.version && !isNaN(meta.version as any)) {
+      meta.version = `1.${meta.version}.0`;
+    } else if (meta && meta.version && !Versioning.isRecognizedVersion(meta.version as any)) {
+      const v = meta.version;
+      meta.version = `${Versioning.toExternalVersion(meta)}-${v}`;
     }
     if (meta && !meta.stage) {
       meta.stage = 'released';
@@ -140,6 +168,9 @@ export class Versioning {
     return meta.version = `1.${meta[Versioning.INTERNAL_REVISION]}.0`;
   }
 
+  public static numericToSemVer(num: string): string {
+    return `1.${num}.0`;
+  }
   public static createRevisionId(name: string, version: string): string {
     const id = `${name}-${version}`;
     return id;
