@@ -22,8 +22,8 @@ import { updateProtectionByObject } from './persistence/preconditionhelper';
 import asyncapihelper from '../../../src/asyncapihelper';
 import { Versioning } from '../../common/versioning';
 import AppUpdateEventEmitter from './apiProducts/appUpdateEventEmitter';
-
-
+import { cloneDeep, parseInt } from 'lodash';
+import Meta = Components.Schemas.Meta;
 const DEPRECATED_TAG = 'deprecated';
 
 export interface APISpecification {
@@ -64,7 +64,7 @@ export class ApisService {
     if (apiInfo.meta) {
       apiInfo.meta = await Versioning.toExternalRepresentation(apiInfo.meta, null);
     }
-    return apiInfo;
+    return this.apiInfoToExternalRepresentation(apiInfo);
   }
 
   async updateInfo(name: string, info: APIInfoPatch) {
@@ -363,7 +363,7 @@ export class ApisService {
     } else {
       const latestApi = await this.byName(apiName);
       const latestApiInfo = await this.infoByName(apiName);
-      L.error(`${latestApiInfo.meta.version} = ${version}`);
+
       if ((latestApiInfo.meta && latestApiInfo.meta.version == version) ||
         version == `1.${latestApiInfo.version}.0`
       ) {
@@ -392,14 +392,14 @@ export class ApisService {
       if (apiInfo.meta) {
         delete apiInfo.meta['internalRevision'];
       }
-      return apiInfo;
+      return this.apiInfoToExternalRepresentation(apiInfo);
     } else {
       const latestApiInfo = await this.infoByName(apiName);
       L.error(`${latestApiInfo.meta.version} = ${version}`);
       if ((latestApiInfo.meta && latestApiInfo.meta.version == version) ||
         version == `1.${latestApiInfo.version}.0`
       ) {
-        return latestApiInfo;
+        return  this.apiInfoToExternalRepresentation(latestApiInfo);
       } else {
         throw new ErrorResponseInternal(404, `Version ${version} of API [${apiName}] does not exist`);
       }
@@ -502,6 +502,23 @@ export class ApisService {
     const d: AsyncAPIDocument = await parser.parse(asyncapi);
     const version = d.info().version();
     return version;
+  }
+
+  private apiInfoToExternalRepresentation (info: APIInfo): APIInfo {
+    const externalInfo = cloneDeep(info);
+    if (!externalInfo.meta){
+      const m: Meta = {
+        created: info.createdTime,
+        createdBy: info.createdBy,
+        lastModified: info.updatedTime,
+        lastModifiedBy: info.createdBy,
+        stage: 'released',
+        version: Versioning.createSemver(info.version, isNaN(info.version as any)?parseInt(info.version):1),
+      };
+      externalInfo.meta = m;
+    }
+    return externalInfo;
+
   }
 }
 
