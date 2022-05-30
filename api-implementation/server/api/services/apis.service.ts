@@ -61,7 +61,9 @@ export class ApisService {
     if (params) {
       apiInfo.apiParameters = params;
     }
-    delete apiInfo.meta['internalRevision'];
+    if (apiInfo.meta) {
+      delete apiInfo.meta['internalRevision'];
+    }
     return apiInfo;
   }
 
@@ -78,13 +80,15 @@ export class ApisService {
       oldInfo.meta = metaUpdate;
     }
     const updatedInfo = await this.apiInfoPersistenceService.update(name, oldInfo);
-    delete updatedInfo.meta['internalRevision'];
+    if (updatedInfo.meta) {
+      delete updatedInfo.meta['internalRevision'];
+    }
     return updatedInfo;
   }
 
   async updateVersionInfo(apiName: string, version: string, info: APIVersionInfoPatch) {
     const oldInfo: APIInfo = await this.apiInfoRevisionPersistenceService.byName(Versioning.createRevisionId(apiName, version));
-    if (info.deprecated){
+    if (info.deprecated) {
       oldInfo.deprecated = info.deprecated;
       oldInfo.deprecatedDescription = info.deprecatedDescription;
     }
@@ -97,7 +101,9 @@ export class ApisService {
     }
     delete oldInfo.name;
     const updatedInfo = await this.apiInfoRevisionPersistenceService.update(Versioning.createRevisionId(apiName, version), oldInfo);
-    delete updatedInfo.meta['internalRevision'];
+    if (updatedInfo.meta) {
+      delete updatedInfo.meta['internalRevision'];
+    }
     return updatedInfo;
   }
 
@@ -352,7 +358,7 @@ export class ApisService {
       throw new ErrorResponseInternal(404, `Version ${version} of API [${apiName}] does not exist`);
     }
   }
-  
+
   async infoByVersion(apiName: string, version: string): Promise<APIInfo> {
     const revisionList = await this.revisionList(apiName);
     if (revisionList.find(n => n == version)) {
@@ -362,7 +368,9 @@ export class ApisService {
       if (!apiInfo) {
         throw new ErrorResponseInternal(404, `Version ${version} of API [${apiName}] does not exist`);
       }
-      delete apiInfo.meta['internalRevision'];
+      if (apiInfo.meta) {
+        delete apiInfo.meta['internalRevision'];
+      }
       return apiInfo;
     } else {
       throw new ErrorResponseInternal(404, `Version ${version} of API [${apiName}] does not exist`);
