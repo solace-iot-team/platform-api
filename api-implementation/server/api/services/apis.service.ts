@@ -216,7 +216,7 @@ export class ApisService {
         const response = await this.createInternal(info, apiSpec, true);
         return response;
       } catch (e) {
-        return this.updateInternal(info, apiSpec, true);
+        return await this.updateInternal(info, apiSpec, true);
       }
     }
   }
@@ -298,49 +298,30 @@ export class ApisService {
         r.version = Versioning.nextRevision(Number(r.version)).toString();
       }
     }
-    return this.updateInternal(r, body);
+    return await this.updateInternal(r, body);
   }
 
-  updateInternal(info: APIInfo, body: string, isImport: boolean = false): Promise<string> {
-    return new Promise<string>(async (resolve, reject) => {
-      try {
-        const validationMessage = await this.getAPIValidationError(body);
-        if (validationMessage) {
-          reject(
-            new ErrorResponseInternal(400, `AsyncAPI document is not valid, ${validationMessage}`)
-          );
-        } else {
-          const spec: APISpecification = {
-            name: info.name,
-            specification: this.convertAPISpec(body),
-          };
-          info.apiParameters = await AsyncAPIHelper.getAsyncAPIParameters(body);
-          info.meta = Versioning.createMetaFromRequest(info.meta);
-          info.meta.version = (await this.getSemVerFromApiSpec(body, info));
-          try {
-            const r = await this.apiInfoPersistenceService.update(info.name, info);
-          } catch (e) {
-            reject(new ErrorResponseInternal(400, e));
-          }
-
-          this.persistenceService
-            .update(info.name, spec)
-            .then(async (spec: APISpecification) => {
-              await this.saveRevision(spec, info, isImport);
-              if (ns != null && ns.getStore() && ns.getStore().get(ContextConstants.ORG_NAME)) {
-                const org = ns.getStore().get(ContextConstants.ORG_NAME);
-                AppUpdateEventEmitter.emit('apiUpdate', org, spec.name);
-              }
-              resolve(this.byName(info.name));
-            })
-            .catch((e) => {
-              reject(e);
-            });
-        }
-      } catch (e) {
-        reject(new ErrorResponseInternal(400, e));
+  async updateInternal(info: APIInfo, body: string, isImport: boolean = false): Promise<string> {
+    const validationMessage = await this.getAPIValidationError(body);
+    if (validationMessage) {
+      throw new ErrorResponseInternal(400, `AsyncAPI document is not valid, ${validationMessage}`);
+    } else {
+      const spec: APISpecification = {
+        name: info.name,
+        specification: this.convertAPISpec(body),
+      };
+      info.apiParameters = await AsyncAPIHelper.getAsyncAPIParameters(body);
+      info.meta = Versioning.createMetaFromRequest(info.meta);
+      info.meta.version = (await this.getSemVerFromApiSpec(body, info));
+      const r = await this.apiInfoPersistenceService.update(info.name, info);
+      const updatedSpec: APISpecification = await this.persistenceService.update(info.name, spec);
+      await this.saveRevision(updatedSpec, info, isImport);
+      if (ns != null && ns.getStore() && ns.getStore().get(ContextConstants.ORG_NAME)) {
+        const org = ns.getStore().get(ContextConstants.ORG_NAME);
+        AppUpdateEventEmitter.emit('apiUpdate', org, updatedSpec.name);
       }
-    });
+      return (this.byName(info.name));
+    }
   }
 
   async revisionList(apiName: string): Promise<string[]> {
@@ -447,19 +428,16 @@ export class ApisService {
   }
 
   private async getAPIValidationError(spec: string): Promise<String> {
-    return new Promise<String>((resolve, reject) => {
-      L.debug(`validating spec`);
+    L.debug(`validating spec`);
+    try {
       parser
-        .parse(spec)
-        .then((d: AsyncAPIDocument) => {
-          L.debug('valid spec');
-          resolve(null);
-        })
-        .catch((e) => {
-          L.debug(`invalid spec ${JSON.stringify(e)}`);
-          resolve(`${e.title}, ${e.detail}`);
-        });
-    });
+        .parse(spec);
+      L.debug('valid spec');
+      return null;
+    } catch (e) {
+      L.debug(`invalid spec ${JSON.stringify(e)}`);
+      return `${e.title}, ${e.detail}`;
+    };
   }
 
   private convertAPISpec(spec: string): string {
