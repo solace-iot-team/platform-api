@@ -371,6 +371,7 @@ export class ApisService {
       if ((latestApiInfo.meta && latestApiInfo.meta.version == version) ||
         version == (await this.getSemVerFromApiSpec(latestApi, latestApiInfo))
       ) {
+        await this.saveRevision({ name: apiName, specification: latestApi }, latestApiInfo);
         return latestApi;
       } else {
         throw new ErrorResponseInternal(404, `Version ${version} of API [${apiName}] does not exist`);
@@ -393,6 +394,7 @@ export class ApisService {
           version == (await this.getSemVerFromApiSpec(latestApi, latestApiInfo))) {
           apiInfo = latestApiInfo;
           api = latestApi;
+          await this.saveRevision({ name: apiName, specification: latestApi }, latestApiInfo);
         } else {
           throw new ErrorResponseInternal(404, `Version ${version} of API [${apiName}] does not exist`);
         }
@@ -408,6 +410,7 @@ export class ApisService {
       if ((latestApiInfo.meta && latestApiInfo.meta.version == version) ||
         version == (await this.getSemVerFromApiSpec(latestApi, latestApiInfo))
       ) {
+        await this.saveRevision({ name: apiName, specification: latestApi }, latestApiInfo);
         return await this.apiInfoToExternalRepresentation(latestApiInfo, latestApi);
       } else {
         throw new ErrorResponseInternal(404, `Version ${version} of API [${apiName}] does not exist`);
@@ -501,22 +504,32 @@ export class ApisService {
   }
 
   private async getSemVerFromApiSpec(asyncapi: string, info: APIInfo): Promise<string> {
-    const d: AsyncAPIDocument = await parser.parse(asyncapi);
-    const version = d.info().version();
-    const internalRevision = info.meta ? info.meta[Versioning.INTERNAL_REVISION] : 1;
-    return Versioning.createSemver(version, internalRevision);
+    try {
+      const d: AsyncAPIDocument = await parser.parse(asyncapi);
+      const version = d.info().version();
+      const internalRevision = info.meta ? info.meta[Versioning.INTERNAL_REVISION] : 1;
+      return Versioning.createSemver(version, internalRevision);
+    } catch (e) {
+      L.error(`${e.title}, ${e.detail}`);
+      return null;
+    }
   }
 
   private async getVersionFromApiSpec(asyncapi: string, info: APIInfo): Promise<string> {
-    const d: AsyncAPIDocument = await parser.parse(asyncapi);
-    const version = d.info() ? d.info().version() : null;
-    return version;
+    try {
+      const d: AsyncAPIDocument = await parser.parse(asyncapi);
+      const version = d.info() ? d.info().version() : null;
+      return version;
+    } catch (e) {
+      L.error(`${e.title}, ${e.detail}`);
+      return null;
+    }
   }
 
   private async apiInfoToExternalRepresentation(info: APIInfo, asyncapi?: string): Promise<APIInfo> {
     const externalInfo = cloneDeep(info);
-    const apiVersion = asyncapi ? (await this.getSemVerFromApiSpec(asyncapi, info)) : null;
     if (!externalInfo.meta) {
+      const apiVersion = (asyncapi ? (await this.getSemVerFromApiSpec(asyncapi, info)) : null);
       const m: Meta = {
         created: info.createdTime,
         createdBy: info.createdBy,
