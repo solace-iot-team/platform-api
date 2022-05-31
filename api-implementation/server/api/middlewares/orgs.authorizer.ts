@@ -6,7 +6,7 @@ import { ErrorResponseInternal } from "./error.handler";
 import L from '../../common/logger';
 import Organization = Components.Schemas.Organization;
 
-export default function orgAuthorizer(req, res, next, org) {
+export default async function orgAuthorizer(req, res, next, org) {
   const url: string = `${req.baseUrl}/${req.url}`.replace('//', '/');
   L.info(`extracting org for ${url}`);
   L.info(`org in namespace is ${ns.getStore().get(ContextConstants.ORG_NAME)}`);
@@ -20,7 +20,8 @@ export default function orgAuthorizer(req, res, next, org) {
     next(err);
     return;
   }
-  OrganizationsService.byName(org).then((r: Organization) => {
+  try {
+    const r: Organization = await OrganizationsService.byName(org);
     L.trace(`router.param org is  ${JSON.stringify(r)}`);
     ns.getStore().set(ContextConstants.ORG_NAME, org);
     ns.getStore().set(ContextConstants.ORG_OBJECT, r);
@@ -29,8 +30,8 @@ export default function orgAuthorizer(req, res, next, org) {
 
     L.trace(`router.param ${url} ns org is ` + ns.getStore().get(ContextConstants.ORG_NAME) + ' ' + ns.getStore().get(ContextConstants.REQUEST_ID) + ` ${JSON.stringify(ns)}`);
     next();
-  }).catch(e => {
+  } catch (e) {
     L.debug(`no org matching URI ${req.baseUrl} ${e}`);
     next(new ErrorResponseInternal(404, `Not found`));
-  });
+  };
 }
