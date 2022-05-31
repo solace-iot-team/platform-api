@@ -12,7 +12,7 @@ import APIProductsService from './apiProducts.service';
 import CommonEntityNameList = Components.Schemas.CommonEntityNameList;
 import CommonEntityNames = Components.Schemas.CommonEntityNames;
 import APIProduct = Components.Schemas.APIProduct;
-import {updateProtectionByObject} from './persistence/preconditionhelper';
+import { updateProtectionByObject } from './persistence/preconditionhelper';
 
 
 export class EnvironmentsService {
@@ -95,24 +95,15 @@ export class EnvironmentsService {
     }
   }
 
-  create(body: Environment): Promise<Environment> {
-    return new Promise<Environment>(async (resolve, reject) => {
-      const envReferenceCheck: ErrorResponseInternal = await this.validateReferences(body);
-      if (envReferenceCheck == null) {
-        this.persistenceService
-          .create(body.name, body)
-          .then((p) => {
-            resolve(p);
-          })
-          .catch((e) => {
-            reject(e);
-          });
-      } else {
-        reject(
-          envReferenceCheck
-        );
-      }
-    });
+  async create(body: Environment): Promise<Environment> {
+    const envReferenceCheck: ErrorResponseInternal = await this.validateReferences(body);
+    if (envReferenceCheck == null) {
+      const p: Environment = await this.persistenceService
+        .create(body.name, body);
+      return p;
+    } else {
+      throw envReferenceCheck;
+    }
   }
 
   async update(name: string, body: EnvironmentPatch): Promise<Environment> {
@@ -150,7 +141,7 @@ export class EnvironmentsService {
       };
 
       const envsWithMatchingServiceIds = await this.persistenceService.all(q);
-      if (envsWithMatchingServiceIds && envsWithMatchingServiceIds.length>0){
+      if (envsWithMatchingServiceIds && envsWithMatchingServiceIds.length > 0) {
         return new ErrorResponseInternal(
           422,
           `an environment referencing service ${env.serviceId} already exists`
