@@ -121,10 +121,10 @@ export class Versioning {
       lastModified: ts,
       createdBy: previousMeta ? previousMeta.createdBy : user,
       lastModifiedBy: (newMeta && newMeta.lastModifiedBy) ? newMeta.lastModifiedBy : user,
-      stage: (newMeta && newMeta.stage) ? newMeta.stage : previousMeta.stage,
+      stage: (newMeta && newMeta.stage) ? newMeta.stage : ((previousMeta && previousMeta.stage)?previousMeta.stage:'released'),
     };
 
-    const derivedFrom = (newMeta && newMeta.derivedFrom) ? newMeta.derivedFrom : (previousMeta.derivedFrom ? previousMeta.derivedFrom : null);
+    const derivedFrom = (newMeta && newMeta.derivedFrom) ? newMeta.derivedFrom : ((previousMeta && previousMeta.derivedFrom) ? previousMeta.derivedFrom : null);
     if (derivedFrom) {
       m.derivedFrom = derivedFrom;
     }
