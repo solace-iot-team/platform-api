@@ -13,10 +13,10 @@ export class HistoryService {
   }
 
   async all(): Promise<History[]> {
-    return this.persistenceService.all({}, {at: -1});
+    return await this.persistenceService.all({}, {at: -1});
   }
-  create(body: History): Promise<History> {
-    return this.persistenceService.create(v4(), body);
+  async create(body: History): Promise<History> {
+    return await this.persistenceService.create(v4(), body);
   }
 }
 
