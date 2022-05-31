@@ -64,7 +64,7 @@ export class ApisService {
     if (apiInfo.meta) {
       apiInfo.meta = await Versioning.toExternalRepresentation(apiInfo.meta, null);
     }
-    return this.apiInfoToExternalRepresentation(apiInfo);
+    return await this.apiInfoToExternalRepresentation(apiInfo, spec);
   }
 
   async updateInfo(name: string, info: APIInfoPatch) {
@@ -369,7 +369,7 @@ export class ApisService {
       const latestApiInfo = await this.infoByName(apiName);
 
       if ((latestApiInfo.meta && latestApiInfo.meta.version == version) ||
-        version == `1.${latestApiInfo.version}.0`
+        version == (await this.getSemVerFromApiSpec(latestApi, latestApiInfo))
       ) {
         return latestApi;
       } else {
@@ -384,11 +384,15 @@ export class ApisService {
       const id = Versioning.createRevisionId(apiName, version);
 
       let apiInfo: APIInfo = await this.apiInfoRevisionPersistenceService.byName(id);
+      let api: string = await this.revisionPersistenceService.byName(id);
       if (!apiInfo) {
         // fall back to main object - backwards compatibility
         const latestApiInfo = await this.infoByName(apiName);
-        if (latestApiInfo.version == version) {
+        const latestApi = await this.byName(apiName);
+        if ((latestApiInfo.meta && latestApiInfo.meta.version == version) ||
+          version == (await this.getSemVerFromApiSpec(latestApi, latestApiInfo))) {
           apiInfo = latestApiInfo;
+          api = latestApi;
         } else {
           throw new ErrorResponseInternal(404, `Version ${version} of API [${apiName}] does not exist`);
         }
@@ -396,14 +400,15 @@ export class ApisService {
       if (apiInfo.meta) {
         delete apiInfo.meta['internalRevision'];
       }
-      return this.apiInfoToExternalRepresentation(apiInfo);
+      return await this.apiInfoToExternalRepresentation(apiInfo, api);
     } else {
       const latestApiInfo = await this.infoByName(apiName);
+      const latestApi = await this.byName(apiName);
       L.error(`${latestApiInfo.meta.version} = ${version}`);
       if ((latestApiInfo.meta && latestApiInfo.meta.version == version) ||
-        version == `1.${latestApiInfo.version}.0`
+        version == (await this.getSemVerFromApiSpec(latestApi, latestApiInfo))
       ) {
-        return this.apiInfoToExternalRepresentation(latestApiInfo);
+        return await this.apiInfoToExternalRepresentation(latestApiInfo, latestApi);
       } else {
         throw new ErrorResponseInternal(404, `Version ${version} of API [${apiName}] does not exist`);
       }
@@ -504,12 +509,13 @@ export class ApisService {
 
   private async getVersionFromApiSpec(asyncapi: string, info: APIInfo): Promise<string> {
     const d: AsyncAPIDocument = await parser.parse(asyncapi);
-    const version = d.info().version();
+    const version = d.info() ? d.info().version() : null;
     return version;
   }
 
-  private apiInfoToExternalRepresentation(info: APIInfo): APIInfo {
+  private async apiInfoToExternalRepresentation(info: APIInfo, asyncapi?: string): Promise<APIInfo> {
     const externalInfo = cloneDeep(info);
+    const apiVersion = asyncapi ? (await this.getSemVerFromApiSpec(asyncapi, info)) : null;
     if (!externalInfo.meta) {
       const m: Meta = {
         created: info.createdTime,
@@ -517,7 +523,7 @@ export class ApisService {
         lastModified: info.updatedTime,
         lastModifiedBy: info.createdBy,
         stage: 'released',
-        version: Versioning.createSemver(info.version, isNaN(info.version as any) ? parseInt(info.version) : 1),
+        version: apiVersion ? apiVersion : (Versioning.createSemver(info.version, isNaN(info.version as any) ? parseInt(info.version) : 1)),
       };
       externalInfo.meta = m;
     }
