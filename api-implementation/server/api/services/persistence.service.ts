@@ -238,29 +238,6 @@ export class PersistenceService {
     }
   }
 
-  validateReferences(names: string[]): Promise<boolean> {
-    return new Promise<boolean>((resolve, reject) => {
-      const results: Promise<boolean>[] = [];
-      names.forEach((n) => {
-        results.push(new Promise<boolean>((resolve, reject) => {
-          this.byName(n).then((p) => {
-            resolve(true);
-          }
-          ).catch((e) => {
-            reject(new ErrorResponseInternal(422, `Referenced name ${n} does not exist`));
-          })
-        }));
-      });
-      Promise.all(results).then((r) => { resolve(true) }).catch((e) => {
-        L.info(e);
-        reject(new ErrorResponseInternal(422, e));
-      });
-
-    }
-
-    );
-  }
-
   private createPublicErrorMessage(error: MongoError): ErrorResponseInternal {
     if (error instanceof MongoError) {
       L.debug(`Initial mongo error ${error.message}`);
