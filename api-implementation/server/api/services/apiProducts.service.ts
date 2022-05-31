@@ -57,35 +57,27 @@ export class ApiProductsService {
     }
   }
 
-  create(body: APIProduct): Promise<APIProduct> {
-    return new Promise<APIProduct>(async (resolve, reject) => {
-      try {
-        const apiReferenceCheck: boolean = await this.validateReferences(body);
-        L.info(`Reference check result ${apiReferenceCheck}`);
-        if (!apiReferenceCheck) {
-          L.info(`Reference check failed ${apiReferenceCheck}`);
-          reject(new ErrorResponseInternal(422, `Reference check failed ${apiReferenceCheck}`));
+  async create(body: APIProduct): Promise<APIProduct> {
+    const apiReferenceCheck: boolean = await this.validateReferences(body);
+    L.info(`Reference check result ${apiReferenceCheck}`);
+    if (!apiReferenceCheck) {
+      L.info(`Reference check failed ${apiReferenceCheck}`);
+      throw new ErrorResponseInternal(422, `Reference check failed ${apiReferenceCheck}`);
 
-        }
-        if (!body.meta) {
-          body.meta = Versioning.createMeta();
-        } else {
-          body.meta = Versioning.createMetaFromRequest(body.meta);
-        }
-        this.persistenceService.create(body.name, body).then(async (p) => {
-          await this.saveRevision(body);
-          resolve(this.byName(body.name));
-        }).catch((e) => {
-          L.error(`APIProductsService.create error ${e}`);
-          reject(e);
-        });
-
-      } catch (e) {
-        L.error(`APIProductsService.create failure  ${e}`);
-        reject(e);
+    }
+    try {
+      if (!body.meta) {
+        body.meta = Versioning.createMeta();
+      } else {
+        body.meta = Versioning.createMetaFromRequest(body.meta);
       }
-    });
-
+      const p = await this.persistenceService.create(body.name, body);
+      await this.saveRevision(body);
+      return await this.byName(body.name);
+    } catch (e) {
+      L.error(`APIProductsService.create error ${e}`);
+      throw e;
+    }
   }
 
   async update(name: string, body: APIProduct): Promise<APIProduct> {
@@ -232,7 +224,7 @@ export class ApiProductsService {
     }
   }
 
-  async byReference( apiProductRef: string): Promise<APIProduct> {
+  async byReference(apiProductRef: string): Promise<APIProduct> {
     let p: APIProduct;
     const ref: string[] = apiProductRef.split('@');
     if (ref.length == 2) {
@@ -240,7 +232,7 @@ export class ApiProductsService {
     } else {
       p = (await this.byName(apiProductRef));
     }
-    return p;    
+    return p;
   }
 
 
