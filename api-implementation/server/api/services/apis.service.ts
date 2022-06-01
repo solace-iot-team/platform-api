@@ -427,7 +427,7 @@ export class ApisService {
   private async getAPIValidationError(spec: string): Promise<String> {
     L.debug(`validating spec`);
     try {
-      parser
+      await parser
         .parse(spec);
       L.debug('valid spec');
       return null;
