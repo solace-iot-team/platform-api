@@ -178,8 +178,9 @@ export class ApisService {
       source: 'Upload',
       summary: name,
       version: "1",
+      deprecated: false,
     }
-    return this.createInternal(info, body);
+    return await this.createInternal(info, body);
   }
 
   async import(body: Components.Schemas.APIImport): Promise<string> {
@@ -208,57 +209,53 @@ export class ApisService {
       summary: api.summary,
       updatedTime: api.publishedTime,
       version: api.version,
+      deprecated: false,
+      deprecatedDescription: '',
     }
     if (!body.overwrite) {
-      return this.createInternal(info, apiSpec, true);
+      return await this.createInternal(info, apiSpec, true);
     } else {
       try {
         const response = await this.createInternal(info, apiSpec, true);
         return response;
       } catch (e) {
-        return this.updateInternal(info, apiSpec, true);
+        return await this.updateInternal(info, apiSpec, true);
       }
     }
   }
 
-  createInternal(info: APIInfo, asyncapi: string, isImport: boolean = false): Promise<string> {
-    return new Promise<string>(async (resolve, reject) => {
-      const validationMessage = await this.getAPIValidationError(asyncapi);
-      if (validationMessage) {
-        reject(new ErrorResponseInternal(400, `Entity ${info.name} is not valid, ${validationMessage}`));
-      } else {
-        info.apiParameters = await AsyncAPIHelper.getAsyncAPIParameters(asyncapi);
-        const d: AsyncAPIDocument = await parser.parse(asyncapi);
-        const version = (await this.getVersionFromApiSpec(asyncapi, info));
+  async createInternal(info: APIInfo, asyncapi: string, isImport: boolean = false): Promise<string> {
+    const validationMessage = await this.getAPIValidationError(asyncapi);
+    if (validationMessage) {
+      throw new ErrorResponseInternal(400, `Entity ${info.name} is not valid, ${validationMessage}`);
+    } else {
+      info.apiParameters = await AsyncAPIHelper.getAsyncAPIParameters(asyncapi);
+      const d: AsyncAPIDocument = await parser.parse(asyncapi);
+      const version = (await this.getVersionFromApiSpec(asyncapi, info));
 
-        if (d.hasTag(DEPRECATED_TAG)) {
-          info.deprecated = true;
-          info.deprecatedDescription = d.tag(DEPRECATED_TAG).description();
-        } else {
-          info.deprecated = false;
-        }
-        info.meta = Versioning.createMeta(version, 'released');
-        info.meta.version = version;
-        const spec: APISpecification = {
-          name: info.name,
-          specification: this.convertAPISpec(asyncapi),
-        };
-        try {
-          const r = await this.apiInfoPersistenceService.create(info.name, info);
-        } catch (e) {
-          reject(new ErrorResponseInternal(400, e));
-        }
-        this.persistenceService
-          .create(info.name, spec)
-          .then(async (spec: APISpecification) => {
-            await this.saveRevision(spec, info, isImport);
-            resolve(spec.specification);
-          })
-          .catch((e) => {
-            reject(new ErrorResponseInternal(400, e));
-          });
+      if (d.hasTag(DEPRECATED_TAG)) {
+        info.deprecated = true;
+        info.deprecatedDescription = d.tag(DEPRECATED_TAG).description();
+      } else {
+        info.deprecated = false;
       }
-    });
+      info.meta = Versioning.createMeta(version, 'released');
+      info.meta.version = version;
+      const spec: APISpecification = {
+        name: info.name,
+        specification: this.convertAPISpec(asyncapi),
+      };
+      try {
+        const r = await this.apiInfoPersistenceService.create(info.name, info);
+        const newSpec: APISpecification = await this.persistenceService
+          .create(info.name, spec);
+
+        await this.saveRevision(newSpec, r, isImport);
+        return newSpec.specification;
+      } catch (e) {
+        throw new ErrorResponseInternal(400, e);
+      };
+    }
 
   }
 
@@ -298,49 +295,30 @@ export class ApisService {
         r.version = Versioning.nextRevision(Number(r.version)).toString();
       }
     }
-    return this.updateInternal(r, body);
+    return await this.updateInternal(r, body);
   }
 
-  updateInternal(info: APIInfo, body: string, isImport: boolean = false): Promise<string> {
-    return new Promise<string>(async (resolve, reject) => {
-      try {
-        const validationMessage = await this.getAPIValidationError(body);
-        if (validationMessage) {
-          reject(
-            new ErrorResponseInternal(400, `AsyncAPI document is not valid, ${validationMessage}`)
-          );
-        } else {
-          const spec: APISpecification = {
-            name: info.name,
-            specification: this.convertAPISpec(body),
-          };
-          info.apiParameters = await AsyncAPIHelper.getAsyncAPIParameters(body);
-          info.meta = Versioning.createMetaFromRequest(info.meta);
-          info.meta.version = (await this.getSemVerFromApiSpec(body, info));
-          try {
-            const r = await this.apiInfoPersistenceService.update(info.name, info);
-          } catch (e) {
-            reject(new ErrorResponseInternal(400, e));
-          }
-
-          this.persistenceService
-            .update(info.name, spec)
-            .then(async (spec: APISpecification) => {
-              await this.saveRevision(spec, info, isImport);
-              if (ns != null && ns.getStore() && ns.getStore().get(ContextConstants.ORG_NAME)) {
-                const org = ns.getStore().get(ContextConstants.ORG_NAME);
-                AppUpdateEventEmitter.emit('apiUpdate', org, spec.name);
-              }
-              resolve(this.byName(info.name));
-            })
-            .catch((e) => {
-              reject(e);
-            });
-        }
-      } catch (e) {
-        reject(new ErrorResponseInternal(400, e));
+  async updateInternal(info: APIInfo, body: string, isImport: boolean = false): Promise<string> {
+    const validationMessage = await this.getAPIValidationError(body);
+    if (validationMessage) {
+      throw new ErrorResponseInternal(400, `AsyncAPI document is not valid, ${validationMessage}`);
+    } else {
+      const spec: APISpecification = {
+        name: info.name,
+        specification: this.convertAPISpec(body),
+      };
+      info.apiParameters = await AsyncAPIHelper.getAsyncAPIParameters(body);
+      info.meta = Versioning.createMetaFromRequest(info.meta);
+      info.meta.version = (await this.getSemVerFromApiSpec(body, info));
+      const r = await this.apiInfoPersistenceService.update(info.name, info);
+      const updatedSpec: APISpecification = await this.persistenceService.update(info.name, spec);
+      await this.saveRevision(updatedSpec, info, isImport);
+      if (ns != null && ns.getStore() && ns.getStore().get(ContextConstants.ORG_NAME)) {
+        const org = ns.getStore().get(ContextConstants.ORG_NAME);
+        AppUpdateEventEmitter.emit('apiUpdate', org, updatedSpec.name);
       }
-    });
+      return (this.byName(info.name));
+    }
   }
 
   async revisionList(apiName: string): Promise<string[]> {
@@ -447,19 +425,16 @@ export class ApisService {
   }
 
   private async getAPIValidationError(spec: string): Promise<String> {
-    return new Promise<String>((resolve, reject) => {
-      L.debug(`validating spec`);
-      parser
-        .parse(spec)
-        .then((d: AsyncAPIDocument) => {
-          L.debug('valid spec');
-          resolve(null);
-        })
-        .catch((e) => {
-          L.debug(`invalid spec ${JSON.stringify(e)}`);
-          resolve(`${e.title}, ${e.detail}`);
-        });
-    });
+    L.debug(`validating spec`);
+    try {
+      await parser
+        .parse(spec);
+      L.debug('valid spec');
+      return null;
+    } catch (e) {
+      L.debug(`invalid spec ${JSON.stringify(e)}`);
+      return `${e.title}, ${e.detail}`;
+    };
   }
 
   private convertAPISpec(spec: string): string {

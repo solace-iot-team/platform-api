@@ -6,19 +6,18 @@ import L from './logger';
 const ENV_PREFIX_DISCOVERY = 'AUTH_DISCOVERY';
 
 
-const redirect = function (req: Request, res: Response, next: NextFunction): void {
+const redirect = async function (req: Request, res: Response, next: NextFunction): Promise<void> {
   const agent = new https.Agent({
     rejectUnauthorized: false
   })
-  fetch(process.env[`${ENV_PREFIX_DISCOVERY}_OIDC_URL`], {agent}).then(response => {
-    response.json().then(j => res.json(j)).catch(e=>{
-      res.status(404).send();
-    });
-  }
-  ).catch(e => {
+  try {
+    const response = await fetch(process.env[`${ENV_PREFIX_DISCOVERY}_OIDC_URL`], { agent });
+    const j = await response.json();
+    res.json(j);
+  } catch (e) {
     L.warn(e);
     res.status(404).send();
-  });
+  };
 
 }
 export default express
