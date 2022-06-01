@@ -51,9 +51,9 @@ class ApisReadLocalStrategy implements ApisReadStrategy {
                 info.apiParameters = await AsyncAPIHelper.getAsyncAPIParameters(spec);
 
               }
-              delete info.deprecated;
+              //delete info.deprecated;
               delete info.meta;
-              delete info.deprecatedDescription;
+              //delete info.deprecatedDescription;
             }
             resolve(apiInfos);
           }

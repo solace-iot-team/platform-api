@@ -178,6 +178,7 @@ export class ApisService {
       source: 'Upload',
       summary: name,
       version: "1",
+      deprecated: false,
     }
     return await this.createInternal(info, body);
   }
@@ -208,6 +209,8 @@ export class ApisService {
       summary: api.summary,
       updatedTime: api.publishedTime,
       version: api.version,
+      deprecated: false,
+      deprecatedDescription: '',
     }
     if (!body.overwrite) {
       return await this.createInternal(info, apiSpec, true);
