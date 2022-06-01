@@ -1,5 +1,40 @@
 # Release Notes
 
+## Version 0.4.0
+* OpenAPI: 0.7.18
+* API Management Connector Server: 0.4.0
+
+### Features
+* **feat-app-provision-on-upstream-change**
+  - Changes to APIs (PATCH on `apis` resource) and API Products (PATCH on `apiProducts` resource) now trigger re-provisioning of all Apps referencing the changed object This ensures that the configuraiton on the Solace PS+ Service is consistent with the changes.
+  - Changes are queued and executed sequentially
+  - While an App re-provisioning job is pending or in flight all PATCH request to `developer/{developer_name}/apps` and `team/{team_name}/apps` are blocked and return a HTTP 412 error.
+  - Job details are stored in the MongoDB database. Future enhancement will expose a resource to retrieve Job status.
+* **feat-api-metadata-improvements**
+  - The APIInfo (`apis/{api_name}/info`) resource now includes a `Meta` object with version, stage and created/modfied information. 
+  - It also includes a `deprecated` marker and a comment to explain depreciation reason.
+  - An API version can be marked deprecated by either PATCHing the API's info or by adding a tag `deprecated` (optionally including a description) in the root object of the Async API Document and updating (PATCH) the API resource with this new document.
+
+### Fixes
+* **fix-api-products-handling-accommodate-references-with-revisions**
+  - Fixes and improvements to support referencing a specific version of an API for an API Product. 
+* **fix-app-provisioning**
+  - various fixes to reprovisioning logic - retrieve api and api products by revision reference via the api and apiProducts services, remove queues if a change in api product results in zero subscriptions on the queue(s),
+* **fix-organization-service-refactor-delete-add-delay**
+  - refactored/simplified org delete and added a delay before removing the DB in case any DB operations are in flight
+* **fix-verbose-logging**
+  - Removed or downgraded logging in multiple services
+  - API Products, Persistence, Teams, Broker
+* **fix-app-credentials-rotation**
+  - Switched job scheduling to agenda.js to standardise job scheduling and avoid high-CPU utilisation of previous framework used
+* **fix-add-uncaught-exception-handler**
+  - Fix to avoid connector crashing on unhandled exceptions raised by asynchrnously inviked functions (applicable when running in development mode)
+* **fix-runtime-dependencies**
+  - Upgraded node.js version to 18.
+  - Upgraded node.js mongodb API dependency
+* **fix-apis-service-parse-asyncapi-await**
+  - Code clean up
+
 ## Version 0.3.9
 * OpenAPI: 0.7.15
 * API Management Connector Server: 0.3.9
