@@ -15,6 +15,7 @@
         <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
         <script src="../_static/jquery.js"></script>
         <script src="../_static/underscore.js"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script src="../_static/doctools.js"></script>
         <script src="../_static/contentui.js"></script>
     <script src="../_static/js/theme.js"></script>
@@ -105,11 +106,11 @@
            <div itemprop="articleBody">
              
   <section id="configure-keycloak-for-use-with-the-api-server">
-<h1>Configure Keycloak for use with the API Server<a class="headerlink" href="#configure-keycloak-for-use-with-the-api-server" title="Permalink to this headline"></a></h1>
+<h1>Configure Keycloak for use with the API Server<a class="headerlink" href="#configure-keycloak-for-use-with-the-api-server" title="Permalink to this heading"></a></h1>
 <p>Steps to configure a keycloak realm to issue suitable tokens for the API
 Server.</p>
 <section id="create-a-new-realm">
-<h2>Create a new realm<a class="headerlink" href="#create-a-new-realm" title="Permalink to this headline"></a></h2>
+<h2>Create a new realm<a class="headerlink" href="#create-a-new-realm" title="Permalink to this heading"></a></h2>
 <figure class="align-default" id="id1">
 <img alt="image" src="https://user-images.githubusercontent.com/3858485/116523509-358b8f00-a8ce-11eb-8f01-39e8821806e2.png" />
 <figcaption>
@@ -118,7 +119,7 @@ Server.</p>
 </figure>
 </section>
 <section id="configure-organizations-add-groups">
-<h2>Configure Organizations - Add groups<a class="headerlink" href="#configure-organizations-add-groups" title="Permalink to this headline"></a></h2>
+<h2>Configure Organizations - Add groups<a class="headerlink" href="#configure-organizations-add-groups" title="Permalink to this heading"></a></h2>
 <p>Currently organizations are not propagated to the IdP. You need to add
 organizations manually. In Keycloak we use the groups concept to
 represent an organization.</p>
@@ -137,7 +138,7 @@ represent an organization.</p>
 </figure>
 </section>
 <section id="add-a-user">
-<h2>Add a user<a class="headerlink" href="#add-a-user" title="Permalink to this headline"></a></h2>
+<h2>Add a user<a class="headerlink" href="#add-a-user" title="Permalink to this heading"></a></h2>
 <p>First add a user, then on the newly created user set the password -
 <img alt="image1" src="https://user-images.githubusercontent.com/3858485/116525193-2c9bbd00-a8d0-11eb-9dba-18b13b476023.png" /></p>
 <figure class="align-default" id="id4">
@@ -148,7 +149,7 @@ represent an organization.</p>
 </figure>
 </section>
 <section id="add-client-configuration-for-the-api-server">
-<h2>Add client configuration for the API Server<a class="headerlink" href="#add-client-configuration-for-the-api-server" title="Permalink to this headline"></a></h2>
+<h2>Add client configuration for the API Server<a class="headerlink" href="#add-client-configuration-for-the-api-server" title="Permalink to this heading"></a></h2>
 <p>Add a new client and set the callback url and web-origin (for CORS). Use
 the correct host name and port according to your deployment.</p>
 <figure class="align-default" id="id5">
@@ -165,7 +166,7 @@ the correct host name and port according to your deployment.</p>
 </figure>
 </section>
 <section id="add-roles-to-the-client">
-<h2>Add roles to the client<a class="headerlink" href="#add-roles-to-the-client" title="Permalink to this headline"></a></h2>
+<h2>Add roles to the client<a class="headerlink" href="#add-roles-to-the-client" title="Permalink to this heading"></a></h2>
 <p>Now we need to add the roles (org-admin, platform-admin) to the client</p>
 <figure class="align-default" id="id7">
 <img alt="image" src="https://user-images.githubusercontent.com/3858485/116526248-4d184700-a8d1-11eb-8e0c-35c5e3407e36.png" />
@@ -187,7 +188,7 @@ the correct host name and port according to your deployment.</p>
 </figure>
 </section>
 <section id="add-roles-to-user">
-<h2>Add roles to user<a class="headerlink" href="#add-roles-to-user" title="Permalink to this headline"></a></h2>
+<h2>Add roles to user<a class="headerlink" href="#add-roles-to-user" title="Permalink to this heading"></a></h2>
 <p>Navigate to the user you created and switch to the role mappings tab -
 then in the “client roles” field select the name of the client you
 created (in the example <code class="docutils literal notranslate"><span class="pre">platform-api-server</span></code>). This will load the
@@ -207,7 +208,7 @@ user</p>
 </figure>
 </section>
 <section id="add-groups-to-user">
-<h2>Add groups to user<a class="headerlink" href="#add-groups-to-user" title="Permalink to this headline"></a></h2>
+<h2>Add groups to user<a class="headerlink" href="#add-groups-to-user" title="Permalink to this heading"></a></h2>
 <p>Navigate to the user you created and switch to the groups tab. Add the
 <code class="docutils literal notranslate"><span class="pre">my-org</span></code> group to the user:</p>
 <figure class="align-default" id="id12">
@@ -218,7 +219,7 @@ user</p>
 </figure>
 </section>
 <section id="add-mappers-to-the-client">
-<h2>Add mappers to the client<a class="headerlink" href="#add-mappers-to-the-client" title="Permalink to this headline"></a></h2>
+<h2>Add mappers to the client<a class="headerlink" href="#add-mappers-to-the-client" title="Permalink to this heading"></a></h2>
 <p>The issued JWT token must include the roles and groups as well as the
 audience (<code class="docutils literal notranslate"><span class="pre">aud</span></code>) claim. We need to set up mappers for these
 attributes.</p>
@@ -229,7 +230,7 @@ attributes.</p>
 </figcaption>
 </figure>
 <section id="add-groups-organizations-mapper">
-<h3>Add groups (organizations) mapper<a class="headerlink" href="#add-groups-organizations-mapper" title="Permalink to this headline"></a></h3>
+<h3>Add groups (organizations) mapper<a class="headerlink" href="#add-groups-organizations-mapper" title="Permalink to this heading"></a></h3>
 <p>Click “Create” to add a new mapper. Set the new mapper up as follows:</p>
 <figure class="align-default" id="id14">
 <img alt="image" src="https://user-images.githubusercontent.com/3858485/116529175-8ef6bc80-a8d4-11eb-8a5a-a4664e71dbc9.png" />
@@ -239,17 +240,17 @@ attributes.</p>
 </figure>
 </section>
 <section id="add-audience-aud-mapper">
-<h3>Add audience (aud) mapper<a class="headerlink" href="#add-audience-aud-mapper" title="Permalink to this headline"></a></h3>
+<h3>Add audience (aud) mapper<a class="headerlink" href="#add-audience-aud-mapper" title="Permalink to this heading"></a></h3>
 <p>Click “Create” to add a new mapper. Set the new mapper up as follows:
 <img alt="image2" src="https://user-images.githubusercontent.com/3858485/116529816-3bd13980-a8d5-11eb-9675-d3b853f5c855.png" /></p>
 </section>
 </section>
 <section id="modify-the-client-scope-settings">
-<h2>Modify the Client Scope settings<a class="headerlink" href="#modify-the-client-scope-settings" title="Permalink to this headline"></a></h2>
+<h2>Modify the Client Scope settings<a class="headerlink" href="#modify-the-client-scope-settings" title="Permalink to this heading"></a></h2>
 <p>Disable “Full Scope Allowed”: <img alt="image3" src="https://user-images.githubusercontent.com/3858485/116530151-9b2f4980-a8d5-11eb-8779-88423079278f.png" /></p>
 </section>
 <section id="setup-the-client-scopes">
-<h2>Setup the Client Scopes<a class="headerlink" href="#setup-the-client-scopes" title="Permalink to this headline"></a></h2>
+<h2>Setup the Client Scopes<a class="headerlink" href="#setup-the-client-scopes" title="Permalink to this heading"></a></h2>
 <p>Go to the “Client Scopes” tab of your client and the sub-tab “Setup”.
 Set the default and optional client scopes as shown below:</p>
 <figure class="align-default" id="id15">
@@ -260,7 +261,7 @@ Set the default and optional client scopes as shown below:</p>
 </figure>
 </section>
 <section id="preview-the-jwt-token">
-<h2>Preview the JWT token<a class="headerlink" href="#preview-the-jwt-token" title="Permalink to this headline"></a></h2>
+<h2>Preview the JWT token<a class="headerlink" href="#preview-the-jwt-token" title="Permalink to this heading"></a></h2>
 <p>Go to the “Client Scopes” tab of your client and the sub-tab “Evaluate”.
 Select the user you created previously:</p>
 <figure class="align-default" id="id16">
@@ -310,9 +311,9 @@ Select the user you created previously:</p>
 </div>
 </section>
 <section id="configure-the-api-server">
-<h2>Configure the API Server<a class="headerlink" href="#configure-the-api-server" title="Permalink to this headline"></a></h2>
+<h2>Configure the API Server<a class="headerlink" href="#configure-the-api-server" title="Permalink to this heading"></a></h2>
 <section id="properties-for-claim-and-username-extraction">
-<h3>Properties for claim and username extraction:<a class="headerlink" href="#properties-for-claim-and-username-extraction" title="Permalink to this headline"></a></h3>
+<h3>Properties for claim and username extraction:<a class="headerlink" href="#properties-for-claim-and-username-extraction" title="Permalink to this heading"></a></h3>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>AUTH_EXTRACTION_USER_PRINCIPAL=$.preferred_username
 </pre></div>
 </div>
@@ -338,7 +339,7 @@ Select the user you created previously:</p>
 </div>
 </section>
 <section id="properties-for-jwt-verification">
-<h3>Properties for JWT verification<a class="headerlink" href="#properties-for-jwt-verification" title="Permalink to this headline"></a></h3>
+<h3>Properties for JWT verification<a class="headerlink" href="#properties-for-jwt-verification" title="Permalink to this heading"></a></h3>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">AUTH_VERIFICATION_AUD</span><span class="o">=</span><span class="n">platform</span><span class="o">-</span><span class="n">api</span><span class="o">-</span><span class="n">server</span>
 </pre></div>
 </div>
@@ -355,7 +356,7 @@ Replace if you use another realm.</p>
 from the “Realm Settings” in keycloak: <img alt="image4" src="https://user-images.githubusercontent.com/3858485/116533161-f4e54300-a8d8-11eb-92d9-8a0544e5cd81.png" /></p>
 </section>
 <section id="set-the-openid-connect-discovery-url">
-<h3>Set the OpenId Connect Discovery URL<a class="headerlink" href="#set-the-openid-connect-discovery-url" title="Permalink to this headline"></a></h3>
+<h3>Set the OpenId Connect Discovery URL<a class="headerlink" href="#set-the-openid-connect-discovery-url" title="Permalink to this heading"></a></h3>
 <p>Will be in the format below. Replace host, port and realm
 (<code class="docutils literal notranslate"><span class="pre">apim-connector</span></code> in the example below) with the correct values for
 your deployment:</p>
@@ -378,7 +379,7 @@ your deployment:</p>
 
   <div role="contentinfo">
     <p>&#169; Copyright 2022, Solace Corporation, Swen-Helge Huber, &lt;swen-helge.huber@solace.com&gt;.
-      <span class="lastupdated">Last updated on 19 May 2022 at 11:04.
+      <span class="lastupdated">Last updated on 13 Jun 2022 at 07:31.
       </span></p>
   </div>
 

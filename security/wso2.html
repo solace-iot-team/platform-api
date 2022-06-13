@@ -15,6 +15,7 @@
         <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
         <script src="../_static/jquery.js"></script>
         <script src="../_static/underscore.js"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script src="../_static/doctools.js"></script>
         <script src="../_static/contentui.js"></script>
     <script src="../_static/js/theme.js"></script>
@@ -101,9 +102,9 @@
            <div itemprop="articleBody">
              
   <section id="configure-wso2-api-manager-for-use-with-the-api-server">
-<h1>Configure WSO2 API Manager for use with the API Server<a class="headerlink" href="#configure-wso2-api-manager-for-use-with-the-api-server" title="Permalink to this headline"></a></h1>
+<h1>Configure WSO2 API Manager for use with the API Server<a class="headerlink" href="#configure-wso2-api-manager-for-use-with-the-api-server" title="Permalink to this heading"></a></h1>
 <section id="add-roles">
-<h2>Add roles<a class="headerlink" href="#add-roles" title="Permalink to this headline"></a></h2>
+<h2>Add roles<a class="headerlink" href="#add-roles" title="Permalink to this heading"></a></h2>
 <p>Navigate to “Users and Roles” -&gt; “Add”. Then click “Add new role”. Add
 both <code class="docutils literal notranslate"><span class="pre">org-admin</span></code> and <code class="docutils literal notranslate"><span class="pre">platform-admin</span></code> roles. <img alt="image2" src="https://user-images.githubusercontent.com/3858485/116539946-6f19c580-a8e1-11eb-856f-aadf1477d551.png" /></p>
 <figure class="align-default" id="id1">
@@ -120,7 +121,7 @@ both <code class="docutils literal notranslate"><span class="pre">org-admin</spa
 </figure>
 </section>
 <section id="add-user">
-<h2>Add user<a class="headerlink" href="#add-user" title="Permalink to this headline"></a></h2>
+<h2>Add user<a class="headerlink" href="#add-user" title="Permalink to this heading"></a></h2>
 <p>Navigate to “Users and Roles” -&gt; “Add”. Then click “Add new user”.</p>
 <figure class="align-default" id="id3">
 <img alt="image" src="https://user-images.githubusercontent.com/3858485/116539144-5a88fd80-a8e0-11eb-8272-13eb7a2a3332.png" />
@@ -137,7 +138,7 @@ both <code class="docutils literal notranslate"><span class="pre">org-admin</spa
 </figure>
 </section>
 <section id="add-organization-association-s">
-<h2>Add organization association(s)<a class="headerlink" href="#add-organization-association-s" title="Permalink to this headline"></a></h2>
+<h2>Add organization association(s)<a class="headerlink" href="#add-organization-association-s" title="Permalink to this heading"></a></h2>
 <p>We will use the <code class="docutils literal notranslate"><span class="pre">organization</span></code> attribute of the user profile to store
 organization membership. The API Server expects a list of orgs separated
 by space character.</p>
@@ -158,7 +159,7 @@ the <code class="docutils literal notranslate"><span class="pre">organization</s
 </figure>
 </section>
 <section id="configure-openid-scope-for-organization">
-<h2>Configure OpenId Scope for organization<a class="headerlink" href="#configure-openid-scope-for-organization" title="Permalink to this headline"></a></h2>
+<h2>Configure OpenId Scope for organization<a class="headerlink" href="#configure-openid-scope-for-organization" title="Permalink to this heading"></a></h2>
 <p>This is necessary so the <code class="docutils literal notranslate"><span class="pre">organization</span></code> attribute of the user profile
 is included in the JWT</p>
 <p>Navigate to “OICD Scope” -&gt; “Add”. Set scope name to <code class="docutils literal notranslate"><span class="pre">organization</span></code>
@@ -167,17 +168,17 @@ and then “Add OIDC Claim” <img alt="image2" src="https://user-images.githubu
 <img alt="image3" src="https://user-images.githubusercontent.com/3858485/116540173-b4d68e00-a8e1-11eb-8e29-2e5fb643464a.png" /></p>
 </section>
 <section id="configure-service-provider-for-the-api-server">
-<h2>Configure Service Provider for the API Server<a class="headerlink" href="#configure-service-provider-for-the-api-server" title="Permalink to this headline"></a></h2>
+<h2>Configure Service Provider for the API Server<a class="headerlink" href="#configure-service-provider-for-the-api-server" title="Permalink to this heading"></a></h2>
 <p>Navigate to “Service Provider” -&gt; “Add”, add a name and register the
 provider: <img alt="image4" src="https://user-images.githubusercontent.com/3858485/116540440-0ed75380-a8e2-11eb-8166-fc9674b6a909.png" /></p>
 <p>Then edit your service provider selecting it in “Service Provider” -&gt;
 “List” <img alt="image5" src="https://user-images.githubusercontent.com/3858485/116540542-35958a00-a8e2-11eb-85bf-0c9f1d939dad.png" /></p>
 <section id="claim-configuration">
-<h3>Claim Configuration<a class="headerlink" href="#claim-configuration" title="Permalink to this headline"></a></h3>
+<h3>Claim Configuration<a class="headerlink" href="#claim-configuration" title="Permalink to this heading"></a></h3>
 <p>Ensure the “Claim Configuration” looks similar: <img alt="image6" src="https://user-images.githubusercontent.com/3858485/116552885-73e67580-a8f1-11eb-8ba7-304e4b40c122.png" /></p>
 </section>
 <section id="oauth-openid-connect-configuration">
-<h3>OAuth/OpenID Connect Configuration<a class="headerlink" href="#oauth-openid-connect-configuration" title="Permalink to this headline"></a></h3>
+<h3>OAuth/OpenID Connect Configuration<a class="headerlink" href="#oauth-openid-connect-configuration" title="Permalink to this heading"></a></h3>
 <p>Open the section “Inbound Authentication Configuration” sub section
 “OAuth/OpenID Connect Configuration” and click “Edit”:</p>
 <figure class="align-default" id="id7">
@@ -205,13 +206,13 @@ audience claim. If disabled - enable the “Role based scope validator”</p>
 </section>
 </section>
 <section id="obtaining-a-jwt-token">
-<h2>Obtaining a JWT Token<a class="headerlink" href="#obtaining-a-jwt-token" title="Permalink to this headline"></a></h2>
+<h2>Obtaining a JWT Token<a class="headerlink" href="#obtaining-a-jwt-token" title="Permalink to this heading"></a></h2>
 <p>The tokens must be requested with the “openid” and “organization” scope.
 The latter is required so that the organization attribute of the user is
 included in the tokens.</p>
 </section>
 <section id="example-jwt">
-<h2>Example JWT<a class="headerlink" href="#example-jwt" title="Permalink to this headline"></a></h2>
+<h2>Example JWT<a class="headerlink" href="#example-jwt" title="Permalink to this heading"></a></h2>
 <p>The payload section of a JWT obtained from WSO2 that contains all
 required attributes will look similar to this:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
@@ -243,9 +244,9 @@ required attributes will look similar to this:</p>
 </div>
 </section>
 <section id="configure-the-api-server">
-<h2>Configure the API Server<a class="headerlink" href="#configure-the-api-server" title="Permalink to this headline"></a></h2>
+<h2>Configure the API Server<a class="headerlink" href="#configure-the-api-server" title="Permalink to this heading"></a></h2>
 <section id="properties-for-claim-and-username-extraction">
-<h3>Properties for claim and username extraction:<a class="headerlink" href="#properties-for-claim-and-username-extraction" title="Permalink to this headline"></a></h3>
+<h3>Properties for claim and username extraction:<a class="headerlink" href="#properties-for-claim-and-username-extraction" title="Permalink to this heading"></a></h3>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>AUTH_EXTRACTION_USER_PRINCIPAL=$.upn
 </pre></div>
 </div>
@@ -270,7 +271,7 @@ required attributes will look similar to this:</p>
 </div>
 </section>
 <section id="properties-for-jwt-verification">
-<h3>Properties for JWT verification<a class="headerlink" href="#properties-for-jwt-verification" title="Permalink to this headline"></a></h3>
+<h3>Properties for JWT verification<a class="headerlink" href="#properties-for-jwt-verification" title="Permalink to this heading"></a></h3>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">AUTH_VERIFICATION_AUD</span><span class="o">=</span><span class="n">platform</span><span class="o">-</span><span class="n">api</span><span class="o">-</span><span class="n">server</span>
 </pre></div>
 </div>
@@ -306,7 +307,7 @@ system - in the example above it was saved to
 </figure>
 </section>
 <section id="set-the-openid-connect-discovery-url">
-<h3>Set the OpenId Connect Discovery URL<a class="headerlink" href="#set-the-openid-connect-discovery-url" title="Permalink to this headline"></a></h3>
+<h3>Set the OpenId Connect Discovery URL<a class="headerlink" href="#set-the-openid-connect-discovery-url" title="Permalink to this heading"></a></h3>
 <p>Will be in the format below. Replace host and port with the correct
 values for your deployment:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">AUTH_DISCOVERY_OIDC_URL</span><span class="o">=</span><span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">ec2</span><span class="o">.</span><span class="n">eu</span><span class="o">-</span><span class="n">central</span><span class="o">.</span><span class="n">compute</span><span class="o">.</span><span class="n">amazonaws</span><span class="o">.</span><span class="n">com</span><span class="p">:</span><span class="mi">9443</span><span class="o">/</span><span class="n">oauth2</span><span class="o">/</span><span class="n">oidcdiscovery</span><span class="o">/.</span><span class="n">well</span><span class="o">-</span><span class="n">known</span><span class="o">/</span><span class="n">openid</span><span class="o">-</span><span class="n">configuration</span>
@@ -328,7 +329,7 @@ values for your deployment:</p>
 
   <div role="contentinfo">
     <p>&#169; Copyright 2022, Solace Corporation, Swen-Helge Huber, &lt;swen-helge.huber@solace.com&gt;.
-      <span class="lastupdated">Last updated on 19 May 2022 at 11:04.
+      <span class="lastupdated">Last updated on 13 Jun 2022 at 07:31.
       </span></p>
   </div>
 

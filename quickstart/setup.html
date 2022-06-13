@@ -15,6 +15,7 @@
         <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
         <script src="../_static/jquery.js"></script>
         <script src="../_static/underscore.js"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script src="../_static/doctools.js"></script>
         <script src="../_static/contentui.js"></script>
     <script src="../_static/js/theme.js"></script>
@@ -101,7 +102,7 @@
            <div itemprop="articleBody">
              
   <section id="configuring-the-apim-connector-using-the-rest-api">
-<h1>Configuring the APIM Connector using the REST API<a class="headerlink" href="#configuring-the-apim-connector-using-the-rest-api" title="Permalink to this headline"></a></h1>
+<h1>Configuring the APIM Connector using the REST API<a class="headerlink" href="#configuring-the-apim-connector-using-the-rest-api" title="Permalink to this heading"></a></h1>
 <p>In this section we will configure the connector with a tenant and create
 all the resources required to eventually allow a developer to register
 an app, that provides access to a Solace Event Broker:</p>
@@ -118,7 +119,7 @@ configuring the allowed protocols</p></li>
 explore the API by browsing to
 <code class="docutils literal notranslate"><span class="pre">http://{connector_host}:{connector_port}/api-explorer</span></code>.</p>
 <section id="conventions">
-<h2>Conventions<a class="headerlink" href="#conventions" title="Permalink to this headline"></a></h2>
+<h2>Conventions<a class="headerlink" href="#conventions" title="Permalink to this heading"></a></h2>
 <p>The API call examples below use curl.</p>
 <p>The following place holders are used in the cURL commands, you need to
 replace these with the correct values: * <code class="docutils literal notranslate"><span class="pre">{connector_host}</span></code>: host
@@ -129,7 +130,7 @@ org-admin privileges * <code class="docutils literal notranslate"><span class="p
 you want to create</p>
 </section>
 <section id="set-up-an-organisation-tenant-in-the-connector">
-<h2>Set up an organisation (tenant) in the connector<a class="headerlink" href="#set-up-an-organisation-tenant-in-the-connector" title="Permalink to this headline"></a></h2>
+<h2>Set up an organisation (tenant) in the connector<a class="headerlink" href="#set-up-an-organisation-tenant-in-the-connector" title="Permalink to this heading"></a></h2>
 <p>In order to create an organisation the call must be made using
 credentials of a user with <code class="docutils literal notranslate"><span class="pre">platform-admin</span></code> privileges. (refer back to
 the deployment section which outlines how the users are configured).</p>
@@ -150,7 +151,7 @@ above for how to create this token</p>
 </div>
 </section>
 <section id="create-an-environment-register-a-pubsub-broker-as-an-api-gateway">
-<h2>Create an environment - register a PubSub+ broker as an API gateway<a class="headerlink" href="#create-an-environment-register-a-pubsub-broker-as-an-api-gateway" title="Permalink to this headline"></a></h2>
+<h2>Create an environment - register a PubSub+ broker as an API gateway<a class="headerlink" href="#create-an-environment-register-a-pubsub-broker-as-an-api-gateway" title="Permalink to this heading"></a></h2>
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">{service_id}</span></code>: the id of a PubSub+ broker in your Solace Cloud
 account. You can use the first cURL command below to retrieve a list
@@ -188,7 +189,7 @@ with <code class="docutils literal notranslate"><span class="pre">{service_id}</
 </div>
 </section>
 <section id="create-an-api-async-api">
-<h2>Create an API (Async API)<a class="headerlink" href="#create-an-api-async-api" title="Permalink to this headline"></a></h2>
+<h2>Create an API (Async API)<a class="headerlink" href="#create-an-api-async-api" title="Permalink to this heading"></a></h2>
 <p>The call below uploads and creates an Async API called <code class="docutils literal notranslate"><span class="pre">Test-API</span></code>.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">curl</span> <span class="o">--</span><span class="n">location</span> <span class="o">--</span><span class="n">request</span> <span class="n">PUT</span> <span class="s1">&#39;http://</span><span class="si">{connector_host}</span><span class="s1">:</span><span class="si">{connector_port}</span><span class="s1">/v1/</span><span class="si">{org_name}</span><span class="s1">/apis/Test-API&#39;</span> \
 <span class="o">--</span><span class="n">user</span> <span class="p">{</span><span class="n">org_admin_name</span><span class="p">}:{</span><span class="n">org_admin_pwd</span><span class="p">}</span><span class="o">&gt;</span> \
@@ -409,7 +410,7 @@ with <code class="docutils literal notranslate"><span class="pre">{service_id}</
 </div>
 </section>
 <section id="create-an-api-product">
-<h2>Create an API Product<a class="headerlink" href="#create-an-api-product" title="Permalink to this headline"></a></h2>
+<h2>Create an API Product<a class="headerlink" href="#create-an-api-product" title="Permalink to this heading"></a></h2>
 <p>Now let’s package the API - configure which protocols and quotas,
 quality of service apply by using an API product called
 <code class="docutils literal notranslate"><span class="pre">Test-API_PRODUCT</span></code>.</p>
@@ -455,7 +456,7 @@ step:</p>
 </div>
 </section>
 <section id="create-a-developer">
-<h2>Create a developer<a class="headerlink" href="#create-a-developer" title="Permalink to this headline"></a></h2>
+<h2>Create a developer<a class="headerlink" href="#create-a-developer" title="Permalink to this heading"></a></h2>
 <p>Next let’s create a developer, who will be able to register apps in
 order to gain access to APIs. Take a note of the user name, we will need
 it in the call further below to register an application.
@@ -473,7 +474,7 @@ it in the call further below to register an application.
 </div>
 </section>
 <section id="create-an-app">
-<h2>Create an app<a class="headerlink" href="#create-an-app" title="Permalink to this headline"></a></h2>
+<h2>Create an app<a class="headerlink" href="#create-an-app" title="Permalink to this heading"></a></h2>
 <p>The last step is registering an app for the developer (<code class="docutils literal notranslate"><span class="pre">daisy</span></code> in the
 example above). We will also reference the API Product we have created
 before.</p>
@@ -512,21 +513,21 @@ protocol, host and port.</p>
 </section>
 </section>
 <section id="integrating-the-connector-with-api-management-platforms">
-<h1>Integrating the Connector with API Management Platforms<a class="headerlink" href="#integrating-the-connector-with-api-management-platforms" title="Permalink to this headline"></a></h1>
+<h1>Integrating the Connector with API Management Platforms<a class="headerlink" href="#integrating-the-connector-with-api-management-platforms" title="Permalink to this heading"></a></h1>
 <section id="wso2-api-management">
-<h2>WSO2 API Management<a class="headerlink" href="#wso2-api-management" title="Permalink to this headline"></a></h2>
+<h2>WSO2 API Management<a class="headerlink" href="#wso2-api-management" title="Permalink to this heading"></a></h2>
 <p>The API Management Connector can be easily integrated with WSO2 API
 Management version 4.1.0 (and above).</p>
 <p>This section describes the initial configuration of the Connector and
 WSO2 API Management and provides a walkthrough of the API life cycle in
 WSO2 API Management.</p>
 <section id="prepare-the-api-management-connector">
-<h3>Prepare the API Management Connector<a class="headerlink" href="#prepare-the-api-management-connector" title="Permalink to this headline"></a></h3>
+<h3>Prepare the API Management Connector<a class="headerlink" href="#prepare-the-api-management-connector" title="Permalink to this heading"></a></h3>
 <p>An initial configuration of the Connector must be carried out using its
 REST API: * Setting up an Organization * Setting up an Envrionment *
 Setting up a generic developer (TODO - streamline)</p>
 <section id="set-up-an-organisation-tenant-in-the-connector-1">
-<span id="id1"></span><h4>Set up an organisation (tenant) in the connector<a class="headerlink" href="#set-up-an-organisation-tenant-in-the-connector-1" title="Permalink to this headline"></a></h4>
+<span id="id1"></span><h4>Set up an organisation (tenant) in the connector<a class="headerlink" href="#set-up-an-organisation-tenant-in-the-connector-1" title="Permalink to this heading"></a></h4>
 <p>In order to create an organisation the call must be made using
 credentials of a user with <code class="docutils literal notranslate"><span class="pre">platform-admin</span></code> privileges. (refer back to
 the deployment section which outlines how the users are configured).</p>
@@ -549,7 +550,7 @@ it to configure the WSO2 API Management</strong></p>
 </div>
 </section>
 <section id="create-an-environment-register-a-pubsub-broker-as-an-api-gateway-1">
-<span id="id2"></span><h4>Create an environment - register a PubSub+ broker as an API gateway<a class="headerlink" href="#create-an-environment-register-a-pubsub-broker-as-an-api-gateway-1" title="Permalink to this headline"></a></h4>
+<span id="id2"></span><h4>Create an environment - register a PubSub+ broker as an API gateway<a class="headerlink" href="#create-an-environment-register-a-pubsub-broker-as-an-api-gateway-1" title="Permalink to this heading"></a></h4>
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">{service_id}</span></code>: the id of a PubSub+ broker in your Solace Cloud
 account. You can use the first cURL command below to retrieve a list
@@ -638,7 +639,7 @@ call (the actual response may contain more protocols):</p>
 <p><strong>Note: Remember the environment name</strong></p>
 </section>
 <section id="create-a-developer-1">
-<span id="id3"></span><h4>Create a developer<a class="headerlink" href="#create-a-developer-1" title="Permalink to this headline"></a></h4>
+<span id="id3"></span><h4>Create a developer<a class="headerlink" href="#create-a-developer-1" title="Permalink to this heading"></a></h4>
 <p>Next let’s create a generic developer, which will be used by WSO2 API
 Management . Take a note of the user name, we will need it when
 configuring WSO2. <code class="docutils literal notranslate"><span class="pre">&quot;userName&quot;:</span> <span class="pre">&quot;wso2-apim&quot;</span></code>.</p>
@@ -656,7 +657,7 @@ configuring WSO2. <code class="docutils literal notranslate"><span class="pre">&
 </section>
 </section>
 <section id="integrating-the-connector-into-wso2-api-management">
-<h3>Integrating the Connector into WSO2 API Management<a class="headerlink" href="#integrating-the-connector-into-wso2-api-management" title="Permalink to this headline"></a></h3>
+<h3>Integrating the Connector into WSO2 API Management<a class="headerlink" href="#integrating-the-connector-into-wso2-api-management" title="Permalink to this heading"></a></h3>
 <p>Open the <code class="docutils literal notranslate"><span class="pre">&lt;API-M_HOME&gt;/repository/conf/deployment.toml</span></code> file and add
 the following according to your account details. Make sure to restart
 the server after adding the configurations.</p>
@@ -704,12 +705,12 @@ the server after adding the configurations.</p>
 <p><img alt="image7" src="https://apim.docs.wso2.com/en/latest/assets/img/tutorials/solace/view-solace-broker.png" /></p>
 </section>
 <section id="creating-and-deploying-an-api">
-<h3>Creating and deploying an API<a class="headerlink" href="#creating-and-deploying-an-api" title="Permalink to this headline"></a></h3>
+<h3>Creating and deploying an API<a class="headerlink" href="#creating-and-deploying-an-api" title="Permalink to this heading"></a></h3>
 <p>You can use the Async API specification generated from the Solace
 PubSub+ Event Portal or any other source to create APIs in WSO2 API
 Manager.</p>
 <section id="importing-an-async-api">
-<h4>Importing an Async API<a class="headerlink" href="#importing-an-async-api" title="Permalink to this headline"></a></h4>
+<h4>Importing an Async API<a class="headerlink" href="#importing-an-async-api" title="Permalink to this heading"></a></h4>
 <p>Before you begin: Make sure that you have integrated the Solace event
 broker with WSO2 API Manager as shown in the above section.</p>
 <ol class="arabic">
@@ -738,7 +739,7 @@ the API topics have to use. You do not need to provide the protocol
 information separately</p>
 </section>
 <section id="importing-an-async-api-from-solace-event-portal">
-<h4>Importing an Async API from Solace Event Portal<a class="headerlink" href="#importing-an-async-api-from-solace-event-portal" title="Permalink to this headline"></a></h4>
+<h4>Importing an Async API from Solace Event Portal<a class="headerlink" href="#importing-an-async-api-from-solace-event-portal" title="Permalink to this heading"></a></h4>
 <p>When you choose the <code class="docutils literal notranslate"><span class="pre">AsyncAPI</span> <span class="pre">URL</span></code> option during import you can
 provide the URL of the AsyncAPI spec published in Solace Event Portal.</p>
 <p>See <a class="reference external" href="https://docs.solace.com/Cloud/Event-Portal/get-started-event-api-products.htm">Creating and Sharing Event API
@@ -746,7 +747,7 @@ Products</a>
 for details.</p>
 </section>
 <section id="configuring-topics">
-<h4>Configuring Topics<a class="headerlink" href="#configuring-topics" title="Permalink to this headline"></a></h4>
+<h4>Configuring Topics<a class="headerlink" href="#configuring-topics" title="Permalink to this heading"></a></h4>
 <ol class="arabic simple">
 <li><p>Click <strong>Topics</strong> to navigate to the topics page.</p></li>
 </ol>
@@ -754,7 +755,7 @@ for details.</p>
 AsyncAPI definition provided in the previous step.</p>
 </section>
 <section id="viewing-the-async-api-definition">
-<h4>Viewing the Async API definition<a class="headerlink" href="#viewing-the-async-api-definition" title="Permalink to this headline"></a></h4>
+<h4>Viewing the Async API definition<a class="headerlink" href="#viewing-the-async-api-definition" title="Permalink to this heading"></a></h4>
 <ol class="arabic simple">
 <li><p>Go to <strong>API Configurations</strong> and click <strong>AsyncAPI Definition</strong> to see
 the definition of the API you created in the previous step. <img alt="image10" src="https://apim.docs.wso2.com/en/latest/assets/img/tutorials/solace/asyncapi-definition.png" /></p></li>
@@ -769,7 +770,7 @@ Protocol as the API level subscription policy for Solace APIs. Once a
 subscription is made, that policy will be added automatically.</p>
 </section>
 <section id="deploying-the-api-to-the-solace-pubsub-environment">
-<h4>Deploying the API to the Solace PubSub+ environment<a class="headerlink" href="#deploying-the-api-to-the-solace-pubsub-environment" title="Permalink to this headline"></a></h4>
+<h4>Deploying the API to the Solace PubSub+ environment<a class="headerlink" href="#deploying-the-api-to-the-solace-pubsub-environment" title="Permalink to this heading"></a></h4>
 <ol class="arabic simple">
 <li><p>Navigate to the <strong>Deploy</strong> section and go to <strong>Deployments</strong>.
 <img alt="image11" src="https://apim.docs.wso2.com/en/latest/assets/img/tutorials/solace/deployments.png" /></p></li>
@@ -781,14 +782,14 @@ is user-provided. <img alt="image12" src="https://apim.docs.wso2.com/en/latest/a
 </ol>
 </section>
 <section id="publishing-the-api">
-<h4>Publishing the API<a class="headerlink" href="#publishing-the-api" title="Permalink to this headline"></a></h4>
+<h4>Publishing the API<a class="headerlink" href="#publishing-the-api" title="Permalink to this heading"></a></h4>
 <p>See <a class="reference external" href="https://apim.docs.wso2.com/en/latest/deploy-and-publish/publish-on-dev-portal/publish-an-api">Publish an
 API</a>
 for instructions on publishing the API created in the previous steps.</p>
 </section>
 </section>
 <section id="subscribing-to-an-api">
-<h3>Subscribing to an API<a class="headerlink" href="#subscribing-to-an-api" title="Permalink to this headline"></a></h3>
+<h3>Subscribing to an API<a class="headerlink" href="#subscribing-to-an-api" title="Permalink to this heading"></a></h3>
 <p>You have to subscribe to a published Solace API before consuming them.
 The subscription process fulfills the authentication process and
 provides you with access tokens that you can use to invoke an API. The
@@ -813,11 +814,11 @@ API level and application-level throttling will not be supported for the
 Solace API subscriptions.</p>
 </section>
 <section id="invoking-an-api">
-<h3>Invoking an API<a class="headerlink" href="#invoking-an-api" title="Permalink to this headline"></a></h3>
+<h3>Invoking an API<a class="headerlink" href="#invoking-an-api" title="Permalink to this heading"></a></h3>
 <p>In this section, you will subscribe to the AsyncAPI through the
 Developer Portal</p>
 <section id="subscribing-to-the-solace-api">
-<h4>Subscribing to the Solace API<a class="headerlink" href="#subscribing-to-the-solace-api" title="Permalink to this headline"></a></h4>
+<h4>Subscribing to the Solace API<a class="headerlink" href="#subscribing-to-the-solace-api" title="Permalink to this heading"></a></h4>
 <ol class="arabic simple">
 <li><p>Log in to the Developer Portal via <code class="docutils literal notranslate"><span class="pre">https://:9443/devportal</span></code></p></li>
 <li><p>Select your Solace API and navigate to the <strong>Overview</strong>.</p></li>
@@ -826,7 +827,7 @@ create a new application for this purpose.</p></li>
 </ol>
 </section>
 <section id="generating-keys">
-<h4>Generating keys<a class="headerlink" href="#generating-keys" title="Permalink to this headline"></a></h4>
+<h4>Generating keys<a class="headerlink" href="#generating-keys" title="Permalink to this heading"></a></h4>
 <ol class="arabic simple">
 <li><p>In the sample application, click <strong>Production Keys</strong> and navigate to
 <strong>OAuth2 Tokens</strong>. <img alt="image17" src="https://user-images.githubusercontent.com/3858485/149137984-96f8528d-f4cd-49f4-bf5a-d37b6a23850c.png" /></p></li>
@@ -836,7 +837,7 @@ instructions on generating keys see, Application Keys.</p></li>
 </ol>
 </section>
 <section id="selecting-the-async-protocol-and-topic">
-<h4>Selecting the Async Protocol and Topic<a class="headerlink" href="#selecting-the-async-protocol-and-topic" title="Permalink to this headline"></a></h4>
+<h4>Selecting the Async Protocol and Topic<a class="headerlink" href="#selecting-the-async-protocol-and-topic" title="Permalink to this heading"></a></h4>
 <ol class="arabic simple">
 <li><p>Select the Solace API and click on the <strong>Solace Info</strong> section in the
 left menu. This will render an information page like the following.
@@ -863,7 +864,7 @@ to invoke the topic and consume the topic.</p></li>
 </ol>
 </section>
 <section id="publishing-messages-using-http">
-<h4>Publishing messages using HTTP<a class="headerlink" href="#publishing-messages-using-http" title="Permalink to this headline"></a></h4>
+<h4>Publishing messages using HTTP<a class="headerlink" href="#publishing-messages-using-http" title="Permalink to this heading"></a></h4>
 <p>If your Async API is available via HTTP you can use the information
 gathered above to publish an event using a simple HTTP POST.</p>
 <p>You need the following information: * <code class="docutils literal notranslate"><span class="pre">{endpoint_url}</span></code>: the endpoint
@@ -881,7 +882,7 @@ environment</p>
 </div>
 </section>
 <section id="subscribing-to-messages-using-mqtt">
-<h4>Subscribing to messages using MQTT<a class="headerlink" href="#subscribing-to-messages-using-mqtt" title="Permalink to this headline"></a></h4>
+<h4>Subscribing to messages using MQTT<a class="headerlink" href="#subscribing-to-messages-using-mqtt" title="Permalink to this heading"></a></h4>
 <p>If your Async API is available via MQTT you can use the information
 gathered above to subscribe to topics using an MQTT client.</p>
 <p>You need the following information: * <code class="docutils literal notranslate"><span class="pre">{endpoint_url}</span></code>: the endpoint
@@ -923,7 +924,7 @@ subscribe to: <img alt="image20" src="https://user-images.githubusercontent.com/
 
   <div role="contentinfo">
     <p>&#169; Copyright 2022, Solace Corporation, Swen-Helge Huber, &lt;swen-helge.huber@solace.com&gt;.
-      <span class="lastupdated">Last updated on 19 May 2022 at 11:04.
+      <span class="lastupdated">Last updated on 13 Jun 2022 at 07:31.
       </span></p>
   </div>
 

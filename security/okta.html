@@ -15,6 +15,7 @@
         <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
         <script src="../_static/jquery.js"></script>
         <script src="../_static/underscore.js"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script src="../_static/doctools.js"></script>
         <script src="../_static/contentui.js"></script>
     <script src="../_static/js/theme.js"></script>
@@ -97,9 +98,9 @@
            <div itemprop="articleBody">
              
   <section id="configure-okta-for-use-with-the-api-server">
-<h1>Configure Okta for use with the API Server<a class="headerlink" href="#configure-okta-for-use-with-the-api-server" title="Permalink to this headline"></a></h1>
+<h1>Configure Okta for use with the API Server<a class="headerlink" href="#configure-okta-for-use-with-the-api-server" title="Permalink to this heading"></a></h1>
 <section id="add-roles">
-<h2>Add roles<a class="headerlink" href="#add-roles" title="Permalink to this headline"></a></h2>
+<h2>Add roles<a class="headerlink" href="#add-roles" title="Permalink to this heading"></a></h2>
 <p>In Okta roles will be configured using the <code class="docutils literal notranslate"><span class="pre">groups</span></code> construct.</p>
 <p>Go to the groups menu - in the example below both <code class="docutils literal notranslate"><span class="pre">org-admin</span></code> and
 <code class="docutils literal notranslate"><span class="pre">platform-admin</span></code> roles are already defined <img alt="image1" src="https://user-images.githubusercontent.com/3858485/116583136-f0874d00-a90d-11eb-914e-f6e9d72db5cf.png" /></p>
@@ -107,7 +108,7 @@
 the name and a description <img alt="image2" src="https://user-images.githubusercontent.com/3858485/116583314-1f9dbe80-a90e-11eb-98cf-7c794e8fcd58.png" /></p>
 </section>
 <section id="add-user">
-<h2>Add user<a class="headerlink" href="#add-user" title="Permalink to this headline"></a></h2>
+<h2>Add user<a class="headerlink" href="#add-user" title="Permalink to this heading"></a></h2>
 <p>Users are managed under the “People” menu -</p>
 <figure class="align-default" id="id1">
 <img alt="image" src="https://user-images.githubusercontent.com/3858485/116583645-7a371a80-a90e-11eb-8a83-353b4a5711a0.png" />
@@ -126,7 +127,7 @@ best to preset the password as shown in the screenshot)</p>
 </figure>
 </section>
 <section id="add-organizations">
-<h2>Add organizations<a class="headerlink" href="#add-organizations" title="Permalink to this headline"></a></h2>
+<h2>Add organizations<a class="headerlink" href="#add-organizations" title="Permalink to this heading"></a></h2>
 <p>Organizations are captured in the <code class="docutils literal notranslate"><span class="pre">organization</span></code> attribute of the user
 profile. Edit the user you just created (here - Harry H) <img alt="image3" src="https://user-images.githubusercontent.com/3858485/116584298-1bbe6c00-a90f-11eb-865a-6688b2ce6cad.png" /></p>
 <figure class="align-default" id="id3">
@@ -146,7 +147,7 @@ part of. The API server expects a list separated by space characters.</p>
 </figure>
 </section>
 <section id="add-the-application">
-<h2>Add the application<a class="headerlink" href="#add-the-application" title="Permalink to this headline"></a></h2>
+<h2>Add the application<a class="headerlink" href="#add-the-application" title="Permalink to this heading"></a></h2>
 <p>Now add the API Server application - on the “Applications” menu, click
 “Add Application”</p>
 <figure class="align-default" id="id5">
@@ -170,7 +171,7 @@ authorization/token acquisition, then save.</p>
 <p><img alt="image4" src="https://user-images.githubusercontent.com/3858485/116587493-6ab9d080-a912-11eb-936b-d5182c5ee187.png" /> <img alt="image5" src="https://user-images.githubusercontent.com/3858485/116587687-9b016f00-a912-11eb-9414-419efe2a10aa.png" /></p>
 </section>
 <section id="including-groups-api-server-roles-in-the-jwt">
-<h2>Including Groups (API Server Roles) in the JWT<a class="headerlink" href="#including-groups-api-server-roles-in-the-jwt" title="Permalink to this headline"></a></h2>
+<h2>Including Groups (API Server Roles) in the JWT<a class="headerlink" href="#including-groups-api-server-roles-in-the-jwt" title="Permalink to this heading"></a></h2>
 <p>In your application view switch to the “Sign-On” tab. You need to
 configure the “Groups Claim Type” in the “OpenID Connect ID Token”
 section. Scroll to this section, then hit “edit” and change the “Groups
@@ -190,7 +191,7 @@ matching expression.</p>
 </figure>
 </section>
 <section id="include-groups-and-organization-claim-in-jwt-configure-authorization-server">
-<h2>Include groups and organization claim in JWT - Configure Authorization Server<a class="headerlink" href="#include-groups-and-organization-claim-in-jwt-configure-authorization-server" title="Permalink to this headline"></a></h2>
+<h2>Include groups and organization claim in JWT - Configure Authorization Server<a class="headerlink" href="#include-groups-and-organization-claim-in-jwt-configure-authorization-server" title="Permalink to this heading"></a></h2>
 <p>Navigate to “Security” -&gt; “API”.</p>
 <figure class="align-default" id="id9">
 <img alt="image" src="https://user-images.githubusercontent.com/3858485/116588668-bde05300-a913-11eb-8fa0-a879d2cb4882.png" />
@@ -229,7 +230,7 @@ acquisition regardless of the scopes requested.</p>
 </figure>
 </section>
 <section id="preview-jwt">
-<h2>Preview JWT<a class="headerlink" href="#preview-jwt" title="Permalink to this headline"></a></h2>
+<h2>Preview JWT<a class="headerlink" href="#preview-jwt" title="Permalink to this heading"></a></h2>
 <p>In the “Authorization Server” view under “Security” -&gt; “API” there is a
 “Token Preview” tab</p>
 <figure class="align-default" id="id13">
@@ -274,9 +275,9 @@ preview the token:</p>
 </div>
 </section>
 <section id="configure-the-api-server">
-<h2>Configure the API Server<a class="headerlink" href="#configure-the-api-server" title="Permalink to this headline"></a></h2>
+<h2>Configure the API Server<a class="headerlink" href="#configure-the-api-server" title="Permalink to this heading"></a></h2>
 <section id="properties-for-claim-and-username-extraction">
-<h3>Properties for claim and username extraction:<a class="headerlink" href="#properties-for-claim-and-username-extraction" title="Permalink to this headline"></a></h3>
+<h3>Properties for claim and username extraction:<a class="headerlink" href="#properties-for-claim-and-username-extraction" title="Permalink to this heading"></a></h3>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>AUTH_EXTRACTION_USER_PRINCIPAL=$.preferred_username
 </pre></div>
 </div>
@@ -299,7 +300,7 @@ preview the token:</p>
 </div>
 </section>
 <section id="properties-for-jwt-verification">
-<h3>Properties for JWT verification<a class="headerlink" href="#properties-for-jwt-verification" title="Permalink to this headline"></a></h3>
+<h3>Properties for JWT verification<a class="headerlink" href="#properties-for-jwt-verification" title="Permalink to this heading"></a></h3>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">AUTH_VERIFICATION_AUD</span><span class="o">=</span> <span class="mi">0</span><span class="n">oancf26sFegoXz8l5d6</span>
 </pre></div>
 </div>
@@ -335,7 +336,7 @@ system - in the example above it was saved to
 </figure>
 </section>
 <section id="set-the-openid-connect-discovery-url">
-<h3>Set the OpenId Connect Discovery URL<a class="headerlink" href="#set-the-openid-connect-discovery-url" title="Permalink to this headline"></a></h3>
+<h3>Set the OpenId Connect Discovery URL<a class="headerlink" href="#set-the-openid-connect-discovery-url" title="Permalink to this heading"></a></h3>
 <p>Will be in the format below. Replace <code class="docutils literal notranslate"><span class="pre">account</span> <span class="pre">name</span></code> and
 <code class="docutils literal notranslate"><span class="pre">authorization</span> <span class="pre">server</span> <span class="pre">name</span></code> with the correct values for your
 deployment:</p>
@@ -358,7 +359,7 @@ deployment:</p>
 
   <div role="contentinfo">
     <p>&#169; Copyright 2022, Solace Corporation, Swen-Helge Huber, &lt;swen-helge.huber@solace.com&gt;.
-      <span class="lastupdated">Last updated on 19 May 2022 at 11:04.
+      <span class="lastupdated">Last updated on 13 Jun 2022 at 07:31.
       </span></p>
   </div>
 

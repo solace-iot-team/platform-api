@@ -15,6 +15,7 @@
         <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
         <script src="../_static/jquery.js"></script>
         <script src="../_static/underscore.js"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script src="../_static/doctools.js"></script>
         <script src="../_static/contentui.js"></script>
     <script src="../_static/js/theme.js"></script>
@@ -88,7 +89,7 @@
            <div itemprop="articleBody">
              
   <section id="security-auth-overview">
-<h1>Security / Auth Overview<a class="headerlink" href="#security-auth-overview" title="Permalink to this headline"></a></h1>
+<h1>Security / Auth Overview<a class="headerlink" href="#security-auth-overview" title="Permalink to this heading"></a></h1>
 <p>The API server provides both HTTP Basic Authentication and Bearer
 Token/JWT mechanisms. Either of the mechanisms are sufficient for
 authentication. Basic Authentication is deprecated and only provided for
@@ -105,7 +106,7 @@ platform management APIs. * org-admin: grants access to specific
 organizations and privileges for all organization level resources.</p>
 <p>The role model may be refined in subsequent releases.</p>
 <section id="file-based-user-registry">
-<h2>File Based User Registry<a class="headerlink" href="#file-based-user-registry" title="Permalink to this headline"></a></h2>
+<h2>File Based User Registry<a class="headerlink" href="#file-based-user-registry" title="Permalink to this heading"></a></h2>
 <p>Basic authentication uses a file based user registry. It is intended for
 demo/test purposes as it stores passwords in clear text. See below for a
 short example, the repo contains a full example:</p>
@@ -134,7 +135,7 @@ passwords and roles. The location of the user registry is configurable
 (see “Environment Configuration”)</p>
 </section>
 <section id="identity-provider-integration">
-<h2>Identity Provider Integration<a class="headerlink" href="#identity-provider-integration" title="Permalink to this headline"></a></h2>
+<h2>Identity Provider Integration<a class="headerlink" href="#identity-provider-integration" title="Permalink to this heading"></a></h2>
 <p>JWT tokens are validated locally, the validation and extraction of user
 roles, groups is configurable (see “Environment Configuration”).</p>
 <p>JWT should be obtained from a suitable IdP and it is validated by
@@ -188,14 +189,14 @@ one organization <code class="docutils literal notranslate"><span class="pre">my
 </div>
 </section>
 <section id="example-idp-configurations">
-<h2>Example IdP Configurations<a class="headerlink" href="#example-idp-configurations" title="Permalink to this headline"></a></h2>
+<h2>Example IdP Configurations<a class="headerlink" href="#example-idp-configurations" title="Permalink to this heading"></a></h2>
 <p>Tested with:
 * Keycloak - [[Configure Keycloak for use with the API Server]]
 * WSO2 API Manager (Identity Server) - [[Configure WSO2 API Manager for use with the API Server]]
 * Okta - [[Configure Okta for use with the API Server]]</p>
 </section>
 <section id="obtaining-a-jwt">
-<h2>Obtaining a JWT<a class="headerlink" href="#obtaining-a-jwt" title="Permalink to this headline"></a></h2>
+<h2>Obtaining a JWT<a class="headerlink" href="#obtaining-a-jwt" title="Permalink to this heading"></a></h2>
 <p>The API Explorer (Swagger UI) can be used to obtain a token. The API
 definition is configured with a Open Id Connect Discovery URL that the
 API Explorer uses to find out the authorization and token endpoints for
@@ -217,7 +218,7 @@ previously e.g. via postman - as Bearer token in the API Explorer.</p>
 
   <div role="contentinfo">
     <p>&#169; Copyright 2022, Solace Corporation, Swen-Helge Huber, &lt;swen-helge.huber@solace.com&gt;.
-      <span class="lastupdated">Last updated on 19 May 2022 at 11:04.
+      <span class="lastupdated">Last updated on 13 Jun 2022 at 07:31.
       </span></p>
   </div>
 
