@@ -97,11 +97,13 @@ class BrokerService {
         credentials: null,
       }
       await QueueManager.deleteAPIProductQueues(tempApp, newServices, tempApp.internalName);
+      await QueueManager.deleteAPIQueues(tempApp, newServices, tempApp.internalName);
     }
     // also  queues may no longe be required
     if (!QueueHelper.areAppQueuesRequired(products) || (await ACLManager.getQueueSubscriptionsByApp(appPatch)).length==0) {
       L.debug('make sure to remove queues');
       await QueueManager.deleteAPIProductQueues(appPatch, newServices, appPatch.internalName);
+      await QueueManager.deleteAPIQueues(appPatch, newServices, appPatch.internalName);
     }
 
     // try to provision the modified app, if it fails roll back to previous version and provision the previous version
@@ -186,6 +188,7 @@ class BrokerService {
       await QueueManager.deleteWebHookQueues(app, services, app.internalName);
     }
     await QueueManager.createAPIProductQueues(app, services, products, ownerAttributes);
+    await QueueManager.createAPIQueues(app, services, products, ownerAttributes);
     // no webhook - no RDP
     //L.info(app.webHooks);    
     if (app.webHooks != null && app.webHooks.length > 0) {
@@ -230,6 +233,7 @@ class BrokerService {
       await this.deleteRDPs(app, services, objectName);
       await QueueManager.deleteWebHookQueues(app, services, objectName);
       await QueueManager.deleteAPIProductQueues(app, services, objectName);
+      await QueueManager.deleteAPIQueues(app, services, objectName);
       await MQTTSessionManager.delete(app, services);
 
     } catch (err) {

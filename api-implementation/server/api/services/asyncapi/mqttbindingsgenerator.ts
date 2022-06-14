@@ -18,7 +18,7 @@ export class MQTTBindingsGenerator implements BindingsGenerator {
     return this.APPLICABLE_PROTOCOLS;
   }
 
-  async processChannels(channels: any, app: App, apiProduct: APIProduct): Promise<void> {
+  async processChannels(apiName: string, channels: any, app: App, apiProduct: APIProduct): Promise<void> {
     const channelNames: string[] = Object.keys(channels);
     for (const channelName of channelNames) {
       const channel = channels[channelName];

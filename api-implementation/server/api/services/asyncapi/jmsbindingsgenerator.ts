@@ -20,15 +20,15 @@ export class JMSBindingsGenerator implements BindingsGenerator {
     return this.APPLICABLE_PROTOCOLS;
   }
 
-  async processChannels(channels: any, app: App, apiProduct: APIProduct): Promise<void> {
+  async processChannels(apiName: string, channels: any, app: App, apiProduct: APIProduct): Promise<void> {
     const channelNames: string[] = Object.keys(channels);
     for (const channelName of channelNames) {
       const channel = channels[channelName];
-      await this.processChannel(channel, app, apiProduct);
+      await this.processChannel(apiName, channel, app, apiProduct);
     }
   }
 
-  async processChannel(channel: any, app: App, apiProduct: APIProduct): Promise<void> {
+  async processChannel(apiName: string, channel: any, app: App, apiProduct: APIProduct): Promise<void> {
     L.debug(`processChannel ${JSON.stringify(channel)}`);
     if (channel.subscribe) {
       let publisherBindings: any = channel.subscribe.bindings;
@@ -55,7 +55,7 @@ export class JMSBindingsGenerator implements BindingsGenerator {
       if (QueueHelper.isAPIProductQueueRequired(apiProduct)) {
         smfBinding.destinationType = DESTINATION_TYPE_QUEUE;
         const queue: any = {};
-        queue.name = QueueHelper.getAPIProductQueueName(app, apiProduct);
+        queue.name = QueueHelper.isAPIProductQueueRequired(apiProduct)?QueueHelper.getAPIQueueName(app, apiProduct):QueueHelper.getAPIQueueName(app, apiProduct, apiName);
         queue.accessType = apiProduct.clientOptions.guaranteedMessaging.accessType;
         smfBinding.queue = queue;
       } else {

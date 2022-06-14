@@ -4,18 +4,20 @@ import App = Components.Schemas.App;
 import { Service } from '../../../../src/clients/solacecloud/models/Service';
 
 export class QueueHelper {
-  public getAPIProductQueueName(app: App, apiProduct: APIProduct): string {
-    if (app) {
+
+  public getAPIQueueName(app: App, apiProduct: APIProduct, api?: string): string {
+    if (app && api) {
+      return `${app.internalName}-${apiProduct.name}-${api}`;
+    } else if (app) {
       return `${app.internalName}-${apiProduct.name}`;
     } else {
       return `${apiProduct.name}`;
     }
   }
 
-
   public areAppQueuesRequired(apiProducts: APIProduct[]): boolean {
-    for (const apiProduct of apiProducts){
-      if (this.isAPIProductQueueRequired(apiProduct)){
+    for (const apiProduct of apiProducts) {
+      if (this.isAPIProductQueueRequired(apiProduct)) {
         L.debug(`API Product ${apiProduct.name} requires a queue`)
         return true;
       }
@@ -25,6 +27,27 @@ export class QueueHelper {
   }
 
   public isAPIProductQueueRequired(apiProduct: APIProduct): boolean {
+    if (!this.hasAPiProductRequiredGuaranteedMessagingProtocol(apiProduct)) {
+      return false;
+    }
+    return apiProduct.clientOptions
+      && apiProduct.clientOptions.guaranteedMessaging
+      && apiProduct.clientOptions.guaranteedMessaging.requireQueue
+      && (apiProduct.clientOptions.guaranteedMessaging.queueGranularity == 'apiProduct'
+        || !apiProduct.clientOptions.guaranteedMessaging.queueGranularity);
+  }
+
+  public isAPIQueueRequired(apiProduct: APIProduct): boolean {
+    if (!this.hasAPiProductRequiredGuaranteedMessagingProtocol(apiProduct)) {
+      return false;
+    }
+    return apiProduct.clientOptions
+      && apiProduct.clientOptions.guaranteedMessaging
+      && apiProduct.clientOptions.guaranteedMessaging.requireQueue
+      && (apiProduct.clientOptions.guaranteedMessaging.queueGranularity == 'api');
+  }
+
+  public hasAPiProductRequiredGuaranteedMessagingProtocol(apiProduct: APIProduct): boolean {
     // at the moment we require AMQP, JMS or SMF protocols
     if (!apiProduct.protocols) {
       return false;
@@ -35,8 +58,10 @@ export class QueueHelper {
       e.name == 'smf' || e.name == 'smfs')
     ).length == 0) {
       return false;
+    } else {
+      return true;
     }
-    return apiProduct.clientOptions && apiProduct.clientOptions.guaranteedMessaging && apiProduct.clientOptions.guaranteedMessaging.requireQueue;
+
   }
 
   public filterServicesForWebHook(app: App, services: Service[]): Service[] {
