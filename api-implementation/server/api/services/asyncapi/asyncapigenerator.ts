@@ -42,7 +42,7 @@ class AsyncApiGenerator {
     }
     specModel.servers = await this.getServersByApiProduct(apiProduct);
     specModel.components.securitySchemes = this.getSecuritySchemes();
-    await this.processApiProductChannelBindings(apiProduct, null, specModel.channels);
+    await this.processApiProductChannelBindings(apiName, apiProduct, null, specModel.channels);
     return JSON.stringify(specModel);
 
   }
@@ -108,18 +108,18 @@ class AsyncApiGenerator {
     const apiProducts: APIProduct[] = await this.findAPIProductsByAPIName(apiName, app);
     L.debug(`processChannelBindings found API Products ${apiProducts}`);
     for (const apiProduct of apiProducts) {
-      await this.processApiProductChannelBindings(apiProduct, app, channels);
+      await this.processApiProductChannelBindings(apiName, apiProduct, app, channels);
     }
 
   }
 
-  private async processApiProductChannelBindings(apiProduct: APIProduct, app: App, channels: any) {
+  private async processApiProductChannelBindings(apiName: string,apiProduct: APIProduct, app: App, channels: any) {
     if (apiProduct.protocols) {
       for (const protocol of apiProduct.protocols) {
         L.info(`processChannelBindings processing  ${apiProduct.name} protocol ${protocol.name}`);
         const generator: BindingsGenerator = BindingsRegistry.getGeneratorByProtocol(protocol);
         if (generator) {
-          await generator.processChannels(channels, app, apiProduct);
+          await generator.processChannels(apiName, channels, app, apiProduct);
         } else {
           L.warn(`No BindingsGenerator registered for ${protocol.name}`);
         }

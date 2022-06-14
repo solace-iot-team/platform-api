@@ -20,7 +20,7 @@ import SempV2ClientFactory from '../broker/sempv2clientfactory';
 import { ErrorResponseInternal } from '../../middlewares/error.handler';
 import BrokerUtils from './brokerutils';
 import APIProductsTypeHelper from '../../../../src/apiproductstypehelper';
-
+import _ from 'lodash';
 export class QueueManager {
   public async createWebHookQueues(app: App, services: Service[],
     apiProducts: APIProduct[], ownerAttributes: Attributes): Promise<void> {
@@ -37,7 +37,7 @@ export class QueueManager {
   public async createAPIProductQueues(app: App, services: Service[],
     apiProducts: APIProduct[], ownerAttributes: Attributes): Promise<void> {
     for (const apiProduct of apiProducts) {
-      const queueName: string = QueueHelper.getAPIProductQueueName(app, apiProduct);
+      const queueName: string = QueueHelper.getAPIQueueName(app, apiProduct);
       if (QueueHelper.isAPIProductQueueRequired(apiProduct)) {
         await this.createQueues(app, services, [apiProduct], ownerAttributes, queueName, apiProduct.clientOptions);
       } else {
@@ -45,11 +45,26 @@ export class QueueManager {
       }
     }
   }
+  public async createAPIQueues(app: App, services: Service[],
+    apiProducts: APIProduct[], ownerAttributes: Attributes): Promise<void> {
+    for (const apiProduct of apiProducts) {
+      for (const api of apiProduct.apis) {
+        const queueName: string = QueueHelper.getAPIQueueName(app, apiProduct, api);
+        if (QueueHelper.isAPIQueueRequired(apiProduct)) {
+          const dummyProduct: APIProduct = _.cloneDeep(apiProduct);
+          dummyProduct.apis = [api];
+          await this.createQueues(app, services, [dummyProduct], ownerAttributes, queueName, apiProduct.clientOptions);
+        } else {
+          await this.deleteQueues(services, queueName);
+        }
+      }
+    }
+  }
 
   private async createQueues(app: App, services: Service[],
     apiProducts: APIProduct[], ownerAttributes: Attributes, queueName?: string, clientOptions?: ClientOptions): Promise<void> {
     L.info(`createQueueSubscriptions services: ${services}`);
-    let subscribeExceptions: string[] = await ACLManager.getQueueSubscriptions(app, apiProducts, ownerAttributes);
+    const subscribeExceptions: string[] = await ACLManager.getQueueSubscriptions(app, apiProducts, ownerAttributes);
     if (subscribeExceptions === undefined || subscribeExceptions.length == 0) {
       return;
     }
@@ -122,13 +137,26 @@ export class QueueManager {
       const productName: string = APIProductsTypeHelper.apiProductReferenceToString(apiProductReference);
       const apiProduct: APIProduct = await ApiProductsService.byReference(productName);
       if (QueueHelper.isAPIProductQueueRequired(apiProduct)) {
-        const queueName: string = QueueHelper.getAPIProductQueueName(app, apiProduct);
+        const queueName: string = QueueHelper.getAPIQueueName(app, apiProduct);
         await this.deleteQueues(services, queueName);
+      }
+    }
+  }
+
+  public async deleteAPIQueues(app: App, services: Service[], name: string) {
+
+    for (const apiProductReference of app.apiProducts) {
+      const productName: string = APIProductsTypeHelper.apiProductReferenceToString(apiProductReference);
+      const apiProduct: APIProduct = await ApiProductsService.byReference(productName);
+      for (const api of apiProduct.apis) {
+        if (QueueHelper.isAPIQueueRequired(apiProduct)) {
+          const queueName: string = QueueHelper.getAPIQueueName(app, apiProduct, api);
+          await this.deleteQueues(services, queueName);
+        }
       }
     }
     //await this.deleteQueues(services, name);
   }
-
   public async deleteWebHookQueues(app: App, services: Service[], name: string) {
     await this.deleteQueues(services, name);
   }

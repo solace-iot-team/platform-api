@@ -2,7 +2,7 @@ openapi: 3.0.0
 info:
   title: Solace API Management Connector
   description: 'Solace API Management Connector API. Note: basic authentication security mechanism is deprecated.'
-  version: 0.7.18
+  version: 0.7.19
 servers:
   - url: /v1
 
@@ -775,6 +775,13 @@ components:
           type: boolean
           description: "Automatically provision a queue with all subscriptions permitted for this app attached"
           example: true
+        queueGranularity:
+          type: string
+          enum:
+          - api
+          - apiProduct
+          description: "Queue can be applied at api level (one queue per API) or at API Product level (one queue per product, aggregating the subscriptions of all associated APIs), defaults to apiProduct if not supplied"
+          example: api
         accessType:
           type: string
           description: access mode for the queue

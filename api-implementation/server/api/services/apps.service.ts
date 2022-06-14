@@ -126,20 +126,33 @@ export class AppsService {
           for (const apiProductReference of app.apiProducts) {
             const productName: string = APIProductsTypeHelper.apiProductReferenceToString(apiProductReference);
             const apiProduct = await ApiProductsService.byName(productName);
-            const isSupportedProtocol: boolean = apiProduct.protocols.find(p => p.name.toString().indexOf('smf') > -1
-              || p.name.toString().indexOf('jms') > -1) != null;
+            const isSupportedProtocol: boolean = QueueHelper.hasAPiProductRequiredGuaranteedMessagingProtocol(apiProduct);
             if (isSupportedProtocol && apiProduct.clientOptions
               && apiProduct.clientOptions.guaranteedMessaging
               && apiProduct.clientOptions.guaranteedMessaging.requireQueue) {
-              clientInformation.push({
-                guaranteedMessaging: {
-                  name: QueueHelper.getAPIProductQueueName(app, apiProduct),
-                  accessType: apiProduct.clientOptions.guaranteedMessaging.accessType,
-                  apiProduct: productName,
-                  maxMsgSpoolUsage: apiProduct.clientOptions.guaranteedMessaging.maxMsgSpoolUsage,
-                  maxTtl: apiProduct.clientOptions.guaranteedMessaging.maxTtl,
+              if (QueueHelper.isAPIProductQueueRequired(apiProduct)) {
+                clientInformation.push({
+                  guaranteedMessaging: {
+                    name: QueueHelper.getAPIQueueName(app, apiProduct),
+                    accessType: apiProduct.clientOptions.guaranteedMessaging.accessType,
+                    apiProduct: productName,
+                    maxMsgSpoolUsage: apiProduct.clientOptions.guaranteedMessaging.maxMsgSpoolUsage,
+                    maxTtl: apiProduct.clientOptions.guaranteedMessaging.maxTtl,
+                  }
+                });
+              } else if (QueueHelper.isAPIQueueRequired(apiProduct)) {
+                for (const api of apiProduct.apis) {
+                  clientInformation.push({
+                    guaranteedMessaging: {
+                      name: QueueHelper.getAPIQueueName(app, apiProduct, api),
+                      accessType: apiProduct.clientOptions.guaranteedMessaging.accessType,
+                      apiProduct: productName,
+                      maxMsgSpoolUsage: apiProduct.clientOptions.guaranteedMessaging.maxMsgSpoolUsage,
+                      maxTtl: apiProduct.clientOptions.guaranteedMessaging.maxTtl,
+                    }
+                  });
                 }
-              });
+              }
             }
           }
           if (clientInformation.length > 0) {
@@ -448,7 +461,7 @@ export class AppsService {
         const persistentProduct = appPersistentState.apiProducts.find(a => !isString(a) && (a as AppApiProductsComplex).apiproduct == productName);
 
         const hasPersistentStatus: boolean = (persistentProduct && (persistentProduct as AppApiProductsComplex).status !== undefined);
-        //L.error(`${hasPersistentStatus}`);
+        
         if (!isString(product) && !(product as AppApiProductsComplex).status
         ) {
           if (hasPersistentStatus) {

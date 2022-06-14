@@ -528,6 +528,12 @@ declare namespace Components {
              */
             requireQueue?: boolean;
             /**
+             * Queue can be applied at api level (one queue per API) or at API Product level (one queue per product, aggregating the subscriptions of all associated APIs), defaults to apiProduct if not supplied
+             * example:
+             * api
+             */
+            queueGranularity?: "api" | "apiProduct";
+            /**
              * access mode for the queue
              * example:
              * exclusive
