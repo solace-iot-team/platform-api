@@ -15784,7 +15784,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\"apis\":[\"Y-API\"],\"approvalType\":\"auto\",\"accessLevel\":\"private\",\"displayName\":\"mqtt-qos-1\",\"name\":\"1f6d8a2f-13a9-47a6-973c-e4e939a82b7e\",\"description\":\"mqtt-qos-1\",\"pubResources\":[],\"subResources\":[],\"attributes\":[{\"name\":\"_AP_BUSINESS_GROUP_OWNING_ID_\",\"value\":\"rjgu-devel\"},{\"name\":\"_AP_BUSINESS_GROUP_OWNING_DISPLAY_NAME_\",\"value\":\"RJGU-DEVEL\"},{\"name\":\"_AP_BUSINESS_GROUP_SHARING_LIST_\",\"value\":\"[]\"},{\"name\":\"_AP_ASSET_OWNER_ID_\",\"value\":\"master.user@async-apim-devel.com\"},{\"name\":\"_AP_LIFECYLE_STATE_\",\"value\":\"released\"}],\"environments\":[\"dev\"],\"protocols\":[{\"name\":\"mqtt\",\"version\":\"3.1.1\"},{\"name\":\"secure-mqtt\",\"version\":\"3.1.1\"}],\"clientOptions\":{\"guaranteedMessaging\":{\"requireQueue\":true,\"accessType\":\"exclusive\",\"maxTtl\":1,\"maxMsgSpoolUsage\":1}},\"meta\":{\"version\":\"1.0.0\"}}",
+							"raw": "{\"apis\":[\"{{API_NAME}}\"],\"approvalType\":\"auto\",\"accessLevel\":\"private\",\"displayName\":\"mqtt-qos-1\",\"name\":\"1f6d8a2f-13a9-47a6-973c-e4e939a82b7e\",\"description\":\"mqtt-qos-1\",\"pubResources\":[],\"subResources\":[],\"attributes\":[{\"name\":\"_AP_BUSINESS_GROUP_OWNING_ID_\",\"value\":\"rjgu-devel\"},{\"name\":\"_AP_BUSINESS_GROUP_OWNING_DISPLAY_NAME_\",\"value\":\"RJGU-DEVEL\"},{\"name\":\"_AP_BUSINESS_GROUP_SHARING_LIST_\",\"value\":\"[]\"},{\"name\":\"_AP_ASSET_OWNER_ID_\",\"value\":\"master.user@async-apim-devel.com\"},{\"name\":\"_AP_LIFECYLE_STATE_\",\"value\":\"released\"}],\"environments\":[\"dev\"],\"protocols\":[{\"name\":\"mqtt\",\"version\":\"3.1.1\"},{\"name\":\"secure-mqtt\",\"version\":\"3.1.1\"}],\"clientOptions\":{\"guaranteedMessaging\":{\"requireQueue\":true,\"accessType\":\"exclusive\",\"maxTtl\":1,\"maxMsgSpoolUsage\":1}},\"meta\":{\"version\":\"1.0.0\"}}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -19237,14 +19237,14 @@
 					"response": []
 				},
 				{
-					"name": "Delete App",
+					"name": "Patch API Product - Switch to Product Queue",
 					"event": [
 						{
 							"listen": "test",
 							"script": {
 								"exec": [
-									"pm.test(\"Status code is OK\", function () {",
-									"    pm.response.to.have.status(204);",
+									"pm.test(\"Status OK\", function () {",
+									"    pm.response.to.have.status(200);",
 									"});"
 								],
 								"type": "text/javascript"
@@ -19252,19 +19252,179 @@
 						}
 					],
 					"request": {
-						"method": "DELETE",
+						"method": "PATCH",
 						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"clientOptions\": {\n    \"guaranteedMessaging\": {\n      \"requireQueue\": true,\n      \"queueGranularity\": \"apiProduct\",\n      \"accessType\": \"exclusive\",\n      \"maxTtl\": 600,\n      \"maxMsgSpoolUsage\": 50\n    }\n  }\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
 						"url": {
-							"raw": "{{CONNECTOR_BASEURL}}/{{TENANT}}/teams/{{TEAM_NAME}}/apps/{{APP_NAME}}",
+							"raw": "{{CONNECTOR_BASEURL}}/{{TENANT}}/apiProducts/{{API_NAME}}_PRODUCT2",
 							"host": [
 								"{{CONNECTOR_BASEURL}}"
 							],
 							"path": [
 								"{{TENANT}}",
-								"teams",
-								"{{TEAM_NAME}}",
-								"apps",
-								"{{APP_NAME}}"
+								"apiProducts",
+								"{{API_NAME}}_PRODUCT2"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Wait for async app provisioning",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "https://postman-echo.com/delay/10",
+							"protocol": "https",
+							"host": [
+								"postman-echo",
+								"com"
+							],
+							"path": [
+								"delay",
+								"10"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Wait for async app provisioning Copy",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "https://postman-echo.com/delay/10",
+							"protocol": "https",
+							"host": [
+								"postman-echo",
+								"com"
+							],
+							"path": [
+								"delay",
+								"10"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Check API Product Queue Present",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"ACL is present\", function () {",
+									"    var queueName = `${pm.environment.get(\"APP_NAME_INTERNAL\")}-${pm.environment.get(\"API_NAME\")}_PRODUCT2`;",
+									"    pm.expect(pm.response.text()).to.include(queueName);",
+									"});",
+									"pm.test(\"Status code is OK\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "{{BROKER_PASSWORD}}",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "{{BROKER_USER}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{BROKER_BASEURL}}/msgVpns/{{CLOUD_VPN}}/queues/{{APP_NAME_INTERNAL}}-{{API_NAME}}_PRODUCT2",
+							"host": [
+								"{{BROKER_BASEURL}}"
+							],
+							"path": [
+								"msgVpns",
+								"{{CLOUD_VPN}}",
+								"queues",
+								"{{APP_NAME_INTERNAL}}-{{API_NAME}}_PRODUCT2"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Check Subscriptions on Product Queue",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"pm.test(\"Has subscription\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.data[0].subscriptionTopic).to.eql('traxens/feed/*/v1/E1/*/>');",
+									"});",
+									"pm.test(\"Has subscrioption\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.data[2].subscriptionTopic).to.eql('say/hello');",
+									"});",
+									"pm.test(\"Has expected number of subscriptions\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.data.length).to.eql(3);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "{{BROKER_PASSWORD}}",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "{{BROKER_USER}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{BROKER_BASEURL}}/msgVpns/{{CLOUD_VPN}}/queues/{{APP_NAME_INTERNAL}}-{{API_NAME}}_PRODUCT2/subscriptions",
+							"host": [
+								"{{BROKER_BASEURL}}"
+							],
+							"path": [
+								"msgVpns",
+								"{{CLOUD_VPN}}",
+								"queues",
+								"{{APP_NAME_INTERNAL}}-{{API_NAME}}_PRODUCT2",
+								"subscriptions"
 							]
 						}
 					},
@@ -19367,6 +19527,91 @@
 								"{{CLOUD_VPN}}",
 								"queues",
 								"{{APP_NAME_INTERNAL}}-{{API_NAME}}_PRODUCT2-{{API_NAME}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete App",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is OK\", function () {",
+									"    pm.response.to.have.status(204);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{CONNECTOR_BASEURL}}/{{TENANT}}/teams/{{TEAM_NAME}}/apps/{{APP_NAME}}",
+							"host": [
+								"{{CONNECTOR_BASEURL}}"
+							],
+							"path": [
+								"{{TENANT}}",
+								"teams",
+								"{{TEAM_NAME}}",
+								"apps",
+								"{{APP_NAME}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Check API Product Queue Not present",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Queue is not found\", function () {",
+									"    pm.expect(pm.response.text()).to.include(\"NOT_FOUND\");",
+									"});",
+									"pm.test(\"Status code is 400\", function () {",
+									"    pm.response.to.have.status(400);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "{{BROKER_PASSWORD}}",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "{{BROKER_USER}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{BROKER_BASEURL}}/msgVpns/{{CLOUD_VPN}}/queues/{{APP_NAME_INTERNAL}}-{{API_NAME}}_PRODUCT2",
+							"host": [
+								"{{BROKER_BASEURL}}"
+							],
+							"path": [
+								"msgVpns",
+								"{{CLOUD_VPN}}",
+								"queues",
+								"{{APP_NAME_INTERNAL}}-{{API_NAME}}_PRODUCT2"
 							]
 						}
 					},
