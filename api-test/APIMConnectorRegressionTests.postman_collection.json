@@ -19298,6 +19298,26 @@
 					"response": []
 				},
 				{
+					"name": "Wait for async app provisioning Copy",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "https://postman-echo.com/delay/10",
+							"protocol": "https",
+							"host": [
+								"postman-echo",
+								"com"
+							],
+							"path": [
+								"delay",
+								"10"
+							]
+						}
+					},
+					"response": []
+				},
+				{
 					"name": "Check API Product Queue Present",
 					"event": [
 						{
