@@ -35,17 +35,20 @@ export class databaseaccess {
           maxPoolSize: 20,
         });
         await databaseaccess.client.connect();
+        databaseaccess.client.removeAllListeners('timeout');
         databaseaccess.client.on('timeout', () => {
           L.error('db timeout');
           databaseaccess.reconnect(url);
 
         });
+        databaseaccess.client.removeAllListeners('error');
         databaseaccess.client.on('error', (e) => {
           L.error("mongo error");
           L.error(e);
           databaseaccess.reconnect(url);
         });
 
+        databaseaccess.client.removeAllListeners('serverHeartbeatFailed');
         databaseaccess.client.on('serverHeartbeatFailed', (e) => {
           L.error("mongo error");
           L.error(e);
