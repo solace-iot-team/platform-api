@@ -1,5 +1,19 @@
 # Release Notes
 
+## Version 0.5.0
+* OpenAPI: 0.7.19
+* API Management Connector Server: 0.5.0
+
+### Features
+* **feat-app-queue-per-api**
+  - The API Product now features a setting to scope the queue creation if guranteeed messaging is supported to either apiProduct (one queue per API Product) or api (one queue for each associated API)
+  - Scope defaults to apiProduct if omitted
+  - API change: added optional queueGranularity to API Product Guaranteed Messaging settings, with apiProduct (default)and api scopes for queues
+
+### Fixes
+* **fix-mongodb-reconnection-and-error-handling**
+  - Improved reconnection logic on connection errors to MongoDB
+
 ## Version 0.4.0
 * OpenAPI: 0.7.18
 * API Management Connector Server: 0.4.0
