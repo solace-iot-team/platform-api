@@ -112,6 +112,8 @@ class BrokerService {
       return true;
     }
     catch (e) {
+      L.error(`Error reprovisioning app `, e);
+      L.error(e);
       const r = await this.provisionApp(appUnmodified as App, ownerAttributes, true);
       return false;
     }

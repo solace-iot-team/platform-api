@@ -98,10 +98,18 @@ export class QueueManager {
       }
       try {
         const q = await apiClient.getMsgVpnQueue(service.msgVpnName, objectName);
+        L.trace(`queue exists ${objectName}`);
+        const disableQ: MsgVpnQueue = {
+          queueName: objectName,
+          msgVpnName: service.msgVpnName,
+          ingressEnabled: false,
+          egressEnabled: false
+        };
+        const disableQueueResponse = await apiClient.updateMsgVpnQueue(service.msgVpnName, objectName, disableQ);
         const updateResponseMsgVpnQueue = await apiClient.updateMsgVpnQueue(service.msgVpnName, objectName, newQ);
         L.debug(`createQueues updated ${app.internalName}`);
       } catch (e) {
-        L.debug(`createQueues lookup  failed ${JSON.stringify(e)}`);
+        L.warn(`createQueues lookup  failed ${JSON.stringify(e)}`);
         try {
           const q = await apiClient.createMsgVpnQueue(service.msgVpnName, newQ);
         } catch (e) {

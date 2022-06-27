@@ -253,9 +253,11 @@ export class AppsService {
     );
 
     const validated = await this.validate(app, true, appNotModified as App);
-    if (app.credentials && app.credentials.secret && !app.credentials.secret.consumerSecret) {
+    if (app.credentials && app.credentials.secret) {
       // regenerate a consumerSecret if omitted / partial secret is sent
-      app.credentials.secret.consumerSecret = AppHelper.generateConsumerSecret();
+      if (!app.credentials.secret.consumerSecret){
+        app.credentials.secret.consumerSecret = AppHelper.generateConsumerSecret();
+      }
       // set the issuedAt and calculate expiresAt timestamp
       const now: number = Date.now();
       app.credentials.issuedAt = now;
