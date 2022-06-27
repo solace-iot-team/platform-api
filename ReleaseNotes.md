@@ -1,5 +1,18 @@
 # Release Notes
 
+## Version 0.5.1
+* OpenAPI: 0.7.19
+* API Management Connector Server: 0.5.1
+
+### Fixes
+* **fix-broker-provisioning-log-error**
+  - added error logging into reprovision method to track root cause
+* **fix-app-patch-set-expiry**
+  - fixed issue where expiresAt was not calculated if full credentials were provided in request
+* **fix-app-reprovisioning-queue-update**
+  - fixed issue when a queue update was required due to change of credentials. 
+  - The queue was not updated as ingress/egress were active. Now queue is disabled before update.
+
 ## Version 0.5.0
 * OpenAPI: 0.7.19
 * API Management Connector Server: 0.5.0
