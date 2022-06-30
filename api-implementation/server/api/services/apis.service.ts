@@ -57,9 +57,14 @@ export class ApisService {
   async infoByName(name: string): Promise<APIInfo> {
     const apiInfo = await this.readStrategy.infoByName(name);
     const spec: string = await this.byName(name);
-    const params = await AsyncAPIHelper.getAsyncAPIParameters(spec);
-    if (params) {
-      apiInfo.apiParameters = params;
+    try {
+      const params = await AsyncAPIHelper.getAsyncAPIParameters(spec);
+      if (params) {
+        apiInfo.apiParameters = params;
+      }
+    } catch (e) {
+      L.debug(e);
+      // do nothing, Async API may be broken but we still want to return a valid APIInfo
     }
     if (apiInfo.meta) {
       apiInfo.meta = await Versioning.toExternalRepresentation(apiInfo.meta, null);
@@ -229,8 +234,8 @@ export class ApisService {
     if (validationMessage) {
       throw new ErrorResponseInternal(400, `Entity ${info.name} is not valid, ${validationMessage}`);
     } else {
-      info.apiParameters = await AsyncAPIHelper.getAsyncAPIParameters(asyncapi);
       const d: AsyncAPIDocument = await parser.parse(asyncapi);
+      info.apiParameters = await AsyncAPIHelper.getAsyncAPIParameters(asyncapi);
       const version = (await this.getVersionFromApiSpec(asyncapi, info));
 
       if (d.hasTag(DEPRECATED_TAG)) {
