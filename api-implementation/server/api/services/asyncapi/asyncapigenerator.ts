@@ -8,7 +8,6 @@ import ApiProductsTypeHelper from '../../../../src/apiproductstypehelper';
 import BindingsRegistry from './bindingsregistry';
 import { BindingsGenerator } from './bindingsgenerator';
 import ApiProductsService from '../apiProducts.service';
-
 import App = Components.Schemas.App;
 import APIProduct = Components.Schemas.APIProduct;
 import AppEnvironment = Components.Schemas.AppEnvironment;
@@ -81,6 +80,12 @@ class AsyncApiGenerator {
           }
           server.bindings['mqtt'] = { 'clientId': app.internalName, 'version': '0.1.0' };
         }
+        if (protocol.protocol.name.toUpperCase().includes('JMS') || protocol.protocol.name.toUpperCase().includes('SMF')) {
+          if (!server.bindings) {
+            server.bindings = {};
+          }
+          server.bindings['solace'] = { 'msgVpn': protocol.msgVpn, 'version': '0.2.0' };
+        }
 
         servers[serverKey] = server;
       }
@@ -113,7 +118,7 @@ class AsyncApiGenerator {
 
   }
 
-  private async processApiProductChannelBindings(apiName: string,apiProduct: APIProduct, app: App, channels: any) {
+  private async processApiProductChannelBindings(apiName: string, apiProduct: APIProduct, app: App, channels: any) {
     if (apiProduct.protocols) {
       for (const protocol of apiProduct.protocols) {
         L.info(`processChannelBindings processing  ${apiProduct.name} protocol ${protocol.name}`);

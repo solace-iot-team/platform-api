@@ -50,7 +50,7 @@ export class SolaceCloudService {
           datacenterProvider: cloudService.datacenterProvider,
           infrastructureId: cloudService.infrastructureId,
           locked: cloudService.locked,
-          messagingProtocols: await ProtocolMapper.mapSolaceMessagingProtocolsToAsyncAPI(cloudService.messagingProtocols),
+          messagingProtocols: await ProtocolMapper.mapSolaceMessagingProtocolsToAsyncAPI(cloudService, cloudService.messagingProtocols),
           messagingStorage: cloudService.messagingStorage,
           msgVpnAttributes: newMsgVpnAttributes,
           msgVpnName: cloudService.msgVpnName,

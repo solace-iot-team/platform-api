@@ -683,6 +683,7 @@ declare namespace Components {
              * amqp://mr1i5g7tif6z9h.messaging.solace.cloud:5672
              */
             uri?: string; // ^[a-zA-Z0-9\.\-+]*:\/\/[A-Za-z\.:0-9\-]*.*$
+            msgVpn?: string;
         }
         /**
          * Request to derive a new entity from an existing entity (clone). Meta object allows to pass in current user name to override the logged in user context in the Connector

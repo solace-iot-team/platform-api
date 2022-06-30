@@ -571,6 +571,7 @@ class BrokerService {
               protocol: protocol,
               transport: endpoint.transport,
               uri: endpoint.uris[0],
+              msgVpn: service.msgVpnName
             };
             endpoints.push(newEndpoint);
           }

@@ -2081,6 +2081,11 @@ components:
           maxLength: 2083
           pattern: "^[a-zA-Z0-9\\.\\-+]*:\\/\\/[A-Za-z\\.:0-9\\-]*.*$"
           example: "amqp://mr1i5g7tif6z9h.messaging.solace.cloud:5672"
+        msgVpn:
+          type: string
+          minLength: 5
+          maxLength: 256
+          
     About:
       type: object
       additionalProperties: false
