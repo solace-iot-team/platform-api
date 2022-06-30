@@ -48,12 +48,19 @@ class ApisReadLocalStrategy implements ApisReadStrategy {
             for (const info of apiInfos) {
               if (!info.apiParameters) {
                 const spec: string = (await this.persistenceService.byName(info.name)).specification;
-                info.apiParameters = await AsyncAPIHelper.getAsyncAPIParameters(spec);
+                try {
+                  info.apiParameters = await AsyncAPIHelper.getAsyncAPIParameters(spec);
+                } catch (e){
+                  L.warn(e);
+                  // do nothing. the API spec is broken but the list should still be generated as required
+                }
 
               }
               //delete info.deprecated;
+              info.version = info.meta.version?info.meta.version:info.version;
               delete info.meta;
               //delete info.deprecatedDescription;
+
             }
             resolve(apiInfos);
           }

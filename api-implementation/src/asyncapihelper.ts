@@ -100,8 +100,8 @@ export class AsyncAPIHelper {
 
       return this.uniqueLastVal(parameterNames, it => it.name);
     } catch (e) {
-      L.fatal(`Unable to parse Async API spec ${name}`)
-      throw new ErrorResponseInternal(500, `Unable to parse ${name}`);
+      L.error(`Unable to parse Async API spec ${e.title}, ${e.detail}`)
+      throw new ErrorResponseInternal(400, `Unable to parse, ${e.title}, ${e.detail}`);
     }
   }
 
