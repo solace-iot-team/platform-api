@@ -853,6 +853,17 @@ declare namespace Components {
              */
             responseCode?: number; // int64
         }
+        export interface Job {
+            id: string;
+            nextRunAt?: string; // date-time
+            lastRunAt?: string; // date-time
+            lastFinishedAt?: string; // date-time
+            result?: {
+            } | string | boolean | number | number | any[];
+            status?: "pending" | "finished";
+            name: string;
+            app?: AppResponse;
+        }
         /**
          * meta information of an object. Will be returned by some resources. Can be set when patching or creating an object. Auto generated if not set.
          */
@@ -2209,6 +2220,26 @@ declare namespace Paths {
     namespace ListHistory {
         namespace Responses {
             export type $200 = Components.Schemas.History[];
+            export type $400 = Components.Responses.BadRequest;
+            export type $401 = Components.Responses.Unauthorized;
+            export type $403 = Components.Responses.Forbidden;
+            export type $404 = Components.Responses.NotFound;
+            export type $406 = Components.Responses.NotAcceptable;
+            export type $429 = Components.Responses.TooManyRequests;
+            export type $500 = Components.Responses.InternalServerError;
+            export type $503 = Components.Responses.ServiceUnavailable;
+            export type $504 = Components.Responses.GatewayTimeout;
+        }
+    }
+    namespace ListJobs {
+        namespace Parameters {
+            export type Status = "all" | "pending" | "finished";
+        }
+        export interface QueryParameters {
+            status?: Parameters.Status;
+        }
+        namespace Responses {
+            export type $200 = Components.Schemas.Job[];
             export type $400 = Components.Responses.BadRequest;
             export type $401 = Components.Responses.Unauthorized;
             export type $403 = Components.Responses.Forbidden;

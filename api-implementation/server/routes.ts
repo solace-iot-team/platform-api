@@ -10,6 +10,7 @@ import environmentsRouter from './api/controllers/environments/router';
 import accountRouter from './api/controllers/account/router';
 import organizationsRouter from './api/controllers/organizations/router';
 import historyRouter from './api/controllers/history/router';
+import jobsRouter from './api/controllers/jobs/router';
 import tokenRouter from './api/controllers/token/router';
 import aboutRouter from './api/controllers/about/router';
 import healthCheckRouter from './api/controllers/healthcheck/router';
@@ -58,6 +59,7 @@ export default function routes(app: Application): void {
   router.use('/:org/environments', authorizedRoles(['org-admin']), environmentsRouter);
   router.use('/:org/services', authorizedRoles(['org-admin']), accountRouter);
   router.use('/:org/history', authorizedRoles(['org-admin']), historyRouter);
+  router.use('/:org/jobs', authorizedRoles(['org-admin']), jobsRouter);
   router.use('/:org/token', authorizedRoles(['org-admin']), tokenRouter);
   router.use('/:org/apps', authorizedRoles(['org-admin']), appsRouter);
   router.use('/healthcheck', healthCheckRouter);
