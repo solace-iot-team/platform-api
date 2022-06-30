@@ -52,8 +52,10 @@ class ApisReadLocalStrategy implements ApisReadStrategy {
 
               }
               //delete info.deprecated;
+              info.version = info.meta.version?info.meta.version:info.version;
               delete info.meta;
               //delete info.deprecatedDescription;
+
             }
             resolve(apiInfos);
           }
