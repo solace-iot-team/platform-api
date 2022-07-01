@@ -76,19 +76,7 @@ export class DevelopersService {
         syntax,
         dev.attributes,
       );
-      if (app) {
-        const endpoints = await BrokerService.getMessagingProtocols(app);
-        app.environments = endpoints;
-        for (const appEnv of app.environments) {
-          const permissions = await BrokerService.getPermissions(
-            app,
-            dev.attributes,
-            appEnv.name,
-            syntax
-          );
-          appEnv.permissions = permissions;
-        }
-      } else {
+      if (!app) {
         throw 404;
       }
       await AppFactory.transformToExternalAppRepresentation(app);

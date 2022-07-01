@@ -49,7 +49,8 @@ class BrokerService {
       return permissions;
     } catch (err) {
       L.error("Get permissions error");
-      throw new ErrorResponseInternal(500, err);
+      L.error(err);
+      throw err;
     }
   }
 
@@ -571,6 +572,7 @@ class BrokerService {
               protocol: protocol,
               transport: endpoint.transport,
               uri: endpoint.uris[0],
+              msgVpn: service.msgVpnName
             };
             endpoints.push(newEndpoint);
           }

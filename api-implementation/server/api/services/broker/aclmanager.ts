@@ -1,5 +1,5 @@
 import L from '../../../common/logger';
-import parser from '@asyncapi/parser';
+import parser, { AsyncAPIDocument } from '@asyncapi/parser';
 
 import { ErrorResponseInternal } from '../../middlewares/error.handler';
 
@@ -282,47 +282,31 @@ class ACLManager {
     return destinations;
   }
 
-  private getResourcesFromAsyncAPIs(apis: string[], direction: Direction): Promise<string[]> {
-    return new Promise<string[]>(
-      (resolve, reject) => {
-        const apiPromises: Promise<string>[] = [];
-        apis.forEach((api: string) => {
-          apiPromises.push(ApisService.byApiReference(api));
-        });
-        Promise.all(apiPromises).then(async (specs) => {
-          const parserPromises: Promise<any>[] = [];
-          const resources: string[] = [];
-          specs.forEach((specification: string) => {
-            const p: Promise<any> = parser.parse(specification);
-            parserPromises.push(p);
+  private async getResourcesFromAsyncAPIs(apis: string[], direction: Direction): Promise<string[]> {
 
-            p.then(
-              (spec) => {
-                spec.channelNames().forEach((s: string) => {
-
-                  const channel = spec.channel(s);
-
-                  if (direction == Direction.Subscribe && channel.hasSubscribe()) {
-                    resources.push(s);
-                  }
-                  if (direction == Direction.Publish && channel.hasPublish()) {
-                    resources.push(s);
-                  }
-                });
-              }
-            ).catch((e) => {
-              L.error(e);
-              reject(e);
-            });
-          });
-          Promise.all(parserPromises).then((vals) => {
-            resolve(resources);
-          });
-
-
-        });
+    const resources: string[] = [];
+    const specs: string[] = [];
+    for (const api of apis) {
+      specs.push(await ApisService.byApiReference(api));
+    }
+    for (const specification of specs) {
+      try {
+        const parsedSpec: AsyncAPIDocument = await parser.parse(specification);
+        for (const s of parsedSpec.channelNames()) {
+          const channel = parsedSpec.channel(s);
+          if (direction == Direction.Subscribe && channel.hasSubscribe()) {
+            resources.push(s);
+          }
+          if (direction == Direction.Publish && channel.hasPublish()) {
+            resources.push(s);
+          }
+        }
+      } catch (e) {
+        L.warn(e);
+        throw new ErrorResponseInternal(500, `Unable to parse, ${e.title}, ${e.detail}`);
       }
-    );
+    }
+    return resources;
   }
 
   private scrubDestination(destination: string, syntax?: TopicSyntax) {
@@ -431,44 +415,7 @@ class ACLManager {
 
   }
   public getSubscriptionsFromAsyncAPIs(apis: string[]): Promise<string[]> {
-    return new Promise<string[]>(
-      (resolve, reject) => {
-        const apiPromises: Promise<string>[] = [];
-        apis.forEach((api: string) => {
-          apiPromises.push(ApisService.byApiReference(api));
-        });
-        Promise.all(apiPromises).then(async (specs) => {
-          const parserPromises: Promise<any>[] = [];
-          const resources: string[] = [];
-          specs.forEach((specification: string) => {
-            const p: Promise<any> = parser.parse(specification);
-            parserPromises.push(p);
-
-            p.then(
-              (spec) => {
-                spec.channelNames().forEach((s: string) => {
-
-                  const channel = spec.channel(s);
-                  // publish means subscribe - async api transposition
-                  if (channel.hasPublish()) {
-                    L.info(`getSubscriptionsFromAsyncAPIs subscribe ${s}`)
-                    resources.push(s);
-                  }
-                });
-              }
-            ).catch((e) => {
-              L.error(e);
-              reject(e);
-            });
-          });
-          Promise.all(parserPromises).then((vals) => {
-            resolve(resources);
-          });
-
-
-        });
-      }
-    );
+    return this,this.getResourcesFromAsyncAPIs(apis, Direction.Publish);
   }
 
   public async getQueueSubscriptionsByApp(app: App): Promise<string[]> {
@@ -479,7 +426,7 @@ class ACLManager {
       query['$or'] = [];
       app.apiProducts.forEach(a => query['$or'].push({ name: APIProductsTypeHelper.apiProductReferenceToString(a) }));
     }
-    const apiProducts = (await ApiProductsService.all(query)).filter(product=>(product.meta && (!product.meta.stage || product.meta.stage != 'retired')));
+    const apiProducts = (await ApiProductsService.all(query)).filter(product => (product.meta && (!product.meta.stage || product.meta.stage != 'retired')));
     return this.getQueueSubscriptions(app, apiProducts, null);
   }
 

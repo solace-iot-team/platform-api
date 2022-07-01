@@ -1,3 +1,4 @@
+import server from '../server';
 import L from '../server/common/logger';
 import Endpoint = Components.Schemas.Endpoint;
 import Protocol = Components.Schemas.Protocol;
@@ -212,7 +213,7 @@ export class ProtocolMapper {
     return ProtocolMapper.getProtocolMappings().find(element => element.name == protocol.name);
   }
 
-  public static async mapSolaceMessagingProtocolsToAsyncAPI(serverProtocols): Promise<Endpoint[]> {
+  public static async mapSolaceMessagingProtocolsToAsyncAPI(service, serverProtocols): Promise<Endpoint[]> {
     const endpoints: Endpoint[] = [];
     const mappings = ProtocolMapper.getProtocolMappings();
     for (const protocol of serverProtocols) {
@@ -234,8 +235,10 @@ export class ProtocolMapper {
                 version: mapping.version
               },
               transport: endpoint.transport,
-              uri: endpoint.uris[0]
+              uri: endpoint.uris[0],
+              msgVpn: service.msgVpnName,
             };
+
 
             endpoints.push(newEndpoint);
           }
@@ -251,9 +254,9 @@ export class ProtocolMapper {
   public static mapSolaceClientNameToProtocol(clientName: string, tls: boolean): Protocol {
     let clientProtocol: string = clientName.substring(0,
       clientName.indexOf('/')).replace('#', '');
-      if (clientName.startsWith('#rest')){
-        clientProtocol = 'rest';
-      }
+    if (clientName.startsWith('#rest')) {
+      clientProtocol = 'rest';
+    }
     const mappings = ProtocolMapper.getProtocolMappings();
     let mapping = mappings.find(element => element.clientProtocol.name == clientProtocol && element.clientProtocol.tls == tls);
     let protocol: Protocol;
@@ -267,7 +270,7 @@ export class ProtocolMapper {
       protocol = {
         name: mapping.name as Protocol["name"],
         version: mapping.version
-      }      
+      }
     }
     return protocol;
   }

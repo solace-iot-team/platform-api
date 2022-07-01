@@ -30,6 +30,7 @@ export class EnvironmentsService {
         let messagingProtocols: Components.Schemas.Endpoint[] = [];
         if (service.creationState == 'completed') {
           messagingProtocols = await ProtocolMapper.mapSolaceMessagingProtocolsToAsyncAPI(
+            service, 
             service.messagingProtocols
           );
           env.msgVpnName = service.msgVpnName;
@@ -49,7 +50,7 @@ export class EnvironmentsService {
     let messagingProtocols: Components.Schemas.Endpoint[] = [];
     if (service.creationState == 'completed') {
       messagingProtocols = await ProtocolMapper.mapSolaceMessagingProtocolsToAsyncAPI(
-        service.messagingProtocols
+        service, service.messagingProtocols
       );
     }
     const response: EnvironmentResponse = {
@@ -161,7 +162,7 @@ export class EnvironmentsService {
             `No protocols exposed for service ${env.serviceId}`
           );
         }
-        const serverProtocols: Components.Schemas.Endpoint[] = await ProtocolMapper.mapSolaceMessagingProtocolsToAsyncAPI(svc.messagingProtocols);
+        const serverProtocols: Components.Schemas.Endpoint[] = await ProtocolMapper.mapSolaceMessagingProtocolsToAsyncAPI(svc, svc.messagingProtocols);
         for (const exposedProtocol of env.exposedProtocols) {
           L.debug(`${exposedProtocol.name} - ${exposedProtocol.version}`);
           const matchingSP = serverProtocols.find(serverProtocol => (exposedProtocol.name == serverProtocol.protocol.name && exposedProtocol.version == serverProtocol.protocol.version));
