@@ -235,8 +235,89 @@ export class ApiProductsService {
     return p;
   }
 
+  /**
+   * Attributes methods
+   * 
+   */
+  async attributeByName(apiProductName: string, name: string): Promise<string> {
+    const product: APIProduct = await this.persistenceService.byName(apiProductName);
+    if (!product.attributes){
+      throw new ErrorResponseInternal(404, `Attribute [${name}] is not set for API Product [${apiProductName}]`); 
+    }
+    const attr = product.attributes.find(n => n.name == name);
+    if (attr) {
+      return attr.value;
+    } else {
+      throw new ErrorResponseInternal(404, `Attribute [${name}] is not set for API Product [${apiProductName}]`);
+    }
+  }
 
-  private async canDelete(name: string): Promise<boolean> {
+  async createAttribute(apiProductName: string, name: string, value: string): Promise<string> {
+    const product: APIProduct = await this.persistenceService.byName(apiProductName);
+    if (!product.attributes){
+      product.attributes = [];
+    }
+    const attr = product.attributes.find(n => n.name == name);
+    if (!attr) {
+      product.attributes.push({
+        name: name,
+        value: value
+      });
+      await this.updateProductAttributes(apiProductName, product);
+      return value;
+    } else {
+      throw new ErrorResponseInternal(422, `Attribute [${name}] is already set for API Product [${apiProductName}]`);
+    }
+  }  
+
+  async updateAttribute(apiProductName: string, attributeName: string, attributeValue: string): Promise<string> {
+    const product: APIProduct = await this.persistenceService.byName(apiProductName);
+    if (!product.attributes){
+      product.attributes = [];
+    }
+    const attr = product.attributes.find(n => n.name == attributeName);
+    if (attr) {
+      attr.value = attributeValue;
+      product.attributes[product.attributes.findIndex(n => n.name == attributeName)] = attr;
+      await this.updateProductAttributes(apiProductName, product);
+      return attributeValue;
+    } else {
+      throw new ErrorResponseInternal(404, `Attribute [${attributeName}] is not set for API Product [${apiProductName}]`);
+    }
+  }  
+
+  async deleteAttribute(apiProductName: string, attributeName: string): Promise<number> {
+    const product: APIProduct  = await this.persistenceService.byName(apiProductName);
+    if (!product.attributes){
+      product.attributes = [];
+    }
+    const attr = product.attributes.find(n => n.name == attributeName);
+    if (attr) {
+      const newAttributes = product.attributes.filter(n => n.name != attributeName);
+      product.attributes = newAttributes;
+      await this.updateProductAttributes(apiProductName, product);
+      return 204;
+    } else {
+      throw new ErrorResponseInternal(404, `Attribute [${attributeName}] is not set for API Product [${apiProductName}]`);
+    }
+  } 
+  /**
+   * Update an API Product after an attribute has been updated. Auto increments the minor version of the API Product
+   * @param apiProductName 
+   * @param product 
+   */
+  private async updateProductAttributes (apiProductName: string, product: APIProduct) : Promise<APIProduct>{
+      if (product.meta && product.meta.version){
+        product.meta.version = Versioning.incrementVersion(product.meta.version);
+      }
+      return this.update(apiProductName, product);
+  }
+  /**
+   * Private methods
+   * 
+   */
+
+   private async canDelete(name: string): Promise<boolean> {
     const apps = await this.listAppsReferencingProduct(name);
     if (apps == null || apps.length == 0) {
       return true;

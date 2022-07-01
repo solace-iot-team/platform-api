@@ -107,5 +107,42 @@ export class Controller {
       });
   };
 
+  /**
+   * Attributes resource
+   */
+  attributeByName(req: Request, res: Response, next: NextFunction): void {
+    ApiProductsService.attributeByName(req.params['name'], req.params['attributeName'])
+      .then((r) => {
+        res.status(200).json(r);
+      })
+      .catch((e) => {
+        L.info(e);
+        next(e);
+      });
+  };
+  createAttribute(req: Request, res: Response, next: NextFunction): void {
+    ApiProductsService.createAttribute(req.params['name'], req.params['attributeName'], req.body).then((r) => {
+      if (r) {
+        res.status(200).json(r);
+      }
+      else
+        next(new ErrorResponseInternal(500, `No response`));
+    }).catch((e) => next(e));
+  }
+  updateAttribute(req: Request, res: Response, next: NextFunction): void {
+    ApiProductsService.updateAttribute(req.params['name'], req.params['attributeName'], req.body).then((r) => {
+      if (r) {
+        res.status(200).json(r);
+      }
+      else
+        next(new ErrorResponseInternal(500, `No response`));
+    }).catch((e) => next(e));
+  }
+
+  deleteAttribute(req: Request, res: Response, next: NextFunction): void {
+    ApiProductsService.deleteAttribute(req.params['name'], req.params['attributeName']).then((r) => {
+      res.status(r).send();
+    }).catch((e) => next(e));
+  }
 }
 export default new Controller();

@@ -187,6 +187,19 @@
         required: true
         schema:
           $ref: '#/components/schemas/Version' 
+      
+      attribute_name:
+        name: attributeName
+        in: path
+        required: true
+        schema:
+          description: Attribute name, access is a special value as it governs access control to the product.
+          example:
+            access
+          type: string
+          pattern: "^[a-zA-Z0-9._-]*$"
+          minLength: 2
+          maxLength: 1024
     responses:
       PreconditionFailed:
         description: PreConditon Failed, likely a mismatch between current etag and if-match header
@@ -758,7 +771,15 @@
         type: array
         minItems: 0
         maxItems: 32768
-  
+        
+      AttributeValue:
+        description: Value of the attribute.
+        example:
+          'public, private, or internal'
+        type: string
+        pattern: "^.*$"
+        minLength: 1
+        maxLength: 1024
   
       ClientOptions:
         type: object
@@ -3969,6 +3990,178 @@
               application/json:
                 schema:
                   $ref: "#/components/schemas/APIProduct"
+          '400':
+             $ref: '#/components/responses/BadRequest'
+          '401':
+            $ref: '#/components/responses/Unauthorized'
+          '403':
+            $ref: '#/components/responses/Forbidden'
+          '404':
+            $ref: '#/components/responses/NotFound'
+          '406':
+            $ref: '#/components/responses/NotAcceptable'
+          '429':
+            $ref: '#/components/responses/TooManyRequests'
+          '500':
+            $ref: '#/components/responses/InternalServerError'
+          '503':
+            $ref: '#/components/responses/ServiceUnavailable'
+          '504':
+            $ref: '#/components/responses/GatewayTimeout'
+
+    /{organization_name}/apiProducts/{api_product_name}/attributes/{attributeName}:
+      parameters:
+      - $ref: '#/components/parameters/organization'
+      - $ref: '#/components/parameters/api_product_name'
+      - $ref: '#/components/parameters/attribute_name'
+      get:
+       operationId: getApiProductAttribute
+       tags:
+       - apiProducts
+       responses:
+          '200':
+            description:  attribute value
+            content:
+              application/json:
+                schema:
+                  $ref: '#/components/schemas/AttributeValue'
+          '400':
+             $ref: '#/components/responses/BadRequest'
+          '401':
+            $ref: '#/components/responses/Unauthorized'
+          '403':
+            $ref: '#/components/responses/Forbidden'
+          '404':
+            $ref: '#/components/responses/NotFound'
+          '406':
+            $ref: '#/components/responses/NotAcceptable'
+          '429':
+            $ref: '#/components/responses/TooManyRequests'
+          '500':
+            $ref: '#/components/responses/InternalServerError'
+          '503':
+            $ref: '#/components/responses/ServiceUnavailable'
+          '504':
+            $ref: '#/components/responses/GatewayTimeout'
+      put:
+       operationId: createApiProductAttribute
+       tags:
+       - apiProducts
+       parameters:
+       - $ref: '#/components/parameters/ifMatchHeader'
+       requestBody:
+         description: "Attribute value"
+         content:
+           "text/plain":
+             schema:
+              "$ref": "#/components/schemas/AttributeValue"
+       responses:
+          '200':
+            description: Updated Attribute Value
+            content:
+              application/json:
+                schema:
+                  $ref: '#/components/schemas/AttributeValue'
+          '409':
+            description: "The Attribute is not valid."
+            content:
+             "application/json":
+              schema:
+                "$ref": "#/components/schemas/ErrorResponse"
+          '422':
+            description: "Duplicate API Product or invalid object reference e.g. invalid environment name"
+            content:
+             "application/json":
+              schema:
+                "$ref": "#/components/schemas/ErrorResponse"
+          '400':
+             $ref: '#/components/responses/BadRequest'
+          '401':
+            $ref: '#/components/responses/Unauthorized'
+          '403':
+            $ref: '#/components/responses/Forbidden'
+          '404':
+            $ref: '#/components/responses/NotFound'
+          '406':
+            $ref: '#/components/responses/NotAcceptable'
+          '412':
+            $ref: '#/components/responses/PreconditionFailed'
+          '415':
+            $ref: '#/components/responses/UnsupportedMediaType'
+          '429':
+            $ref: '#/components/responses/TooManyRequests'
+          '500':
+            $ref: '#/components/responses/InternalServerError'
+          '503':
+            $ref: '#/components/responses/ServiceUnavailable'
+          '504':
+            $ref: '#/components/responses/GatewayTimeout'
+      patch:
+       operationId: updateApiProductAttribute
+       tags:
+       - apiProducts
+       parameters:
+       - $ref: '#/components/parameters/ifMatchHeader'
+       requestBody:
+         description: "Attribute value"
+         content:
+           "text/plain":
+             schema:
+              "$ref": "#/components/schemas/AttributeValue"
+       responses:
+          '200':
+            description: Updated Attribute Value
+            content:
+              application/json:
+                schema:
+                  $ref: '#/components/schemas/AttributeValue'
+          '409':
+            description: "The Attribute is not valid."
+            content:
+             "application/json":
+              schema:
+                "$ref": "#/components/schemas/ErrorResponse"
+          '422':
+            description: "Duplicate API Product or invalid object reference e.g. invalid environment name"
+            content:
+             "application/json":
+              schema:
+                "$ref": "#/components/schemas/ErrorResponse"
+          '400':
+             $ref: '#/components/responses/BadRequest'
+          '401':
+            $ref: '#/components/responses/Unauthorized'
+          '403':
+            $ref: '#/components/responses/Forbidden'
+          '404':
+            $ref: '#/components/responses/NotFound'
+          '406':
+            $ref: '#/components/responses/NotAcceptable'
+          '412':
+            $ref: '#/components/responses/PreconditionFailed'
+          '415':
+            $ref: '#/components/responses/UnsupportedMediaType'
+          '429':
+            $ref: '#/components/responses/TooManyRequests'
+          '500':
+            $ref: '#/components/responses/InternalServerError'
+          '503':
+            $ref: '#/components/responses/ServiceUnavailable'
+          '504':
+            $ref: '#/components/responses/GatewayTimeout'
+      delete:
+       operationId: deleteApiProductAttribute
+       tags:
+       - apiProducts
+       responses:
+          '204':
+            description: No content
+          '409':
+            description: "Can't delete"
+            content:
+             "application/json":
+              schema:
+               "$ref": "#/components/schemas/ErrorResponse"
           '400':
              $ref: '#/components/responses/BadRequest'
           '401':

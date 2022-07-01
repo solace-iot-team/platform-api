@@ -15658,6 +15658,8 @@
 									"    pm.expect(jsonData.credentials.expiresAt-jsonData.credentials.issuedAt).to.eql(100*1000);",
 									"    pm.expect(jsonData.credentials.issuedAt).to.be.greaterThan(oldIssuedAt);",
 									"    pm.globals.clear();",
+									"    pm.globals.set(\"37_postApp_issuedAt\", `${jsonData.credentials.issuedAt}`);",
+									"",
 									"});",
 									""
 								],
@@ -15671,6 +15673,108 @@
 						"body": {
 							"mode": "raw",
 							"raw": "{\n  \"credentials\": {\n    \"secret\": {\n      \"consumerKey\": \"{{CONSUMER_KEY}}\"\n    }\n  }\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{CONNECTOR_BASEURL}}/{{TENANT}}/teams/{{TEAM_NAME}}/apps/{{APP_NAME}}",
+							"host": [
+								"{{CONNECTOR_BASEURL}}"
+							],
+							"path": [
+								"{{TENANT}}",
+								"teams",
+								"{{TEAM_NAME}}",
+								"apps",
+								"{{APP_NAME}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Approve App",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status OK\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PATCH",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"status\": \"approved\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{CONNECTOR_BASEURL}}/{{TENANT}}/teams/{{TEAM_NAME}}/apps/{{APP_NAME}}",
+							"host": [
+								"{{CONNECTOR_BASEURL}}"
+							],
+							"path": [
+								"{{TENANT}}",
+								"teams",
+								"{{TEAM_NAME}}",
+								"apps",
+								"{{APP_NAME}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Set Credentials",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status OK\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Check consumerSecret was set\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    var oldSecret = pm.environment.get(\"CONSUMER_SECRET\");",
+									"    pm.expect(jsonData.credentials.secret.consumerSecret).to.eql(oldSecret);",
+									"});",
+									"",
+									"pm.test(\"Check issuedAt and expiryDate\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    var oldIssuedAt = parseInt(pm.globals.get(\"37_postApp_issuedAt\"));",
+									"    pm.expect(jsonData.credentials.expiresAt-jsonData.credentials.issuedAt).to.eql(100*1000);",
+									"    pm.expect(jsonData.credentials.issuedAt).to.be.greaterThan(oldIssuedAt);",
+									"    pm.globals.clear();",
+									"});",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PATCH",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"credentials\": {\n    \"secret\": {\n      \"consumerKey\": \"{{CONSUMER_KEY}}_new\",\n      \"consumerSecret\": \"{{CONSUMER_SECRET}}\"\n    }\n  }\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -19612,6 +19716,1008 @@
 								"{{CLOUD_VPN}}",
 								"queues",
 								"{{APP_NAME_INTERNAL}}-{{API_NAME}}_PRODUCT2"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete API Product",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is OK\", function () {",
+									"    pm.response.to.have.status(204);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{CONNECTOR_BASEURL}}/{{TENANT}}/apiProducts/{{API_NAME}}_PRODUCT2",
+							"host": [
+								"{{CONNECTOR_BASEURL}}"
+							],
+							"path": [
+								"{{TENANT}}",
+								"apiProducts",
+								"{{API_NAME}}_PRODUCT2"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "44 API Product (Internal Version) - Attributes Resource",
+			"item": [
+				{
+					"name": "Create API Product",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status OK\", function () {",
+									"    pm.response.to.have.status(201);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"apis\": [\n      \"{{API_NAME}}\",\n      \"SayHelloPub\"\n  ],\n  \"approvalType\": \"auto\",\n  \"attributes\": [{\n    \"name\":\"attribute01\",\n    \"value\": \"value01\"\n    }\n  ],\n  \"description\": \"{{API_NAME}}_PRODUCT\",\n  \"displayName\": \"{{API_NAME}}_PRODUCT\",\n  \"environments\": [\n    \"dev\"\n  ],\n  \"name\": \"{{API_NAME}}_PRODUCT2\",\n  \"pubResources\": [\n  ],\n  \"subResources\": [\n  ],\n  \"protocols\": [\n    {\n      \"name\": \"smfs\",\n      \"version\": \"smfs\"\n    }\n\n  ],\n  \"clientOptions\": {\n    \"guaranteedMessaging\": {\n      \"requireQueue\": true,\n      \"queueGranularity\": \"api\",\n      \"accessType\": \"exclusive\",\n      \"maxTtl\": 600,\n      \"maxMsgSpoolUsage\": 50\n    }\n  }\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{CONNECTOR_BASEURL}}/{{TENANT}}/apiProducts",
+							"host": [
+								"{{CONNECTOR_BASEURL}}"
+							],
+							"path": [
+								"{{TENANT}}",
+								"apiProducts"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Attribute - Exists",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status OK\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Body matches string\", function () {",
+									"    pm.expect(pm.response.text()).to.include(\"value01\");",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{CONNECTOR_BASEURL}}/{{TENANT}}/apiProducts/{{API_NAME}}_PRODUCT2/attributes/attribute01",
+							"host": [
+								"{{CONNECTOR_BASEURL}}"
+							],
+							"path": [
+								"{{TENANT}}",
+								"apiProducts",
+								"{{API_NAME}}_PRODUCT2",
+								"attributes",
+								"attribute01"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Attribute - Missing",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status OK\", function () {",
+									"    pm.response.to.have.status(404);",
+									"});",
+									"",
+									"pm.test(\"Body matches string\", function () {",
+									"    pm.expect(pm.response.text()).to.include(\"is not set\");",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{CONNECTOR_BASEURL}}/{{TENANT}}/apiProducts/{{API_NAME}}_PRODUCT2/attributes/attribute02",
+							"host": [
+								"{{CONNECTOR_BASEURL}}"
+							],
+							"path": [
+								"{{TENANT}}",
+								"apiProducts",
+								"{{API_NAME}}_PRODUCT2",
+								"attributes",
+								"attribute02"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Attribute - Duplicate",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status OK\", function () {",
+									"    pm.response.to.have.status(422);",
+									"});",
+									"",
+									"pm.test(\"Body matches string\", function () {",
+									"    pm.expect(pm.response.text()).to.include(\"is already set for\");",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "value01_UPDATE",
+							"options": {
+								"raw": {
+									"language": "text"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{CONNECTOR_BASEURL}}/{{TENANT}}/apiProducts/{{API_NAME}}_PRODUCT2/attributes/attribute01",
+							"host": [
+								"{{CONNECTOR_BASEURL}}"
+							],
+							"path": [
+								"{{TENANT}}",
+								"apiProducts",
+								"{{API_NAME}}_PRODUCT2",
+								"attributes",
+								"attribute01"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Attribute - Success",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status OK\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Body matches string\", function () {",
+									"    pm.expect(pm.response.text()).to.include(\"value02\");",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "value02",
+							"options": {
+								"raw": {
+									"language": "text"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{CONNECTOR_BASEURL}}/{{TENANT}}/apiProducts/{{API_NAME}}_PRODUCT2/attributes/attribute02",
+							"host": [
+								"{{CONNECTOR_BASEURL}}"
+							],
+							"path": [
+								"{{TENANT}}",
+								"apiProducts",
+								"{{API_NAME}}_PRODUCT2",
+								"attributes",
+								"attribute02"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Product - check attributes and version",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status OK\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Check attributes\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.attributes.length).to.eql(2);",
+									"    pm.expect(jsonData.attributes[1].name).to.eql(\"attribute02\");",
+									"});",
+									"",
+									"pm.test(\"Check version incremented\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.meta.version).to.eql('1.2.0');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{CONNECTOR_BASEURL}}/{{TENANT}}/apiProducts/{{API_NAME}}_PRODUCT2",
+							"host": [
+								"{{CONNECTOR_BASEURL}}"
+							],
+							"path": [
+								"{{TENANT}}",
+								"apiProducts",
+								"{{API_NAME}}_PRODUCT2"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update Attribute - Success",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status OK\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Body matches string\", function () {",
+									"    pm.expect(pm.response.text()).to.include(\"value02_update\");",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PATCH",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "value02_update",
+							"options": {
+								"raw": {
+									"language": "text"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{CONNECTOR_BASEURL}}/{{TENANT}}/apiProducts/{{API_NAME}}_PRODUCT2/attributes/attribute02",
+							"host": [
+								"{{CONNECTOR_BASEURL}}"
+							],
+							"path": [
+								"{{TENANT}}",
+								"apiProducts",
+								"{{API_NAME}}_PRODUCT2",
+								"attributes",
+								"attribute02"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update Attribute - Failure",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status OK\", function () {",
+									"    pm.response.to.have.status(404);",
+									"});",
+									"",
+									"pm.test(\"Body matches string\", function () {",
+									"    pm.expect(pm.response.text()).to.include(\"is not set\");",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PATCH",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "value03",
+							"options": {
+								"raw": {
+									"language": "text"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{CONNECTOR_BASEURL}}/{{TENANT}}/apiProducts/{{API_NAME}}_PRODUCT2/attributes/attribute03",
+							"host": [
+								"{{CONNECTOR_BASEURL}}"
+							],
+							"path": [
+								"{{TENANT}}",
+								"apiProducts",
+								"{{API_NAME}}_PRODUCT2",
+								"attributes",
+								"attribute03"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Product - check attributes and version Copy",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status OK\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Check attributes\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.attributes.length).to.eql(2);",
+									"    pm.expect(jsonData.attributes[1].value).to.eql(\"value02_update\");",
+									"});",
+									"",
+									"pm.test(\"Check version incremented\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.meta.version).to.eql('1.3.0');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{CONNECTOR_BASEURL}}/{{TENANT}}/apiProducts/{{API_NAME}}_PRODUCT2",
+							"host": [
+								"{{CONNECTOR_BASEURL}}"
+							],
+							"path": [
+								"{{TENANT}}",
+								"apiProducts",
+								"{{API_NAME}}_PRODUCT2"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Attribute - Failure",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status OK\", function () {",
+									"    pm.response.to.have.status(404);",
+									"});",
+									"",
+									"pm.test(\"Body matches string\", function () {",
+									"    pm.expect(pm.response.text()).to.include(\"is not set\");",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{CONNECTOR_BASEURL}}/{{TENANT}}/apiProducts/{{API_NAME}}_PRODUCT2/attributes/attribute03",
+							"host": [
+								"{{CONNECTOR_BASEURL}}"
+							],
+							"path": [
+								"{{TENANT}}",
+								"apiProducts",
+								"{{API_NAME}}_PRODUCT2",
+								"attributes",
+								"attribute03"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Attribute - Success",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status OK\", function () {",
+									"    pm.response.to.have.status(204);",
+									"});",
+									"",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{CONNECTOR_BASEURL}}/{{TENANT}}/apiProducts/{{API_NAME}}_PRODUCT2/attributes/attribute02",
+							"host": [
+								"{{CONNECTOR_BASEURL}}"
+							],
+							"path": [
+								"{{TENANT}}",
+								"apiProducts",
+								"{{API_NAME}}_PRODUCT2",
+								"attributes",
+								"attribute02"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete API Product",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is OK\", function () {",
+									"    pm.response.to.have.status(204);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{CONNECTOR_BASEURL}}/{{TENANT}}/apiProducts/{{API_NAME}}_PRODUCT2",
+							"host": [
+								"{{CONNECTOR_BASEURL}}"
+							],
+							"path": [
+								"{{TENANT}}",
+								"apiProducts",
+								"{{API_NAME}}_PRODUCT2"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "45 API Product (External Version) - Attributes Resource",
+			"item": [
+				{
+					"name": "Create API Product",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status OK\", function () {",
+									"    pm.response.to.have.status(201);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"apis\": [\n      \"{{API_NAME}}\",\n      \"SayHelloPub\"\n  ],\n  \"approvalType\": \"auto\",\n  \"attributes\": [{\n    \"name\":\"attribute01\",\n    \"value\": \"value01\"\n    }\n  ],\n  \"description\": \"{{API_NAME}}_PRODUCT\",\n  \"displayName\": \"{{API_NAME}}_PRODUCT\",\n  \"environments\": [\n    \"dev\"\n  ],\n  \"name\": \"{{API_NAME}}_PRODUCT2\",\n  \"pubResources\": [\n  ],\n  \"subResources\": [\n  ],\n  \"protocols\": [\n    {\n      \"name\": \"smfs\",\n      \"version\": \"smfs\"\n    }\n\n  ],\n  \"clientOptions\": {\n    \"guaranteedMessaging\": {\n      \"requireQueue\": true,\n      \"queueGranularity\": \"api\",\n      \"accessType\": \"exclusive\",\n      \"maxTtl\": 600,\n      \"maxMsgSpoolUsage\": 50\n    }\n  },\n  \"meta\": {\n      \"version\" : \"1.0.0\"\n  }\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{CONNECTOR_BASEURL}}/{{TENANT}}/apiProducts",
+							"host": [
+								"{{CONNECTOR_BASEURL}}"
+							],
+							"path": [
+								"{{TENANT}}",
+								"apiProducts"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Attribute - Exists",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status OK\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Body matches string\", function () {",
+									"    pm.expect(pm.response.text()).to.include(\"value01\");",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{CONNECTOR_BASEURL}}/{{TENANT}}/apiProducts/{{API_NAME}}_PRODUCT2/attributes/attribute01",
+							"host": [
+								"{{CONNECTOR_BASEURL}}"
+							],
+							"path": [
+								"{{TENANT}}",
+								"apiProducts",
+								"{{API_NAME}}_PRODUCT2",
+								"attributes",
+								"attribute01"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Attribute - Missing",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status OK\", function () {",
+									"    pm.response.to.have.status(404);",
+									"});",
+									"",
+									"pm.test(\"Body matches string\", function () {",
+									"    pm.expect(pm.response.text()).to.include(\"is not set\");",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{CONNECTOR_BASEURL}}/{{TENANT}}/apiProducts/{{API_NAME}}_PRODUCT2/attributes/attribute02",
+							"host": [
+								"{{CONNECTOR_BASEURL}}"
+							],
+							"path": [
+								"{{TENANT}}",
+								"apiProducts",
+								"{{API_NAME}}_PRODUCT2",
+								"attributes",
+								"attribute02"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Attribute - Duplicate",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status OK\", function () {",
+									"    pm.response.to.have.status(422);",
+									"});",
+									"",
+									"pm.test(\"Body matches string\", function () {",
+									"    pm.expect(pm.response.text()).to.include(\"is already set for\");",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "value01_UPDATE",
+							"options": {
+								"raw": {
+									"language": "text"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{CONNECTOR_BASEURL}}/{{TENANT}}/apiProducts/{{API_NAME}}_PRODUCT2/attributes/attribute01",
+							"host": [
+								"{{CONNECTOR_BASEURL}}"
+							],
+							"path": [
+								"{{TENANT}}",
+								"apiProducts",
+								"{{API_NAME}}_PRODUCT2",
+								"attributes",
+								"attribute01"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Attribute - Success",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status OK\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Body matches string\", function () {",
+									"    pm.expect(pm.response.text()).to.include(\"value02\");",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "value02",
+							"options": {
+								"raw": {
+									"language": "text"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{CONNECTOR_BASEURL}}/{{TENANT}}/apiProducts/{{API_NAME}}_PRODUCT2/attributes/attribute02",
+							"host": [
+								"{{CONNECTOR_BASEURL}}"
+							],
+							"path": [
+								"{{TENANT}}",
+								"apiProducts",
+								"{{API_NAME}}_PRODUCT2",
+								"attributes",
+								"attribute02"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Product - check attributes and version",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status OK\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Check attributes\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.attributes.length).to.eql(2);",
+									"    pm.expect(jsonData.attributes[1].name).to.eql(\"attribute02\");",
+									"});",
+									"",
+									"pm.test(\"Check version incremented\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.meta.version).to.eql('1.1.0');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{CONNECTOR_BASEURL}}/{{TENANT}}/apiProducts/{{API_NAME}}_PRODUCT2",
+							"host": [
+								"{{CONNECTOR_BASEURL}}"
+							],
+							"path": [
+								"{{TENANT}}",
+								"apiProducts",
+								"{{API_NAME}}_PRODUCT2"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update Attribute - Success",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status OK\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Body matches string\", function () {",
+									"    pm.expect(pm.response.text()).to.include(\"value02_update\");",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PATCH",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "value02_update",
+							"options": {
+								"raw": {
+									"language": "text"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{CONNECTOR_BASEURL}}/{{TENANT}}/apiProducts/{{API_NAME}}_PRODUCT2/attributes/attribute02",
+							"host": [
+								"{{CONNECTOR_BASEURL}}"
+							],
+							"path": [
+								"{{TENANT}}",
+								"apiProducts",
+								"{{API_NAME}}_PRODUCT2",
+								"attributes",
+								"attribute02"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update Attribute - Failure",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status OK\", function () {",
+									"    pm.response.to.have.status(404);",
+									"});",
+									"",
+									"pm.test(\"Body matches string\", function () {",
+									"    pm.expect(pm.response.text()).to.include(\"is not set\");",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PATCH",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "value03",
+							"options": {
+								"raw": {
+									"language": "text"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{CONNECTOR_BASEURL}}/{{TENANT}}/apiProducts/{{API_NAME}}_PRODUCT2/attributes/attribute03",
+							"host": [
+								"{{CONNECTOR_BASEURL}}"
+							],
+							"path": [
+								"{{TENANT}}",
+								"apiProducts",
+								"{{API_NAME}}_PRODUCT2",
+								"attributes",
+								"attribute03"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Product - check attributes and version Copy 2",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status OK\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Check attributes\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.attributes.length).to.eql(2);",
+									"    pm.expect(jsonData.attributes[1].value).to.eql(\"value02_update\");",
+									"});",
+									"",
+									"pm.test(\"Check version incremented\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.meta.version).to.eql('1.2.0');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{CONNECTOR_BASEURL}}/{{TENANT}}/apiProducts/{{API_NAME}}_PRODUCT2",
+							"host": [
+								"{{CONNECTOR_BASEURL}}"
+							],
+							"path": [
+								"{{TENANT}}",
+								"apiProducts",
+								"{{API_NAME}}_PRODUCT2"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Attribute - Failure",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status OK\", function () {",
+									"    pm.response.to.have.status(404);",
+									"});",
+									"",
+									"pm.test(\"Body matches string\", function () {",
+									"    pm.expect(pm.response.text()).to.include(\"is not set\");",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{CONNECTOR_BASEURL}}/{{TENANT}}/apiProducts/{{API_NAME}}_PRODUCT2/attributes/attribute03",
+							"host": [
+								"{{CONNECTOR_BASEURL}}"
+							],
+							"path": [
+								"{{TENANT}}",
+								"apiProducts",
+								"{{API_NAME}}_PRODUCT2",
+								"attributes",
+								"attribute03"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Attribute - Success",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status OK\", function () {",
+									"    pm.response.to.have.status(204);",
+									"});",
+									"",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{CONNECTOR_BASEURL}}/{{TENANT}}/apiProducts/{{API_NAME}}_PRODUCT2/attributes/attribute02",
+							"host": [
+								"{{CONNECTOR_BASEURL}}"
+							],
+							"path": [
+								"{{TENANT}}",
+								"apiProducts",
+								"{{API_NAME}}_PRODUCT2",
+								"attributes",
+								"attribute02"
 							]
 						}
 					},
