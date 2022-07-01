@@ -303,7 +303,7 @@ class ACLManager {
         }
       } catch (e) {
         L.warn(e);
-        throw new ErrorResponseInternal(400, `Unable to parse, ${e.title}, ${e.detail}`);
+        throw new ErrorResponseInternal(500, `Unable to parse, ${e.title}, ${e.detail}`);
       }
     }
     return resources;
@@ -415,44 +415,7 @@ class ACLManager {
 
   }
   public getSubscriptionsFromAsyncAPIs(apis: string[]): Promise<string[]> {
-    return new Promise<string[]>(
-      (resolve, reject) => {
-        const apiPromises: Promise<string>[] = [];
-        apis.forEach((api: string) => {
-          apiPromises.push(ApisService.byApiReference(api));
-        });
-        Promise.all(apiPromises).then(async (specs) => {
-          const parserPromises: Promise<any>[] = [];
-          const resources: string[] = [];
-          specs.forEach((specification: string) => {
-            const p: Promise<any> = parser.parse(specification);
-            parserPromises.push(p);
-
-            p.then(
-              (spec) => {
-                spec.channelNames().forEach((s: string) => {
-
-                  const channel = spec.channel(s);
-                  // publish means subscribe - async api transposition
-                  if (channel.hasPublish()) {
-                    L.info(`getSubscriptionsFromAsyncAPIs subscribe ${s}`)
-                    resources.push(s);
-                  }
-                });
-              }
-            ).catch((e) => {
-              L.error(e);
-              reject(e);
-            });
-          });
-          Promise.all(parserPromises).then((vals) => {
-            resolve(resources);
-          });
-
-
-        });
-      }
-    );
+    return this,this.getResourcesFromAsyncAPIs(apis, Direction.Publish);
   }
 
   public async getQueueSubscriptionsByApp(app: App): Promise<string[]> {
