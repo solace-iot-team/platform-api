@@ -1,4 +1,4 @@
-import semver from 'semver';
+import semver, { minor } from 'semver';
 import Meta = Components.Schemas.Meta;
 import MetaEntityStage = Components.Schemas.MetaEntityStage;
 import { ns } from '../api/middlewares/context.handler';
@@ -36,6 +36,18 @@ export class Versioning {
     }
   }
 
+  public static incrementVersion(version: string): string {
+    const isSemVer: boolean = semver.parse(version) != null;
+    const isInteger: boolean = !isNaN(version as any);
+    if (isSemVer) {
+      let semVer = semver.parse(version);
+      return semver.inc(semVer, 'minor');
+    } else if (isInteger) {
+      return Versioning.nextRevision(parseInt(version)).toString();
+    } else {
+      return version;
+    }
+  }
 
 
   public static validateNewVersionString(newVersion: string, previousVersion: string): boolean {
