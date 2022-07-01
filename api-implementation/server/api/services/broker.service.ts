@@ -49,7 +49,8 @@ class BrokerService {
       return permissions;
     } catch (err) {
       L.error("Get permissions error");
-      throw new ErrorResponseInternal(500, err);
+      L.error(err);
+      throw err;
     }
   }
 
