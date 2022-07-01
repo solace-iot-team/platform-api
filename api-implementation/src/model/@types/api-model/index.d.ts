@@ -12,6 +12,14 @@ declare namespace Components {
         namespace AppName {
             export type AppName = string; // ^[a-zA-Z0-9_-]*$
         }
+        namespace AttributeName {
+            /**
+             * Attribute name, access is a special value as it governs access control to the product.
+             * example:
+             * access
+             */
+            export type AttributeName = string; // ^[a-zA-Z0-9._-]*$
+        }
         namespace DeveloperUsername {
             export type DeveloperUsername = Schemas.CommonUserName; // ^[.a-zA-Z0-9@_-]*$
         }
@@ -444,6 +452,12 @@ declare namespace Components {
             ownerId?: string; // .*
         }
         export type AppStatus = "approved" | "pending" | "revoked";
+        /**
+         * Value of the attribute.
+         * example:
+         * public, private, or internal
+         */
+        export type AttributeValue = string; // ^.*$
         /**
          * Arbitrary name/value pairs associated with an API product, team, developer or app.
          */
@@ -1254,6 +1268,25 @@ declare namespace Paths {
             export type $504 = Components.Responses.GatewayTimeout;
         }
     }
+    namespace CreateApiProductAttribute {
+        export type RequestBody = Components.Schemas.AttributeValue; // ^.*$
+        namespace Responses {
+            export type $200 = Components.Schemas.AttributeValue; // ^.*$
+            export type $400 = Components.Responses.BadRequest;
+            export type $401 = Components.Responses.Unauthorized;
+            export type $403 = Components.Responses.Forbidden;
+            export type $404 = Components.Responses.NotFound;
+            export type $406 = Components.Responses.NotAcceptable;
+            export type $409 = Components.Schemas.ErrorResponse;
+            export type $412 = Components.Responses.PreconditionFailed;
+            export type $415 = Components.Responses.UnsupportedMediaType;
+            export type $422 = Components.Schemas.ErrorResponse;
+            export type $429 = Components.Responses.TooManyRequests;
+            export type $500 = Components.Responses.InternalServerError;
+            export type $503 = Components.Responses.ServiceUnavailable;
+            export type $504 = Components.Responses.GatewayTimeout;
+        }
+    }
     namespace CreateDerivedApiProduct {
         export type RequestBody = Components.Schemas.EntityDeriveRequest;
         namespace Responses {
@@ -1425,6 +1458,22 @@ declare namespace Paths {
         }
     }
     namespace DeleteApiProduct {
+        namespace Responses {
+            export interface $204 {
+            }
+            export type $400 = Components.Responses.BadRequest;
+            export type $401 = Components.Responses.Unauthorized;
+            export type $403 = Components.Responses.Forbidden;
+            export type $404 = Components.Responses.NotFound;
+            export type $406 = Components.Responses.NotAcceptable;
+            export type $409 = Components.Schemas.ErrorResponse;
+            export type $429 = Components.Responses.TooManyRequests;
+            export type $500 = Components.Responses.InternalServerError;
+            export type $503 = Components.Responses.ServiceUnavailable;
+            export type $504 = Components.Responses.GatewayTimeout;
+        }
+    }
+    namespace DeleteApiProductAttribute {
         namespace Responses {
             export interface $204 {
             }
@@ -1623,6 +1672,20 @@ declare namespace Paths {
             export interface $200 {
                 [name: string]: any;
             }
+            export type $400 = Components.Responses.BadRequest;
+            export type $401 = Components.Responses.Unauthorized;
+            export type $403 = Components.Responses.Forbidden;
+            export type $404 = Components.Responses.NotFound;
+            export type $406 = Components.Responses.NotAcceptable;
+            export type $429 = Components.Responses.TooManyRequests;
+            export type $500 = Components.Responses.InternalServerError;
+            export type $503 = Components.Responses.ServiceUnavailable;
+            export type $504 = Components.Responses.GatewayTimeout;
+        }
+    }
+    namespace GetApiProductAttribute {
+        namespace Responses {
+            export type $200 = Components.Schemas.AttributeValue; // ^.*$
             export type $400 = Components.Responses.BadRequest;
             export type $401 = Components.Responses.Unauthorized;
             export type $403 = Components.Responses.Forbidden;
@@ -2370,6 +2433,25 @@ declare namespace Paths {
         export type RequestBody = Components.Schemas.APIProductPatch;
         namespace Responses {
             export type $200 = Components.Schemas.APIProduct;
+            export type $400 = Components.Responses.BadRequest;
+            export type $401 = Components.Responses.Unauthorized;
+            export type $403 = Components.Responses.Forbidden;
+            export type $404 = Components.Responses.NotFound;
+            export type $406 = Components.Responses.NotAcceptable;
+            export type $409 = Components.Schemas.ErrorResponse;
+            export type $412 = Components.Responses.PreconditionFailed;
+            export type $415 = Components.Responses.UnsupportedMediaType;
+            export type $422 = Components.Schemas.ErrorResponse;
+            export type $429 = Components.Responses.TooManyRequests;
+            export type $500 = Components.Responses.InternalServerError;
+            export type $503 = Components.Responses.ServiceUnavailable;
+            export type $504 = Components.Responses.GatewayTimeout;
+        }
+    }
+    namespace UpdateApiProductAttribute {
+        export type RequestBody = Components.Schemas.AttributeValue; // ^.*$
+        namespace Responses {
+            export type $200 = Components.Schemas.AttributeValue; // ^.*$
             export type $400 = Components.Responses.BadRequest;
             export type $401 = Components.Responses.Unauthorized;
             export type $403 = Components.Responses.Forbidden;
