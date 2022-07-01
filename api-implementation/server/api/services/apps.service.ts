@@ -110,54 +110,59 @@ export class AppsService {
       if (app) {
         const endpoints = await BrokerService.getMessagingProtocols(app);
         app.environments = endpoints;
-        for (const appEnv of app.environments) {
-          const permissions = await BrokerService.getPermissions(
-            app,
-            ownerAttributes,
-            appEnv.name,
-            syntax
-          );
-          appEnv.permissions = permissions;
-        }
-        const subs = await ACLManager.getQueueSubscriptionsByApp(app);
-        const requireClientInformation: boolean = subs.length > 0;
-        if (requireClientInformation) {
-          const clientInformation: ClientInformation[] = [];
-          for (const apiProductReference of app.apiProducts) {
-            const productName: string = APIProductsTypeHelper.apiProductReferenceToString(apiProductReference);
-            const apiProduct = await ApiProductsService.byName(productName);
-            const isSupportedProtocol: boolean = QueueHelper.hasAPiProductRequiredGuaranteedMessagingProtocol(apiProduct);
-            if (isSupportedProtocol && apiProduct.clientOptions
-              && apiProduct.clientOptions.guaranteedMessaging
-              && apiProduct.clientOptions.guaranteedMessaging.requireQueue) {
-              if (QueueHelper.isAPIProductQueueRequired(apiProduct)) {
-                clientInformation.push({
-                  guaranteedMessaging: {
-                    name: QueueHelper.getAPIQueueName(app, apiProduct),
-                    accessType: apiProduct.clientOptions.guaranteedMessaging.accessType,
-                    apiProduct: productName,
-                    maxMsgSpoolUsage: apiProduct.clientOptions.guaranteedMessaging.maxMsgSpoolUsage,
-                    maxTtl: apiProduct.clientOptions.guaranteedMessaging.maxTtl,
-                  }
-                });
-              } else if (QueueHelper.isAPIQueueRequired(apiProduct)) {
-                for (const api of apiProduct.apis) {
+        try {
+          for (const appEnv of app.environments) {
+            const permissions = await BrokerService.getPermissions(
+              app,
+              ownerAttributes,
+              appEnv.name,
+              syntax
+            );
+            appEnv.permissions = permissions;
+          }
+          const subs = await ACLManager.getQueueSubscriptionsByApp(app);
+          const requireClientInformation: boolean = subs.length > 0;
+          if (requireClientInformation) {
+            const clientInformation: ClientInformation[] = [];
+            for (const apiProductReference of app.apiProducts) {
+              const productName: string = APIProductsTypeHelper.apiProductReferenceToString(apiProductReference);
+              const apiProduct = await ApiProductsService.byName(productName);
+              const isSupportedProtocol: boolean = QueueHelper.hasAPiProductRequiredGuaranteedMessagingProtocol(apiProduct);
+              if (isSupportedProtocol && apiProduct.clientOptions
+                && apiProduct.clientOptions.guaranteedMessaging
+                && apiProduct.clientOptions.guaranteedMessaging.requireQueue) {
+                if (QueueHelper.isAPIProductQueueRequired(apiProduct)) {
                   clientInformation.push({
                     guaranteedMessaging: {
-                      name: QueueHelper.getAPIQueueName(app, apiProduct, api),
+                      name: QueueHelper.getAPIQueueName(app, apiProduct),
                       accessType: apiProduct.clientOptions.guaranteedMessaging.accessType,
                       apiProduct: productName,
                       maxMsgSpoolUsage: apiProduct.clientOptions.guaranteedMessaging.maxMsgSpoolUsage,
                       maxTtl: apiProduct.clientOptions.guaranteedMessaging.maxTtl,
                     }
                   });
+                } else if (QueueHelper.isAPIQueueRequired(apiProduct)) {
+                  for (const api of apiProduct.apis) {
+                    clientInformation.push({
+                      guaranteedMessaging: {
+                        name: QueueHelper.getAPIQueueName(app, apiProduct, api),
+                        accessType: apiProduct.clientOptions.guaranteedMessaging.accessType,
+                        apiProduct: productName,
+                        maxMsgSpoolUsage: apiProduct.clientOptions.guaranteedMessaging.maxMsgSpoolUsage,
+                        maxTtl: apiProduct.clientOptions.guaranteedMessaging.maxTtl,
+                      }
+                    });
+                  }
                 }
               }
             }
+            if (clientInformation.length > 0) {
+              app.clientInformation = clientInformation;
+            }
           }
-          if (clientInformation.length > 0) {
-            app.clientInformation = clientInformation;
-          }
+        } catch (e) {
+          L.warn(`Errors processing extended app information such as permissions, clientInformation`);
+          L.warn(e);
         }
       } else {
         throw 404;
@@ -255,7 +260,7 @@ export class AppsService {
     const validated = await this.validate(app, true, appNotModified as App);
     if (app.credentials && app.credentials.secret) {
       // regenerate a consumerSecret if omitted / partial secret is sent
-      if (!app.credentials.secret.consumerSecret){
+      if (!app.credentials.secret.consumerSecret) {
         app.credentials.secret.consumerSecret = AppHelper.generateConsumerSecret();
       }
       // set the issuedAt and calculate expiresAt timestamp
@@ -463,7 +468,7 @@ export class AppsService {
         const persistentProduct = appPersistentState.apiProducts.find(a => !isString(a) && (a as AppApiProductsComplex).apiproduct == productName);
 
         const hasPersistentStatus: boolean = (persistentProduct && (persistentProduct as AppApiProductsComplex).status !== undefined);
-        
+
         if (!isString(product) && !(product as AppApiProductsComplex).status
         ) {
           if (hasPersistentStatus) {
