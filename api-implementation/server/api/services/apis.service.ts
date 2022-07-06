@@ -235,6 +235,7 @@ export class ApisService {
       throw new ErrorResponseInternal(400, `Entity ${info.name} is not valid, ${validationMessage}`);
     } else {
       const d: AsyncAPIDocument = await parser.parse(asyncapi);
+      
       info.apiParameters = await AsyncAPIHelper.getAsyncAPIParameters(asyncapi);
       const version = (await this.getVersionFromApiSpec(asyncapi, info));
 
@@ -248,7 +249,7 @@ export class ApisService {
       info.meta.version = version;
       const spec: APISpecification = {
         name: info.name,
-        specification: this.convertAPISpec(asyncapi),
+        specification: await this.convertAPISpec(asyncapi),
       };
       try {
         const r = await this.apiInfoPersistenceService.create(info.name, info);
@@ -310,7 +311,7 @@ export class ApisService {
     } else {
       const spec: APISpecification = {
         name: info.name,
-        specification: this.convertAPISpec(body),
+        specification: await this.convertAPISpec(body),
       };
       info.apiParameters = await AsyncAPIHelper.getAsyncAPIParameters(body);
       info.meta = Versioning.createMetaFromRequest(info.meta);
@@ -442,7 +443,7 @@ export class ApisService {
     };
   }
 
-  private convertAPISpec(spec: string): string {
+  private async convertAPISpec(spec: string): Promise<string> {
     const contentType = AsyncAPIHelper.getContentType(spec);
     let parsedSpec = null;
     if (contentType.indexOf('yaml') > -1) {
@@ -451,7 +452,16 @@ export class ApisService {
       parsedSpec = JSON.parse(spec);
     }
     this.addAsyncAPIExtensionInfo(parsedSpec);
-    return JSON.stringify(parsedSpec);
+    let newSpec: string = JSON.stringify(parsedSpec);
+    try {
+      const d: AsyncAPIDocument = await parser.parse(newSpec);
+      if (d['_json']){
+        newSpec = JSON.stringify(d['_json']);
+      }
+    } catch (e){
+      L.warn(`Not a valid AsyncAPI document, this shouldnt really happen here`);
+    }
+    return newSpec;
   }
 
   private addAsyncAPIExtensionInfo(spec: any) {
