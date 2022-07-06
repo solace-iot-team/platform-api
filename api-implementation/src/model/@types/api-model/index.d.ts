@@ -532,6 +532,7 @@ declare namespace Components {
             maxMsgSpoolUsage?: number; // int64
         }
         export interface ClientOptions {
+            guaranteedMessagingEnabled?: boolean;
             guaranteedMessaging?: ClientOptionsGuaranteedMessaging;
         }
         export interface ClientOptionsGuaranteedMessaging {

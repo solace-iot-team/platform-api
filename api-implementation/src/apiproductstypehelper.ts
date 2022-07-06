@@ -1,7 +1,25 @@
 import AppAPIProducts = Components.Schemas.AppApiProducts;
+import APIProduct = Components.Schemas.APIProduct;
+import ClientOptions = Components.Schemas.ClientOptions;
 import AppApiProductsComplex = Components.Schemas.AppApiProductsComplex;
 import { isString } from './typehelpers';
 export class APIProductsTypeHelper {
+
+  public isGuaranteedMessagingEnabled(apiProduct: APIProduct): boolean {
+    if (!apiProduct.clientOptions) {
+      return false;
+    }
+    return this.isClientOptionsGuaranteedMessagingEnabled(apiProduct.clientOptions);
+  }
+
+  public isClientOptionsGuaranteedMessagingEnabled(clientOptions: ClientOptions): boolean {
+    return (
+      (clientOptions.guaranteedMessaging && (clientOptions?.guaranteedMessagingEnabled == null))
+      ||
+      clientOptions.guaranteedMessagingEnabled
+    );
+  }
+
   public apiProductReferencesToStringArray(apiProducts: AppAPIProducts): string[] {
     const productNames: string[] = [];
     for (const apiProductReference of apiProducts) {
@@ -52,7 +70,7 @@ export class APIProductsTypeHelper {
     // } else {
     const retVal: AppApiProductsComplex = {
       apiproduct: newName,
-      status: (apiProductReference as AppApiProductsComplex).status?(apiProductReference as AppApiProductsComplex).status:'approved'
+      status: (apiProductReference as AppApiProductsComplex).status ? (apiProductReference as AppApiProductsComplex).status : 'approved'
     }
     return retVal;
     // }

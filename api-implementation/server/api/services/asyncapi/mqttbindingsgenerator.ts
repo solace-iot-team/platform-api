@@ -1,6 +1,6 @@
 import L from '../../../common/logger';
 import { BindingsGenerator } from './bindingsgenerator';
-import QueueHelper from '../broker/queuehelper';
+import ApiProductTypeOperations from '../../../../src/apiproductstypehelper';
 import APIProduct = Components.Schemas.APIProduct;
 import App = Components.Schemas.App;
 
@@ -51,7 +51,7 @@ export class MQTTBindingsGenerator implements BindingsGenerator {
 
   private buildMQTTOperationBinding(apiProduct: APIProduct): any {
     const mqttBinding: any = {};
-    if (apiProduct.clientOptions && apiProduct.clientOptions.guaranteedMessaging) {
+    if (ApiProductTypeOperations.isGuaranteedMessagingEnabled(apiProduct)) {
       mqttBinding.qos = QOS_1;
     } else {
       mqttBinding.qos = QOS_0;

@@ -2,6 +2,7 @@ import L from '../../../common/logger';
 import APIProduct = Components.Schemas.APIProduct;
 import App = Components.Schemas.App;
 import { Service } from '../../../../src/clients/solacecloud/models/Service';
+import ApiProductTypeOperations from '../../../../src/apiproductstypehelper';
 
 export class QueueHelper {
 
@@ -30,8 +31,7 @@ export class QueueHelper {
     if (!this.hasAPiProductRequiredGuaranteedMessagingProtocol(apiProduct)) {
       return false;
     }
-    return apiProduct.clientOptions
-      && apiProduct.clientOptions.guaranteedMessaging
+    return ApiProductTypeOperations.isGuaranteedMessagingEnabled(apiProduct)
       && apiProduct.clientOptions.guaranteedMessaging.requireQueue
       && (apiProduct.clientOptions.guaranteedMessaging.queueGranularity == 'apiProduct'
         || !apiProduct.clientOptions.guaranteedMessaging.queueGranularity);
@@ -41,8 +41,7 @@ export class QueueHelper {
     if (!this.hasAPiProductRequiredGuaranteedMessagingProtocol(apiProduct)) {
       return false;
     }
-    return apiProduct.clientOptions
-      && apiProduct.clientOptions.guaranteedMessaging
+    return ApiProductTypeOperations.isGuaranteedMessagingEnabled(apiProduct)
       && apiProduct.clientOptions.guaranteedMessaging.requireQueue
       && (apiProduct.clientOptions.guaranteedMessaging.queueGranularity == 'api');
   }

@@ -128,9 +128,7 @@ export class AppsService {
               const productName: string = APIProductsTypeHelper.apiProductReferenceToString(apiProductReference);
               const apiProduct = await ApiProductsService.byName(productName);
               const isSupportedProtocol: boolean = QueueHelper.hasAPiProductRequiredGuaranteedMessagingProtocol(apiProduct);
-              if (isSupportedProtocol && apiProduct.clientOptions
-                && apiProduct.clientOptions.guaranteedMessaging
-                && apiProduct.clientOptions.guaranteedMessaging.requireQueue) {
+              if (isSupportedProtocol && apiProduct.clientOptions?.guaranteedMessaging?.requireQueue) {
                 if (QueueHelper.isAPIProductQueueRequired(apiProduct)) {
                   clientInformation.push({
                     guaranteedMessaging: {

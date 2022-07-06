@@ -2,7 +2,7 @@
   info:
     title: Solace API Management Connector
     description: 'Solace API Management Connector API. Note: basic authentication security mechanism is deprecated.'
-    version: 0.8.0
+    version: 0.8.1
   servers:
     - url: /v1
   
@@ -785,6 +785,8 @@
         type: object
         additionalProperties: false
         properties:
+          guaranteedMessagingEnabled:
+            type: boolean
           guaranteedMessaging:
             $ref: '#/components/schemas/ClientOptionsGuaranteedMessaging'
   
