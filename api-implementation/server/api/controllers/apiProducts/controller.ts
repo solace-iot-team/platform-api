@@ -53,8 +53,8 @@ export class Controller {
 
   apiByName(req: Request, res: Response, next: NextFunction): void {
     ApiProductsService.apiByName(req.params['name'], req.params['api'])
-      .then((r) => {
-        AsyncAPIHelper.handleResponse(r, req, res, next);
+      .then(async (r) => {
+        await AsyncAPIHelper.handleResponse(r, req, res, next, 200, req.params['api']);
       })
       .catch((e) => {
         L.info(e);

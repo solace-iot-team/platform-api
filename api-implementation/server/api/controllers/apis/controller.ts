@@ -13,8 +13,8 @@ export class Controller {
 
   byName(req: Request, res: Response, next: NextFunction): void {
     ApisService.byName(req.params['name'])
-      .then((r) => {
-        AsyncAPIHelper.handleResponse(r, req, res, next);
+      .then(async (r) => {
+        await AsyncAPIHelper.handleResponse(r, req, res, next, 200, req.params['name']);
       })
       .catch((e) => {
         L.error(e);
@@ -51,24 +51,24 @@ export class Controller {
 
   create(req: Request, res: Response, next: NextFunction): void {
     ApisService.create(req.params['name'], req.body)
-      .then((r) => {
-        AsyncAPIHelper.handleResponse(r, req, res, next, 201);
+      .then(async (r) => {
+        await AsyncAPIHelper.handleResponse(r, req, res, next, 201, req.params['name']);
       })
       .catch((e) => next(e));
   }
 
   import(req: Request, res: Response, next: NextFunction): void {
     ApisService.import(req.body)
-      .then((r) => {
-        AsyncAPIHelper.handleResponse(r, req, res, next, 201);
+      .then(async (r) => {
+        await AsyncAPIHelper.handleResponse(r, req, res, next, 201);
       })
       .catch((e) => next(e));
   }
 
   update(req: Request, res: Response, next: NextFunction): void {
     ApisService.update(req.params['name'], req.body)
-      .then((r) => {
-        AsyncAPIHelper.handleResponse(r, req, res, next);
+      .then(async (r) => {
+        await AsyncAPIHelper.handleResponse(r, req, res, next, 200, req.params['name']);
       })
       .catch((e) => next(e));
   }
@@ -98,8 +98,8 @@ export class Controller {
   }
   revisionByVersion(req: Request, res: Response, next: NextFunction): void {
     ApisService.revisionByVersion(req.params['name'], req.params['version'])
-      .then((r) => {
-        AsyncAPIHelper.handleResponse(r, req, res, next);
+      .then(async (r) => {
+        await AsyncAPIHelper.handleResponse(r, req, res, next, 200, `${req.params['name']}-${req.params['version']}`);
       })
       .catch((e) => {
         L.error(e);
