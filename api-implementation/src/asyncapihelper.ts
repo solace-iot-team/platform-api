@@ -88,26 +88,19 @@ export class AsyncAPIHelper {
           archiver.append(r as string, { name: name ? `${name}.${extension}` : `spec.${extension}` });
           for (const msg of d.allMessages()) {
             const p: Buffer = Buffer.from(JSON.stringify(msg[1].originalPayload()));
-            L.error(`${isString(p)}`);
             archiver.append(p, { name: `${msg[0]}.json` });
           }
           await archiver.finalize();
         } catch (e) {
           L.error(e);
-          // res.attachment = null;
-          // res.contentType(`application/json`);
           next(new ErrorResponseInternal(500, 'Invalid AsyncAPI in storage'));
         }
 
       } else {
-        L.error('no content type');
         if (this.getContentType(r) == "application/json") {
-          L.error('is json');
           if (isString(r)) {
-            L.error('is string');
             res.status(statusCode).contentType("application/json").json(JSON.parse(r));
           } else {
-            L.error('is object');
             res.status(statusCode).contentType("application/json").json(r);
           }
         } else {
