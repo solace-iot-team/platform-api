@@ -88,7 +88,7 @@ export class AsyncAPIHelper {
           archiver.append(r as string, { name: name ? `${name}.${extension}` : `spec.${extension}` });
           for (const msg of d.allMessages()) {
             const p: Buffer = Buffer.from(JSON.stringify(msg[1].originalPayload()));
-            archiver.append(p, { name: `${msg[0]}.json` });
+            archiver.append(p, { name: `schemas/${msg[0]}.json` });
           }
           await archiver.finalize();
         } catch (e) {
