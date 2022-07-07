@@ -390,7 +390,7 @@ export class ApisService {
     } else {
       const latestApiInfo = await this.infoByName(apiName);
       const latestApi = await this.byName(apiName);
-      L.error(`${latestApiInfo.meta.version} = ${version}`);
+      L.debug(`${latestApiInfo.meta.version} = ${version}`);
       if ((latestApiInfo.meta && latestApiInfo.meta.version == version) ||
         version == (await this.getSemVerFromApiSpec(latestApi, latestApiInfo))
       ) {
