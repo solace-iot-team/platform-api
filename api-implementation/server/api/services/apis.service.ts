@@ -235,7 +235,7 @@ export class ApisService {
       throw new ErrorResponseInternal(400, `Entity ${info.name} is not valid, ${validationMessage}`);
     } else {
       const d: AsyncAPIDocument = await parser.parse(asyncapi);
-      
+
       info.apiParameters = await AsyncAPIHelper.getAsyncAPIParameters(asyncapi);
       const version = (await this.getVersionFromApiSpec(asyncapi, info));
 
@@ -378,7 +378,15 @@ export class ApisService {
           version == (await this.getSemVerFromApiSpec(latestApi, latestApiInfo))) {
           apiInfo = latestApiInfo;
           api = latestApi;
-          await this.saveRevision({ name: apiName, specification: latestApi }, latestApiInfo);
+          try {
+            await this.saveRevision({ name: apiName, specification: latestApi }, latestApiInfo);
+          } catch (e) {
+            // possible race condition leads to saveRevision call failing with a 422 
+            // (call to this method is made in parallel to updating or inserting the API)
+            if (422 != (e as ErrorResponseInternal).statusCode) {
+              throw e;
+            }
+          }
         } else {
           throw new ErrorResponseInternal(404, `Version ${version} of API [${apiName}] does not exist`);
         }
@@ -394,7 +402,15 @@ export class ApisService {
       if ((latestApiInfo.meta && latestApiInfo.meta.version == version) ||
         version == (await this.getSemVerFromApiSpec(latestApi, latestApiInfo))
       ) {
-        await this.saveRevision({ name: apiName, specification: latestApi }, latestApiInfo);
+        try {
+          await this.saveRevision({ name: apiName, specification: latestApi }, latestApiInfo);
+        } catch (e) {
+          // possible race condition leads to saveRevision call failing with a 422 
+          // (call to this method is made in parallel to updating or inserting the API)
+          if (422 != (e as ErrorResponseInternal).statusCode) {
+            throw e;
+          }
+        }
         return await this.apiInfoToExternalRepresentation(latestApiInfo, latestApi);
       } else {
         throw new ErrorResponseInternal(404, `Version ${version} of API [${apiName}] does not exist`);
@@ -455,10 +471,10 @@ export class ApisService {
     let newSpec: string = JSON.stringify(parsedSpec);
     try {
       const d: AsyncAPIDocument = await parser.parse(newSpec);
-      if (d['_json']){
+      if (d['_json']) {
         newSpec = JSON.stringify(d['_json']);
       }
-    } catch (e){
+    } catch (e) {
       L.warn(`Not a valid AsyncAPI document, this shouldnt really happen here`);
     }
     return newSpec;
