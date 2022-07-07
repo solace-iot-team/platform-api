@@ -471,7 +471,27 @@ export class ApisService {
     let newSpec: string = JSON.stringify(parsedSpec);
     try {
       const d: AsyncAPIDocument = await parser.parse(newSpec);
-      if (d['_json']) {
+      const schemas = d.allSchemas();
+      let hasExternalRef: boolean = false;
+      for (const schema of schemas){
+        const uid = schema[1].uid();
+        let isUrl: boolean = false;
+        try {
+          const url = new URL(uid);
+          if (url){
+            isUrl = true;
+          }
+
+        } catch (e){
+
+        }
+        if (!uid.startsWith('#') && isUrl){
+          L.debug (`Async API contains external schema references [${uid}]`);
+          hasExternalRef = true;
+        }
+      }
+      if (hasExternalRef && d['_json']) {
+        L.info(`Async API contains external schema references`);
         newSpec = JSON.stringify(d['_json']);
       }
     } catch (e) {
