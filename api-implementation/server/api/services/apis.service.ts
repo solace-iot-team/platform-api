@@ -470,18 +470,14 @@ export class ApisService {
       parsedSpec = JSON.parse(spec);
     }
     this.addAsyncAPIExtensionInfo(parsedSpec);
-    let newSpec: string = JSON.stringify(parsedSpec, null, 2);
+    let newSpec: string = JSON.stringify(parsedSpec);
     const refs: string[] = jsonPath.query(parsedSpec, `$..['$ref']`);
-    L.error(refs);
     let hasExternalRef: boolean = false;
     for (const uid of refs) {
-      L.error(uid);
       let isUrl: boolean = false;
       try {
         const url = new URL(uid);
         if (url) {
-          L.error(uid);
-
           isUrl = true;
         }
 
@@ -494,7 +490,6 @@ export class ApisService {
         hasExternalRef = true;
       }
     }
-    L.error(`external ref ${hasExternalRef}`);
     if (hasExternalRef) {
       L.info(`Async API contains external schema references`);
       try {
