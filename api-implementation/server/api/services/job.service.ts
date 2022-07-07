@@ -52,7 +52,6 @@ export class HistoryService {
 
       results.push(job);
     }
-    L.error(results);
     return results;
   }
 }
