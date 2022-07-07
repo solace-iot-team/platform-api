@@ -24,6 +24,8 @@ import { Versioning } from '../../common/versioning';
 import AppUpdateEventEmitter from './apiProducts/appUpdateEventEmitter';
 import { cloneDeep, parseInt } from 'lodash';
 import Meta = Components.Schemas.Meta;
+import jsonPath from 'jsonpath';
+
 const DEPRECATED_TAG = 'deprecated';
 
 export interface APISpecification {
@@ -468,14 +470,40 @@ export class ApisService {
       parsedSpec = JSON.parse(spec);
     }
     this.addAsyncAPIExtensionInfo(parsedSpec);
-    let newSpec: string = JSON.stringify(parsedSpec);
-    try {
-      const d: AsyncAPIDocument = await parser.parse(newSpec);
-      if (d['_json']) {
-        newSpec = JSON.stringify(d['_json']);
+    let newSpec: string = JSON.stringify(parsedSpec, null, 2);
+    const refs: string[] = jsonPath.query(parsedSpec, `$..['$ref']`);
+    L.error(refs);
+    let hasExternalRef: boolean = false;
+    for (const uid of refs) {
+      L.error(uid);
+      let isUrl: boolean = false;
+      try {
+        const url = new URL(uid);
+        if (url) {
+          L.error(uid);
+
+          isUrl = true;
+        }
+
+      } catch (e) {
+        isUrl = false;
+
       }
-    } catch (e) {
-      L.warn(`Not a valid AsyncAPI document, this shouldnt really happen here`);
+      if (!uid.startsWith('#') && isUrl) {
+        L.debug(`Async API contains external schema references [${uid}]`);
+        hasExternalRef = true;
+      }
+    }
+    L.error(`external ref ${hasExternalRef}`);
+    if (hasExternalRef) {
+      L.info(`Async API contains external schema references`);
+      try {
+        const d: AsyncAPIDocument = await parser.parse(newSpec);
+        newSpec = d['_json'] ? JSON.stringify(d['_json']) : newSpec;
+      } catch (e) {
+        L.error(e);
+        L.warn(`Not a valid AsyncAPI document, this shouldnt really happen here`);
+      }
     }
     return newSpec;
   }
