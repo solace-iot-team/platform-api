@@ -91,7 +91,7 @@ class BrokerUtils {
           e.name == 'ws-mqtt' || e.name == 'wss-mqtt')
         ).length >= 1) {
           L.debug(`api product ${apiProduct.name} uses MQTT`);
-          if (apiProduct.clientOptions && apiProduct.clientOptions.guaranteedMessaging && apiProduct.clientOptions.guaranteedMessaging.requireQueue) {
+          if (APIProductsTypeHelper.isGuaranteedMessagingEnabled(apiProduct) && apiProduct.clientOptions.guaranteedMessaging.requireQueue) {
             L.debug(`api product ${apiProduct.name} uses MQTT-QOS1`);
             return true;
           }
@@ -113,8 +113,7 @@ class BrokerUtils {
       }
     };
     for (const apiProduct of apiProducts) {
-      if (apiProduct.clientOptions
-        && apiProduct.clientOptions.guaranteedMessaging
+      if (APIProductsTypeHelper.isGuaranteedMessagingEnabled(apiProduct)
         && apiProduct.clientOptions.guaranteedMessaging.requireQueue) {
         const gmOptions = apiProduct.clientOptions.guaranteedMessaging;
         clientOpts.guaranteedMessaging.requireQueue = gmOptions.requireQueue;
@@ -122,7 +121,7 @@ class BrokerUtils {
         clientOpts.guaranteedMessaging.maxTtl = clientOpts.guaranteedMessaging.maxTtl > gmOptions.maxTtl ? clientOpts.guaranteedMessaging.maxTtl : gmOptions.maxTtl;
       }
     }
-    if (clientOpts.guaranteedMessaging.maxMsgSpoolUsage > 0) {
+    if (clientOpts.guaranteedMessaging?.maxMsgSpoolUsage > 0) {
       if (L.isLevelEnabled('debug'))
         L.debug(`combined client options ${JSON.stringify(clientOpts)}`);
       return clientOpts;

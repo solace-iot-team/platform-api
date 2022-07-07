@@ -24,6 +24,8 @@ import { Versioning } from '../../common/versioning';
 import AppUpdateEventEmitter from './apiProducts/appUpdateEventEmitter';
 import { cloneDeep, parseInt } from 'lodash';
 import Meta = Components.Schemas.Meta;
+import jsonPath from 'jsonpath';
+
 const DEPRECATED_TAG = 'deprecated';
 
 export interface APISpecification {
@@ -235,6 +237,7 @@ export class ApisService {
       throw new ErrorResponseInternal(400, `Entity ${info.name} is not valid, ${validationMessage}`);
     } else {
       const d: AsyncAPIDocument = await parser.parse(asyncapi);
+
       info.apiParameters = await AsyncAPIHelper.getAsyncAPIParameters(asyncapi);
       const version = (await this.getVersionFromApiSpec(asyncapi, info));
 
@@ -248,7 +251,7 @@ export class ApisService {
       info.meta.version = version;
       const spec: APISpecification = {
         name: info.name,
-        specification: this.convertAPISpec(asyncapi),
+        specification: await this.convertAPISpec(asyncapi),
       };
       try {
         const r = await this.apiInfoPersistenceService.create(info.name, info);
@@ -310,7 +313,7 @@ export class ApisService {
     } else {
       const spec: APISpecification = {
         name: info.name,
-        specification: this.convertAPISpec(body),
+        specification: await this.convertAPISpec(body),
       };
       info.apiParameters = await AsyncAPIHelper.getAsyncAPIParameters(body);
       info.meta = Versioning.createMetaFromRequest(info.meta);
@@ -377,7 +380,15 @@ export class ApisService {
           version == (await this.getSemVerFromApiSpec(latestApi, latestApiInfo))) {
           apiInfo = latestApiInfo;
           api = latestApi;
-          await this.saveRevision({ name: apiName, specification: latestApi }, latestApiInfo);
+          try {
+            await this.saveRevision({ name: apiName, specification: latestApi }, latestApiInfo);
+          } catch (e) {
+            // possible race condition leads to saveRevision call failing with a 422 
+            // (call to this method is made in parallel to updating or inserting the API)
+            if (422 != (e as ErrorResponseInternal).statusCode) {
+              throw e;
+            }
+          }
         } else {
           throw new ErrorResponseInternal(404, `Version ${version} of API [${apiName}] does not exist`);
         }
@@ -389,11 +400,19 @@ export class ApisService {
     } else {
       const latestApiInfo = await this.infoByName(apiName);
       const latestApi = await this.byName(apiName);
-      L.error(`${latestApiInfo.meta.version} = ${version}`);
+      L.debug(`${latestApiInfo.meta.version} = ${version}`);
       if ((latestApiInfo.meta && latestApiInfo.meta.version == version) ||
         version == (await this.getSemVerFromApiSpec(latestApi, latestApiInfo))
       ) {
-        await this.saveRevision({ name: apiName, specification: latestApi }, latestApiInfo);
+        try {
+          await this.saveRevision({ name: apiName, specification: latestApi }, latestApiInfo);
+        } catch (e) {
+          // possible race condition leads to saveRevision call failing with a 422 
+          // (call to this method is made in parallel to updating or inserting the API)
+          if (422 != (e as ErrorResponseInternal).statusCode) {
+            throw e;
+          }
+        }
         return await this.apiInfoToExternalRepresentation(latestApiInfo, latestApi);
       } else {
         throw new ErrorResponseInternal(404, `Version ${version} of API [${apiName}] does not exist`);
@@ -442,7 +461,7 @@ export class ApisService {
     };
   }
 
-  private convertAPISpec(spec: string): string {
+  private async convertAPISpec(spec: string): Promise<string> {
     const contentType = AsyncAPIHelper.getContentType(spec);
     let parsedSpec = null;
     if (contentType.indexOf('yaml') > -1) {
@@ -451,7 +470,37 @@ export class ApisService {
       parsedSpec = JSON.parse(spec);
     }
     this.addAsyncAPIExtensionInfo(parsedSpec);
-    return JSON.stringify(parsedSpec);
+    let newSpec: string = JSON.stringify(parsedSpec);
+    const refs: string[] = jsonPath.query(parsedSpec, `$..['$ref']`);
+    let hasExternalRef: boolean = false;
+    for (const uid of refs) {
+      let isUrl: boolean = false;
+      try {
+        const url = new URL(uid);
+        if (url) {
+          isUrl = true;
+        }
+
+      } catch (e) {
+        isUrl = false;
+
+      }
+      if (!uid.startsWith('#') && isUrl) {
+        L.debug(`Async API contains external schema references [${uid}]`);
+        hasExternalRef = true;
+      }
+    }
+    if (hasExternalRef) {
+      L.info(`Async API contains external schema references`);
+      try {
+        const d: AsyncAPIDocument = await parser.parse(newSpec);
+        newSpec = d['_json'] ? JSON.stringify(d['_json']) : newSpec;
+      } catch (e) {
+        L.error(e);
+        L.warn(`Not a valid AsyncAPI document, this shouldnt really happen here`);
+      }
+    }
+    return newSpec;
   }
 
   private addAsyncAPIExtensionInfo(spec: any) {

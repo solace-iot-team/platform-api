@@ -13,8 +13,8 @@ export class Controller {
 
   specById(req: Request, res: Response, next: NextFunction): void {
     EventPortalFacade.getEventApiProductAsyncApi(req.params['id'])
-      .then((r) => {
-        AsyncAPIHelper.handleResponse(r, req, res, next);
+      .then(async (r) => {
+        AsyncAPIHelper.handleResponse(r, req, res, next, 200 , req.params['id']);
       })
       .catch((e) => {
         L.error(e);

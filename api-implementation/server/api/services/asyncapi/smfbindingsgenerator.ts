@@ -3,6 +3,7 @@ import { BindingsGenerator } from './bindingsgenerator';
 import QueueHelper from '../broker/queuehelper';
 import APIProduct = Components.Schemas.APIProduct;
 import App = Components.Schemas.App;
+import ApiProductTypeOperations from '../../../../src/apiproductstypehelper';
 
 const DESTINATION_TYPE_TOPIC = 'topic';
 const DESTINATION_TYPE_QUEUE = 'queue';
@@ -39,7 +40,7 @@ export class SMFBindingsGenerator implements BindingsGenerator {
       const smfBindings: any[] = [];
       const smfBinding: any = {};
       smfBinding.destinationType = DESTINATION_TYPE_TOPIC;
-      if (apiProduct.clientOptions && apiProduct.clientOptions.guaranteedMessaging) {
+      if (ApiProductTypeOperations.isGuaranteedMessagingEnabled(apiProduct)) {
         smfBinding.deliveryMode = DELIVERY_MODE_PERSISTENT;
       } else {
         smfBinding.deliveryMode = DELIVERY_MODE_DIRECT;

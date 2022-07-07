@@ -2,6 +2,8 @@ import L from '../../../common/logger';
 import { BindingsGenerator } from './bindingsgenerator';
 import QueueHelper from '../broker/queuehelper';
 import APIProduct = Components.Schemas.APIProduct;
+import ApiProductTypeOperations from '../../../../src/apiproductstypehelper';
+
 import App = Components.Schemas.App;
 
 const DESTINATION_TYPE_TOPIC = 'topic';
@@ -38,7 +40,7 @@ export class JMSBindingsGenerator implements BindingsGenerator {
       }
       const smfBinding: any = {};
       smfBinding.destinationType = DESTINATION_TYPE_TOPIC;
-      if (apiProduct.clientOptions && apiProduct.clientOptions.guaranteedMessaging) {
+      if (ApiProductTypeOperations.isGuaranteedMessagingEnabled(apiProduct)) {
         smfBinding.deliveryMode = DELIVERY_MODE_PERSISTENT;
       } else {
         smfBinding.deliveryMode = DELIVERY_MODE_DIRECT;

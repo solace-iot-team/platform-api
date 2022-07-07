@@ -4,6 +4,7 @@ import Format = Paths.GetApi.Parameters.Format;
 import APIParameter = Components.Schemas.APIParameter;
 import { isString } from './typehelpers';
 import parser, { AsyncAPIDocument } from '@asyncapi/parser';
+import { Archiver, create as createArchiver } from 'archiver';
 
 import YAML from 'js-yaml';
 
@@ -24,7 +25,7 @@ export class AsyncAPIHelper {
 
   YAMLtoJSON(apiSpec: string): string {
     if (this.getContentType(apiSpec) == "application/x-yaml") {
-      const o = YAML.load(apiSpec, {schema: YAML.DEFAULT_SCHEMA});
+      const o = YAML.load(apiSpec, { schema: YAML.DEFAULT_SCHEMA });
       return JSON.stringify(o);
     } else {
       throw new ErrorResponseInternal(500, "Invalid YAMl");
@@ -47,7 +48,7 @@ export class AsyncAPIHelper {
     }
   }
 
-  handleResponse(r, req, res, next, statusCode: number = 200) {
+  async handleResponse(r, req, res, next, statusCode: number = 200, name?: string) {
 
     if (r != null) {
       const contentType: Format = req.query['format'] as Format;
@@ -67,8 +68,44 @@ export class AsyncAPIHelper {
         } else {
           res.status(statusCode).contentType(contentType).send(this.JSONtoYAML(r));
         }
+      } else if (contentType == "application/zip") {
+        const archiver: Archiver = createArchiver('zip');
+        archiver.on('finish', function (error) {
+          L.debug(`Archiver signaled finished - res end`);
+          return res.end();
+        });
+        try {
+          const d: AsyncAPIDocument = await parser.parse(r);
+          res.attachment(name ? `${name}.zip` : `spec.zip`);
+          res.status(statusCode).contentType(contentType);
+
+          archiver.pipe(res);
+          let extension: string = 'json';
+          if (this.getContentType(r) == "application/x-yaml") {
+            extension = 'yaml'
+          }
+
+          archiver.append(r as string, { name: name ? `${name}.${extension}` : `spec.${extension}` });
+          for (const msg of d.allMessages()) {
+            const p: Buffer = Buffer.from(JSON.stringify(msg[1].originalPayload()));
+            archiver.append(p, { name: `schemas/${msg[0]}.json` });
+          }
+          await archiver.finalize();
+        } catch (e) {
+          L.error(e);
+          next(new ErrorResponseInternal(500, 'Invalid AsyncAPI in storage'));
+        }
+
       } else {
-        res.status(statusCode).contentType(this.getContentType(r)).send(r);
+        if (this.getContentType(r) == "application/json") {
+          if (isString(r)) {
+            res.status(statusCode).contentType("application/json").json(JSON.parse(r));
+          } else {
+            res.status(statusCode).contentType("application/json").json(r);
+          }
+        } else {
+          res.status(statusCode).contentType("application/json").json(this.YAMLtoJSON(r));
+        }
       }
     } else {
       next(new ErrorResponseInternal(404, `Not found`));
@@ -76,7 +113,7 @@ export class AsyncAPIHelper {
   }
 
 
-    public async getAsyncAPIParameters(spec: string): Promise<APIParameter[]> {
+  public async getAsyncAPIParameters(spec: string): Promise<APIParameter[]> {
     try {
       let parameterNames: APIParameter[] = [];
       const d: AsyncAPIDocument = await parser

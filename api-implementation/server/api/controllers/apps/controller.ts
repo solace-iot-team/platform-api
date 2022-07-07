@@ -31,8 +31,8 @@ export class Controller {
 
   apiByName(req: Request, res: Response, next: NextFunction): void {
     AppsService.apiByName(req.params['app'], req.params['name'])
-      .then((r) => {
-        AsyncAPIHelper.handleResponse(r, req, res, next);
+      .then(async (r) => {
+        await AsyncAPIHelper.handleResponse(r, req, res, next, 200, req.params['name']);
       })
       .catch((e) => {
         L.error(e);

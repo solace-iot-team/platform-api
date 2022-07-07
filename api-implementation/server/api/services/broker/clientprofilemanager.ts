@@ -7,7 +7,7 @@ import App = Components.Schemas.App;
 import APIProduct = Components.Schemas.APIProduct;
 import Attributes = Components.Schemas.Attributes;
 import Permissions = Components.Schemas.Permissions;
-
+import APIProductsTypeHelper from '../../../../src/apiproductstypehelper';
 import { Service } from '../../../../src/clients/solacecloud/models/Service';
 import {
   AllService,
@@ -174,7 +174,7 @@ class ClientProfileManager implements BrokerResourceManager<string>{
 
   private isQueueRequiredForAnyAPIProduct(apiProducts: APIProduct[]): boolean {
     for (const apiProduct of apiProducts) {
-      const isRequiredForProduct: boolean = apiProduct.clientOptions && apiProduct.clientOptions.guaranteedMessaging && apiProduct.clientOptions.guaranteedMessaging.requireQueue;
+      const isRequiredForProduct: boolean = APIProductsTypeHelper.isGuaranteedMessagingEnabled(apiProduct) && apiProduct.clientOptions.guaranteedMessaging.requireQueue;
       if (isRequiredForProduct) {
         return true;
       }
@@ -185,7 +185,7 @@ class ClientProfileManager implements BrokerResourceManager<string>{
   private isSendRequiredForAnyAPIProduct(apiProducts: APIProduct[]): boolean {
     for (const apiProduct of apiProducts) {
 
-      const isRequiredForProduct: boolean = (apiProduct.clientOptions && apiProduct.clientOptions.guaranteedMessaging) ? true : false;
+      const isRequiredForProduct: boolean = APIProductsTypeHelper.isGuaranteedMessagingEnabled(apiProduct);
       if (isRequiredForProduct) {
         return true;
       }

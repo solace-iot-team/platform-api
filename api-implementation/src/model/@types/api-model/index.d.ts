@@ -532,6 +532,7 @@ declare namespace Components {
             maxMsgSpoolUsage?: number; // int64
         }
         export interface ClientOptions {
+            guaranteedMessagingEnabled?: boolean;
             guaranteedMessaging?: ClientOptionsGuaranteedMessaging;
         }
         export interface ClientOptionsGuaranteedMessaging {
@@ -1614,7 +1615,7 @@ declare namespace Paths {
     }
     namespace GetApi {
         namespace Parameters {
-            export type Format = "application/json" | "application/x-yaml";
+            export type Format = "application/json" | "application/x-yaml" | "application/zip";
         }
         export interface QueryParameters {
             format?: Parameters.Format;
@@ -1663,7 +1664,7 @@ declare namespace Paths {
     }
     namespace GetApiProductApiSpecification {
         namespace Parameters {
-            export type Format = "application/json" | "application/x-yaml";
+            export type Format = "application/json" | "application/x-yaml" | "application/zip";
         }
         export interface QueryParameters {
             format?: Parameters.Format;
@@ -1727,7 +1728,7 @@ declare namespace Paths {
     }
     namespace GetApiRevision {
         namespace Parameters {
-            export type Format = "application/json" | "application/x-yaml";
+            export type Format = "application/json" | "application/x-yaml" | "application/zip";
         }
         export interface QueryParameters {
             format?: Parameters.Format;
@@ -1790,7 +1791,7 @@ declare namespace Paths {
     }
     namespace GetAppApiSpecification {
         namespace Parameters {
-            export type Format = "application/json" | "application/x-yaml";
+            export type Format = "application/json" | "application/x-yaml" | "application/zip";
         }
         export interface QueryParameters {
             format?: Parameters.Format;
@@ -1911,7 +1912,7 @@ declare namespace Paths {
     }
     namespace GetEventAPIProductAsyncAPI {
         namespace Parameters {
-            export type Format = "application/json" | "application/x-yaml";
+            export type Format = "application/json" | "application/x-yaml" | "application/zip";
         }
         export interface QueryParameters {
             format?: Parameters.Format;

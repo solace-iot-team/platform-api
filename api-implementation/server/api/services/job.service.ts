@@ -28,26 +28,30 @@ export class HistoryService {
       }
       if (rawJob.app) {
         job.app = rawJob.app;
+        delete job.app.credentials;
+      }
+      if (rawJob['data']['app']) {
+        job.app = rawJob['data']['app'];
+        delete job.app.credentials;
       }
       if (rawJob.result) {
         job.result = rawJob.result;
       }
-      if (rawJob.lastFinishedAt){
+      if (rawJob.lastFinishedAt) {
         job.lastFinishedAt = rawJob.lastFinishedAt;
         job.status = 'finished';
       } else {
         job.status = 'pending';
       }
-      if (rawJob.lastRunAt){
+      if (rawJob.lastRunAt) {
         job.lastRunAt = rawJob.lastRunAt;
       }
-      if (rawJob.nextRunAt){
+      if (rawJob.nextRunAt) {
         job.nextRunAt = rawJob.nextRunAt;
       }
 
       results.push(job);
     }
-    L.error(results); 
     return results;
   }
 }

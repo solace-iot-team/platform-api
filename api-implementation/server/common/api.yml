@@ -2,7 +2,7 @@
   info:
     title: Solace API Management Connector
     description: 'Solace API Management Connector API. Note: basic authentication security mechanism is deprecated.'
-    version: 0.8.0
+    version: 0.9.0
   servers:
     - url: /v1
   
@@ -785,6 +785,8 @@
         type: object
         additionalProperties: false
         properties:
+          guaranteedMessagingEnabled:
+            type: boolean
           guaranteedMessaging:
             $ref: '#/components/schemas/ClientOptionsGuaranteedMessaging'
   
@@ -3070,6 +3072,7 @@
           enum:
           - application/json
           - application/x-yaml
+          - application/zip
        responses:
           '200':
             description:  async api sepc
@@ -3080,6 +3083,10 @@
               application/x-yaml:
                 schema:
                   $ref: "#/components/schemas/String2MB"
+              application/zip:
+                schema:
+                  type: string
+                  format: binary
           '400':
              $ref: '#/components/responses/BadRequest'
           '401':
@@ -3334,6 +3341,7 @@
           enum:
           - application/json
           - application/x-yaml
+          - application/zip
        responses:
           '200':
             description:  async api sepc
@@ -3344,6 +3352,10 @@
               application/x-yaml:
                 schema:
                   $ref: "#/components/schemas/String2MB"
+              application/zip:
+                schema:
+                  type: string
+                  format: binary
           '400':
              $ref: '#/components/responses/BadRequest'
           '401':
@@ -3865,6 +3877,7 @@
           enum:
           - application/json
           - application/x-yaml
+          - application/zip
        responses:
           '200':
             description:  async api sepc
@@ -3876,6 +3889,10 @@
               application/x-yaml:
                 schema:
                   $ref: "#/components/schemas/String2MB"
+              application/zip:
+                schema:
+                  type: string
+                  format: binary
           '400':
              $ref: '#/components/responses/BadRequest'
           '401':
@@ -5580,6 +5597,7 @@
           enum:
           - application/json
           - application/x-yaml
+          - application/zip
        responses:
           '200':
             description:  async api sepc
@@ -5591,6 +5609,10 @@
               application/x-yaml:
                 schema:
                   $ref: "#/components/schemas/String2MB"
+              application/zip:
+                schema:
+                  type: string
+                  format: binary
           '400':
              $ref: '#/components/responses/BadRequest'
           '401':
@@ -5980,6 +6002,7 @@
           enum:
           - application/json
           - application/x-yaml
+          - application/zip
        responses:
           '200':
             description: the Async API spec in JSON format
@@ -6002,6 +6025,10 @@
               application/x-yaml:
                schema:
                   $ref: "#/components/schemas/String2MB"
+              application/zip:
+                schema:
+                  type: string
+                  format: binary
           '400':
              $ref: '#/components/responses/BadRequest'
           '401':

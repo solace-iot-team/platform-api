@@ -586,8 +586,7 @@ class BrokerService {
   clientOptionsRequireQueue(clientOptions: ClientOptions): boolean {
     L.debug(clientOptions);
     const requireQueue: boolean = (clientOptions != null
-      && clientOptions.guaranteedMessaging != null
-      && clientOptions.guaranteedMessaging.requireQueue == true);
+      && clientOptions.guaranteedMessaging?.requireQueue == true);
     L.debug(`Provisioning Requires a queue - ${requireQueue}`)
     return requireQueue;
   }
