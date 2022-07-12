@@ -82,7 +82,7 @@ export class QueueManager {
         ingressEnabled: true,
         egressEnabled: true,
         owner: app.credentials.secret.consumerKey,
-        permission: MsgVpnQueue.permission.CONSUME
+        permission: MsgVpnQueue.permission.NO_ACCESS
       };
       if (clientOptions && clientOptions.guaranteedMessaging) {
         newQ.accessType = (clientOptions.guaranteedMessaging.accessType.toLowerCase() == MsgVpnQueue.accessType.EXCLUSIVE.toLowerCase()) ?
