@@ -16,5 +16,10 @@ export default express
   .post('/:team/apps/:name/webHooks', controller.createWebHook)
   .get('/:team/apps/:app/webHooks/:name', controller.webHookByName)
   .delete('/:team/apps/:app/webHooks/:name', controller.deleteWebHook)
-  .patch('/:team/apps/:app/webHooks/:name', controller.updateWebHook);
+  .patch('/:team/apps/:app/webHooks/:name', controller.updateWebHook)
+  .get('/:team/apps/:app/attributes/:attributeName', controller.attributeByName)
+  .put('/:team/apps/:app/attributes/:attributeName', controller.createAttribute)
+  .patch('/:team/apps/:app/attributes/:attributeName', controller.updateAttribute)
+  .delete('/:team/apps/:app/attributes/:attributeName', controller.deleteAttribute)
+  ;
 

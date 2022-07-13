@@ -8,7 +8,7 @@ import WebHookNameList = Components.Schemas.WebHookNameList;
 import WebHook = Components.Schemas.WebHook;
 import AppsService from './apps.service';
 import BrokerService from './broker.service';
-import AppFactory from './apps/appfactory';
+import AppFactory, {APP_TYPE_TEAM} from './apps/appfactory';
 import WebHookHelpers from './apps/webhookhelpers';
 
 import { PersistenceService } from './persistence.service';
@@ -260,7 +260,7 @@ export class TeamsService {
         }
         await this.updateAppInternal(team, appName, app);
       }
-      if (webHook){
+      if (webHook) {
         throw new ErrorResponseInternal(422, `WebHook already exists`);
       }
     } else {
@@ -299,6 +299,27 @@ export class TeamsService {
     }
     return 204;
   }
+
+  /**
+* Attributes methods
+* 
+*/
+  async attributeByName(team: string, appName: string, name: string): Promise<string> {
+    return AppsService.attributeByName(appName, name, APP_TYPE_TEAM, team);
+  }
+
+  async createAttribute(team: string, appName: string, name: string, value: string): Promise<string> {
+    return AppsService.createAttribute(appName, name, value, APP_TYPE_TEAM, team);
+  }
+
+  async updateAttribute(team: string, appName: string, attributeName: string, attributeValue: string): Promise<string> {
+    return AppsService.updateAttribute(appName, attributeName, attributeValue, APP_TYPE_TEAM, team);
+  }
+
+  async deleteAttribute(team: string, appName: string, attributeName: string): Promise<number> {
+    return AppsService.deleteAttribute(appName, attributeName, APP_TYPE_TEAM, team);
+  }
+
   // private methods
   private async canDeleteTeam(name: string): Promise<boolean> {
     const q = {

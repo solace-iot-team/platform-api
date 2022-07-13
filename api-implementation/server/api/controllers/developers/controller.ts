@@ -160,6 +160,43 @@ export class Controller {
       .catch((e) => next(e));
   }
 
+  /**
+   * Attributes resource
+   */
+  attributeByName(req: Request, res: Response, next: NextFunction): void {
+    DevelopersService.attributeByName(req.params['developer'], req.params['app'], req.params['attributeName'])
+      .then((r) => {
+        res.status(200).json(r);
+      })
+      .catch((e) => {
+        L.info(e);
+        next(e);
+      });
+  };
+  createAttribute(req: Request, res: Response, next: NextFunction): void {
+    DevelopersService.createAttribute(req.params['developer'], req.params['app'], req.params['attributeName'], req.body).then((r) => {
+      if (r) {
+        res.status(200).json(r);
+      }
+      else
+        next(new ErrorResponseInternal(500, `No response`));
+    }).catch((e) => next(e));
+  }
+  updateAttribute(req: Request, res: Response, next: NextFunction): void {
+    DevelopersService.updateAttribute(req.params['developer'], req.params['app'], req.params['attributeName'], req.body).then((r) => {
+      if (r) {
+        res.status(200).json(r);
+      }
+      else
+        next(new ErrorResponseInternal(500, `No response`));
+    }).catch((e) => next(e));
+  }
+
+  deleteAttribute(req: Request, res: Response, next: NextFunction): void {
+    DevelopersService.deleteAttribute(req.params['developer'], req.params['app'], req.params['attributeName']).then((r) => {
+      res.status(r).send();
+    }).catch((e) => next(e));
+  }
 
 
 }

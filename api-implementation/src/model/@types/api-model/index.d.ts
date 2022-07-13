@@ -1357,6 +1357,25 @@ declare namespace Paths {
             export type $504 = Components.Responses.GatewayTimeout;
         }
     }
+    namespace CreateDeveloperAppAttribute {
+        export type RequestBody = Components.Schemas.AttributeValue; // ^.*$
+        namespace Responses {
+            export type $200 = Components.Schemas.AttributeValue; // ^.*$
+            export type $400 = Components.Responses.BadRequest;
+            export type $401 = Components.Responses.Unauthorized;
+            export type $403 = Components.Responses.Forbidden;
+            export type $404 = Components.Responses.NotFound;
+            export type $406 = Components.Responses.NotAcceptable;
+            export type $409 = Components.Schemas.ErrorResponse;
+            export type $412 = Components.Responses.PreconditionFailed;
+            export type $415 = Components.Responses.UnsupportedMediaType;
+            export type $422 = Components.Schemas.ErrorResponse;
+            export type $429 = Components.Responses.TooManyRequests;
+            export type $500 = Components.Responses.InternalServerError;
+            export type $503 = Components.Responses.ServiceUnavailable;
+            export type $504 = Components.Responses.GatewayTimeout;
+        }
+    }
     namespace CreateDeveloperAppWebHook {
         export type RequestBody = Components.Schemas.WebHook;
         namespace Responses {
@@ -1439,6 +1458,25 @@ declare namespace Paths {
             export type $422 = Components.Schemas.ErrorResponse;
             export type $429 = Components.Responses.TooManyRequests;
             export type $500 = Components.Schemas.ErrorResponse;
+            export type $503 = Components.Responses.ServiceUnavailable;
+            export type $504 = Components.Responses.GatewayTimeout;
+        }
+    }
+    namespace CreateTeamAppAttribute {
+        export type RequestBody = Components.Schemas.AttributeValue; // ^.*$
+        namespace Responses {
+            export type $200 = Components.Schemas.AttributeValue; // ^.*$
+            export type $400 = Components.Responses.BadRequest;
+            export type $401 = Components.Responses.Unauthorized;
+            export type $403 = Components.Responses.Forbidden;
+            export type $404 = Components.Responses.NotFound;
+            export type $406 = Components.Responses.NotAcceptable;
+            export type $409 = Components.Schemas.ErrorResponse;
+            export type $412 = Components.Responses.PreconditionFailed;
+            export type $415 = Components.Responses.UnsupportedMediaType;
+            export type $422 = Components.Schemas.ErrorResponse;
+            export type $429 = Components.Responses.TooManyRequests;
+            export type $500 = Components.Responses.InternalServerError;
             export type $503 = Components.Responses.ServiceUnavailable;
             export type $504 = Components.Responses.GatewayTimeout;
         }
@@ -1556,6 +1594,22 @@ declare namespace Paths {
             export type $504 = Components.Responses.GatewayTimeout;
         }
     }
+    namespace DeleteDeveloperAppAttribute {
+        namespace Responses {
+            export interface $204 {
+            }
+            export type $400 = Components.Responses.BadRequest;
+            export type $401 = Components.Responses.Unauthorized;
+            export type $403 = Components.Responses.Forbidden;
+            export type $404 = Components.Responses.NotFound;
+            export type $406 = Components.Responses.NotAcceptable;
+            export type $409 = Components.Schemas.ErrorResponse;
+            export type $429 = Components.Responses.TooManyRequests;
+            export type $500 = Components.Responses.InternalServerError;
+            export type $503 = Components.Responses.ServiceUnavailable;
+            export type $504 = Components.Responses.GatewayTimeout;
+        }
+    }
     namespace DeleteDeveloperAppWebHook {
         namespace Responses {
             export interface $204 {
@@ -1627,6 +1681,22 @@ declare namespace Paths {
             export type $403 = Components.Responses.Forbidden;
             export type $404 = Components.Responses.NotFound;
             export type $406 = Components.Responses.NotAcceptable;
+            export type $429 = Components.Responses.TooManyRequests;
+            export type $500 = Components.Responses.InternalServerError;
+            export type $503 = Components.Responses.ServiceUnavailable;
+            export type $504 = Components.Responses.GatewayTimeout;
+        }
+    }
+    namespace DeleteTeamAppAttribute {
+        namespace Responses {
+            export interface $204 {
+            }
+            export type $400 = Components.Responses.BadRequest;
+            export type $401 = Components.Responses.Unauthorized;
+            export type $403 = Components.Responses.Forbidden;
+            export type $404 = Components.Responses.NotFound;
+            export type $406 = Components.Responses.NotAcceptable;
+            export type $409 = Components.Schemas.ErrorResponse;
             export type $429 = Components.Responses.TooManyRequests;
             export type $500 = Components.Responses.InternalServerError;
             export type $503 = Components.Responses.ServiceUnavailable;
@@ -1902,6 +1972,20 @@ declare namespace Paths {
             export type $504 = Components.Responses.GatewayTimeout;
         }
     }
+    namespace GetDeveloperAppAttribute {
+        namespace Responses {
+            export type $200 = Components.Schemas.AttributeValue; // ^.*$
+            export type $400 = Components.Responses.BadRequest;
+            export type $401 = Components.Responses.Unauthorized;
+            export type $403 = Components.Responses.Forbidden;
+            export type $404 = Components.Responses.NotFound;
+            export type $406 = Components.Responses.NotAcceptable;
+            export type $429 = Components.Responses.TooManyRequests;
+            export type $500 = Components.Responses.InternalServerError;
+            export type $503 = Components.Responses.ServiceUnavailable;
+            export type $504 = Components.Responses.GatewayTimeout;
+        }
+    }
     namespace GetDeveloperAppWebHook {
         namespace Responses {
             export type $200 = Components.Schemas.WebHook;
@@ -2033,6 +2117,20 @@ declare namespace Paths {
     namespace GetTeamApp {
         namespace Responses {
             export type $200 = Components.Schemas.AppResponse;
+            export type $400 = Components.Responses.BadRequest;
+            export type $401 = Components.Responses.Unauthorized;
+            export type $403 = Components.Responses.Forbidden;
+            export type $404 = Components.Responses.NotFound;
+            export type $406 = Components.Responses.NotAcceptable;
+            export type $429 = Components.Responses.TooManyRequests;
+            export type $500 = Components.Responses.InternalServerError;
+            export type $503 = Components.Responses.ServiceUnavailable;
+            export type $504 = Components.Responses.GatewayTimeout;
+        }
+    }
+    namespace GetTeamAppAttribute {
+        namespace Responses {
+            export type $200 = Components.Schemas.AttributeValue; // ^.*$
             export type $400 = Components.Responses.BadRequest;
             export type $401 = Components.Responses.Unauthorized;
             export type $403 = Components.Responses.Forbidden;
@@ -2589,6 +2687,25 @@ declare namespace Paths {
             export type $504 = Components.Responses.GatewayTimeout;
         }
     }
+    namespace UpdateDeveloperAppAttribute {
+        export type RequestBody = Components.Schemas.AttributeValue; // ^.*$
+        namespace Responses {
+            export type $200 = Components.Schemas.AttributeValue; // ^.*$
+            export type $400 = Components.Responses.BadRequest;
+            export type $401 = Components.Responses.Unauthorized;
+            export type $403 = Components.Responses.Forbidden;
+            export type $404 = Components.Responses.NotFound;
+            export type $406 = Components.Responses.NotAcceptable;
+            export type $409 = Components.Schemas.ErrorResponse;
+            export type $412 = Components.Responses.PreconditionFailed;
+            export type $415 = Components.Responses.UnsupportedMediaType;
+            export type $422 = Components.Schemas.ErrorResponse;
+            export type $429 = Components.Responses.TooManyRequests;
+            export type $500 = Components.Responses.InternalServerError;
+            export type $503 = Components.Responses.ServiceUnavailable;
+            export type $504 = Components.Responses.GatewayTimeout;
+        }
+    }
     namespace UpdateDeveloperAppWebHook {
         export type RequestBody = Components.Schemas.WebHook;
         namespace Responses {
@@ -2672,6 +2789,25 @@ declare namespace Paths {
             export type $422 = Components.Schemas.ErrorResponse;
             export type $429 = Components.Responses.TooManyRequests;
             export type $500 = Components.Schemas.ErrorResponse;
+            export type $503 = Components.Responses.ServiceUnavailable;
+            export type $504 = Components.Responses.GatewayTimeout;
+        }
+    }
+    namespace UpdateTeamAppAttribute {
+        export type RequestBody = Components.Schemas.AttributeValue; // ^.*$
+        namespace Responses {
+            export type $200 = Components.Schemas.AttributeValue; // ^.*$
+            export type $400 = Components.Responses.BadRequest;
+            export type $401 = Components.Responses.Unauthorized;
+            export type $403 = Components.Responses.Forbidden;
+            export type $404 = Components.Responses.NotFound;
+            export type $406 = Components.Responses.NotAcceptable;
+            export type $409 = Components.Schemas.ErrorResponse;
+            export type $412 = Components.Responses.PreconditionFailed;
+            export type $415 = Components.Responses.UnsupportedMediaType;
+            export type $422 = Components.Schemas.ErrorResponse;
+            export type $429 = Components.Responses.TooManyRequests;
+            export type $500 = Components.Responses.InternalServerError;
             export type $503 = Components.Responses.ServiceUnavailable;
             export type $504 = Components.Responses.GatewayTimeout;
         }
