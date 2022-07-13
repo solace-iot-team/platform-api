@@ -1,5 +1,40 @@
 # Release Notes
 
+## Version 0.6.0
+* OpenAPI: 0.10.0
+* API Management Connector Server: 0.6.0
+
+### Features
+* **feat-asyncapi-include-solace-binding**
+  - Include solace binding (msg vpn) in generated AsyncAPI server sections. Also adds message vpn into App response
+* **feat-jobs-history**
+  - Add a resource to retrieve all internal jobs in the connector (e.g. app re-provision triggered by upstream changes). Can fiter on job status
+* **feat-attributes-resource**
+  - added a resource to manage a single attribute associated with an object - provides save CRUD operations on the attributes array in the underlying document
+  - this is available as a sub resource on `apiProducts`, `apis`, `team/apps` and `developer/apps` resources
+* **feat-asyncapi-download-as-zip**
+  - API Specifications can be requested as a ZIP file that contains the API spec as well as the JSON schemas of all messages as separate files
+
+### Fixes
+* **fix-apiinfo-include-version-from-meta**
+  - When retrieving the extended list of APIs the version field is now set to the version defined in the meta object if present.
+* **fix-apiinfo-asyncapi-parameters**
+  - Fixed issue where API Parameters could not be extracted as the Async API contained invalid schema references. API Info now omits the parameters if the Async APi is invalid
+* **fix-apis-list-extended-format-null-guard**
+  - Handle cases gracefully when no meta object exists on the API Info
+* **refact-broker-aclmanager-re-use-asyncapi-parsing**
+  - Centralised Async APi parsing for many resources
+  - Improved error handling and reporting when AsyncAPI parsing errors occur
+* **fix-apiproduct-clientoptions-guaranteed-messaging-switch**
+  - Added an explicit switch to enable guaranteed messaging. Previously the presence of `clientoptions.guaranteedMessaging` was used as a switch. Now there is an explicit flag on `clientOptions` that takes precedence to enable GM if set. If the flag is omitted the previous behaviour is preserved.
+* **fix-apis-resource-inline-external-schemas**
+  - Added fix to de-reference external resources such as schema definitions are inlined into the async api spec
+  - This is to avoid errors if externally referenced resources (schemas) become unavailable temporarily or permantently
+* **fix-apis-resources-race-condition**
+  - Fixed an error returned by api info revisions resource that occurs when the call is being made concurrently with a PATCH to the API resource
+* **fix-app-queue-owner-only-acccess**
+  - changed queue permission to NO_ACCESS(only queue owner can access the queue)
+
 ## Version 0.5.1
 * OpenAPI: 0.7.19
 * API Management Connector Server: 0.5.1
