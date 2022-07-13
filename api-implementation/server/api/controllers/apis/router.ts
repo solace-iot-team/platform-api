@@ -16,4 +16,8 @@ export default express
   .get('/:name/revisions/:version/info', controller.infoByVersion)
   .patch('/:name/revisions/:version/info', controller.updateInfoByVersion)
   .get('/:name/revisions/:version/apiProducts', controller.apiProductsByVersion)
+  .get('/:name/attributes/:attributeName', controller.attributeByName)
+  .put('/:name/attributes/:attributeName', controller.createAttribute)
+  .patch('/:name/attributes/:attributeName', controller.updateAttribute)
+  .delete('/:name/attributes/:attributeName', controller.deleteAttribute)
   ;

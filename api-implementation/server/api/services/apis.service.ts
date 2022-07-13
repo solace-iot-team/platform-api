@@ -572,6 +572,83 @@ export class ApisService {
     return externalInfo;
 
   }
+
+
+    /**
+   * Attributes methods
+   * 
+   */
+  async attributeByName(apiName: string, name: string): Promise<string> {
+    const info: APIInfo = await this.apiInfoPersistenceService.byName(apiName);
+    if (!info.attributes){
+      throw new ErrorResponseInternal(404, `Attribute [${name}] is not set for API  [${apiName}]`); 
+    }
+    const attr = info.attributes.find(n => n.name == name);
+    if (attr) {
+      return attr.value;
+    } else {
+      throw new ErrorResponseInternal(404, `Attribute [${name}] is not set for API [${apiName}]`);
+    }
+  }
+
+  async createAttribute(apiName: string, name: string, value: string): Promise<string> {
+    const info: APIInfo = await this.apiInfoPersistenceService.byName(apiName);
+    if (!info.attributes){
+      info.attributes = [];
+    }
+    const attr = info.attributes.find(n => n.name == name);
+    if (!attr) {
+      info.attributes.push({
+        name: name,
+        value: value
+      });
+      await this.updateAPIAttributes(apiName, info);
+      return value;
+    } else {
+      throw new ErrorResponseInternal(422, `Attribute [${name}] is already set for API  [${apiName}]`);
+    }
+  }  
+
+  async updateAttribute(apiName: string, attributeName: string, attributeValue: string): Promise<string> {
+    const info: APIInfo = await this.apiInfoPersistenceService.byName(apiName);
+    if (!info.attributes){
+      info.attributes = [];
+    }
+    const attr = info.attributes.find(n => n.name == attributeName);
+    if (attr) {
+      attr.value = attributeValue;
+      info.attributes[info.attributes.findIndex(n => n.name == attributeName)] = attr;
+      await this.updateAPIAttributes(apiName, info);
+      return attributeValue;
+    } else {
+      throw new ErrorResponseInternal(404, `Attribute [${attributeName}] is not set for API  [${apiName}]`);
+    }
+  }  
+
+  async deleteAttribute(apiName: string, attributeName: string): Promise<number> {
+    const info: APIInfo  = await this.apiInfoPersistenceService.byName(apiName);
+    if (!info.attributes){
+      info.attributes = [];
+    }
+    const attr = info.attributes.find(n => n.name == attributeName);
+    if (attr) {
+      const newAttributes = info.attributes.filter(n => n.name != attributeName);
+      info.attributes = newAttributes;
+      await this.updateAPIAttributes(apiName, info);
+      return 204;
+    } else {
+      throw new ErrorResponseInternal(404, `Attribute [${attributeName}] is not set for API  [${apiName}]`);
+    }
+  } 
+  /**
+   * Update an API Info after an attribute has been updated. 
+   * @param apiInfo 
+   */
+  private async updateAPIAttributes (apiName: string, apiInfo: APIInfo) : Promise<APIInfo>{
+
+      return this.updateInfo(apiName, apiInfo);
+  }
+
 }
 
 export default new ApisService();

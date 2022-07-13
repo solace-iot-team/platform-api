@@ -484,6 +484,90 @@ export class AppsService {
       }
     }
   }
-}
 
+
+  /**
+* Attributes methods
+* 
+*/
+  async attributeByName(appName: string, name: string, appType: string, appOwner: string): Promise<string> {
+    const app: App = await this.persistenceService.byName(appName);
+    if (app['appType'] != appType || app['ownerId'] != appOwner) {
+      throw new ErrorResponseInternal(404, `App [${appName}] not found`);
+    }
+    if (!app.attributes) {
+      throw new ErrorResponseInternal(404, `Attribute [${name}] is not set for app  [${appName}]`);
+    }
+    const attr = app.attributes.find(n => n.name == name);
+    if (attr) {
+      return attr.value;
+    } else {
+      throw new ErrorResponseInternal(404, `Attribute [${name}] is not set for app [${appName}]`);
+    }
+  }
+
+  async createAttribute(appName: string, name: string, value: string, appType: string, appOwner: string): Promise<string> {
+    const app: App = await this.persistenceService.byName(appName);
+    if (!app.attributes) {
+      app.attributes = [];
+    }
+    const attr = app.attributes.find(n => n.name == name);
+    if (!attr) {
+      app.attributes.push({
+        name: name,
+        value: value
+      });
+      await this.updateAppAttributes(appName, app, appType, appOwner);
+      return value;
+    } else {
+      throw new ErrorResponseInternal(422, `Attribute [${name}] is already set for app  [${appName}]`);
+    }
+  }
+
+  async updateAttribute(appName: string, attributeName: string, attributeValue: string, appType: string, appOwner: string): Promise<string> {
+    const app: App = await this.persistenceService.byName(appName);
+    if (!app.attributes) {
+      app.attributes = [];
+    }
+    const attr = app.attributes.find(n => n.name == attributeName);
+    if (attr) {
+      attr.value = attributeValue;
+      app.attributes[app.attributes.findIndex(n => n.name == attributeName)] = attr;
+      await this.updateAppAttributes(appName, app, appType, appOwner);
+      return attributeValue;
+    } else {
+      throw new ErrorResponseInternal(404, `Attribute [${attributeName}] is not set for app  [${appName}]`);
+    }
+  }
+
+  async deleteAttribute(appName: string, attributeName: string, appType: string, appOwner: string): Promise<number> {
+    const app: App = await this.persistenceService.byName(appName);
+    if (!app.attributes) {
+      app.attributes = [];
+    }
+    const attr = app.attributes.find(n => n.name == attributeName);
+    if (attr) {
+      const newAttributes = app.attributes.filter(n => n.name != attributeName);
+      app.attributes = newAttributes;
+      await this.updateAppAttributes(appName, app, appType, appOwner);
+      return 204;
+    } else {
+      throw new ErrorResponseInternal(404, `Attribute [${attributeName}] is not set for app  [${appName}]`);
+    }
+  }
+  /**
+   * Update an API Info after an attribute has been updated. 
+   * @param app 
+   */
+  private async updateAppAttributes(appName: string, app: App, appType: string, appOwner: string): Promise<AppPatch> {
+    if (app['appType'] != appType || app['ownerId'] != appOwner) {
+      if (app['appType'] != appType) {
+        throw new ErrorResponseInternal(404, `App [${appName}] not found`);
+      }
+      const ownerAttributes = await this.getAttributes(app['appType'], app['ownerId']);
+      return this.update(app['ownerId'], appName, (app as AppPatch), ownerAttributes);
+    }
+
+  }
+}
 export default new AppsService();

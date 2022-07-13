@@ -17,5 +17,9 @@ export default express
   .get('/:developer/apps/:app/webHooks/:name', controller.webHookByName)
   .patch('/:developer/apps/:app/webHooks/:name', controller.updateWebHook)
   .delete('/:developer/apps/:app/webHooks/:name', controller.deleteWebHook)
+  .get('/:developer/apps/:app/attributes/:attributeName', controller.attributeByName)
+  .put('/:developer/apps/:app/attributes/:attributeName', controller.createAttribute)
+  .patch('/:developer/apps/:app/attributes/:attributeName', controller.updateAttribute)
+  .delete('/:developer/apps/:app/attributes/:attributeName', controller.deleteAttribute)
   ;
 

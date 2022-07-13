@@ -8,8 +8,8 @@ import { ErrorResponseInternal } from '../../middlewares/error.handler';
 import ACLManager from '../broker/aclmanager';
 import passwordGenerator from 'generate-password';
 
-const APP_TYPE_DEVELOPER: string = 'developer';
-const APP_TYPE_TEAM: string = 'team';
+export const APP_TYPE_DEVELOPER: string = 'developer';
+export const APP_TYPE_TEAM: string = 'team';
 
 
 class AppFactory {

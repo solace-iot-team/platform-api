@@ -7,7 +7,7 @@ import TopicSyntax = Components.Parameters.TopicSyntax.TopicSyntax;
 import WebHookNameList = Components.Schemas.WebHookNameList;
 import WebHook = Components.Schemas.WebHook;
 import AppsService from './apps.service';
-import AppFactory from './apps/appfactory';
+import AppFactory, {APP_TYPE_DEVELOPER} from './apps/appfactory';
 import WebHookHelpers from './apps/webhookhelpers';
 import BrokerService from './broker.service';
 
@@ -294,7 +294,25 @@ export class DevelopersService {
     return 204;
   }
 
+  /**
+* Attributes methods
+* 
+*/
+  async attributeByName(developer: string, appName: string, name: string): Promise<string> {
+    return AppsService.attributeByName(appName, name, APP_TYPE_DEVELOPER, developer);
+  }
 
+  async createAttribute(developer: string, appName: string, name: string, value: string): Promise<string> {
+    return AppsService.createAttribute(appName, name, value, APP_TYPE_DEVELOPER, developer);
+  }
+
+  async updateAttribute(developer: string, appName: string, attributeName: string, attributeValue: string): Promise<string> {
+    return AppsService.updateAttribute(appName, attributeName, attributeValue, APP_TYPE_DEVELOPER, developer);
+  }
+
+  async deleteAttribute(developer: string, appName: string, attributeName: string): Promise<number> {
+    return AppsService.deleteAttribute(appName, attributeName, APP_TYPE_DEVELOPER, developer);
+  }
   // private methods
   private async canDeleteDeveloper(name: string): Promise<boolean> {
     const q = {
