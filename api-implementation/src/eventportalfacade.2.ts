@@ -9,7 +9,8 @@ import { StatesResponse } from './clients/ep.2.0/models/StatesResponse';
 import { EventApiProductsResponse } from './clients/ep.2.0/models/EventApiProductsResponse';
 import { StateDTO } from './clients/ep.2.0/models/StateDTO';
 import { EventAPIAsyncAPIInfo } from './model/eventapiasyncapiinfo';
-import { EventApiProductVersion, eventApiVersion } from './clients/ep.2.0';
+import { eventApiVersion } from './clients/ep.2.0/models/eventApiVersion';
+import { EventApiProductVersion } from './clients/ep.2.0/models/EventApiProductVersion';
 
 var cmp = require('semver-compare');
 
