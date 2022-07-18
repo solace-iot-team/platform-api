@@ -74,7 +74,7 @@ export default class EventPortalImporterTaskImpl {
           }
           const product: APIProduct = {
             apis: [FAKE_API_ID],
-            attributes: mappedAttributes,
+            attributes: mappedAttributes?mappedAttributes:[],
             displayName: `${prodVersion.displayName} ${plan.name}`,
             environments: [envName],
             name: apiProductId,
