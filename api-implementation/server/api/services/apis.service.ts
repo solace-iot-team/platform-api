@@ -650,6 +650,73 @@ export class ApisService {
       return this.updateInfo(apiName, apiInfo);
   }
 
+    /**
+   * Meta Attributes methods
+   * 
+   */
+     async metaAttributeByName(apiName: string, name: string): Promise<string> {
+      const info: APIInfo = await this.apiInfoPersistenceService.byName(apiName);
+      if (!info.meta?.attributes){
+        throw new ErrorResponseInternal(404, `Attribute [${name}] is not set for API  [${apiName}]`); 
+      }
+      const attr = info.meta?.attributes.find(n => n.name == name);
+      if (attr) {
+        return attr.value;
+      } else {
+        throw new ErrorResponseInternal(404, `Attribute [${name}] is not set for API [${apiName}]`);
+      }
+    }
+  
+    async createMetaAttribute(apiName: string, name: string, value: string): Promise<string> {
+      const info: APIInfo = await this.apiInfoPersistenceService.byName(apiName);
+      if (!info.meta?.attributes){
+        info.meta.attributes = [];
+      }
+      const attr = info.meta.attributes.find(n => n.name == name);
+      if (!attr && info.meta?.attributes) {
+        info.meta.attributes.push({
+          name: name,
+          value: value
+        });
+        await this.updateAPIAttributes(apiName, info);
+        return value;
+      } else {
+        throw new ErrorResponseInternal(422, `Attribute [${name}] is already set for API  [${apiName}]`);
+      }
+    }  
+  
+    async updateMetaAttribute(apiName: string, attributeName: string, attributeValue: string): Promise<string> {
+      const info: APIInfo = await this.apiInfoPersistenceService.byName(apiName);
+      if (!info.meta?.attributes){
+        info.meta.attributes = [];
+      }
+      const attr = info.meta?.attributes.find(n => n.name == attributeName);
+      if (attr && info.meta?.attributes) {
+        attr.value = attributeValue;
+        info.meta.attributes[info.meta.attributes.findIndex(n => n.name == attributeName)] = attr;
+        await this.updateAPIAttributes(apiName, info);
+        return attributeValue;
+      } else {
+        throw new ErrorResponseInternal(404, `Attribute [${attributeName}] is not set for API  [${apiName}]`);
+      }
+    }  
+  
+    async deleteMetaAttribute(apiName: string, attributeName: string): Promise<number> {
+      const info: APIInfo  = await this.apiInfoPersistenceService.byName(apiName);
+      if (!info.meta?.attributes){
+        info.meta.attributes = [];
+      }
+      const attr = info.meta.attributes.find(n => n.name == attributeName);
+      if (attr) {
+        const newAttributes = info.meta?.attributes.filter(n => n.name != attributeName);
+        info.meta.attributes = newAttributes;
+        await this.updateAPIAttributes(apiName, info);
+        return 204;
+      } else {
+        throw new ErrorResponseInternal(404, `Attribute [${attributeName}] is not set for API  [${apiName}]`);
+      }
+    } 
+  
 }
 
 export default new ApisService();
