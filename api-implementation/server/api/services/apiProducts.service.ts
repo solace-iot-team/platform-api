@@ -236,10 +236,88 @@ export class ApiProductsService {
   }
 
   /**
+   * Attributes methods - meta/unversioned
+   * 
+   */
+  async metaAttributeByName(apiProductName: string, name: string): Promise<string> {
+    const product: APIProduct = await this.persistenceService.byName(apiProductName);
+    if (!product.meta?.attributes){
+      throw new ErrorResponseInternal(404, `Unversioned attribute [${name}] is not set for API Product [${apiProductName}]`); 
+    }
+    const attr = product.meta?.attributes.find(n => n.name == name);
+    if (attr) {
+      return attr.value;
+    } else {
+      throw new ErrorResponseInternal(404, `Unversioned attribute [${name}] is not set for API Product [${apiProductName}]`);
+    }
+  }
+
+  async createMetaAttribute(apiProductName: string, name: string, value: string): Promise<string> {
+    const product: APIProduct = await this.persistenceService.byName(apiProductName);
+    if (!product.meta?.attributes){
+      product.meta.attributes = [];
+    }
+    const attr = product.meta?.attributes.find(n => n.name == name);
+    if (!attr) {
+      product.meta?.attributes.push({
+        name: name,
+        value: value
+      });
+      await this.persistenceService.update(apiProductName, product);
+      return value;
+    } else {
+      throw new ErrorResponseInternal(422, `Unversioned attribute [${name}] is already set for API Product [${apiProductName}]`);
+    }
+  }  
+
+  async updateMetaAttribute(apiProductName: string, attributeName: string, attributeValue: string): Promise<string> {
+    const product: APIProduct = await this.persistenceService.byName(apiProductName);
+    if (!product.meta?.attributes){
+      product.meta.attributes = [];
+    }
+    const attr = product.meta?.attributes.find(n => n.name == attributeName);
+    if (attr && product.meta) {
+      attr.value = attributeValue;
+      product.meta.attributes[product.attributes.findIndex(n => n.name == attributeName)] = attr;
+      await this.persistenceService.update(apiProductName, product);
+      return attributeValue;
+    } else {
+      throw new ErrorResponseInternal(404, `Unversioned attribute [${attributeName}] is not set for API Product [${apiProductName}]`);
+    }
+  }  
+
+  async deleteMetaAttribute(apiProductName: string, attributeName: string): Promise<number> {
+    const product: APIProduct  = await this.persistenceService.byName(apiProductName);
+    if (!product.meta?.attributes){
+      product.meta.attributes = [];
+    }
+    const attr = product.meta?.attributes.find(n => n.name == attributeName);
+    if (attr && product.meta) {
+      const newAttributes = product.meta?.attributes.filter(n => n.name != attributeName);
+      product.meta.attributes = newAttributes;
+      await this.persistenceService.update(apiProductName, product);
+      return 204;
+    } else {
+      throw new ErrorResponseInternal(404, `Unversioned attribute [${attributeName}] is not set for API Product [${apiProductName}]`);
+    }
+  } 
+  /**
+   * Update an API Product after an attribute has been updated. Auto increments the minor version of the API Product
+   * @param apiProductName 
+   * @param product 
+   */
+  private async updateProductAttributes (apiProductName: string, product: APIProduct) : Promise<APIProduct>{
+      if (product.meta && product.meta.version){
+        product.meta.version = Versioning.incrementVersion(product.meta.version);
+      }
+      return this.update(apiProductName, product);
+  }
+
+  /**
    * Attributes methods
    * 
    */
-  async attributeByName(apiProductName: string, name: string): Promise<string> {
+   async attributeByName(apiProductName: string, name: string): Promise<string> {
     const product: APIProduct = await this.persistenceService.byName(apiProductName);
     if (!product.attributes){
       throw new ErrorResponseInternal(404, `Attribute [${name}] is not set for API Product [${apiProductName}]`); 
@@ -301,17 +379,7 @@ export class ApiProductsService {
       throw new ErrorResponseInternal(404, `Attribute [${attributeName}] is not set for API Product [${apiProductName}]`);
     }
   } 
-  /**
-   * Update an API Product after an attribute has been updated. Auto increments the minor version of the API Product
-   * @param apiProductName 
-   * @param product 
-   */
-  private async updateProductAttributes (apiProductName: string, product: APIProduct) : Promise<APIProduct>{
-      if (product.meta && product.meta.version){
-        product.meta.version = Versioning.incrementVersion(product.meta.version);
-      }
-      return this.update(apiProductName, product);
-  }
+
   /**
    * Private methods
    * 

@@ -144,5 +144,44 @@ export class Controller {
       res.status(r).send();
     }).catch((e) => next(e));
   }
+
+
+  /**
+   * Meta Attributes resource
+   */
+  metaAttributeByName(req: Request, res: Response, next: NextFunction): void {
+    ApiProductsService.metaAttributeByName(req.params['name'], req.params['attributeName'])
+      .then((r) => {
+        res.status(200).json(r);
+      })
+      .catch((e) => {
+        L.info(e);
+        next(e);
+      });
+  };
+  createMetaAttribute(req: Request, res: Response, next: NextFunction): void {
+    ApiProductsService.createMetaAttribute(req.params['name'], req.params['attributeName'], req.body).then((r) => {
+      if (r) {
+        res.status(200).json(r);
+      }
+      else
+        next(new ErrorResponseInternal(500, `No response`));
+    }).catch((e) => next(e));
+  }
+  updateMetaAttribute(req: Request, res: Response, next: NextFunction): void {
+    ApiProductsService.updateMetaAttribute(req.params['name'], req.params['attributeName'], req.body).then((r) => {
+      if (r) {
+        res.status(200).json(r);
+      }
+      else
+        next(new ErrorResponseInternal(500, `No response`));
+    }).catch((e) => next(e));
+  }
+
+  deleteMetaAttribute(req: Request, res: Response, next: NextFunction): void {
+    ApiProductsService.deleteMetaAttribute(req.params['name'], req.params['attributeName']).then((r) => {
+      res.status(r).send();
+    }).catch((e) => next(e));
+  }
 }
 export default new Controller();

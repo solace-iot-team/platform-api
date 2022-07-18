@@ -918,6 +918,7 @@ declare namespace Components {
             createdBy?: CommonUserName; // ^[.a-zA-Z0-9@_-]*$
             stage?: MetaEntityStage;
             derivedFrom?: MetaEntityReference;
+            attributes?: Attributes;
         }
         export interface MetaEntityReference {
             /**
