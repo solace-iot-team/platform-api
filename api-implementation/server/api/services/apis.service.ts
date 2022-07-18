@@ -504,6 +504,7 @@ export class ApisService {
   }
 
   private addAsyncAPIExtensionInfo(spec: any) {
+    L.error(JSON.stringify(spec));
     if (spec.info['x-origin']) {
       return;
     }

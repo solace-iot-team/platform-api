@@ -2,7 +2,7 @@
   info:
     title: Solace API Management Connector
     description: 'Solace API Management Connector API. Note: basic authentication security mechanism is deprecated.'
-    version: 0.10.0
+    version: 0.11.0
   servers:
     - url: /v1
   
@@ -86,6 +86,15 @@
           maxLength: 188
       env_name:
         name: env_name
+        in: path
+        required: true
+        schema:
+          type: string
+          pattern: "^[a-zA-Z0-9_-]*$"
+          minLength: 2
+          maxLength: 188
+      importer_job_name:
+        name: importer_job_name
         in: path
         required: true
         schema:
@@ -275,6 +284,22 @@
               $ref: '#/components/schemas/ErrorResponse'
   
     schemas:
+      SuccessResponse:
+       type: object
+       additionalProperties: false
+       properties:
+        message:
+         type: string
+         minLength: 0
+         maxLength: 1024
+         pattern: "^[\\S]([\\S\\s]|[[:punct:]])*$"
+         example: "Submission successful"
+        id:
+         type: string
+         example: "123e4567-e89b-12d3-a456-426655440000"
+         minLength: 0
+         maxLength: 64
+         pattern: "^[a-zA-Z0-9_-]*$"
       ErrorResponse:
        type: object
        additionalProperties: false
@@ -2404,7 +2429,50 @@
             $ref: "#/components/schemas/CommonDisplayNameReadOnly"
           revision: 
             $ref: "#/components/schemas/SemVerReadOnly"
-      
+  
+      ImporterConfiguration:
+        type: object
+        additionalProperties: false
+        required:
+        - name
+        - displayName
+        properties:
+          importerType:
+            $ref: "#/components/schemas/CommonName"
+          name:
+            $ref: "#/components/schemas/CommonName"
+          displayName:
+            $ref: "#/components/schemas/CommonDisplayName"
+          filter:
+            description: an array of ids that an importer will apply to the issues against theexternal system
+            type: array
+            minLength: 0
+            maxLength: 256
+            items:
+              $ref: "#/components/schemas/CommonName"
+          attributeMap:
+            type: array
+            items: 
+              type: object
+              properties: 
+                name: 
+                  $ref: "#/components/schemas/CommonName"
+                attributes:
+                  $ref: "#/components/schemas/attributes"
+      ImporterInfo:
+        type: object
+        additionalProperties: false
+        properties:
+          name:
+            $ref: "#/components/schemas/CommonName"
+          description: 
+            $ref: "#/components/schemas/CommonDescription"
+          attributeMapDescription: 
+            $ref: "#/components/schemas/CommonDescription"
+          filterDescription: 
+            $ref: "#/components/schemas/CommonDescription"
+
+        
   security:
     - OpenId: []
     - BasicAuth: []
@@ -2912,6 +2980,250 @@
             $ref: '#/components/responses/NotAcceptable'
           '415':
             $ref: '#/components/responses/UnsupportedMediaType'
+          '429':
+            $ref: '#/components/responses/TooManyRequests'
+          '500':
+            $ref: '#/components/responses/InternalServerError'
+          '503':
+            $ref: '#/components/responses/ServiceUnavailable'
+          '504':
+            $ref: '#/components/responses/GatewayTimeout'
+
+    /{organization_name}/importers:
+      parameters:
+      - $ref: '#/components/parameters/organization'
+      get:
+       operationId: getAllImporters
+       tags:
+       - management
+       responses:
+          '200':
+            description:  list of all importers registered in the connector
+            content:
+              "application/json":
+                schema:
+                  type: array
+                  items:
+                   $ref: '#/components/schemas/ImporterConfiguration'
+          '400':
+             $ref: '#/components/responses/BadRequest'
+          '401':
+            $ref: '#/components/responses/Unauthorized'
+          '403':
+            $ref: '#/components/responses/Forbidden'
+          '404':
+            $ref: '#/components/responses/NotFound'
+          '406':
+            $ref: '#/components/responses/NotAcceptable'
+          '429':
+            $ref: '#/components/responses/TooManyRequests'
+          '500':
+            $ref: '#/components/responses/InternalServerError'
+          '503':
+            $ref: '#/components/responses/ServiceUnavailable'
+          '504':
+            $ref: '#/components/responses/GatewayTimeout'
+      post:
+        operationId: createImporterJob
+        tags:
+        - management
+        requestBody:
+         description: "Importer Configuration"
+         content:
+           "application/json":
+             schema:
+               $ref: '#/components/schemas/ImporterConfiguration'
+        responses:
+          '201':
+            description: The importer configuration
+            content:
+              'application/json':
+                schema:
+                  $ref: '#/components/schemas/ImporterConfiguration'
+          '400':
+             $ref: '#/components/responses/BadRequest'
+          '401':
+            $ref: '#/components/responses/Unauthorized'
+          '403':
+            $ref: '#/components/responses/Forbidden'
+          '404':
+            $ref: '#/components/responses/NotFound'
+          '406':
+            $ref: '#/components/responses/NotAcceptable'
+          '415':
+            $ref: '#/components/responses/UnsupportedMediaType'
+          '429':
+            $ref: '#/components/responses/TooManyRequests'
+          '500':
+            $ref: '#/components/responses/InternalServerError'
+          '503':
+            $ref: '#/components/responses/ServiceUnavailable'
+          '504':
+            $ref: '#/components/responses/GatewayTimeout'
+    /{organization_name}/importers/{importer_job_name}:
+      parameters:
+      - $ref: '#/components/parameters/organization'
+      - $ref: '#/components/parameters/importer_job_name'
+      get:
+        operationId: getImporterJob
+        tags:
+        - management
+        responses:
+          '200':
+            description: The importer configuration
+            content:
+              'application/json':
+                schema:
+                  $ref: '#/components/schemas/ImporterConfiguration'
+          '400':
+             $ref: '#/components/responses/BadRequest'
+          '401':
+            $ref: '#/components/responses/Unauthorized'
+          '403':
+            $ref: '#/components/responses/Forbidden'
+          '404':
+            $ref: '#/components/responses/NotFound'
+          '406':
+            $ref: '#/components/responses/NotAcceptable'
+          '415':
+            $ref: '#/components/responses/UnsupportedMediaType'
+          '429':
+            $ref: '#/components/responses/TooManyRequests'
+          '500':
+            $ref: '#/components/responses/InternalServerError'
+          '503':
+            $ref: '#/components/responses/ServiceUnavailable'
+          '504':
+            $ref: '#/components/responses/GatewayTimeout'
+      patch:
+        operationId: updateImporterJob
+        tags:
+        - management
+        requestBody:
+         description: "Importer Configuration"
+         content:
+           "application/json":
+             schema:
+               $ref: '#/components/schemas/ImporterConfiguration'
+        responses:
+          '200':
+            description: The importer configuration
+            content:
+              'application/json':
+                schema:
+                  $ref: '#/components/schemas/ImporterConfiguration'
+          '400':
+             $ref: '#/components/responses/BadRequest'
+          '401':
+            $ref: '#/components/responses/Unauthorized'
+          '403':
+            $ref: '#/components/responses/Forbidden'
+          '404':
+            $ref: '#/components/responses/NotFound'
+          '406':
+            $ref: '#/components/responses/NotAcceptable'
+          '415':
+            $ref: '#/components/responses/UnsupportedMediaType'
+          '429':
+            $ref: '#/components/responses/TooManyRequests'
+          '500':
+            $ref: '#/components/responses/InternalServerError'
+          '503':
+            $ref: '#/components/responses/ServiceUnavailable'
+          '504':
+            $ref: '#/components/responses/GatewayTimeout'
+      delete:
+       operationId: deleteImporterJob
+       tags:
+       - management
+       responses:
+          '204':
+            description: No content
+          '400':
+             $ref: '#/components/responses/BadRequest'
+          '401':
+            $ref: '#/components/responses/Unauthorized'
+          '403':
+            $ref: '#/components/responses/Forbidden'
+          '404':
+            $ref: '#/components/responses/NotFound'
+          '406':
+            $ref: '#/components/responses/NotAcceptable'
+          '409':
+            description: "Can't delete, API Product is still referenced."
+            content:
+             "application/json":
+              schema:
+               "$ref": "#/components/schemas/ErrorResponse"
+          '429':
+            $ref: '#/components/responses/TooManyRequests'
+          '500':
+            $ref: '#/components/responses/InternalServerError'
+          '503':
+            $ref: '#/components/responses/ServiceUnavailable'
+          '504':
+            $ref: '#/components/responses/GatewayTimeout'
+    /{organization_name}/importers/{importer_job_name}/run:
+      parameters:
+      - $ref: '#/components/parameters/organization'
+      - $ref: '#/components/parameters/importer_job_name'
+      post:
+        operationId: runImporterJob
+        tags:
+        - management
+        responses:
+          '200':
+            description: Submission message
+            content:
+              'application/json':
+                schema:
+                  $ref: '#/components/schemas/SuccessResponse'
+          '400':
+             $ref: '#/components/responses/BadRequest'
+          '401':
+            $ref: '#/components/responses/Unauthorized'
+          '403':
+            $ref: '#/components/responses/Forbidden'
+          '404':
+            $ref: '#/components/responses/NotFound'
+          '406':
+            $ref: '#/components/responses/NotAcceptable'
+          '415':
+            $ref: '#/components/responses/UnsupportedMediaType'
+          '429':
+            $ref: '#/components/responses/TooManyRequests'
+          '500':
+            $ref: '#/components/responses/InternalServerError'
+          '503':
+            $ref: '#/components/responses/ServiceUnavailable'
+          '504':
+            $ref: '#/components/responses/GatewayTimeout'
+    /{organization_name}/importerTypes:
+      parameters:
+      - $ref: '#/components/parameters/organization'
+      get:
+       operationId: getAllImporterTypes
+       tags:
+       - management
+       responses:
+          '200':
+            description:  list of all importer types deinfed in the connector
+            content:
+              "application/json":
+                schema:
+                  type: array
+                  items:
+                   $ref: '#/components/schemas/ImporterInfo'
+          '400':
+             $ref: '#/components/responses/BadRequest'
+          '401':
+            $ref: '#/components/responses/Unauthorized'
+          '403':
+            $ref: '#/components/responses/Forbidden'
+          '404':
+            $ref: '#/components/responses/NotFound'
+          '406':
+            $ref: '#/components/responses/NotAcceptable'
           '429':
             $ref: '#/components/responses/TooManyRequests'
           '500':

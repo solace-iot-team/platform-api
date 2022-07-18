@@ -35,6 +35,9 @@ declare namespace Components {
         namespace IfMatchHeader {
             export type IfMatch = string;
         }
+        namespace ImporterJobName {
+            export type ImporterJobName = string; // ^[a-zA-Z0-9_-]*$
+        }
         namespace Organization {
             export type OrganizationName = string; // ^[a-zA-Z0-9_-]*$
         }
@@ -868,6 +871,25 @@ declare namespace Components {
              */
             responseCode?: number; // int64
         }
+        export interface ImporterConfiguration {
+            importerType?: CommonName; // ^[a-zA-Z0-9_\-]*(@[ |\S]*)?$
+            name: CommonName; // ^[a-zA-Z0-9_\-]*(@[ |\S]*)?$
+            displayName: CommonDisplayName; // ^[\/\sa-z.A-z0-9_-]*$
+            /**
+             * an array of ids that an importer will apply to the issues against theexternal system
+             */
+            filter?: CommonName /* ^[a-zA-Z0-9_\-]*(@[ |\S]*)?$ */ [];
+            attributeMap?: {
+                name?: CommonName; // ^[a-zA-Z0-9_\-]*(@[ |\S]*)?$
+                attributes?: Attributes;
+            }[];
+        }
+        export interface ImporterInfo {
+            name?: CommonName; // ^[a-zA-Z0-9_\-]*(@[ |\S]*)?$
+            description?: CommonDescription; // ^[\s\S]*$
+            attributeMapDescription?: CommonDescription; // ^[\s\S]*$
+            filterDescription?: CommonDescription; // ^[\s\S]*$
+        }
         export interface Job {
             id: string;
             nextRunAt?: string; // date-time
@@ -1119,6 +1141,18 @@ declare namespace Components {
          * 
          */
         export type String2MB = string; // ^[\s\S]*$
+        export interface SuccessResponse {
+            /**
+             * example:
+             * Submission successful
+             */
+            message?: string; // ^[\S]([\S\s]|[[:punct:]])*$
+            /**
+             * example:
+             * 123e4567-e89b-12d3-a456-426655440000
+             */
+            id?: string; // ^[a-zA-Z0-9_-]*$
+        }
         /**
          * A profile of a team. After the team is created, an app can be registered and API credentials are created
          */
@@ -1411,6 +1445,22 @@ declare namespace Paths {
             export type $504 = Components.Responses.GatewayTimeout;
         }
     }
+    namespace CreateImporterJob {
+        export type RequestBody = Components.Schemas.ImporterConfiguration;
+        namespace Responses {
+            export type $201 = Components.Schemas.ImporterConfiguration;
+            export type $400 = Components.Responses.BadRequest;
+            export type $401 = Components.Responses.Unauthorized;
+            export type $403 = Components.Responses.Forbidden;
+            export type $404 = Components.Responses.NotFound;
+            export type $406 = Components.Responses.NotAcceptable;
+            export type $415 = Components.Responses.UnsupportedMediaType;
+            export type $429 = Components.Responses.TooManyRequests;
+            export type $500 = Components.Responses.InternalServerError;
+            export type $503 = Components.Responses.ServiceUnavailable;
+            export type $504 = Components.Responses.GatewayTimeout;
+        }
+    }
     namespace CreateOrganization {
         export type RequestBody = Components.Schemas.Organization;
         namespace Responses {
@@ -1641,6 +1691,22 @@ declare namespace Paths {
             export type $504 = Components.Responses.GatewayTimeout;
         }
     }
+    namespace DeleteImporterJob {
+        namespace Responses {
+            export interface $204 {
+            }
+            export type $400 = Components.Responses.BadRequest;
+            export type $401 = Components.Responses.Unauthorized;
+            export type $403 = Components.Responses.Forbidden;
+            export type $404 = Components.Responses.NotFound;
+            export type $406 = Components.Responses.NotAcceptable;
+            export type $409 = Components.Schemas.ErrorResponse;
+            export type $429 = Components.Responses.TooManyRequests;
+            export type $500 = Components.Responses.InternalServerError;
+            export type $503 = Components.Responses.ServiceUnavailable;
+            export type $504 = Components.Responses.GatewayTimeout;
+        }
+    }
     namespace DeleteOrganization {
         namespace Responses {
             export interface $204 {
@@ -1707,6 +1773,34 @@ declare namespace Paths {
         namespace Responses {
             export interface $204 {
             }
+            export type $400 = Components.Responses.BadRequest;
+            export type $401 = Components.Responses.Unauthorized;
+            export type $403 = Components.Responses.Forbidden;
+            export type $404 = Components.Responses.NotFound;
+            export type $406 = Components.Responses.NotAcceptable;
+            export type $429 = Components.Responses.TooManyRequests;
+            export type $500 = Components.Responses.InternalServerError;
+            export type $503 = Components.Responses.ServiceUnavailable;
+            export type $504 = Components.Responses.GatewayTimeout;
+        }
+    }
+    namespace GetAllImporterTypes {
+        namespace Responses {
+            export type $200 = Components.Schemas.ImporterInfo[];
+            export type $400 = Components.Responses.BadRequest;
+            export type $401 = Components.Responses.Unauthorized;
+            export type $403 = Components.Responses.Forbidden;
+            export type $404 = Components.Responses.NotFound;
+            export type $406 = Components.Responses.NotAcceptable;
+            export type $429 = Components.Responses.TooManyRequests;
+            export type $500 = Components.Responses.InternalServerError;
+            export type $503 = Components.Responses.ServiceUnavailable;
+            export type $504 = Components.Responses.GatewayTimeout;
+        }
+    }
+    namespace GetAllImporters {
+        namespace Responses {
+            export type $200 = Components.Schemas.ImporterConfiguration[];
             export type $400 = Components.Responses.BadRequest;
             export type $401 = Components.Responses.Unauthorized;
             export type $403 = Components.Responses.Forbidden;
@@ -2080,6 +2174,21 @@ declare namespace Paths {
             export type $403 = Components.Responses.Forbidden;
             export type $404 = Components.Responses.NotFound;
             export type $406 = Components.Responses.NotAcceptable;
+            export type $429 = Components.Responses.TooManyRequests;
+            export type $500 = Components.Responses.InternalServerError;
+            export type $503 = Components.Responses.ServiceUnavailable;
+            export type $504 = Components.Responses.GatewayTimeout;
+        }
+    }
+    namespace GetImporterJob {
+        namespace Responses {
+            export type $200 = Components.Schemas.ImporterConfiguration;
+            export type $400 = Components.Responses.BadRequest;
+            export type $401 = Components.Responses.Unauthorized;
+            export type $403 = Components.Responses.Forbidden;
+            export type $404 = Components.Responses.NotFound;
+            export type $406 = Components.Responses.NotAcceptable;
+            export type $415 = Components.Responses.UnsupportedMediaType;
             export type $429 = Components.Responses.TooManyRequests;
             export type $500 = Components.Responses.InternalServerError;
             export type $503 = Components.Responses.ServiceUnavailable;
@@ -2538,6 +2647,21 @@ declare namespace Paths {
             export type $504 = Components.Responses.GatewayTimeout;
         }
     }
+    namespace RunImporterJob {
+        namespace Responses {
+            export type $200 = Components.Schemas.SuccessResponse;
+            export type $400 = Components.Responses.BadRequest;
+            export type $401 = Components.Responses.Unauthorized;
+            export type $403 = Components.Responses.Forbidden;
+            export type $404 = Components.Responses.NotFound;
+            export type $406 = Components.Responses.NotAcceptable;
+            export type $415 = Components.Responses.UnsupportedMediaType;
+            export type $429 = Components.Responses.TooManyRequests;
+            export type $500 = Components.Responses.InternalServerError;
+            export type $503 = Components.Responses.ServiceUnavailable;
+            export type $504 = Components.Responses.GatewayTimeout;
+        }
+    }
     namespace UpdateApi {
         export type RequestBody = Components.Schemas.String2MB; // ^[\s\S]*$
         namespace Responses {
@@ -2736,6 +2860,22 @@ declare namespace Paths {
             export type $412 = Components.Responses.PreconditionFailed;
             export type $415 = Components.Responses.UnsupportedMediaType;
             export type $422 = Components.Schemas.ErrorResponse;
+            export type $429 = Components.Responses.TooManyRequests;
+            export type $500 = Components.Responses.InternalServerError;
+            export type $503 = Components.Responses.ServiceUnavailable;
+            export type $504 = Components.Responses.GatewayTimeout;
+        }
+    }
+    namespace UpdateImporterJob {
+        export type RequestBody = Components.Schemas.ImporterConfiguration;
+        namespace Responses {
+            export type $200 = Components.Schemas.ImporterConfiguration;
+            export type $400 = Components.Responses.BadRequest;
+            export type $401 = Components.Responses.Unauthorized;
+            export type $403 = Components.Responses.Forbidden;
+            export type $404 = Components.Responses.NotFound;
+            export type $406 = Components.Responses.NotAcceptable;
+            export type $415 = Components.Responses.UnsupportedMediaType;
             export type $429 = Components.Responses.TooManyRequests;
             export type $500 = Components.Responses.InternalServerError;
             export type $503 = Components.Responses.ServiceUnavailable;

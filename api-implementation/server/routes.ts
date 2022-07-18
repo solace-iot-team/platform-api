@@ -14,6 +14,8 @@ import jobsRouter from './api/controllers/jobs/router';
 import tokenRouter from './api/controllers/token/router';
 import aboutRouter from './api/controllers/about/router';
 import healthCheckRouter from './api/controllers/healthcheck/router';
+import importersRouter from './api/controllers/importers/router';
+import importerTypesRouter from './api/controllers/importers/typesrouter';
 import { ContextConstants } from './common/constants';
 import { Request, Response } from 'express';
 import pagingHandler from './api/middlewares/paging.handler';
@@ -60,6 +62,8 @@ export default function routes(app: Application): void {
   router.use('/:org/services', authorizedRoles(['org-admin']), accountRouter);
   router.use('/:org/history', authorizedRoles(['org-admin']), historyRouter);
   router.use('/:org/jobs', authorizedRoles(['org-admin']), jobsRouter);
+  router.use('/:org/importers', authorizedRoles(['org-admin']), importersRouter);
+  router.use('/:org/importertypes', authorizedRoles(['org-admin']), importerTypesRouter);
   router.use('/:org/token', authorizedRoles(['org-admin']), tokenRouter);
   router.use('/:org/apps', authorizedRoles(['org-admin']), appsRouter);
   router.use('/healthcheck', healthCheckRouter);

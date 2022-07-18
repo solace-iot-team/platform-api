@@ -75,7 +75,7 @@ export class PersistenceService {
       throw new ErrorResponseInternal(500, `Can't write to  ${this.collection} in tenant ${db}`);
     }
 
-    L.info(`db is ${db}`);
+    L.debug(`db is ${db}`);
     const client = databaseaccess.client;
     const mongoCollection: Collection = client.db(db).collection(this.collection);
     return mongoCollection;
