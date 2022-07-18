@@ -26,7 +26,7 @@ export interface EventApiProductsService {
         ids?: Array<string>,
         applicationDomainId?: string,
         applicationDomainIds?: Array<string>,
-        shared: boolean,
+        shared?: boolean,
         sort?: string,
     ): Promise<EventApiProductsResponse>;
 
@@ -51,7 +51,7 @@ export interface EventApiProductsService {
         ids?: Array<string>,
         applicationDomainId?: string,
         applicationDomainIds?: Array<string>,
-        shared: boolean,
+        shared?: boolean,
         sort?: string,
     ): ApiRequestOptions;
 
