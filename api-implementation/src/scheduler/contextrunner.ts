@@ -15,7 +15,7 @@ export default async function (org: Organization, task: (data?: any) => Promise<
     ns.getStore().set(ContextConstants.AUTHENTICATED_USER, `context-runner-${org.name}`);
     
     try {
-      L.trace(`running task ${task.name}`);
+      //L.trace(`running task ${task.name}`);
       result = await task(data);
       L.trace('finished task');
     } catch (e) {

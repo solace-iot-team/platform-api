@@ -244,7 +244,7 @@ export class AppsService {
     ownerAttributes: Attributes
   ): Promise<AppPatch> {
     // reject request if app is being reprovisioned
-    const isJobRunning: boolean = await scheduler.isJobQueued(name);
+    const isJobRunning: boolean = await scheduler.isJobDefined(name, null, true);
     if (isJobRunning) {
       L.debug(`is a job queued for ${name}, blocking app provisioning ${isJobRunning}`);
       throw new ErrorResponseInternal(412, `An update on this app is currently processing, please try again later`);

@@ -3,7 +3,7 @@ import L from '../../server/common/logger';
 import OrganizationService from '../../server/api/services/organizations.service';
 import DatabaseBootstrapper from '../../server/api/services/persistence/databasebootstrapper';
 
-import { Agenda } from "agenda";
+import { Agenda, Processor } from "agenda";
 import { databaseaccess } from '../databaseaccess';
 import { AppProvisioningJob } from './jobs/appprovisioningjob';
 import { AppRotateCredentialsJobSpec, OrganizationAppsRotateCredentials } from './jobs/rotatecredentials';
@@ -11,6 +11,8 @@ import { ns } from '../../server/api/middlewares/context.handler';
 import { ContextConstants } from '../../server/common/constants';
 
 import Organization = Components.Schemas.Organization;
+import ImporterRegistry from '../../server/api/services/importer/importerregistry';
+import { ErrorResponseInternal } from '../../server/api/middlewares/error.handler';
 
 
 const DEFAULT_JOB_INTERVAL = `15 minutes`;
@@ -115,22 +117,51 @@ export default class TaskScheduler {
     }
   }
 
-  public async isJobAlreadyQueued(spec: AgendaJobSpec): Promise<boolean> {
-    return await this.isJobQueued(spec.data.name, spec.data.orgName);
+  public async scheduleJobAtInterval(spec: AgendaJobSpec, interval: string) {
+    L.info(`Schedule job ${spec.jobName} in ${spec.orgName}`);
+    const agenda: Agenda = this.#agendas.get(spec.orgName);
+    const inFlight: boolean = await this.isJobDefined(spec.data.name, spec.data.orgName);
+    L.debug(`Job ${spec.jobName} for ${spec.orgName} ${spec.data.name} scheduled ${inFlight}`);
+    // if a job is scheduled we need to remove the schedule and add this new job in the schedule
+    if (agenda) {
+      const query = {
+        'data.name': spec.data.name,
+        'data.orgName': spec.data.orgName,
+      };
+      const matchingJobs = await agenda.jobs(query);
+      if (matchingJobs.length > 0) {
+        const existingJob = matchingJobs[0];
+        await existingJob.disable().remove();
+      }
+      const job = agenda.create(spec.jobName, spec.data);
+
+      await job.repeatAt(interval).save();
+
+    } else if (!agenda) {
+      L.error(`No agenda for ${spec.orgName}, could not queue job`);
+    }
   }
 
-  public async isJobQueued(name: string, organization?: string): Promise<boolean> {
+  public async isJobAlreadyQueued(spec: AgendaJobSpec): Promise<boolean> {
+    return await this.isJobDefined(spec.data.name, spec.data.orgName, true);
+  }
+
+  public async isJobDefined(name: string, organization?: string, pendingOnly?: boolean): Promise<boolean> {
     let org = organization;
     if (!org && ns != null && ns.getStore() && ns.getStore().get(ContextConstants.ORG_NAME)) {
       org = ns.getStore().get(ContextConstants.ORG_NAME);
     }
     if (this.#agendas.get(org)) {
       const agenda: Agenda = this.#agendas.get(org);
-      const matchingJobs = await agenda.jobs({
+      const query = {
         'data.name': name,
         'data.orgName': org,
-        lastFinishedAt: null
-      });
+      };
+      if (pendingOnly) {
+        query['lastFinishedAt'] = null;
+
+      }
+      const matchingJobs = await agenda.jobs(query);
       if (matchingJobs.length > 0) {
         L.debug(`Job already in flight for ${name} in ${org}`);
         return true;
@@ -141,6 +172,72 @@ export default class TaskScheduler {
     } else {
       L.error(`No agenda found for ${org}`);
       return false;
+    }
+
+  }
+  public async allJobsWithName(name: string, organization?: string): Promise<any[]> {
+    let org = organization;
+    if (!org && ns != null && ns.getStore() && ns.getStore().get(ContextConstants.ORG_NAME)) {
+      org = ns.getStore().get(ContextConstants.ORG_NAME);
+    }
+    if (this.#agendas.get(org)) {
+      const agenda: Agenda = this.#agendas.get(org);
+      const query = {
+        name: name,
+        'data.orgName': org,
+      };
+      const matchingJobs = await agenda.jobs(query);
+      return matchingJobs;
+    } else {
+      throw new ErrorResponseInternal(500, 'No scheduler found');
+    }
+  }
+
+  public async findJobInstanceWithName(name: string, organization?: string): Promise<any> {
+    let org = organization;
+    if (!org && ns != null && ns.getStore() && ns.getStore().get(ContextConstants.ORG_NAME)) {
+      org = ns.getStore().get(ContextConstants.ORG_NAME);
+    }
+    if (this.#agendas.get(org)) {
+      const agenda: Agenda = this.#agendas.get(org);
+      const query = {
+        'data.name': name,
+        'data.orgName': org,
+      };
+      const matchingJobs = await agenda.jobs(query);
+      if (matchingJobs.length != 1) {
+        throw new ErrorResponseInternal(404, `Not found`);
+      } else {
+        return matchingJobs[0];
+      }
+    } else {
+      throw new ErrorResponseInternal(500, 'No scheduler found');
+    }
+  }
+
+  public async removeJob(name: string, organization?: string): Promise<number> {
+    let org = organization;
+    if (!org && ns != null && ns.getStore() && ns.getStore().get(ContextConstants.ORG_NAME)) {
+      org = ns.getStore().get(ContextConstants.ORG_NAME);
+    }
+    if (this.#agendas.get(org)) {
+      const agenda: Agenda = this.#agendas.get(org);
+      const query = {
+        'data.name': name,
+        'data.orgName': org,
+      };
+      const matchingJobs = await agenda.jobs(query);
+      if (matchingJobs.length > 0) {
+        L.debug(`Job already in flight for ${name} in ${org}`);
+        matchingJobs[0].remove();
+        return 204
+      } else {
+        return 404;
+      }
+
+    } else {
+      L.error(`No agenda found for ${org}`);
+      return 404;
     }
 
   }
@@ -165,14 +262,21 @@ export default class TaskScheduler {
       const agenda = new Agenda({
         mongo: databaseaccess.client.db(orgName),
         name: orgName,
-        processEvery: DEFAULT_JOB_INTERVAL,
+        processEvery: '1 minute',
+        defaultLockLifetime: 45000,
       });
 
       agenda.define('reprovisionApp', { shouldSaveResult: true, }, AppProvisioningJob.provision);
       agenda.define((new AppRotateCredentialsJobSpec()).jobName, { shouldSaveResult: true, }, OrganizationAppsRotateCredentials.rotateCredentials);
+
+      const importers = ImporterRegistry.all();
+      importers.forEach((v, k) => {
+        L.info(`define job for importer ${k} in org ${orgName}`);
+        agenda.define(k, { shouldSaveResult: true, }, v.import);
+      })
       await agenda.start();
       return agenda;
-    } catch (e) { 
+    } catch (e) {
       L.error(`could not create agenda ${orgName}`);
       return null;
     }
