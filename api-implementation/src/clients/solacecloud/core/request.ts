@@ -1,6 +1,7 @@
 /* eslint-disable */
 import FormData from 'form-data';
-import fetch, { BodyInit, Headers, RequestInit, Response } from 'node-fetch';
+import { BodyInit, Headers, RequestInit, Response } from 'node-fetch';
+import fetch from 'fetch-with-proxy';
 import { types } from 'util';
 
 import type { ApiRequestOptions } from './ApiRequestOptions';
@@ -47,7 +48,6 @@ function getQueryString(params: Record<string, any>): string {
 
 async function getUrl(options: ApiRequestOptions): Promise<string> {
     const base = await resolve(options, options.baseUrl);
-
     const path = options.path.replace(/[:]/g, '_');
     const url = `${base}${path}`;
 
