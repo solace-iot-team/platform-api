@@ -9,7 +9,7 @@ export type ApiOptions = {
     /**
      * the base url of the api
      */
-    baseUrl: string;
+    baseUrl: string | Resolver<string>;
 
     /**
      * optional version of the api

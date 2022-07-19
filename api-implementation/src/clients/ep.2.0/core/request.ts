@@ -1,6 +1,7 @@
 /* eslint-disable */
 import FormData from 'form-data';
-import fetch, { BodyInit, Headers, RequestInit, Response } from 'node-fetch';
+import { BodyInit, Headers, RequestInit, Response } from 'node-fetch';
+import fetch from 'fetch-with-proxy';
 import { types } from 'util';
 
 import type { ApiRequestOptions } from './ApiRequestOptions';
@@ -45,9 +46,10 @@ function getQueryString(params: Record<string, any>): string {
     return '';
 }
 
-export function getUrl(options: ApiRequestOptions): string {
+export async function getUrl(options: ApiRequestOptions): Promise<string> {
+    const base = await resolve(options, options.baseUrl);
     const path = options.path.replace(/[:]/g, '_');
-    const url = `${options.baseUrl}${path}`;
+    const url = `${base}${path}`;
 
     if (options.query) {
         return `${url}${getQueryString(options.query)}`;
@@ -207,7 +209,7 @@ function createError(message: string, options: ApiRequestOptions): Error {
  * @returns ApiResult
  */
 export async function request(options: ApiRequestOptions): Promise<ApiResult> {
-    const url = getUrl(options);
+    const url = await getUrl(options);
     const response = await sendRequest(options, url);
     const responseBody = await getResponseBody(options, response);
     const responseHeader = getResponseHeader(response, options.responseHeader);
