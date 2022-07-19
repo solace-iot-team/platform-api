@@ -13,9 +13,13 @@ import { eventApiVersion } from './clients/ep.2.0/models/eventApiVersion';
 import { EventApiProductVersion } from './clients/ep.2.0/models/EventApiProductVersion';
 
 var cmp = require('semver-compare');
+import { getEventPortalToken } from './cloudtokenhelper';
+
 
 const opts: ApiOptions = {
   baseUrl: 'https://ep-mock.mocklab.io',
+  token: getEventPortalToken,
+
 
 };
 export class EventPortalfacade {
@@ -24,7 +28,7 @@ export class EventPortalfacade {
   private eventApIsService: EventApIsServiceDefault;
   constructor(url?: string) {
     if (url) {
-      opts.baseUrl = url;
+      opts.baseUrl = url;  
     }
     this.statesService = new StatesServiceDefault(opts);
     this.eventApiProductsService = new EventApiProductsServiceDefault(opts);
