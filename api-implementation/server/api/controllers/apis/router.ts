@@ -20,4 +20,8 @@ export default express
   .put('/:name/attributes/:attributeName', controller.createAttribute)
   .patch('/:name/attributes/:attributeName', controller.updateAttribute)
   .delete('/:name/attributes/:attributeName', controller.deleteAttribute)
+  .get('/:name/meta/attributes/:attributeName', controller.metaAttributeByName)
+  .put('/:name/meta/attributes/:attributeName', controller.createMetaAttribute)
+  .patch('/:name/meta/attributes/:attributeName', controller.updateMetaAttribute)
+  .delete('/:name/meta/attributes/:attributeName', controller.deleteMetaAttribute)
   ;
