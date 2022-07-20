@@ -7,7 +7,7 @@ import { PersistenceService } from './persistence.service';
 import { ErrorResponseInternal } from '../middlewares/error.handler';
 import { databaseaccess } from '../../../src/databaseaccess';
 import AppsService from './apps.service';
-import BrokerService from './broker.service';
+import BrokerFactory from './broker.factory';
 import SolaceCloudFacade from '../../../src/solacecloudfacade';
 import EventPortalFacade from '../../../src/eventportalfacade';
 import { isString } from '../../../src/typehelpers';
@@ -189,7 +189,7 @@ export class OrganizationsService {
     L.info(`cleaning up apps ${apps.length}`);
     for (const app of apps) {
       L.error(`deprovisioning ${app.name}`);
-      await BrokerService.deprovisionApp(app);
+      await BrokerFactory.getBroker().deprovision(app);
     }
   }
 

@@ -7,7 +7,6 @@ import TopicSyntax = Components.Parameters.TopicSyntax.TopicSyntax;
 import WebHookNameList = Components.Schemas.WebHookNameList;
 import WebHook = Components.Schemas.WebHook;
 import AppsService from './apps.service';
-import BrokerService from './broker.service';
 import AppFactory, {APP_TYPE_TEAM} from './apps/appfactory';
 import WebHookHelpers from './apps/webhookhelpers';
 

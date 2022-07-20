@@ -1,7 +1,7 @@
 import L from '../../../common/logger';
 
 import ApisService from '../apis.service';
-import BrokerService from '../broker.service';
+import BrokerFactory from '../broker.factory';
 import { AsyncAPIServer } from '../../../../src/model/asyncapiserver';
 import AsyncAPIHelper from '../../../../src/asyncapihelper';
 import ApiProductsTypeHelper from '../../../../src/apiproductstypehelper';
@@ -47,12 +47,12 @@ class AsyncApiGenerator {
   }
 
   private async getServers(app: App): Promise<any> {
-    const envs: AppEnvironment[] = await BrokerService.getMessagingProtocols(app);
+    const envs: AppEnvironment[] = await BrokerFactory.getBroker().getMessagingProtocols(app);
     return this.mapServers(envs, app);
   }
 
   private async getServersByApiProduct(apiProduct: APIProduct): Promise<any> {
-    const envs: AppEnvironment[] = await BrokerService.getMessagingProtocolsByAPIProduct(apiProduct);
+    const envs: AppEnvironment[] = await BrokerFactory.getBroker().getMessagingProtocolsByAPIProduct(apiProduct);
     return this.mapServers(envs);
   }
 

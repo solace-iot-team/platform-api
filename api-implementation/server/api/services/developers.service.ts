@@ -9,7 +9,6 @@ import WebHook = Components.Schemas.WebHook;
 import AppsService from './apps.service';
 import AppFactory, {APP_TYPE_DEVELOPER} from './apps/appfactory';
 import WebHookHelpers from './apps/webhookhelpers';
-import BrokerService from './broker.service';
 
 import { PersistenceService } from './persistence.service';
 import { ErrorResponseInternal } from '../middlewares/error.handler';
