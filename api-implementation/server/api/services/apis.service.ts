@@ -87,6 +87,9 @@ export class ApisService {
         metaUpdate.version = oldInfo.meta.version;
       }
       oldInfo.meta = metaUpdate;
+      if (info.meta?.attributes){
+        oldInfo.meta.attributes = info.meta.attributes;
+      }
     }
     if (info.deprecated) {
       oldInfo.deprecated = true;
