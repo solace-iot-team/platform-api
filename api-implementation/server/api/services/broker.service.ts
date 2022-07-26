@@ -39,9 +39,10 @@ import SempV2ClientFactory from './broker/sempv2clientfactory';
 import APIProductsTypeHelper from '../../../src/apiproductstypehelper';
 import { ErrorResponseInternal } from '../middlewares/error.handler';
 import QueueHelper from './broker/queuehelper';
+import Broker from './broker.interface';
 
 
-class BrokerService {
+export class SolaceBrokerService implements Broker{
   async getPermissions(app: App, ownerAttributes: Attributes, envName: string, syntax: TopicSyntax): Promise<Permissions> {
     try {
       const products: APIProduct[] = await this.getAPIProducts(app.apiProducts);
@@ -54,7 +55,7 @@ class BrokerService {
     }
   }
 
-  async reProvisionApp(appPatch: App, appUnmodified: App, ownerAttributes: Attributes): Promise<boolean> {
+  async reprovision(appPatch: App, appUnmodified: App, ownerAttributes: Attributes): Promise<boolean> {
     L.debug(`Attempting to reprovision ${appPatch.name}`);
     if ((appPatch as AppPatch).status != 'approved') {
       L.debug(`App ${appPatch.name} is not approved`);
@@ -109,18 +110,18 @@ class BrokerService {
 
     // try to provision the modified app, if it fails roll back to previous version and provision the previous version
     try {
-      const r = await this.provisionApp(appPatch as App, ownerAttributes, true);
+      const r = await this.provision(appPatch as App, ownerAttributes, true);
       return true;
     }
     catch (e) {
       L.error(`Error reprovisioning app `, e);
       L.error(e);
-      const r = await this.provisionApp(appUnmodified as App, ownerAttributes, true);
+      const r = await this.provision(appUnmodified as App, ownerAttributes, true);
       return false;
     }
 
   }
-  async provisionApp(app: App, ownerAttributes: Attributes, isUpdate?: boolean): Promise<void> {
+  async provision(app: App, ownerAttributes: Attributes, isUpdate?: boolean): Promise<void> {
 
     if (await this.provisionedByConsumerKey(app)) {
       await this.doDeprovisionApp(app, app.credentials.secret.consumerKey);
@@ -159,7 +160,7 @@ class BrokerService {
 
       L.error(e.stack);
       try {
-        await this.deprovisionApp(app);
+        await this.deprovision(app);
       } catch (e) {
         // things may go wrong here, that's fine. we are just trying to clean up
       }
@@ -207,7 +208,7 @@ class BrokerService {
     L.info(`created mqtt session ${app.internalName}`);
   }
 
-  async deprovisionApp(app: App) {
+  async deprovision(app: App) {
     await this.doDeprovisionApp(app, app.internalName);
   }
 
@@ -611,4 +612,3 @@ class BrokerService {
 
   }
 }
-export default new BrokerService();

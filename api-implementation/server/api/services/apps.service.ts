@@ -3,7 +3,7 @@ import { ErrorResponseInternal } from '../middlewares/error.handler';
 import DevelopersService from './developers.service';
 import TeamsService from './teams.service';
 import ApiProductsService from './apiProducts.service';
-import BrokerService from './broker.service';
+import BrokerFactory from './broker.factory';
 import { PersistenceService } from './persistence.service';
 import App = Components.Schemas.App;
 import AppListItem = Components.Schemas.AppListItem;
@@ -90,7 +90,7 @@ export class AppsService {
   async statusByName(name: string): Promise<AppConnectionStatus> {
     const app: App = await this.persistenceService.byName(name);
 
-    return await BrokerService.getAppStatus(app);
+    return await BrokerFactory.getBroker().getAppStatus(app);
   }
 
   async byNameAndOwnerId(
@@ -108,11 +108,11 @@ export class AppsService {
         ownerIdQuery
       );
       if (app) {
-        const endpoints = await BrokerService.getMessagingProtocols(app);
+        const endpoints = await BrokerFactory.getBroker().getMessagingProtocols(app);
         app.environments = endpoints;
         try {
           for (const appEnv of app.environments) {
-            const permissions = await BrokerService.getPermissions(
+            const permissions = await BrokerFactory.getBroker().getPermissions(
               app,
               ownerAttributes,
               appEnv.name,
@@ -208,7 +208,7 @@ export class AppsService {
 
       if (app.status == 'approved') {
         L.info(`provisioning app ${app.name}`);
-        const r = await BrokerService.provisionApp(newApp as App, ownerAttributes, false);
+        const r = await BrokerFactory.getBroker().provision(newApp as App, ownerAttributes, false);
       }
       try {
         const newApp: OwnedApp = await this.persistenceService.create(
@@ -217,7 +217,7 @@ export class AppsService {
         );
         return newApp;
       } catch (e) {
-        const r = await BrokerService.deprovisionApp(app);
+        const r = await BrokerFactory.getBroker().deprovision(app);
         throw (e);
       }
     } catch (e) {
@@ -290,7 +290,7 @@ export class AppsService {
     // we only take action if the app is in approved status
 
     if (appPatch.status == 'approved') {
-      const result: boolean = await BrokerService.reProvisionApp(appPatch as App, appNotModified as App, ownerAttributes);
+      const result: boolean = await BrokerFactory.getBroker().reprovision(appPatch as App, appNotModified as App, ownerAttributes);
       // roll back database changes
       if (!result) {
         appPatch = await this.persistenceService.update(
@@ -309,7 +309,7 @@ export class AppsService {
         ownerId: owner,
       };
       const app: App = await this.byNameAndOwnerId(name, owner, 'smf', null);
-      const x = await BrokerService.deprovisionApp(app);
+      const x = await BrokerFactory.getBroker().deprovision(app);
       return this.persistenceService.delete(name, q);
     } catch (e) {
       L.error(e);

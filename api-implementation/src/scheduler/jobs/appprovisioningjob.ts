@@ -3,7 +3,7 @@ import App = Components.Schemas.App;
 import Attributes = Components.Schemas.Attributes;
 import L from '../../../server/common/logger';
 import { AgendaJobSpec, AgendaJobData } from '../taskscheduler';
-import BrokerService from '../../../server/api/services/broker.service';
+import BrokerFactory from '../../../server/api/services/broker.factory';
 import ContextRunner from '../contextrunner';
 
 export interface AppProvisioningData extends AgendaJobData {
@@ -29,6 +29,6 @@ export class AppProvisioningJob {
     return await ContextRunner(data.org, AppProvisioningJob.doProvision, data);
   }
   public static async doProvision(data: AppProvisioningData): Promise<any> {
-    return await BrokerService.reProvisionApp(data.app, data.appPrevious ? data.appPrevious : data.app, data.ownerAttributes);
+    return await BrokerFactory.getBroker().reprovision(data.app, data.appPrevious ? data.appPrevious : data.app, data.ownerAttributes);
   }
 }
