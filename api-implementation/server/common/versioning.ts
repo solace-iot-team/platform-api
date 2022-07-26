@@ -140,6 +140,11 @@ export class Versioning {
     if (derivedFrom) {
       m.derivedFrom = derivedFrom;
     }
+    if (newMeta.attributes && newMeta.attributes.length>0){
+      m.attributes = newMeta.attributes;
+    } else if (previousMeta.attributes && previousMeta.attributes.length>0){
+      m.attributes = previousMeta.attributes;
+    }
     m[Versioning.INTERNAL_REVISION] = Versioning.nextRevision(previousMeta ? previousMeta[Versioning.INTERNAL_REVISION] : Versioning.INITIAL_REVISION as number);
     return m;
   }
