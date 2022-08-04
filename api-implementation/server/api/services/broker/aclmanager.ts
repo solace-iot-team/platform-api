@@ -12,14 +12,16 @@ import TopicSyntax = Components.Parameters.TopicSyntax.TopicSyntax;
 import { TopicWildcards } from '../../../common/constants';
 
 import { Service } from '../../../../src/clients/solacecloud/models/Service';
-import { AllService, MsgVpnAclProfile, MsgVpnAclProfilePublishException, MsgVpnAclProfilePublishExceptionsResponse, MsgVpnAclProfileSubscribeException, MsgVpnAclProfileSubscribeExceptionsResponse, MsgVpnAuthorizationGroup } from "../../../../src/clients/sempv2";
+import { AllService } from "../../../../src/clients/sempv2";
 
 import ApisService from '../apis.service';
 import ApiProductsService from '../apiProducts.service';
 import SempV2ClientFactory from './sempv2clientfactory';
 import brokerutils from './brokerutils';
-import EnvironmentService from '../environments.service';
 import APIProductsTypeHelper from '../../../../src/apiproductstypehelper';
+import MsgVpnAclProfile = Components.Schemas.MsgVpnAclProfile;
+import MsgVpnAuthorizationGroup = Components.Schemas.MsgVpnAuthorizationGroup;
+import MsgVpnQueueSubscription = Components.Schemas.MsgVpnQueueSubscription;
 
 export enum Direction {
   Publish = 'Publish',
@@ -33,115 +35,39 @@ interface EnvironmentPermissions {
 }
 
 class ACLManager {
-  /**
-   * Backwards compatibility - check if ACLs with consumer key as name exist, 
-   * this was the naming convention used up until v 0.2.3 
-   */
-  public async hasConsumerKeyACLs(app: App, services: Service[]): Promise<boolean> {
-    let hasACLs: boolean = false;
-    for (const service of services) {
-      const apiClient: AllService = SempV2ClientFactory.getSEMPv2Client(service);
 
-      try {
-        const getResponse = await apiClient.getMsgVpnAclProfile(service.msgVpnName, app.credentials.secret.consumerKey);
-        hasACLs = true;
-      } catch (e) {
-        // got a 400 error - not found
-      }
-    }
-    return hasACLs;
-  }
-  public async createACLs(app: App, services: Service[]): Promise<void> {
-    for (const service of services) {
-      const objectName = app.internalName;
-      const apiClient: AllService = SempV2ClientFactory.getSEMPv2Client(service);
-      const aclProfile: MsgVpnAclProfile = {
-        aclProfileName: objectName,
-        clientConnectDefaultAction:
-          MsgVpnAclProfile.clientConnectDefaultAction.ALLOW,
-        publishTopicDefaultAction:
-          MsgVpnAclProfile.publishTopicDefaultAction.DISALLOW,
-        subscribeTopicDefaultAction:
-          MsgVpnAclProfile.subscribeTopicDefaultAction.DISALLOW,
-        msgVpnName: service.msgVpnName,
-      };
-      try {
-        const getResponse = await apiClient.getMsgVpnAclProfile(service.msgVpnName, objectName);
-        L.debug(`ACL Looked up ${JSON.stringify(getResponse)}`);
-        const responseUpd = await apiClient.updateMsgVpnAclProfile(service.msgVpnName, objectName, aclProfile);
-        L.debug(`ACL updated ${JSON.stringify(responseUpd)}`);
-      } catch (e) {
-        try {
-          const response = await apiClient.createMsgVpnAclProfile(service.msgVpnName, aclProfile);
-          L.debug(`ACL updated ${JSON.stringify(response)}`);
-        } catch (err) {
-          throw (err);
-        }
-      }
+  public async createACLs(app: App, environmentNames: string[]): Promise<MsgVpnAclProfile> {
+    const objectName = app.internalName;
+    const aclProfile: MsgVpnAclProfile = {
+      aclProfileName: objectName,
+      clientConnectDefaultAction:
+        'allow',
+      publishTopicDefaultAction:
+        'disallow',
+      subscribeTopicDefaultAction:
+        'disallow',
+      publishExceptions: [],
+      subscribeExceptions: [],
+      tags: ['app', app.name, app.internalName],
+      environments: environmentNames
     };
+
+    return aclProfile;
   }
 
-  public async deleteACLs(app: App, services: Service[], name: string) {
-    for (const service of services) {
-      const apiClient: AllService = SempV2ClientFactory.getSEMPv2Client(service);
-      try {
-        let getResponse = await apiClient.deleteMsgVpnAclProfile(service.msgVpnName, name);
-        L.info("ACL deleted");
-      } catch (err) {
-        if (!(err.body.meta.error.status == "NOT_FOUND")) {
-          L.error('deleteACLs');
-          L.error(err.body);
-          throw err;
-        }
-      }
+  public async createAuthorizationGroups(app: App, clientProfileName: string, environmentNames: string[]): Promise<MsgVpnAuthorizationGroup> {
+    const objectName: string = app.internalName;
+    const authzGroup: MsgVpnAuthorizationGroup = {
+      aclProfileName: objectName,
+      authorizationGroupName: objectName,
+      clientProfileName: clientProfileName,
+      enabled: true,
+      environments: environmentNames
     };
+    return authzGroup;
   }
 
-  public async createAuthorizationGroups(app: App, services: Service[]): Promise<void> {
-    for (const service of services) {
-      const objectName: string = app.internalName;
-      const apiClient: AllService = SempV2ClientFactory.getSEMPv2Client(service);
-      const authzGroup: MsgVpnAuthorizationGroup = {
-        aclProfileName: objectName,
-        authorizationGroupName: objectName,
-        clientProfileName: "default",
-        msgVpnName: service.msgVpnName,
-        enabled: true
-      };
-      try {
-        const getResponse = await apiClient.getMsgVpnAuthorizationGroup(service.msgVpnName, objectName);
-        L.info("AuthorizationGroup Looked up");
-        const responseUpd = await apiClient.updateMsgVpnAuthorizationGroup(service.msgVpnName, objectName, authzGroup);
-        L.info("AuthorizationGroup updated");
-      } catch (e) {
-
-        try {
-          let response = await apiClient.createMsgVpnAuthorizationGroup(service.msgVpnName, authzGroup);
-          L.info("created  AuthorizationGroup");
-        } catch (e) {
-          throw e;
-        }
-      }
-    }
-  }
-
-  public async deleteAuthorizationGroups(app: App, services: Service[], name: string): Promise<void> {
-    for (const service of services) {
-      const apiClient: AllService = SempV2ClientFactory.getSEMPv2Client(service);
-      try {
-        const getResponse = await apiClient.deleteMsgVpnAuthorizationGroup(service.msgVpnName, name);
-      } catch (err) {
-
-        if (!(err.body.meta.error.status == "NOT_FOUND")) {
-          L.error('deleteAuthorizationGroups');
-          L.error(err);
-          throw err;
-        }
-      }
-    }
-  }
-
-  public async createClientACLExceptions(app: App, apiProducts: APIProduct[], ownerAttributes: Attributes): Promise<void> {
+  public async createClientACLExceptions(app: App, apiProducts: APIProduct[], ownerAttributes: Attributes, aclProfileConfig: MsgVpnAclProfile): Promise<void> {
 
     const envPermissions: EnvironmentPermissions[] = [];
     // compile list of event destinations sub / pub separately
@@ -180,6 +106,8 @@ class ACLManager {
 
     // inject attribute values into parameters within subscriptions
     const attributes: any[] = this.getAttributes(app, ownerAttributes, apiProducts);
+    aclProfileConfig.publishExceptions = [];
+    aclProfileConfig.subscribeExceptions = [];
     try {
       for (const permissions of envPermissions) {
         const services: Service[] = await brokerutils.getServices([permissions.name]);
@@ -194,23 +122,18 @@ class ACLManager {
           arr[index] = this.scrubDestination(s);
         });
         L.info(`provisioning exceptions for env ${permissions.name} to ${services[0].serviceId}`);
-        // need to reverse publish->subscribe due to Async API terminology
-        const q = await this.addPublishTopicExceptions(app, services, subscribeExceptions);
-        const r = await this.addSubscribeTopicExceptions(app, services, publishExceptions);
-
+        // reverse the verbs for Async API conformity
+        subscribeExceptions.forEach(p => aclProfileConfig.publishExceptions.push({
+          publishTopicException: p,
+          publishTopicExceptionSyntax: 'smf',
+          environments: [permissions.name]
+        }))
+        publishExceptions.forEach(p => aclProfileConfig.subscribeExceptions.push({
+          subscribeTopicException: p,
+          subscribeTopicExceptionSyntax: 'smf',
+          environments: [permissions.name]
+        }))
       }
-
-      if (apiProducts.length == 0) {
-        const envNames: string[] = [];
-        for (const env of await EnvironmentService.all()) {
-          envNames.push(env.name);
-        }
-
-        const services: Service[] = await brokerutils.getServices(envNames);
-        const q = await this.addPublishTopicExceptions(app, services, []);
-        const r = await this.addSubscribeTopicExceptions(app, services, []);
-      }
-
     } catch (e) {
       throw new ErrorResponseInternal(400, e);
     }
@@ -323,79 +246,6 @@ class ACLManager {
     return scrubbed;
   }
 
-  private async addPublishTopicExceptions(app: App, services: Service[], exceptions: string[]): Promise<void> {
-    for (const service of services) {
-      const objectName: string = app.internalName;
-      const apiClient: AllService = SempV2ClientFactory.getSEMPv2Client(service);
-
-      // fix - get all exceptions present on the acl profile  and remove those no longer required
-      const currentPublishExceptions: MsgVpnAclProfilePublishExceptionsResponse = await apiClient.getMsgVpnAclProfilePublishExceptions(service.msgVpnName, objectName, 999);
-      for (let pe of currentPublishExceptions.data) {
-        if (!exceptions.includes(pe.publishExceptionTopic)) {
-          await apiClient.deleteMsgVpnAclProfilePublishException(service.msgVpnName, objectName, pe.topicSyntax, encodeURIComponent(pe.publishExceptionTopic));
-        }
-      }
-
-      for (const exception of exceptions) {
-        const aclException: MsgVpnAclProfilePublishException = {
-          aclProfileName: objectName,
-          msgVpnName: service.msgVpnName,
-          publishExceptionTopic: exception,
-          topicSyntax: MsgVpnAclProfilePublishException.topicSyntax.SMF
-        };
-        try {
-          const getResponse = await apiClient.getMsgVpnAclProfilePublishException(service.msgVpnName, objectName, MsgVpnAclProfilePublishException.topicSyntax.SMF, encodeURIComponent(exception));
-          L.info("ACL Looked up");
-        } catch (e) {
-          L.info(`addPublishTopicExceptions lookup  failed ${e}`);
-          try {
-            let response = await apiClient.createMsgVpnAclProfilePublishException(service.msgVpnName, objectName, aclException);
-            L.info("created PublishException");
-          } catch (err) {
-            L.info(`addPublishTopicExceptions add failed ${err}`);
-            throw err;
-          }
-        }
-      }
-    }
-  }
-  private async addSubscribeTopicExceptions(app: App, services: Service[], exceptions: string[]): Promise<void> {
-    for (const service of services) {
-      const objectName: string = app.internalName;
-      const apiClient: AllService = SempV2ClientFactory.getSEMPv2Client(service);
-      // fix - get al exceptions present on the acl profile  and remove those no longer required
-      const currentExceptions: MsgVpnAclProfileSubscribeExceptionsResponse = await apiClient.getMsgVpnAclProfileSubscribeExceptions(service.msgVpnName, objectName, 999);
-      for (let se of currentExceptions.data) {
-        if (!exceptions.includes(se.subscribeExceptionTopic)) {
-          await apiClient.deleteMsgVpnAclProfileSubscribeException(service.msgVpnName, objectName, se.topicSyntax, encodeURIComponent(se.subscribeExceptionTopic));
-        }
-      }
-      for (const exception of exceptions) {
-        const aclException: MsgVpnAclProfileSubscribeException = {
-          aclProfileName: objectName,
-          msgVpnName: service.msgVpnName,
-          subscribeExceptionTopic: exception,
-          topicSyntax: MsgVpnAclProfileSubscribeException.topicSyntax.SMF
-        };
-        try {
-          const getResponse = await apiClient.getMsgVpnAclProfileSubscribeException(service.msgVpnName, objectName, MsgVpnAclProfileSubscribeException.topicSyntax.SMF, encodeURIComponent(exception));
-          L.debug("addSubscribeTopicExceptions: exception exists");
-        } catch (e) {
-          L.info(`addSubscribeTopicExceptions lookup  failed ${JSON.stringify(e)}`);
-          try {
-            const response = await apiClient.createMsgVpnAclProfileSubscribeException(service.msgVpnName, objectName, aclException);
-            L.debug("created SubscribeException");
-          } catch (err) {
-            L.error(`addSubscribeTopicExceptions add failed ${err}`);
-            throw err;
-          }
-
-        }
-      }
-    }
-  }
-
-
   private async getChannelPermissionsFromAsyncAPIs(apis: string[], direction: Direction): Promise<{
     [name: string]: ChannelPermission;
   }[]> {
@@ -415,10 +265,10 @@ class ACLManager {
 
   }
   public getSubscriptionsFromAsyncAPIs(apis: string[]): Promise<string[]> {
-    return this,this.getResourcesFromAsyncAPIs(apis, Direction.Publish);
+    return this, this.getResourcesFromAsyncAPIs(apis, Direction.Publish);
   }
 
-  public async getQueueSubscriptionsByApp(app: App): Promise<string[]> {
+  public async getQueueSubscriptionsByApp(app: App): Promise<MsgVpnQueueSubscription[]> {
     const query = {};
     if (app.apiProducts.length == 0) {
       return [];
@@ -430,26 +280,41 @@ class ACLManager {
     return this.getQueueSubscriptions(app, apiProducts, null);
   }
 
-  public async getQueueSubscriptions(app: App, apiProducts: APIProduct[], ownerAttributes: Attributes): Promise<string[]> {
-    let subscribeExceptions: string[] = [];
+  public async getQueueSubscriptions(app: App, apiProducts: APIProduct[], ownerAttributes: Attributes): Promise<MsgVpnQueueSubscription[]> {
+    let subscribeExceptions: MsgVpnQueueSubscription[] = [];
     for (const product of apiProducts) {
       const strs: string[] = await this.getSubscriptionsFromAsyncAPIs(product.apis);
       for (const s of strs) {
-        subscribeExceptions.push(s);
+        subscribeExceptions.push({
+          environments: product.environments,
+          subscriptionTopic: s,
+        });
       }
       // add in the pubresources as well (again, AsyncAPI reverse )
-      subscribeExceptions = subscribeExceptions.concat(product.pubResources);
+      for (const pubResource of product.pubResources) {
+        subscribeExceptions.push({
+          environments: product.environments,
+          subscriptionTopic: pubResource
+        });
+      }
     }
     if (subscribeExceptions.length < 1) {
       return subscribeExceptions;
     }
     // inject attribute values into parameters within subscriptions
     const attributes: any[] = this.getAttributes(app, ownerAttributes, apiProducts);
-    subscribeExceptions = this.enrichTopics(subscribeExceptions, attributes);
-    subscribeExceptions.forEach((s, index, arr) => {
-      arr[index] = this.scrubDestination(s);
+    const enrichedSubscriptions: MsgVpnQueueSubscription[] = [];
+    for (const s of subscribeExceptions) {
+      const enrichedTopics = this.enrichDestination(s.subscriptionTopic, attributes);
+      enrichedTopics.forEach(t => enrichedSubscriptions.push({
+        environments: s.environments,
+        subscriptionTopic: t
+      }));
+    }
+    enrichedSubscriptions.forEach((s, index, arr) => {
+      s.subscriptionTopic = this.scrubDestination(s.subscriptionTopic);
     });
-    return subscribeExceptions;
+    return enrichedSubscriptions;
   }
 
   public async getClientACLExceptions(app: App, apiProducts: APIProduct[], ownerAttributes: Attributes, envName: string, syntax?: TopicSyntax): Promise<Permissions> {

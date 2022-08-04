@@ -9,12 +9,10 @@ import Attributes = Components.Schemas.Attributes;
 import Permissions = Components.Schemas.Permissions;
 import Endpoint = Components.Schemas.Endpoint;
 import AppEnvironment = Components.Schemas.AppEnvironment;
-import WebHook = Components.Schemas.WebHook;
 import TopicSyntax = Components.Parameters.TopicSyntax.TopicSyntax;
 import EnvironmentResponse = Components.Schemas.EnvironmentResponse;
-import ClientOptions = Components.Schemas.ClientOptions;
 import AppConnectionStatus = Components.Schemas.AppConnectionStatus;
-
+import SolaceConfigService from './solaceconfig.service'
 import ApiProductsService from './apiProducts.service';
 import ACLManager from './broker/aclmanager';
 import QueueManager from './broker/queuemanager';
@@ -27,23 +25,18 @@ import { ProtocolMapper } from '../../../src/protocolmapper';
 
 import EnvironmentsService from './environments.service';
 import { Service } from '../../../src/clients/solacecloud/models/Service';
-import {
-  AllService, MsgVpnClientUsername,
-  MsgVpnRestDeliveryPoint,
-  MsgVpnRestDeliveryPointRestConsumer,
-  MsgVpnRestDeliveryPointQueueBinding,
-  MsgVpnRestDeliveryPointRestConsumerTlsTrustedCommonName,
-} from '../../../src/clients/sempv2';
 import SolaceCloudFacade from '../../../src/solacecloudfacade';
-import SempV2ClientFactory from './broker/sempv2clientfactory';
+
 import APIProductsTypeHelper from '../../../src/apiproductstypehelper';
 import { ErrorResponseInternal } from '../middlewares/error.handler';
-import QueueHelper from './broker/queuehelper';
 import Broker from './broker.interface';
+import MsgVpnClientProfile = Components.Schemas.MsgVpnClientProfile;
+import AppConfigSet = Components.Schemas.AppConfigSet;
+import clientusernameBuilder from './broker/clientusername.builder';
+import restdeliverypointBuilder from './broker/restdeliverypoint.builder';
 
-
-export class SolaceBrokerService implements Broker{
-  async getPermissions(app: App, ownerAttributes: Attributes, envName: string, syntax: TopicSyntax): Promise<Permissions> {
+export class SolaceBrokerService implements Broker {
+  public async getPermissions(app: App, ownerAttributes: Attributes, envName: string, syntax: TopicSyntax): Promise<Permissions> {
     try {
       const products: APIProduct[] = await this.getAPIProducts(app.apiProducts);
       const permissions: Permissions = await ACLManager.getClientACLExceptions(app, products, ownerAttributes, envName, syntax);
@@ -55,57 +48,11 @@ export class SolaceBrokerService implements Broker{
     }
   }
 
-  async reprovision(appPatch: App, appUnmodified: App, ownerAttributes: Attributes): Promise<boolean> {
+  public async reprovision(appPatch: App, appUnmodified: App, ownerAttributes: Attributes): Promise<boolean> {
     L.debug(`Attempting to reprovision ${appPatch.name}`);
     if ((appPatch as AppPatch).status != 'approved') {
       L.debug(`App ${appPatch.name} is not approved`);
       return false;
-    }
-    // check if credentials were changed. this triggers a nem change of broker resources such as client name, password
-    let areCredentialsUpdated: boolean = false;
-    if (appPatch.credentials && appPatch.credentials.secret.consumerKey != appUnmodified.credentials.secret.consumerKey) {
-      areCredentialsUpdated = true;
-    }
-    // credentials change triggers a deprovision action. Too drastic as credentioals change merely impact the client username
-    const products: APIProduct[] = await this.getAPIProducts(appPatch.apiProducts);
-    if (areCredentialsUpdated) {
-      let services = await BrokerUtils.getServicesByApp(appUnmodified);
-      const r = await this.deleteClientUsernames(appUnmodified, services);
-      services = await BrokerUtils.getServicesByApp(appPatch);
-
-      const clientProfileName: string = await ClientProfileManager.create(appPatch, services, products, ownerAttributes);
-      await this.createClientUsernames(appPatch, services, clientProfileName);
-    }
-    // need to figure out if environments were removed and deprovision from these environments
-    const oldServices: Service[] = await BrokerUtils.getServicesByApp(appUnmodified);
-    const newServices: Service[] = await BrokerUtils.getServicesByApp(appPatch);
-    const deProvisionServices = oldServices.filter(s => !newServices.includes(s));
-    L.trace(`updated app references fewer environments, deprovision from services ${JSON.stringify(deProvisionServices)}`)
-    L.info(`provisioning app ${appPatch.name}`);
-    if (deProvisionServices && deProvisionServices.length > 0) {
-      await this.doDeprovisionAppByEnvironments(appUnmodified, appUnmodified.internalName, deProvisionServices);
-    }
-
-    // need to figure out if products were removed and if need to remove associated queues
-    if (appPatch.apiProducts && appUnmodified.apiProducts) {
-      const previousProductNames: string[] = APIProductsTypeHelper.apiProductReferencesToStringArray(appUnmodified.apiProducts);
-      const newProductNames: string[] = APIProductsTypeHelper.apiProductReferencesToStringArray(appPatch.apiProducts);
-      const diff: string[] = previousProductNames.filter(x => !newProductNames.includes(x));
-      L.trace(diff);
-      const tempApp: App = {
-        internalName: appPatch.internalName,
-        name: appPatch.name,
-        apiProducts: diff,
-        credentials: null,
-      }
-      await QueueManager.deleteAPIProductQueues(tempApp, newServices, tempApp.internalName);
-      await QueueManager.deleteAPIQueues(tempApp, newServices, tempApp.internalName);
-    }
-    // also  queues may no longe be required
-    if (!QueueHelper.areAppQueuesRequired(products) || (await ACLManager.getQueueSubscriptionsByApp(appPatch)).length==0) {
-      L.debug('make sure to remove queues');
-      await QueueManager.deleteAPIProductQueues(appPatch, newServices, appPatch.internalName);
-      await QueueManager.deleteAPIQueues(appPatch, newServices, appPatch.internalName);
     }
 
     // try to provision the modified app, if it fails roll back to previous version and provision the previous version
@@ -121,11 +68,7 @@ export class SolaceBrokerService implements Broker{
     }
 
   }
-  async provision(app: App, ownerAttributes: Attributes, isUpdate?: boolean): Promise<void> {
-
-    if (await this.provisionedByConsumerKey(app)) {
-      await this.doDeprovisionApp(app, app.credentials.secret.consumerKey);
-    }
+  public async provision(app: App, ownerAttributes: Attributes, isUpdate?: boolean): Promise<void> {
     const productResults: APIProduct[] = await this.getAPIProducts(app.apiProducts);
     L.info(`API Products looked up, processing provisioning`);
     L.trace(productResults);
@@ -142,15 +85,17 @@ export class SolaceBrokerService implements Broker{
         }
         environmentNames = Array.from(new Set(environmentNames));
         await this.doProvision(app, environmentNames, products, ownerAttributes);
-      }
-      if ((!productResults || productResults.length == 0) && isUpdate) {
-        L.info(`No API Products present, updating Broker`);
-        const environmentNames = await BrokerUtils.getEnvironments(app);
-        const products: APIProduct[] = [];
-        await this.doProvision(app, environmentNames, products, ownerAttributes);
       } else {
-        L.debug(`No update requested or no API Products present.`);
+        try {
+          await this.deprovision(app);
+        } catch (e) {
+          const err = e as ErrorResponseInternal;
+          if (err.statusCode != 404) {
+            throw e;
+          }
+        }
       }
+
     } catch (e) {
       if (e.body) {
         L.error(`Provisioning error ${e.message}, body ${JSON.stringify(e.body)}`);
@@ -169,82 +114,55 @@ export class SolaceBrokerService implements Broker{
 
   }
   private async doProvision(app: App, environmentNames: string[], products: APIProduct[], ownerAttributes: Attributes): Promise<void> {
+
     const services = await BrokerUtils.getServices(environmentNames);
 
-    const clientProfileName: string = await ClientProfileManager.create(app, services, products, ownerAttributes);
-    L.info(`using client profile  ${clientProfileName}`);
-    const a = await ACLManager.createACLs(app, services);
+    const clientProfile: MsgVpnClientProfile = await ClientProfileManager.selectClientProfile(app, products, ownerAttributes);
+    clientProfile.environments = environmentNames;
+    const a = await ACLManager.createACLs(app, environmentNames);
+    await ACLManager.createClientACLExceptions(app, products, ownerAttributes, a);
+    const authzGroup = await ACLManager.createAuthorizationGroups(app, clientProfile.clientProfileName, environmentNames);
+    const rdps = await restdeliverypointBuilder.build(app, services, products, ownerAttributes);
+    let queues = await QueueManager.createAPIProductQueues(app, products, ownerAttributes);
+    queues = queues.concat(await QueueManager.createAPIQueues(app, products, ownerAttributes));
     L.info(`created acl profile ${app.name}`);
-    const b = await this.createClientUsernames(app, services, clientProfileName);
-    L.info(`created client username ${app.name}`);
-    const e = await ACLManager.createAuthorizationGroups(app, services);
-    L.info(`created client username ${app.name}`);
-    const c = await ACLManager.createClientACLExceptions(app, products, ownerAttributes);
-    L.info(`created acl exceptions ${app.name}`);
-
-    // provision queue if webhooks are configured
-    if (app.webHooks != null && app.webHooks.length > 0) {
-      L.info("creating webhook queues");
-      const d = await QueueManager.createWebHookQueues(app, services, products, ownerAttributes);
-      L.info(`created webhook queues ${app.name}`);
-    } else {
-      // clean up queues
-      await QueueManager.deleteWebHookQueues(app, services, app.internalName);
+    const appConfig : AppConfigSet= {
+      aclProfile: a,
+      authorizationGroup: authzGroup,
+      clientProfile: clientProfile,
+      displayName: app.displayName,
+      clientUsername: await clientusernameBuilder.build(app, clientProfile.clientProfileName, environmentNames),
+      name: app.name,
+      services: [],
+      tags: ['app', app.name, app.internalName],
+      restDeliveryPoints: rdps,
+      queues: queues,
+      mqttSession: await MQTTSessionManager.create(app, products, environmentNames)
+    };
+    for (const service of services){
+      appConfig.services.push({
+        environment: service['environment'],
+        service: (service as Components.Schemas.Service)
+      })
     }
-    await QueueManager.createAPIProductQueues(app, services, products, ownerAttributes);
-    await QueueManager.createAPIQueues(app, services, products, ownerAttributes);
-    // no webhook - no RDP
-    //L.info(app.webHooks);    
-    if (app.webHooks != null && app.webHooks.length > 0) {
-      L.info("creating webhook");
-      const d = await this.createRDP(app, services, products);
-      L.info(`created rdps ${app.name}`);
-    } else {
-      // clean up RDPs
-      await this.deleteRDPs(app, services, app.internalName);
-    }
-    // set up the MQTT Session
-    await MQTTSessionManager.create(app, services, products);
-    L.info(`created mqtt session ${app.internalName}`);
+    const result = await SolaceConfigService.apply(appConfig);
+    L.error(result);
   }
 
-  async deprovision(app: App) {
-    await this.doDeprovisionApp(app, app.internalName);
+  public async deprovision(app: App) {
+    try {
+      await SolaceConfigService.delete(app.name);
+    } catch (e) {
+      const err = e as ErrorResponseInternal;
+      if (err.statusCode != 404) {
+        throw e;
+      }
+
+    }
   }
 
-  async getAppStatus(app: App): Promise<AppConnectionStatus> {
+  public async getAppStatus(app: App): Promise<AppConnectionStatus> {
     return await StatusService.getAppStatus(app);
-  }
-
-  private async doDeprovisionApp(app: App, objectName: string) {
-    const environmentNames = await BrokerUtils.getEnvironments(app);
-
-    try {
-      const services = await BrokerUtils.getServices(environmentNames);
-      await this.doDeprovisionAppByEnvironments(app, objectName, services);
-
-    } catch (err) {
-      L.error(`De-Provisioninig error ${err.message}`);
-      L.error(err.body);
-      throw new ErrorResponseInternal(500, err.message);
-    }
-  }
-  private async doDeprovisionAppByEnvironments(app: App, objectName: string, services: Service[]) {
-    try {
-      await this.deleteClientUsernames(app, services);
-      await ACLManager.deleteAuthorizationGroups(app, services, objectName);
-      await ACLManager.deleteACLs(app, services, objectName);
-      await this.deleteRDPs(app, services, objectName);
-      await QueueManager.deleteWebHookQueues(app, services, objectName);
-      await QueueManager.deleteAPIProductQueues(app, services, objectName);
-      await QueueManager.deleteAPIQueues(app, services, objectName);
-      await MQTTSessionManager.delete(app, services);
-
-    } catch (err) {
-      L.error(`De-Provisioninig error ${err.message}`);
-      L.error(err.body);
-      throw new ErrorResponseInternal(500, err.message);
-    }
   }
 
   private async getServiceByEnv(envName: string): Promise<Service> {
@@ -257,263 +175,6 @@ export class SolaceBrokerService implements Broker{
     } catch (err) {
       L.error(`getServiceByEnv - ${JSON.stringify(err)}`);
       throw err;
-    }
-  }
-
-  private async deleteRDPs(app: App, services: Service[], name: string) {
-    for (const service of services) {
-      const apiClient: AllService = SempV2ClientFactory.getSEMPv2Client(service);
-      try {
-        const delResponse = await apiClient.deleteMsgVpnRestDeliveryPoint(service.msgVpnName, name);
-        L.info("RDP deleted");
-      } catch (e) {
-        if (e.body.meta.error.status != "NOT_FOUND") {
-          L.error('deleteRDPs');
-          L.error(e);
-          throw e;
-        }
-      }
-    }
-  }
-
-
-  private async createClientUsernames(app: App, services: Service[], clientProfileName: string): Promise<void> {
-    for (const service of services) {
-      const apiClient: AllService = SempV2ClientFactory.getSEMPv2Client(service);
-      const clientUsername: MsgVpnClientUsername = {
-        aclProfileName: app.internalName,
-        clientUsername: app.credentials.secret.consumerKey,
-        password: app.credentials.secret.consumerSecret,
-        clientProfileName: clientProfileName,
-        msgVpnName: service.msgVpnName,
-        enabled: true
-      };
-      try {
-        const getResponse = await apiClient.getMsgVpnClientUsername(service.msgVpnName, app.credentials.secret.consumerKey);
-        L.info("Client Username Looked up");
-        clientUsername.enabled = false;
-        const responseUpd1 = await apiClient.updateMsgVpnClientUsername(service.msgVpnName, app.credentials.secret.consumerKey, clientUsername);
-        clientUsername.enabled = true;
-        const responseUpd2 = await apiClient.updateMsgVpnClientUsername(service.msgVpnName, app.credentials.secret.consumerKey, clientUsername);
-        L.info("Client Username updated");
-      } catch (e) {
-
-        try {
-          const response = await apiClient.createMsgVpnClientUsername(service.msgVpnName, clientUsername);
-          L.info("created  Client Username");
-        } catch (e) {
-          throw e;
-        }
-      }
-    }
-  }
-
-
-  private async deleteClientUsernames(app: App, services: Service[]): Promise<void> {
-    for (const service of services) {
-      const apiClient: AllService = SempV2ClientFactory.getSEMPv2Client(service);
-      try {
-        const getResponse = await apiClient.deleteMsgVpnClientUsername(service.msgVpnName, app.credentials.secret.consumerKey);
-      } catch (err) {
-        if (err.body && err.body.meta && !(err.body.meta.error.status == "NOT_FOUND")) {
-          L.error('deleteClientUsernames');
-          L.error(err);
-          throw err;
-        }
-      }
-    }
-  }
-
-  private async createRDP(app: App, services: Service[], apiProducts: APIProduct[]): Promise<void> {
-    // delete any existing RDPs - this should lead to short service interruption but no message loss 
-    // as the underlying queue is not affected
-    await this.deleteRDPs(app, services, app.internalName);
-
-    const subscribeExceptions: string[] = [];
-    let useTls: boolean = false;
-    for (const product of apiProducts) {
-      const strs: string[] = await ACLManager.getSubscriptionsFromAsyncAPIs(product.apis);
-      for (const s of strs) {
-        subscribeExceptions.push(s);
-      }
-    }
-    if (subscribeExceptions.length < 1) {
-      return;
-    }
-    const objectName: string = app.internalName;
-    // loop over services
-    for (const service of services) {
-      L.info(`createRDP for service: ${service.serviceId}`);
-      const restConsumerName = `Consumer`;
-      let rdpUrl: URL;
-      let webHooks: WebHook[] = [];
-      webHooks = app.webHooks.filter(w => w.environments == null || w.environments.find(e => e == service['environment']));
-      if (webHooks.length > 1) {
-        const msg: string = `Invalid webhook configuration for ${service['environment']}, found ${webHooks.length} matching configurations`;
-        L.warn(msg);
-        throw new ErrorResponseInternal(400, msg);
-      } else if (webHooks.length == 0) {
-        L.info(`no webhook to provision for service ${service.name} (${service['environment']})`);
-      } else {
-        let webHook = webHooks[0];
-        L.info(`createRDP provisioning to service: ${service.serviceId}`);
-        try {
-          L.debug(`webhook.uri ${webHook.uri}`);
-          rdpUrl = new URL(webHook.uri);
-        } catch (e) {
-          L.error(e);
-          throw new ErrorResponseInternal(400, `webhook URL not provided or invalid ${JSON.stringify(webHook)}`);
-        }
-        L.info(`webhook ${webHook.uri} provision for service ${service.name} (${service['environment']})`);
-
-        const protocol = rdpUrl.protocol.toUpperCase();
-        let port = rdpUrl.port;
-        if (protocol == "HTTPS:") {
-          useTls = true;
-        }
-        L.debug(`protocol is ${protocol}`);
-        if (port == "") {
-          if (useTls) {
-            port = '443';
-          } else {
-            port = '80';
-          }
-        }
-        //create RDPs
-        const apiClient: AllService = SempV2ClientFactory.getSEMPv2Client(service);
-        const newRDP: MsgVpnRestDeliveryPoint = {
-          clientProfileName: "default",
-          msgVpnName: service.msgVpnName,
-          restDeliveryPointName: objectName,
-          enabled: false
-        };
-        try {
-          const q = await apiClient.getMsgVpnRestDeliveryPoint(service.msgVpnName, objectName);
-          const updateResponse = await apiClient.updateMsgVpnRestDeliveryPoint(service.msgVpnName,
-            objectName, newRDP);
-          L.debug(`createRDP updated ${objectName}`);
-        } catch (e) {
-          L.debug(`createRDP lookup  failed ${JSON.stringify(e)}`);
-          try {
-            const q = await apiClient.createMsgVpnRestDeliveryPoint(service.msgVpnName, newRDP);
-          } catch (e) {
-            L.warn(`createRDP creation  failed ${JSON.stringify(e)}`);
-            throw new ErrorResponseInternal(500, e);
-          }
-        }
-        let authScheme = webHook.authentication && webHook.authentication['username'] ? MsgVpnRestDeliveryPointRestConsumer.authenticationScheme.HTTP_BASIC : MsgVpnRestDeliveryPointRestConsumer.authenticationScheme.NONE;
-        if (authScheme == MsgVpnRestDeliveryPointRestConsumer.authenticationScheme.NONE) {
-          authScheme = webHook.authentication && webHook.authentication['headerName'] ? MsgVpnRestDeliveryPointRestConsumer.authenticationScheme.HTTP_HEADER : MsgVpnRestDeliveryPointRestConsumer.authenticationScheme.NONE;
-        }
-        const method = webHook.method == 'PUT' ? MsgVpnRestDeliveryPointRestConsumer.httpMethod.PUT : MsgVpnRestDeliveryPointRestConsumer.httpMethod.POST;
-
-        let connectionCount: number = 3;
-        if (webHook.mode == 'serial') {
-          connectionCount = 1;
-        }
-        const newRDPConsumer: MsgVpnRestDeliveryPointRestConsumer = {
-          msgVpnName: service.msgVpnName,
-          restDeliveryPointName: objectName,
-          restConsumerName: restConsumerName,
-          remotePort: parseInt(port),
-          remoteHost: rdpUrl.hostname,
-          tlsEnabled: useTls,
-          enabled: false,
-          authenticationScheme: authScheme,
-          httpMethod: method,
-          maxPostWaitTime: 90,
-          outgoingConnectionCount: connectionCount,
-          retryDelay: 10
-        };
-
-        MsgVpnRestDeliveryPointRestConsumer.httpMethod.POST
-        if (authScheme == MsgVpnRestDeliveryPointRestConsumer.authenticationScheme.HTTP_BASIC) {
-          newRDPConsumer.authenticationHttpBasicUsername = webHook.authentication['username'];
-          newRDPConsumer.authenticationHttpBasicPassword = webHook.authentication['password'];
-        }
-        if (authScheme == MsgVpnRestDeliveryPointRestConsumer.authenticationScheme.HTTP_HEADER) {
-          newRDPConsumer.authenticationHttpHeaderName = webHook.authentication['headerName'];
-          newRDPConsumer.authenticationHttpHeaderValue = webHook.authentication['headerValue'];
-        }
-
-        try {
-          const r = await apiClient.getMsgVpnRestDeliveryPointRestConsumer(service.msgVpnName, objectName, restConsumerName);
-          const updateResponseRDPConsumer = await apiClient.updateMsgVpnRestDeliveryPointRestConsumer(service.msgVpnName, objectName, restConsumerName, newRDPConsumer);
-          L.debug(`createRDP consumer updated ${app.internalName}`);
-        } catch (e) {
-          L.debug(`createRDP consumer lookup  failed ${JSON.stringify(e)}`);
-          try {
-            const r = await apiClient.createMsgVpnRestDeliveryPointRestConsumer(service.msgVpnName, objectName, newRDPConsumer);
-          } catch (e) {
-            L.warn(`createRDP consumer creation  failed ${JSON.stringify(e)}`);
-            throw new ErrorResponseInternal(500, e);
-          }
-        }
-        const newRDPQueueBinding: MsgVpnRestDeliveryPointQueueBinding = {
-          msgVpnName: service.msgVpnName,
-          restDeliveryPointName: objectName,
-          postRequestTarget: `${rdpUrl.pathname}${rdpUrl.search}`,
-          queueBindingName: objectName
-        };
-        try {
-          const b = await apiClient.getMsgVpnRestDeliveryPointQueueBinding(service.msgVpnName, objectName, objectName);
-
-          const updateResponseQueueBinding = await apiClient.updateMsgVpnRestDeliveryPointQueueBinding(service.msgVpnName, objectName, objectName, newRDPQueueBinding);
-          L.debug(`createRDP queue binding updated ${app.internalName}`);
-        } catch (e) {
-          L.debug(`createRDP queue binding lookup  failed ${JSON.stringify(e)}`);
-          try {
-            const b = await apiClient.createMsgVpnRestDeliveryPointQueueBinding(service.msgVpnName, objectName, newRDPQueueBinding);
-          } catch (e) {
-            L.warn(`createRDP queue binding creation  failed ${JSON.stringify(e)}`);
-            throw new ErrorResponseInternal(500, e);
-          }
-        }
-
-
-        // add the trusted common names
-        if (webHook.tlsOptions && webHook.tlsOptions.tlsTrustedCommonNames && webHook.tlsOptions.tlsTrustedCommonNames.length > 0) {
-          for (const trustedCN of webHook.tlsOptions.tlsTrustedCommonNames) {
-            const msgVpnRestDeliveryPointRestConsumerTlsTrustedCommonName: MsgVpnRestDeliveryPointRestConsumerTlsTrustedCommonName = {
-              msgVpnName: service.msgVpnName,
-              restConsumerName: restConsumerName,
-              restDeliveryPointName: objectName,
-              tlsTrustedCommonName: trustedCN,
-            };
-            try {
-              await apiClient.createMsgVpnRestDeliveryPointRestConsumerTlsTrustedCommonName(service.msgVpnName, objectName, restConsumerName, msgVpnRestDeliveryPointRestConsumerTlsTrustedCommonName);
-            } catch (e) {
-              L.warn(`add TLS Trusted CN failed ${JSON.stringify(e)}`);
-              throw new ErrorResponseInternal(500, e);
-            }
-          }
-        }
-
-        // enable the RDP
-        try {
-          const enableRDP: MsgVpnRestDeliveryPoint = {
-            enabled: true
-          };
-          const enableRDPResponse = await apiClient.updateMsgVpnRestDeliveryPoint(service.msgVpnName, objectName, enableRDP);
-          L.debug(`createRDP enabled ${objectName}`);
-        } catch (e) {
-          L.error(`createRDP enable failed ${JSON.stringify(e)}`);
-          throw new ErrorResponseInternal(500, e);
-        }
-
-        // enable the RDP consumer
-
-        try {
-          const enableRDPConsumer: MsgVpnRestDeliveryPointRestConsumer = {
-            enabled: true
-          };
-          const updateResponseRDPConsumer = await apiClient.updateMsgVpnRestDeliveryPointRestConsumer(service.msgVpnName, objectName, restConsumerName, enableRDPConsumer);
-          L.debug(`createRDP consumer enabled ${objectName}`);
-        } catch (e) {
-          L.debug(`createRDP consumer enablement  failed ${JSON.stringify(e)}`);
-          throw new ErrorResponseInternal(500, e);
-        }
-      }
     }
   }
 
@@ -582,19 +243,6 @@ export class SolaceBrokerService implements Broker{
       appEnv.messagingProtocols = endpoints;
     }
 
-  }
-
-  clientOptionsRequireQueue(clientOptions: ClientOptions): boolean {
-    L.debug(clientOptions);
-    const requireQueue: boolean = (clientOptions != null
-      && clientOptions.guaranteedMessaging?.requireQueue == true);
-    L.debug(`Provisioning Requires a queue - ${requireQueue}`)
-    return requireQueue;
-  }
-
-  private async provisionedByConsumerKey(app: App): Promise<boolean> {
-    const services: Service[] = await BrokerUtils.getServicesByApp(app);
-    return await ACLManager.hasConsumerKeyACLs(app, services);
   }
 
   private async getAPIProducts(apiProducts: AppApiProducts): Promise<APIProduct[]> {

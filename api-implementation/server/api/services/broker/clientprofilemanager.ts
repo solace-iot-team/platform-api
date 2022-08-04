@@ -1,6 +1,5 @@
 import L from '../../../common/logger';
 
-import { BrokerResourceManager } from './brokerresourcemanager';
 import BrokerUtils from './brokerutils';
 import ACLManager from './aclmanager';
 import App = Components.Schemas.App;
@@ -8,17 +7,8 @@ import APIProduct = Components.Schemas.APIProduct;
 import Attributes = Components.Schemas.Attributes;
 import Permissions = Components.Schemas.Permissions;
 import APIProductsTypeHelper from '../../../../src/apiproductstypehelper';
-import { Service } from '../../../../src/clients/solacecloud/models/Service';
-import {
-  AllService,
-  MsgVpnClientProfile
-} from '../../../../src/clients/sempv2';
 
-import SempV2ClientFactory from '../broker/sempv2clientfactory';
-import { ErrorResponseInternal } from '../../middlewares/error.handler';
-
-
-import SolaceCloudFacade from '../../../../src/solacecloudfacade';
+import MsgVpnClientProfile = Components.Schemas.MsgVpnClientProfile;
 const PROFILE_PREFIX = 'APIM-';
 
 const GUARANTEED_MESSAGING_RECEIVE_ONLY: string = `${PROFILE_PREFIX}ReceiveOnlyGM`;
@@ -34,7 +24,8 @@ const NoGuaranteedMessagingProfile: MsgVpnClientProfile = {
   allowTransactedSessionsEnabled: false,
   allowGuaranteedMsgReceiveEnabled: false,
   allowGuaranteedEndpointCreateEnabled: false,
-  compressionEnabled: true
+  compressionEnabled: true, 
+  environments: [],
 }
 
 const GuaranteedMessagingSendOnlyProfile: MsgVpnClientProfile = {
@@ -43,7 +34,8 @@ const GuaranteedMessagingSendOnlyProfile: MsgVpnClientProfile = {
   allowTransactedSessionsEnabled: true,
   allowGuaranteedMsgReceiveEnabled: false,
   allowGuaranteedEndpointCreateEnabled: false,
-  compressionEnabled: true
+  compressionEnabled: true,
+  environments: [],
 }
 
 const GuaranteedMessagingReceiveSendProfile: MsgVpnClientProfile = {
@@ -52,7 +44,8 @@ const GuaranteedMessagingReceiveSendProfile: MsgVpnClientProfile = {
   allowTransactedSessionsEnabled: true,
   allowGuaranteedMsgReceiveEnabled: true,
   allowGuaranteedEndpointCreateEnabled: false,
-  compressionEnabled: true
+  compressionEnabled: true,
+  environments: [],
 }
 
 const GuaranteedMessagingReceiveSendCreateProfile: MsgVpnClientProfile = {
@@ -61,7 +54,8 @@ const GuaranteedMessagingReceiveSendCreateProfile: MsgVpnClientProfile = {
   allowTransactedSessionsEnabled: true,
   allowGuaranteedMsgReceiveEnabled: true,
   allowGuaranteedEndpointCreateEnabled: true,
-  compressionEnabled: true
+  compressionEnabled: true,
+  environments: [],
 }
 
 const GuaranteedMessagingReceiveCreateProfile: MsgVpnClientProfile = {
@@ -70,7 +64,8 @@ const GuaranteedMessagingReceiveCreateProfile: MsgVpnClientProfile = {
   allowTransactedSessionsEnabled: true,
   allowGuaranteedMsgReceiveEnabled: true,
   allowGuaranteedEndpointCreateEnabled: true,
-  compressionEnabled: true
+  compressionEnabled: true,
+  environments: [],
 }
 
 const GuaranteedMessagingReceiveOnlyProfile: MsgVpnClientProfile = {
@@ -79,41 +74,21 @@ const GuaranteedMessagingReceiveOnlyProfile: MsgVpnClientProfile = {
   allowTransactedSessionsEnabled: true,
   allowGuaranteedMsgReceiveEnabled: true,
   allowGuaranteedEndpointCreateEnabled: false,
-  compressionEnabled: true
+  compressionEnabled: true,
+  environments: [],
 }
 
-class ClientProfileManager implements BrokerResourceManager<string>{
-  /**
-   * Create a required client profiel if it doesn't exist and returns thew appaorpriate client profile name that must be 
-   * associated with the client username
-   * @param app  
-   * @param services 
-   * @param apiProducts 
-   * @param ownerAttributes
-   * @returns the name of the client profile that must be assoicated with the client username
-   */
-  public async create(app: App, services: Service[],
-    apiProducts: APIProduct[], ownerAttributes: Attributes): Promise<string> {
-    const clientProfileName = await this.selectClientProfile(app, apiProducts, ownerAttributes);
-    try {
-      await this.provisionClientProfile(clientProfileName, services);
-    } catch(e){
-      L.warn(`No permission to create clientProfiles on any services associated with the organization, this is likely due to insufficient solace cloud privileges`);
-      return 'default';
-    }
-    return clientProfileName;
-  }
+class ClientProfileManager {
 
-  public async delete(app: App, services: Service[]): Promise<void> {
-    // do nothing, client profiles are generic and can be left on broker
-  }
 
-  private async selectClientProfile(app: App, apiProducts: APIProduct[], ownerAttributes: Attributes): Promise<string> {
+  public async selectClientProfile(app: App, apiProducts: APIProduct[], ownerAttributes: Attributes): Promise<MsgVpnClientProfile> {
     let clientProfileName = NO_GUARANTEED_MESSAGING;
     let receiveGM: boolean = false;
     let createEndPoints: boolean = false;
     let sendGM: boolean = false;
     let permissions: Permissions = await ACLManager.getClientACLExceptions(app, apiProducts, ownerAttributes, undefined);
+
+    const tags: string[] = [];
     L.debug(`${this.isQueueRequiredForAnyAPIProduct(apiProducts)} ${JSON.stringify(permissions.publish)}`);
     if (permissions.publish !== undefined && permissions.publish.length > 0 && this.isQueueRequiredForAnyAPIProduct(apiProducts)) {
       receiveGM = true;
@@ -125,6 +100,7 @@ class ClientProfileManager implements BrokerResourceManager<string>{
       sendGM = true;
     }
     L.info(`receiveGM: ${receiveGM}, sendGM: ${sendGM}, createEndpoints: ${createEndPoints}`);
+    tags.push(`receiveGM: ${receiveGM}, sendGM: ${sendGM}, createEndpoints: ${createEndPoints}`);
     if (receiveGM && createEndPoints && sendGM) {
       clientProfileName = GUARANTEED_MESSAGING_RECEIVE_SEND_CREATE;
     }
@@ -140,36 +116,9 @@ class ClientProfileManager implements BrokerResourceManager<string>{
     if (!receiveGM && !createEndPoints && sendGM) {
       clientProfileName = GUARANTEED_MESSAGING_SEND_ONLY;
     }
-
-    return clientProfileName;
-  }
-
-  private async provisionClientProfile(clientProfileName: string, services: Service[]) {
-    for (const service of services) {
-      const apiClient: AllService = SempV2ClientFactory.getSEMPv2Client(service);
-      try {
-        const clientProfile = await apiClient.getMsgVpnClientProfile(service.msgVpnName, clientProfileName);
-        // happy if we found the profile, nothing to do
-        L.info(`CLientProfile ${clientProfileName} exists on service ${service.serviceId}`);
-      } catch (e) {
-        // not found, let's create the profile
-        L.info(`ClientProfile ${clientProfileName} not found on service ${service.serviceId}`);
-        const createRequest: MsgVpnClientProfile = this.getCreateRequestByClientProfileName(clientProfileName);
-        // first try cloud - if error try broker directly
-        try {
-          await SolaceCloudFacade.createClientProfile(service, (createRequest as any));
-          L.info(`ClientProfile ${clientProfileName} created via Cloud API on service ${service.serviceId}`);
-        } catch (cloudError) {
-          try {
-            await apiClient.createMsgVpnClientProfile(service.msgVpnName, createRequest);
-            L.info(`ClientProfile ${clientProfileName} created via SEMPv2 on service ${service.serviceId}`);
-          } catch (sempError) {
-            L.error(`ClientProfile ${clientProfileName} could not be created on service ${service.serviceId}`, sempError);
-            throw new ErrorResponseInternal(500, `Create client profile ${clientProfileName} failed on service ${service.serviceId}`)
-          }
-        }
-      }
-    }
+    const profile = this.getCreateRequestByClientProfileName(clientProfileName);
+    profile.tags = tags;
+    return profile;
   }
 
   private isQueueRequiredForAnyAPIProduct(apiProducts: APIProduct[]): boolean {

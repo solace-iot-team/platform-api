@@ -16,7 +16,7 @@ import APIProductsTypeHelper from '../../../../src/apiproductstypehelper';
 
 class BrokerUtils {
 
-  async getEnvironments(app: App): Promise<string[]> {
+  private async getEnvironments(app: App): Promise<string[]> {
     let environmentNames: string[] = [];
     for (const apiProductReference of app.apiProducts) {
       const productName: string = APIProductsTypeHelper.apiProductReferenceToString(apiProductReference);
@@ -41,7 +41,7 @@ class BrokerUtils {
     return Array.from(new Set(environmentNames));
   }
 
-  async getEnvironmentObjects(app: App): Promise<EnvironmentResponse[]> {
+  public async getEnvironmentObjects(app: App): Promise<EnvironmentResponse[]> {
     const environmentNames: string[] = await this.getEnvironments(app);
     const environments: EnvironmentResponse[] = [];
     for (const envName of environmentNames) {
@@ -51,7 +51,7 @@ class BrokerUtils {
     return environments;
   }
 
-  async getServices(environmentNames: string[]): Promise<Service[]> {
+  public async getServices(environmentNames: string[]): Promise<Service[]> {
     try {
       L.info(`all-env: ${environmentNames} ${environmentNames.length}`);
       const returnServices: Service[] = [];
@@ -72,12 +72,6 @@ class BrokerUtils {
       L.error(`getServices - ${JSON.stringify(err)}`);
       throw err;
     }
-  }
-
-  async getServicesByApp(app: App): Promise<Service[]> {
-    const envs: string[] = await this.getEnvironments(app);
-    const services: Service[] = await this.getServices(envs);
-    return services;
   }
 
   public isMQTTSessionRequired(apiProducts: APIProduct[]): boolean {
