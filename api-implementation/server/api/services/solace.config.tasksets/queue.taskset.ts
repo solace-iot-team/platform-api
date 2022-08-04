@@ -22,10 +22,11 @@ export class QueueBuilder implements TaskSetBuilder {
         for (const queue of queues) {
             // only configure queues with subscriptions
             if (queue.queueSubscriptions && queue.queueSubscriptions.length > 0) {
+                // always keep the queue regardless of state
                 const queueConfig: QueueTaskConfig = {
                     configObject: queue,
                     environment: environmentService,
-                    state: state
+                    state: TaskState.PRESENT
                 };
                 const queueTask = taskFactory(QueueTask, queueConfig);
                 tasks.add(queueTask);
@@ -41,6 +42,16 @@ export class QueueBuilder implements TaskSetBuilder {
 
                 }
 
+            }
+            // delete queues if taskstate is absent and there are no subscriptions 
+            else if (state == TaskState.ABSENT) {
+                const queueConfig: QueueTaskConfig = {
+                    configObject: queue,
+                    environment: environmentService,
+                    state: TaskState.ABSENT
+                };
+                const queueTask = taskFactory(QueueTask, queueConfig);
+                tasks.add(queueTask);
             }
         }
         return tasks;

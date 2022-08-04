@@ -21,6 +21,9 @@ class RestDeliveryPointBuilder extends QueueBuilder {
                 }
                 const rdpTask = taskFactory(RdpTask, rdpConfig);
                 tasks.add(rdpTask);
+                for (const q of rdp.queues){
+                    q.queueSubscriptions = [];
+                }
                 tasks.appendTaskSet(this.buildQueuesTaskSetInternal(rdp.queues, envService, state));
             }
             return tasks;
