@@ -22,6 +22,7 @@ import APIProductsTypeHelper from '../../../../src/apiproductstypehelper';
 import MsgVpnAclProfile = Components.Schemas.MsgVpnAclProfile;
 import MsgVpnAuthorizationGroup = Components.Schemas.MsgVpnAuthorizationGroup;
 import MsgVpnQueueSubscription = Components.Schemas.MsgVpnQueueSubscription;
+import _ = require('lodash');
 
 export enum Direction {
   Publish = 'Publish',
@@ -127,12 +128,20 @@ class ACLManager {
           publishTopicException: p,
           publishTopicExceptionSyntax: 'smf',
           environments: [permissions.name]
-        }))
+        }));
         publishExceptions.forEach(p => aclProfileConfig.subscribeExceptions.push({
           subscribeTopicException: p,
           subscribeTopicExceptionSyntax: 'smf',
           environments: [permissions.name]
-        }))
+        }));
+
+        // dedupe the exceptions
+        const sExceptions = _.uniqWith(aclProfileConfig.subscribeExceptions, (a,b)=>(
+          (_.intersection(a.environments, b.environments).length == a.environments.length && a.environments.length == b.environments.length) && a.subscribeTopicException == b.subscribeTopicException));
+        aclProfileConfig.subscribeExceptions = sExceptions;
+        const pExceptions = _.uniqWith(aclProfileConfig.publishExceptions, (a,b)=>(
+          (_.intersection(a.environments, b.environments).length == a.environments.length && a.environments.length == b.environments.length) && a.publishTopicException == b.publishTopicException));
+        aclProfileConfig.publishExceptions = pExceptions;
       }
     } catch (e) {
       throw new ErrorResponseInternal(400, e);
