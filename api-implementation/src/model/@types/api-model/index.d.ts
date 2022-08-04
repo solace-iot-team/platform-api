@@ -20,6 +20,12 @@ declare namespace Components {
              */
             export type AttributeName = string; // ^[a-zA-Z0-9._-]*$
         }
+        namespace ConfigSetName {
+            export type ConfigSetName = Schemas.CommonName; // ^[a-zA-Z0-9_\-]*(@[ |\S]*)?$
+        }
+        namespace ConfigSnapshotRevision {
+            export type ConfigSnapshotRevision = number;
+        }
         namespace DeveloperUsername {
             export type DeveloperUsername = Schemas.CommonUserName; // ^[.a-zA-Z0-9@_-]*$
         }
@@ -84,6 +90,7 @@ declare namespace Components {
         export type UnsupportedMediaType = Schemas.ErrorResponse;
     }
     namespace Schemas {
+        export type ACLAction = "allow" | "disallow";
         export interface APIImport {
             /**
              * source system for loading the Async API
@@ -324,6 +331,21 @@ declare namespace Components {
         export interface AppApiProductsComplex {
             apiproduct: CommonName; // ^[a-zA-Z0-9_\-]*(@[ |\S]*)?$
             status?: AppStatus;
+        }
+        export interface AppConfigSet {
+            name: CommonName; // ^[a-zA-Z0-9_\-]*(@[ |\S]*)?$
+            displayName: CommonDisplayName; // ^[\/\sa-z.A-z0-9_-]*$
+            state?: ConfigState;
+            aclProfile: MsgVpnAclProfile;
+            clientProfile: MsgVpnClientProfile;
+            clientUsername: MsgVpnClientUsername;
+            authorizationGroup: MsgVpnAuthorizationGroup;
+            mqttSession?: MsgVpnMqttSession;
+            queues?: MsgVpnQueue[];
+            restDeliveryPoints?: MsgVpnRestDeliveryPoint[];
+            services: EnvironmentService[];
+            attributes?: Attributes;
+            tags?: Tags;
         }
         export interface AppConnection {
             protocol?: Protocol;
@@ -624,11 +646,6 @@ declare namespace Components {
         export type CommonTimestampInteger = number; // int64
         /**
          * example:
-         * 1620311683577
-         */
-        export type CommonTimestampIntegerReadOnly = number; // int64
-        /**
-         * example:
          * deliver/*​/enroute/v1/45*​/-75*​/vehicle4*​/>
          */
         export type CommonTopic = string; // ^[a-zA-Z0-9][\S]*[^\/]$
@@ -647,6 +664,22 @@ declare namespace Components {
          * 3.1.1-alpha
          */
         export type CommonVersion = string; // ^[_\-\S\.]*$
+        export interface ConfigSnapshot {
+            name: CommonName; // ^[a-zA-Z0-9_\-]*(@[ |\S]*)?$
+            revision: number;
+            appliedBy: CommonUserName; // ^[.a-zA-Z0-9@_-]*$
+            appliedAt: CommonTimestampInteger; // int64
+            archivedBy: CommonUserName; // ^[.a-zA-Z0-9@_-]*$
+            archivedAt: CommonTimestampInteger; // int64
+            config: AppConfigSet;
+            applied?: boolean;
+        }
+        export interface ConfigState {
+            applied: boolean;
+            appliedBy: CommonUserName; // ^[.a-zA-Z0-9@_-]*$
+            appliedAt: CommonTimestampInteger; // int64
+            errors?: CommonDescription /* ^[\s\S]*$ */ [];
+        }
         /**
          * Credentials object associated with an app
          */
@@ -789,6 +822,10 @@ declare namespace Components {
             serviceClassId?: string; // ^[\s\S]*$
             creationState?: string; // ^[\s\S]*$
             serviceClassDisplayedAttributes?: ServiceClassDisplayedAttributes;
+        }
+        export interface EnvironmentService {
+            environment?: CommonName; // ^[a-zA-Z0-9_\-]*(@[ |\S]*)?$
+            service?: Service;
         }
         export interface ErrorResponse {
             /**
@@ -933,15 +970,150 @@ declare namespace Components {
          * The lifecycle stage of the entity - from draft to released to deprecated to retired. New entities default to 'released' stage if the stage is omitted. Entitites in 'draft' stage can not be referenced by other entities. Entities can transition from 'draft' to 'released' by providing the new stage in an update and once 'released' can be referenced by other entities. Once 'released' an entity can not go back to 'draft' stage. 'released' entities can be 'depcrecated' which means existing references are still valid however new referenceds to this entity can not be created. 'deprecated' stage can be moved back to 'released' stage. An entity in 'deprecated' stagecan be moved to 'retired' which means all references to this entity will be removed. 'once' retired the stage of the entity can no longer be changed.
          */
         export type MetaEntityStage = "draft" | "released" | "deprecated" | "retired";
+        export interface MsgVpnAclProfile {
+            aclProfileName: CommonName; // ^[a-zA-Z0-9_\-]*(@[ |\S]*)?$
+            clientConnectDefaultAction: ACLAction;
+            publishTopicDefaultAction: ACLAction;
+            subscribeTopicDefaultAction: ACLAction;
+            clientConnectExceptions?: MsgVpnAclProfileClientConnectException[];
+            publishExceptions?: MsgVpnAclProfilePublishException[];
+            subscribeExceptions?: MsgVpnAclProfileSubscribeException[];
+            attributes?: Attributes;
+            tags?: Tags;
+            environments: CommonName /* ^[a-zA-Z0-9_\-]*(@[ |\S]*)?$ */ [];
+        }
+        export interface MsgVpnAclProfileClientConnectException {
+            clientConnectExceptionAddress: string; // ^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\/(3[0-2]|[1-2][0-9]|[0-9]))$
+            attributes?: Attributes;
+            tags?: Tags;
+            environments: CommonName /* ^[a-zA-Z0-9_\-]*(@[ |\S]*)?$ */ [];
+        }
+        export interface MsgVpnAclProfilePublishException {
+            publishTopicException: CommonTopic; // ^[a-zA-Z0-9][\S]*[^\/]$
+            publishTopicExceptionSyntax: TopicSyntax;
+            attributes?: Attributes;
+            tags?: Tags;
+            environments: CommonName /* ^[a-zA-Z0-9_\-]*(@[ |\S]*)?$ */ [];
+        }
+        export interface MsgVpnAclProfileSubscribeException {
+            subscribeTopicException: CommonTopic; // ^[a-zA-Z0-9][\S]*[^\/]$
+            subscribeTopicExceptionSyntax: TopicSyntax;
+            attributes?: Attributes;
+            tags?: Tags;
+            environments: CommonName /* ^[a-zA-Z0-9_\-]*(@[ |\S]*)?$ */ [];
+        }
         export interface MsgVpnAttributes {
             authenticationClientCertEnabled: string; // ^[\s\S]*$
             authenticationBasicEnabled: string; // ^[\s\S]*$
+        }
+        export interface MsgVpnAuthorizationGroup {
+            authorizationGroupName: CommonName; // ^[a-zA-Z0-9_\-]*(@[ |\S]*)?$
+            aclProfileName: CommonName; // ^[a-zA-Z0-9_\-]*(@[ |\S]*)?$
+            clientProfileName: CommonName; // ^[a-zA-Z0-9_\-]*(@[ |\S]*)?$
+            enabled: boolean;
+            attributes?: Attributes;
+            tags?: Tags;
+            environments: CommonName /* ^[a-zA-Z0-9_\-]*(@[ |\S]*)?$ */ [];
+        }
+        export interface MsgVpnClientProfile {
+            clientProfileName: CommonName; // ^[a-zA-Z0-9_\-]*(@[ |\S]*)?$
+            allowGuaranteedMsgSendEnabled: boolean;
+            allowTransactedSessionsEnabled: boolean;
+            allowGuaranteedMsgReceiveEnabled: boolean;
+            allowGuaranteedEndpointCreateEnabled: boolean;
+            compressionEnabled: boolean;
+            attributes?: Attributes;
+            tags?: Tags;
+            environments: CommonName /* ^[a-zA-Z0-9_\-]*(@[ |\S]*)?$ */ [];
+        }
+        export interface MsgVpnClientUsername {
+            clientUsername: CommonName; // ^[a-zA-Z0-9_\-]*(@[ |\S]*)?$
+            aclProfileName: CommonName; // ^[a-zA-Z0-9_\-]*(@[ |\S]*)?$
+            clientProfileName: CommonName; // ^[a-zA-Z0-9_\-]*(@[ |\S]*)?$
+            password: CommonName; // ^[a-zA-Z0-9_\-]*(@[ |\S]*)?$
+            enabled: boolean;
+            environments: CommonName /* ^[a-zA-Z0-9_\-]*(@[ |\S]*)?$ */ [];
+        }
+        export interface MsgVpnMqttSession {
+            mqttSessionClientId: CommonName; // ^[a-zA-Z0-9_\-]*(@[ |\S]*)?$
+            enabled: boolean;
+            mqttSessionVirtualRouter: "primary" | "backup";
+            queueMaxTtl?: number;
+            queueMaxMsgSpoolUsage?: number;
+            queueRespectTtlEnabled?: boolean;
+            owner?: CommonName; // ^[a-zA-Z0-9_\-]*(@[ |\S]*)?$
+            attributes?: Attributes;
+            tags?: Tags;
+            environments: CommonName /* ^[a-zA-Z0-9_\-]*(@[ |\S]*)?$ */ [];
         }
         /**
          * example:
          * API-GW-EU:AWS:1
          */
         export type MsgVpnName = string; // ^[^*^?]*$
+        export interface MsgVpnQueue {
+            queueName: CommonName; // ^[a-zA-Z0-9_\-]*(@[ |\S]*)?$
+            ingressEnabled: boolean;
+            egressEnabled: boolean;
+            owner: CommonName; // ^[a-zA-Z0-9_\-]*(@[ |\S]*)?$
+            permission: "no-access" | "read-only";
+            accessType: "exclusive" | "non-exclusive";
+            maxTtl?: number;
+            maxMsgSpoolUsage?: number;
+            respectTtlEnabled?: boolean;
+            queueSubscriptions: MsgVpnQueueSubscription[];
+            attributes?: Attributes;
+            tags?: Tags;
+            environments: CommonName /* ^[a-zA-Z0-9_\-]*(@[ |\S]*)?$ */ [];
+        }
+        export interface MsgVpnQueueSubscription {
+            subscriptionTopic: CommonTopic; // ^[a-zA-Z0-9][\S]*[^\/]$
+            attributes?: Attributes;
+            tags?: Tags;
+            environments: CommonName /* ^[a-zA-Z0-9_\-]*(@[ |\S]*)?$ */ [];
+        }
+        export interface MsgVpnRestDeliveryPoint {
+            restDeliveryPointName: CommonName; // ^[a-zA-Z0-9_\-]*(@[ |\S]*)?$
+            enabled: boolean;
+            restConsumers: MsgVpnRestDeliveryPointRestConsumer[];
+            queueBindings: MsgVpnRestDeliveryPointQueueBinding[];
+            queues: MsgVpnQueue[];
+            environments: CommonName /* ^[a-zA-Z0-9_\-]*(@[ |\S]*)?$ */ [];
+            attributes?: Attributes;
+            tags?: Tags;
+        }
+        export interface MsgVpnRestDeliveryPointQueueBinding {
+            postRequestTarget: string;
+            queueBindingName: CommonName; // ^[a-zA-Z0-9_\-]*(@[ |\S]*)?$
+            attributes?: Attributes;
+            tags?: Tags;
+        }
+        export interface MsgVpnRestDeliveryPointRestConsumer {
+            restConsumerName: CommonName; // ^[a-zA-Z0-9_\-]*(@[ |\S]*)?$
+            remotePort?: number;
+            remoteHost?: string; // [a-zA-Z0-9-\.]*
+            tlsEnabled?: boolean;
+            enabled: boolean;
+            authenticationScheme?: MsgVpnRestDeliveryPointRestConsumerAuthenticationScheme;
+            authenticationHttpBasicUsername?: string;
+            authenticationHttpBasicPassword?: string;
+            authenticationHttpHeaderName?: string;
+            authenticationHttpHeaderValue?: string;
+            httpMethod?: MsgVpnRestDeliveryPointRestConsumerHttpMethod;
+            maxPostWaitTime?: number;
+            outgoingConnectionCount?: number;
+            retryDelay?: number;
+            trustedCNs?: MsgVpnRestDeliveryPointRestConsumerTlsTrustedCommonName[];
+            attributes?: Attributes;
+            tags?: Tags;
+        }
+        export type MsgVpnRestDeliveryPointRestConsumerAuthenticationScheme = "none" | "http-basic" | "http-header";
+        export type MsgVpnRestDeliveryPointRestConsumerHttpMethod = "post" | "put";
+        export interface MsgVpnRestDeliveryPointRestConsumerTlsTrustedCommonName {
+            tlsTrustedCommonName: string;
+            attributes?: Attributes;
+            tags?: Tags;
+        }
         export interface Organization {
             [name: string]: any;
             name: CommonName; // ^[a-zA-Z0-9_\-]*(@[ |\S]*)?$
@@ -1155,6 +1327,14 @@ declare namespace Components {
             id?: string; // ^[a-zA-Z0-9_-]*$
         }
         /**
+         * A tag on an entity
+         */
+        export type Tag = any; // ^.*$
+        /**
+         * Set of tags
+         */
+        export type Tags = Tag /* ^.*$ */ [];
+        /**
          * A profile of a team. After the team is created, an app can be registered and API credentials are created
          */
         export interface Team {
@@ -1173,6 +1353,7 @@ declare namespace Components {
             type: string; // ^[\s\S]*$
             value: string; // ^[\s\S]*$
         }
+        export type TopicSyntax = "smf" | "mqtt";
         /**
          * example:
          * 1.1.0
@@ -1306,6 +1487,25 @@ declare namespace Paths {
             export type $504 = Components.Responses.GatewayTimeout;
         }
     }
+    namespace CreateApiMetaAttribute {
+        export type RequestBody = Components.Schemas.AttributeValue; // ^.*$
+        namespace Responses {
+            export type $200 = Components.Schemas.AttributeValue; // ^.*$
+            export type $400 = Components.Responses.BadRequest;
+            export type $401 = Components.Responses.Unauthorized;
+            export type $403 = Components.Responses.Forbidden;
+            export type $404 = Components.Responses.NotFound;
+            export type $406 = Components.Responses.NotAcceptable;
+            export type $409 = Components.Schemas.ErrorResponse;
+            export type $412 = Components.Responses.PreconditionFailed;
+            export type $415 = Components.Responses.UnsupportedMediaType;
+            export type $422 = Components.Schemas.ErrorResponse;
+            export type $429 = Components.Responses.TooManyRequests;
+            export type $500 = Components.Responses.InternalServerError;
+            export type $503 = Components.Responses.ServiceUnavailable;
+            export type $504 = Components.Responses.GatewayTimeout;
+        }
+    }
     namespace CreateApiProduct {
         export type RequestBody = Components.Schemas.APIProduct;
         namespace Responses {
@@ -1324,6 +1524,25 @@ declare namespace Paths {
         }
     }
     namespace CreateApiProductAttribute {
+        export type RequestBody = Components.Schemas.AttributeValue; // ^.*$
+        namespace Responses {
+            export type $200 = Components.Schemas.AttributeValue; // ^.*$
+            export type $400 = Components.Responses.BadRequest;
+            export type $401 = Components.Responses.Unauthorized;
+            export type $403 = Components.Responses.Forbidden;
+            export type $404 = Components.Responses.NotFound;
+            export type $406 = Components.Responses.NotAcceptable;
+            export type $409 = Components.Schemas.ErrorResponse;
+            export type $412 = Components.Responses.PreconditionFailed;
+            export type $415 = Components.Responses.UnsupportedMediaType;
+            export type $422 = Components.Schemas.ErrorResponse;
+            export type $429 = Components.Responses.TooManyRequests;
+            export type $500 = Components.Responses.InternalServerError;
+            export type $503 = Components.Responses.ServiceUnavailable;
+            export type $504 = Components.Responses.GatewayTimeout;
+        }
+    }
+    namespace CreateApiProductMetaAttribute {
         export type RequestBody = Components.Schemas.AttributeValue; // ^.*$
         namespace Responses {
             export type $200 = Components.Schemas.AttributeValue; // ^.*$
@@ -1582,6 +1801,22 @@ declare namespace Paths {
             export type $504 = Components.Responses.GatewayTimeout;
         }
     }
+    namespace DeleteApiMetaAttribute {
+        namespace Responses {
+            export interface $204 {
+            }
+            export type $400 = Components.Responses.BadRequest;
+            export type $401 = Components.Responses.Unauthorized;
+            export type $403 = Components.Responses.Forbidden;
+            export type $404 = Components.Responses.NotFound;
+            export type $406 = Components.Responses.NotAcceptable;
+            export type $409 = Components.Schemas.ErrorResponse;
+            export type $429 = Components.Responses.TooManyRequests;
+            export type $500 = Components.Responses.InternalServerError;
+            export type $503 = Components.Responses.ServiceUnavailable;
+            export type $504 = Components.Responses.GatewayTimeout;
+        }
+    }
     namespace DeleteApiProduct {
         namespace Responses {
             export interface $204 {
@@ -1599,6 +1834,22 @@ declare namespace Paths {
         }
     }
     namespace DeleteApiProductAttribute {
+        namespace Responses {
+            export interface $204 {
+            }
+            export type $400 = Components.Responses.BadRequest;
+            export type $401 = Components.Responses.Unauthorized;
+            export type $403 = Components.Responses.Forbidden;
+            export type $404 = Components.Responses.NotFound;
+            export type $406 = Components.Responses.NotAcceptable;
+            export type $409 = Components.Schemas.ErrorResponse;
+            export type $429 = Components.Responses.TooManyRequests;
+            export type $500 = Components.Responses.InternalServerError;
+            export type $503 = Components.Responses.ServiceUnavailable;
+            export type $504 = Components.Responses.GatewayTimeout;
+        }
+    }
+    namespace DeleteApiProductMetaAttribute {
         namespace Responses {
             export interface $204 {
             }
@@ -1862,6 +2113,20 @@ declare namespace Paths {
             export type $504 = Components.Responses.GatewayTimeout;
         }
     }
+    namespace GetApiMetaAttribute {
+        namespace Responses {
+            export type $200 = Components.Schemas.AttributeValue; // ^.*$
+            export type $400 = Components.Responses.BadRequest;
+            export type $401 = Components.Responses.Unauthorized;
+            export type $403 = Components.Responses.Forbidden;
+            export type $404 = Components.Responses.NotFound;
+            export type $406 = Components.Responses.NotAcceptable;
+            export type $429 = Components.Responses.TooManyRequests;
+            export type $500 = Components.Responses.InternalServerError;
+            export type $503 = Components.Responses.ServiceUnavailable;
+            export type $504 = Components.Responses.GatewayTimeout;
+        }
+    }
     namespace GetApiProduct {
         namespace Responses {
             export type $200 = Components.Schemas.APIProduct;
@@ -1899,6 +2164,20 @@ declare namespace Paths {
         }
     }
     namespace GetApiProductAttribute {
+        namespace Responses {
+            export type $200 = Components.Schemas.AttributeValue; // ^.*$
+            export type $400 = Components.Responses.BadRequest;
+            export type $401 = Components.Responses.Unauthorized;
+            export type $403 = Components.Responses.Forbidden;
+            export type $404 = Components.Responses.NotFound;
+            export type $406 = Components.Responses.NotAcceptable;
+            export type $429 = Components.Responses.TooManyRequests;
+            export type $500 = Components.Responses.InternalServerError;
+            export type $503 = Components.Responses.ServiceUnavailable;
+            export type $504 = Components.Responses.GatewayTimeout;
+        }
+    }
+    namespace GetApiProductMetaAttribute {
         namespace Responses {
             export type $200 = Components.Schemas.AttributeValue; // ^.*$
             export type $400 = Components.Responses.BadRequest;
@@ -2014,6 +2293,34 @@ declare namespace Paths {
             export interface $200 {
                 [name: string]: any;
             }
+            export type $400 = Components.Responses.BadRequest;
+            export type $401 = Components.Responses.Unauthorized;
+            export type $403 = Components.Responses.Forbidden;
+            export type $404 = Components.Responses.NotFound;
+            export type $406 = Components.Responses.NotAcceptable;
+            export type $429 = Components.Responses.TooManyRequests;
+            export type $500 = Components.Responses.InternalServerError;
+            export type $503 = Components.Responses.ServiceUnavailable;
+            export type $504 = Components.Responses.GatewayTimeout;
+        }
+    }
+    namespace GetAppConfigSet {
+        namespace Responses {
+            export type $200 = Components.Schemas.AppConfigSet;
+            export type $400 = Components.Responses.BadRequest;
+            export type $401 = Components.Responses.Unauthorized;
+            export type $403 = Components.Responses.Forbidden;
+            export type $404 = Components.Responses.NotFound;
+            export type $406 = Components.Responses.NotAcceptable;
+            export type $429 = Components.Responses.TooManyRequests;
+            export type $500 = Components.Responses.InternalServerError;
+            export type $503 = Components.Responses.ServiceUnavailable;
+            export type $504 = Components.Responses.GatewayTimeout;
+        }
+    }
+    namespace GetAppConfigSnapshot {
+        namespace Responses {
+            export type $200 = Components.Schemas.ConfigSnapshot;
             export type $400 = Components.Responses.BadRequest;
             export type $401 = Components.Responses.Unauthorized;
             export type $403 = Components.Responses.Forbidden;
@@ -2414,6 +2721,34 @@ declare namespace Paths {
             export type $504 = Components.Responses.GatewayTimeout;
         }
     }
+    namespace ListAppConfigSetSnapshots {
+        namespace Responses {
+            export type $200 = number[];
+            export type $400 = Components.Responses.BadRequest;
+            export type $401 = Components.Responses.Unauthorized;
+            export type $403 = Components.Responses.Forbidden;
+            export type $404 = Components.Responses.NotFound;
+            export type $406 = Components.Responses.NotAcceptable;
+            export type $429 = Components.Responses.TooManyRequests;
+            export type $500 = Components.Responses.InternalServerError;
+            export type $503 = Components.Responses.ServiceUnavailable;
+            export type $504 = Components.Responses.GatewayTimeout;
+        }
+    }
+    namespace ListAppConfigSets {
+        namespace Responses {
+            export type $200 = Components.Schemas.CommonEntityNameList[];
+            export type $400 = Components.Responses.BadRequest;
+            export type $401 = Components.Responses.Unauthorized;
+            export type $403 = Components.Responses.Forbidden;
+            export type $404 = Components.Responses.NotFound;
+            export type $406 = Components.Responses.NotAcceptable;
+            export type $429 = Components.Responses.TooManyRequests;
+            export type $500 = Components.Responses.InternalServerError;
+            export type $503 = Components.Responses.ServiceUnavailable;
+            export type $504 = Components.Responses.GatewayTimeout;
+        }
+    }
     namespace ListAppReferencesToAPIProducts {
         namespace Responses {
             export type $200 = Components.Schemas.CommonEntityNameList;
@@ -2721,6 +3056,25 @@ declare namespace Paths {
             export type $504 = Components.Responses.GatewayTimeout;
         }
     }
+    namespace UpdateApiMetaAttribute {
+        export type RequestBody = Components.Schemas.AttributeValue; // ^.*$
+        namespace Responses {
+            export type $200 = Components.Schemas.AttributeValue; // ^.*$
+            export type $400 = Components.Responses.BadRequest;
+            export type $401 = Components.Responses.Unauthorized;
+            export type $403 = Components.Responses.Forbidden;
+            export type $404 = Components.Responses.NotFound;
+            export type $406 = Components.Responses.NotAcceptable;
+            export type $409 = Components.Schemas.ErrorResponse;
+            export type $412 = Components.Responses.PreconditionFailed;
+            export type $415 = Components.Responses.UnsupportedMediaType;
+            export type $422 = Components.Schemas.ErrorResponse;
+            export type $429 = Components.Responses.TooManyRequests;
+            export type $500 = Components.Responses.InternalServerError;
+            export type $503 = Components.Responses.ServiceUnavailable;
+            export type $504 = Components.Responses.GatewayTimeout;
+        }
+    }
     namespace UpdateApiProduct {
         export type RequestBody = Components.Schemas.APIProductPatch;
         namespace Responses {
@@ -2741,6 +3095,25 @@ declare namespace Paths {
         }
     }
     namespace UpdateApiProductAttribute {
+        export type RequestBody = Components.Schemas.AttributeValue; // ^.*$
+        namespace Responses {
+            export type $200 = Components.Schemas.AttributeValue; // ^.*$
+            export type $400 = Components.Responses.BadRequest;
+            export type $401 = Components.Responses.Unauthorized;
+            export type $403 = Components.Responses.Forbidden;
+            export type $404 = Components.Responses.NotFound;
+            export type $406 = Components.Responses.NotAcceptable;
+            export type $409 = Components.Schemas.ErrorResponse;
+            export type $412 = Components.Responses.PreconditionFailed;
+            export type $415 = Components.Responses.UnsupportedMediaType;
+            export type $422 = Components.Schemas.ErrorResponse;
+            export type $429 = Components.Responses.TooManyRequests;
+            export type $500 = Components.Responses.InternalServerError;
+            export type $503 = Components.Responses.ServiceUnavailable;
+            export type $504 = Components.Responses.GatewayTimeout;
+        }
+    }
+    namespace UpdateApiProductMetaAttribute {
         export type RequestBody = Components.Schemas.AttributeValue; // ^.*$
         namespace Responses {
             export type $200 = Components.Schemas.AttributeValue; // ^.*$

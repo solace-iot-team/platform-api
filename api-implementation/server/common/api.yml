@@ -3,6 +3,9 @@ info:
   title: Solace API Management Connector
   description: 'Solace API Management Connector API. Note: basic authentication security mechanism is deprecated.'
   version: 0.11.0
+  license: 
+    name: MIT
+    url: https://github.com/solace-iot-team/platform-api/blob/main/LICENSE
 servers:
   - url: /v1
 
@@ -209,6 +212,19 @@ components:
         pattern: "^[a-zA-Z0-9._-]*$"
         minLength: 2
         maxLength: 1024
+    config_set_name:
+      name: config_set_name
+      required: true
+      in: path
+      schema:
+        $ref: '#/components/schemas/CommonName'
+    config_snapshot_revision:
+      name: config_snapshot_revision
+      required: true
+      in: path
+      schema:
+        type: integer        
+
   responses:
     PreconditionFailed:
       description: PreConditon Failed, likely a mismatch between current etag and if-match header
@@ -788,7 +804,7 @@ components:
             type: string
             pattern: "^.*$"
             minLength: 1
-            maxLength: 1024
+            maxLength: 32768
         required:
         - name
         - value
@@ -804,7 +820,7 @@ components:
       type: string
       pattern: "^.*$"
       minLength: 1
-      maxLength: 1024
+      maxLength: 32768
 
     ClientOptions:
       type: object
@@ -2327,13 +2343,6 @@ components:
       example: 1620311683577
       maximum: 9007199254740991
       minimum: 0
-    CommonTimestampIntegerReadOnly:
-      type: integer
-      format: int64
-      readOnly: true
-      example: 1620311683577
-      maximum: 9007199254740991
-      minimum: 0
     CommonURL:
       type: string
       minLength: 8
@@ -2474,6 +2483,608 @@ components:
         filterDescription: 
           $ref: "#/components/schemas/CommonDescription"
 
+    MsgVpnClientProfile:
+      type: object
+      additionalProperties: false
+      required:
+      - clientProfileName
+      - allowGuaranteedMsgSendEnabled
+      - allowTransactedSessionsEnabled
+      - allowGuaranteedMsgReceiveEnabled
+      - allowGuaranteedEndpointCreateEnabled
+      - compressionEnabled
+      - environments
+      properties:
+        clientProfileName: 
+         $ref: '#/components/schemas/CommonName' 
+        allowGuaranteedMsgSendEnabled:
+          type: boolean 
+        allowTransactedSessionsEnabled:
+          type: boolean 
+        allowGuaranteedMsgReceiveEnabled:
+          type: boolean 
+        allowGuaranteedEndpointCreateEnabled:
+          type: boolean 
+        compressionEnabled:
+          type: boolean
+        attributes:
+          $ref: '#/components/schemas/attributes'
+        tags:
+          $ref: '#/components/schemas/Tags'
+        environments:
+          type: array
+          minLength: 0
+          maxLength: 32
+          items:
+            $ref: "#/components/schemas/CommonName"
+                
+    MsgVpnAuthorizationGroup:
+      type: object
+      additionalProperties: false
+      required:
+      - authorizationGroupName
+      - aclProfileName
+      - clientProfileName
+      - enabled
+      - environments
+      properties:
+        authorizationGroupName: 
+          $ref: '#/components/schemas/CommonName'
+        aclProfileName:
+          $ref: '#/components/schemas/CommonName'
+        clientProfileName:
+          $ref: '#/components/schemas/CommonName'
+        enabled:
+          type: boolean
+        attributes:
+          $ref: '#/components/schemas/attributes'
+        tags:
+          $ref: '#/components/schemas/Tags'
+        environments:
+          type: array
+          minLength: 0
+          maxLength: 32
+          items:
+            $ref: "#/components/schemas/CommonName"
+    MsgVpnClientUsername:
+      type: object
+      additionalProperties: false
+      required:
+      - clientUsername
+      - aclProfileName
+      - clientProfileName
+      - password
+      - enabled
+      - environments
+      properties:
+        clientUsername: 
+          $ref: '#/components/schemas/CommonName'
+        aclProfileName:
+          $ref: '#/components/schemas/CommonName'
+        clientProfileName:
+          $ref: '#/components/schemas/CommonName'
+        password:
+          $ref: '#/components/schemas/CommonName'
+        enabled:
+          type: boolean
+        environments:
+          type: array
+          minLength: 0
+          maxLength: 32
+          items:
+            $ref: "#/components/schemas/CommonName"
+      
+    MsgVpnAclProfile:
+      type: object
+      additionalProperties: false
+      required:
+      - aclProfileName
+      - clientConnectDefaultAction
+      - publishTopicDefaultAction
+      - subscribeTopicDefaultAction
+      - environments
+      properties:
+        aclProfileName: 
+          $ref: '#/components/schemas/CommonName'
+        clientConnectDefaultAction:
+          $ref: '#/components/schemas/ACLAction'
+        publishTopicDefaultAction:
+          $ref: '#/components/schemas/ACLAction'
+        subscribeTopicDefaultAction:
+          $ref: '#/components/schemas/ACLAction'
+        clientConnectExceptions:
+          type: array
+          items:
+            $ref: '#/components/schemas/MsgVpnAclProfileClientConnectException'
+        publishExceptions:
+          type: array
+          items:
+            $ref: '#/components/schemas/MsgVpnAclProfilePublishException'
+        subscribeExceptions:
+          type: array
+          items:
+            $ref: '#/components/schemas/MsgVpnAclProfileSubscribeException'
+        attributes:
+          $ref: '#/components/schemas/attributes'
+        tags:
+          $ref: '#/components/schemas/Tags'
+        environments:
+          type: array
+          minLength: 0
+          maxLength: 32
+          items:
+            $ref: "#/components/schemas/CommonName"
+    
+    MsgVpnAclProfilePublishException:
+      type: object
+      required:
+      - publishTopicException
+      - publishTopicExceptionSyntax        
+      - environments
+      additionalProperties: false
+      properties:
+        publishTopicException:
+          $ref: '#/components/schemas/CommonTopic'
+        publishTopicExceptionSyntax: 
+          $ref: '#/components/schemas/TopicSyntax'
+        attributes:
+          $ref: '#/components/schemas/attributes'
+        tags:
+          $ref: '#/components/schemas/Tags'
+        environments:
+          type: array
+          minLength: 0
+          maxLength: 32
+          items:
+            $ref: "#/components/schemas/CommonName"
+    
+    MsgVpnAclProfileSubscribeException:
+      type: object
+      required:
+      - subscribeTopicException
+      - subscribeTopicExceptionSyntax
+      - environments
+      additionalProperties: false
+      properties:
+        subscribeTopicException:
+          $ref: '#/components/schemas/CommonTopic'
+        subscribeTopicExceptionSyntax: 
+          $ref: '#/components/schemas/TopicSyntax'
+        attributes:
+          $ref: '#/components/schemas/attributes'
+        tags:
+          $ref: '#/components/schemas/Tags'
+        environments:
+          type: array
+          minLength: 0
+          maxLength: 32
+          items:
+            $ref: "#/components/schemas/CommonName"
+    
+    MsgVpnAclProfileClientConnectException:
+      type: object
+      required:
+      - clientConnectExceptionAddress
+      - environments
+      additionalProperties: false
+      properties:
+        clientConnectExceptionAddress:
+          type: string
+          pattern: '^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\/(3[0-2]|[1-2][0-9]|[0-9]))$'
+        attributes:
+          $ref: '#/components/schemas/attributes'
+        tags:
+          $ref: '#/components/schemas/Tags'
+        environments:
+          type: array
+          minLength: 0
+          maxLength: 32
+          items:
+            $ref: "#/components/schemas/CommonName"
+    
+    MsgVpnMqttSession:
+      type: object
+      required:
+      - mqttSessionClientId
+      - enabled
+      - mqttSessionVirtualRouter
+      - environments
+      additionalProperties: false
+      properties:
+        mqttSessionClientId:
+          $ref: '#/components/schemas/CommonName'
+        enabled:
+          type: boolean
+        mqttSessionVirtualRouter:
+          type: string 
+          enum:
+          - 'primary'
+          - 'backup'
+        queueMaxTtl:
+          type: number
+          minimum: 0
+        queueMaxMsgSpoolUsage:
+          type: number
+          minimum: 0
+        queueRespectTtlEnabled:
+          type: boolean
+        owner:
+          $ref: '#/components/schemas/CommonName'
+        attributes:
+          $ref: '#/components/schemas/attributes'
+        tags:
+          $ref: '#/components/schemas/Tags'
+        environments:
+          type: array
+          minLength: 0
+          maxLength: 32
+          items:
+            $ref: "#/components/schemas/CommonName"
+
+    MsgVpnQueue:
+      type: object
+      required:
+      - queueName
+      - ingressEnabled
+      - egressEnabled
+      - owner
+      - permission
+      - accessType
+      - queueSubscriptions
+      - environments
+      additionalProperties: false      
+      properties:
+        queueName: 
+          $ref: '#/components/schemas/CommonName'
+        ingressEnabled: 
+            type: boolean
+        egressEnabled: 
+          type: boolean
+        owner: 
+          $ref: '#/components/schemas/CommonName'
+        permission: 
+          type: string
+          enum:
+          - 'no-access'
+          - 'read-only'
+        accessType:
+          type: string
+          enum:
+          - 'exclusive'
+          - 'non-exclusive'
+        maxTtl:
+          type: number
+          minimum: 0
+        maxMsgSpoolUsage:
+          type: number
+          minimum: 0
+        respectTtlEnabled:
+          type: boolean
+        queueSubscriptions:
+          type: array
+          minLength: 1
+          maxLength: 2048
+          items:
+            $ref: '#/components/schemas/MsgVpnQueueSubscription'
+        attributes:
+          $ref: '#/components/schemas/attributes'
+        tags:
+          $ref: '#/components/schemas/Tags'
+        environments:
+          type: array
+          minLength: 0
+          maxLength: 32
+          items:
+            $ref: "#/components/schemas/CommonName"
+    
+    MsgVpnQueueSubscription:
+      type: object
+      required:
+      - subscriptionTopic
+      - environments
+      additionalProperties: false    
+      properties:
+        subscriptionTopic:
+          $ref: '#/components/schemas/CommonTopic'
+        attributes:
+          $ref: '#/components/schemas/attributes'
+        tags:
+          $ref: '#/components/schemas/Tags'
+        environments:
+          type: array
+          minLength: 0
+          maxLength: 32
+          items:
+            $ref: "#/components/schemas/CommonName"
+    
+    MsgVpnRestDeliveryPoint:    
+      type: object
+      required:
+      - restDeliveryPointName
+      - enabled
+      - restConsumers
+      - queueBindings
+      - queues
+      - environments
+      additionalProperties: false    
+      properties:
+        restDeliveryPointName:
+          $ref: '#/components/schemas/CommonName'
+        enabled:
+          type: boolean
+        restConsumers:
+          type: array
+          minLength: 1
+          maxLength: 16
+          items: 
+            $ref: '#/components/schemas/MsgVpnRestDeliveryPointRestConsumer'
+        queueBindings:
+          type: array
+          minLength: 1
+          maxLength: 16
+          items: 
+            $ref: '#/components/schemas/MsgVpnRestDeliveryPointQueueBinding'
+        queues:
+          type: array
+          minLength: 1
+          maxLength: 16
+          items:
+            $ref: '#/components/schemas/MsgVpnQueue'
+        environments:
+          type: array
+          minLength: 0
+          maxLength: 32
+          items:
+            $ref: "#/components/schemas/CommonName"
+        attributes:
+          $ref: '#/components/schemas/attributes'
+        tags:
+          $ref: '#/components/schemas/Tags'
+
+    MsgVpnRestDeliveryPointRestConsumerAuthenticationScheme: 
+      type: string
+      enum:
+      - 'none'
+      - 'http-basic'
+      - 'http-header'
+
+    MsgVpnRestDeliveryPointRestConsumerHttpMethod: 
+      type: string
+      enum:
+      - post
+      - put
+    
+    MsgVpnRestDeliveryPointRestConsumer:
+      type: object
+      required:
+      - restConsumerName
+      - enabled
+      additionalProperties: false
+      properties:
+        restConsumerName: 
+          $ref: '#/components/schemas/CommonName'
+        remotePort: 
+          type: integer
+          minimum: 1
+        remoteHost: 
+          type: string
+          minLength: 2
+          pattern: '[a-zA-Z0-9-\.]*'
+        tlsEnabled: 
+          type: boolean
+        enabled:
+          type: boolean          
+        authenticationScheme: 
+          $ref: '#/components/schemas/MsgVpnRestDeliveryPointRestConsumerAuthenticationScheme'
+        authenticationHttpBasicUsername:
+          type: string
+          minLength: 2
+          maxLength: 256
+        authenticationHttpBasicPassword:
+          type: string
+          minLength: 2
+          maxLength: 256
+        authenticationHttpHeaderName:
+          type: string
+          minLength: 2
+          maxLength: 256
+        authenticationHttpHeaderValue:
+          type: string
+          minLength: 2
+          maxLength: 256
+        httpMethod: 
+          $ref: '#/components/schemas/MsgVpnRestDeliveryPointRestConsumerHttpMethod'
+        maxPostWaitTime: 
+          type: integer
+          minimum: 1
+        outgoingConnectionCount: 
+          type: integer
+          minimum: 1
+        retryDelay: 
+          type: integer
+          minimum: 0
+        trustedCNs:
+          type: array
+          minLength: 1
+          maxLength: 128
+          items:
+            $ref: '#/components/schemas/MsgVpnRestDeliveryPointRestConsumerTlsTrustedCommonName'
+        attributes:
+          $ref: '#/components/schemas/attributes'
+        tags:
+          $ref: '#/components/schemas/Tags'
+          
+    MsgVpnRestDeliveryPointQueueBinding:
+      type: object
+      required:
+      - postRequestTarget
+      - queueBindingName
+      additionalProperties: false
+      properties:
+        postRequestTarget:
+          type: string
+          minLength: 2
+          maxLength: 2048
+        queueBindingName:
+          $ref: '#/components/schemas/CommonName'
+        attributes:
+          $ref: '#/components/schemas/attributes'
+        tags:
+          $ref: '#/components/schemas/Tags'
+    
+    MsgVpnRestDeliveryPointRestConsumerTlsTrustedCommonName:
+      type: object
+      required:
+      - tlsTrustedCommonName
+      additionalProperties: false
+      properties:
+        tlsTrustedCommonName:
+          type: string
+          minLength: 2
+          maxLength: 256
+        attributes:
+          $ref: '#/components/schemas/attributes'
+        tags:
+          $ref: '#/components/schemas/Tags'
+  
+    
+    AppConfigSet:
+      type: object
+      additionalProperties: false
+      required:
+      - name
+      - displayName
+      - aclProfile
+      - clientProfile
+      - clientUsername
+      - authorizationGroup
+      - services
+      properties:
+        name:
+          $ref: '#/components/schemas/CommonName'
+        displayName:
+          $ref: '#/components/schemas/CommonDisplayName'
+        state:
+          $ref: '#/components/schemas/ConfigState'
+        aclProfile:
+          $ref: '#/components/schemas/MsgVpnAclProfile'
+        clientProfile:
+          $ref: '#/components/schemas/MsgVpnClientProfile'
+        clientUsername:
+          $ref: '#/components/schemas/MsgVpnClientUsername'
+        authorizationGroup:
+          $ref: '#/components/schemas/MsgVpnAuthorizationGroup'
+        mqttSession:
+          $ref: '#/components/schemas/MsgVpnMqttSession'
+        queues:
+          type: array
+          minLength: 0
+          maxLength: 128
+          items:
+            $ref: '#/components/schemas/MsgVpnQueue'
+        restDeliveryPoints:
+          type: array
+          minLength: 0
+          maxLength: 128
+          items:
+            $ref: '#/components/schemas/MsgVpnRestDeliveryPoint'
+        services:
+          type: array
+          minLength: 0
+          maxLength: 32
+          items:
+            $ref: '#/components/schemas/EnvironmentService'
+        attributes:
+          $ref: '#/components/schemas/attributes'
+        tags:
+          $ref: '#/components/schemas/Tags'
+    
+    EnvironmentService:
+            type: object
+            additionalProperties: false
+            properties:
+              environment:
+                $ref: '#/components/schemas/CommonName'
+              service:
+                $ref: '#/components/schemas/Service'
+    
+    
+    ConfigState:
+      type: object
+      additionalProperties: false
+      required:
+      - applied
+      - appliedBy
+      - appliedAt
+      properties:
+        applied:
+          type: boolean
+        appliedBy:
+          $ref: '#/components/schemas/CommonUserName'
+        appliedAt:
+          $ref: '#/components/schemas/CommonTimestampInteger'
+        errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/CommonDescription'
+    
+    ConfigSnapshot:
+      type: object
+      additionalProperties: false
+      required:
+      - name
+      - revision
+      - appliedBy
+      - appliedAt
+      - archivedBy
+      - archivedAt
+      - config
+      properties:
+        name:
+          $ref: '#/components/schemas/CommonName'
+        revision: 
+          type:
+            integer
+        appliedBy:
+          $ref: '#/components/schemas/CommonUserName'
+        appliedAt:
+          $ref: '#/components/schemas/CommonTimestampInteger'
+        archivedBy:
+          $ref: '#/components/schemas/CommonUserName'
+        archivedAt:
+          $ref: '#/components/schemas/CommonTimestampInteger'
+        config:
+          $ref: '#/components/schemas/AppConfigSet'
+        applied:
+          type: 
+            boolean
+  
+    ACLAction:
+      type: string
+      enum:
+      - allow
+      - disallow
+      default: disallow
+      
+    TopicSyntax:
+      type: string
+      enum:
+      - smf
+      - mqtt
+      default: smf
+          
+    Tags:
+      description: Set of tags
+      type: array
+      minItems: 0
+      maxItems: 32768
+      items:
+        $ref: '#/components/schemas/Tag'
+    Tag:
+      description: A tag on an entity
+      pattern: "^.*$"
+      minLength: 1
+      maxLength: 1024
       
 security:
   - OpenId: []
@@ -7228,4 +7839,143 @@ paths:
           $ref: '#/components/responses/ServiceUnavailable'
         '504':
           $ref: '#/components/responses/GatewayTimeout'
-          
+
+  /{organization_name}/configSets:
+    parameters:
+    - $ref: '#/components/parameters/organization'
+    get:
+     operationId: listAppConfigSets
+     tags:
+      - management
+     responses:
+        '200':
+          description: list of configs
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/CommonEntityNameList'
+        '400':
+           $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '406':
+          $ref: '#/components/responses/NotAcceptable'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
+        '504':
+          $ref: '#/components/responses/GatewayTimeout'
+
+  /{organization_name}/configSets/{config_set_name}:
+    parameters:
+    - $ref: '#/components/parameters/organization'
+    - $ref: '#/components/parameters/config_set_name'
+    get:
+     operationId: getAppConfigSet
+     tags:
+      - management
+     responses:
+        '200':
+          description: an event api products defined in the associated Event Portal
+          content:
+            application/json:
+              schema:
+               $ref: '#/components/schemas/AppConfigSet'
+        '400':
+           $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '406':
+          $ref: '#/components/responses/NotAcceptable'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
+        '504':
+          $ref: '#/components/responses/GatewayTimeout'
+              
+  /{organization_name}/configSets/{config_set_name}/snapshots:
+    parameters:
+    - $ref: '#/components/parameters/organization'
+    - $ref: '#/components/parameters/config_set_name'
+    get:
+     operationId: listAppConfigSetSnapshots
+     tags:
+      - management
+     responses:
+        '200':
+          description: list of snapshots (revisions) of a config
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: integer
+        '400':
+           $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '406':
+          $ref: '#/components/responses/NotAcceptable'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
+        '504':
+          $ref: '#/components/responses/GatewayTimeout'
+      
+  /{organization_name}/configSets/{config_set_name}/snapshots/{config_snapshot_revision}:
+    parameters:
+    - $ref: '#/components/parameters/organization'
+    - $ref: '#/components/parameters/config_set_name'
+    - $ref: '#/components/parameters/config_snapshot_revision'    
+    get:
+     operationId: getAppConfigSnapshot
+     tags:
+      - management
+     responses:
+        '200':
+          description: a specific snapshot of an app config
+          content:
+            application/json:
+              schema:
+               $ref: '#/components/schemas/ConfigSnapshot'
+        '400':
+           $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '406':
+          $ref: '#/components/responses/NotAcceptable'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
+        '504':
+          $ref: '#/components/responses/GatewayTimeout'
