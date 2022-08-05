@@ -20,7 +20,6 @@ import restdeliverypointBuilder from './solace.config.tasksets/restdeliverypoint
 import aclprofileExceptionsBuilder from './solace.config.tasksets/aclprofile.exceptions.taskset';
 import aclprofileBuilder from './solace.config.tasksets/aclprofile.taskset';
 import MsgVpnQueue = Components.Schemas.MsgVpnQueue;
-import { config } from 'dotenv';
 
 export class SolaceConfigService {
 
@@ -71,6 +70,24 @@ export class SolaceConfigService {
                 throw e;
             }
         }
+
+        if (!configSet.state?.applied) {
+            // error occured roll back
+            L.warn(`config set ${configSet.name} could not be applied, rolling back`);
+            try {
+                if (isModification) {
+                    L.info(`Rolling back to previous previous config set ${configSet.name}`);
+                    await this.doApplyConfigSet(previousConfigSet);
+                }
+                else {
+                    L.info(`Deleting config set ${configSet.name}`)
+                    await this.doDeleteConfigSet(configSet);
+                }
+            } catch (e) {
+                L.error(`fatal error rolling back config set ${configSet.name}`);
+            }
+
+        }
         // make sure we capture the state if not set already
         if (!configSet.state) {
             const configState: ConfigState = {
@@ -80,11 +97,13 @@ export class SolaceConfigService {
             }
             configSet.state = configState;
         }
-        if (isModification) {
-            this.saveRevision(previousConfigSet);
-            await this.persistenceService.update(configSet.name, configSet);
-        } else {
-            await this.persistenceService.create(configSet.name, configSet);
+        if (configSet.state.applied) {
+            if (isModification) {
+                this.saveRevision(previousConfigSet);
+                await this.persistenceService.update(configSet.name, configSet);
+            } else {
+                await this.persistenceService.create(configSet.name, configSet);
+            }
         }
         return configSet.state;
     }
@@ -100,7 +119,6 @@ export class SolaceConfigService {
         if (!result.success) {
             const errors: string[] = [];
             result.results.filter(r => !r.success).forEach(r => errors.push(`${r.log.action} ${r.log.info}`));
-            // fatal failure, apply a previous config, otherwise delete
             configSet.state = {
                 applied: false,
                 appliedAt: (new Date()).getTime(),
@@ -117,7 +135,6 @@ export class SolaceConfigService {
         }
     }
 
-    // 
     /**
      * build a standard present tasklist for an App Config Set
      * @param configSet 
@@ -154,96 +171,19 @@ export class SolaceConfigService {
             name: 'diff',
             value: JSON.stringify(appDiff),
         });
-        const removedConfigSet = _.cloneDeep(previousConfigSet);
-        removedConfigSet.mqttSession = null;
-        removedConfigSet.queues = [];
-        removedConfigSet.restDeliveryPoints = [];
-        removedConfigSet.aclProfile.subscribeExceptions = [];
-        removedConfigSet.aclProfile.publishExceptions = [];
-        removedConfigSet.aclProfile.clientConnectExceptions = [];
-        const serviceDeletedSet = _.cloneDeep(previousConfigSet);
-        serviceDeletedSet.services = [];
 
         // get everything that was replaced and figure out which of the replacements need an absent task for old object
         const replaced = appDiff.filter(d => d.op == 'replace');
         // get deletions - these all need to use absent state 
-        let removed: boolean = false;
-        if (!_.isEqual(previousConfigSet.mqttSession, configSet.mqttSession) && previousConfigSet.mqttSession) {
-            removedConfigSet.mqttSession = previousConfigSet.mqttSession;
-            removed = true;
-        }
-        const removedServices = _.differenceWith(previousConfigSet.services, configSet.services, _.isEqual);
-        if (removedServices) {
-            serviceDeletedSet.services = removedServices;
-        }
-        const removedQueues: MsgVpnQueue[] = _.differenceWith(previousConfigSet.queues, configSet.queues, (a: any, b: any) => { return (a.queueName == b.queueName) });
-        if (removedQueues) {
-            removed = true;
-            for (const removedQ of removedQueues) {
-                const newQ = _.cloneDeep(removedQ);
-                newQ.queueSubscriptions = [];
-                removedConfigSet.queues.push(newQ);
-            }
-        }
-        // find queues still shared between previous and new set and compare their subscriptions
-        const sharedQueues = _.intersectionWith(previousConfigSet.queues, configSet.queues, (a: any, b: any) => { return (a.queueName == b.queueName) });
-        for (const sharedQueue of sharedQueues) {
-            const previousSubscriptions = previousConfigSet.queues.find(q => q.queueName == sharedQueue.queueName).queueSubscriptions;
-            const subscribeExceptions = configSet.queues.find(q => q.queueName == sharedQueue.queueName).queueSubscriptions;
-            const removedSubscriptions = _.differenceWith(previousSubscriptions, subscribeExceptions, _.isEqual);
-            if (removedSubscriptions && removedSubscriptions.length > 0) {
-                removed = true;
-                const newQ = _.cloneDeep(sharedQueue)
-                newQ.queueSubscriptions = removedSubscriptions;
-                removedConfigSet.queues.push(newQ);
-            }
-        }
-        const removedRDPs = _.differenceWith(previousConfigSet.restDeliveryPoints, configSet.restDeliveryPoints, _.isEqual);
-        if (removedRDPs) {
-            removedConfigSet.restDeliveryPoints = removedRDPs;
-            removed = true;
-        }
-
-        const sharedRDPs = _.intersectionWith(previousConfigSet.restDeliveryPoints, configSet.restDeliveryPoints, (a, b) => { return (a.environments[0] == b.environments[0]) });
-        for (const rdp of sharedRDPs) {
-            for (const sharedQueue of rdp.queues) {
-                const previousSubscriptions = previousConfigSet.restDeliveryPoints.find(r=> (r.restDeliveryPointName == rdp.restDeliveryPointName && r.environments[0] == rdp.environments[0])).queues.find(q => q.queueName == sharedQueue.queueName).queueSubscriptions;
-                const subscribeExceptions = configSet.restDeliveryPoints.find(r=> (r.restDeliveryPointName == rdp.restDeliveryPointName && r.environments[0] == rdp.environments[0])).queues.find(q => q.queueName == sharedQueue.queueName).queueSubscriptions;
-                const removedSubscriptions = _.differenceWith(previousSubscriptions, subscribeExceptions, _.isEqual);
-                if (removedSubscriptions && removedSubscriptions.length > 0) {
-                    removed = true;
-                    const newRDP = _.cloneDeep(rdp);
-                    const newQ = _.cloneDeep(sharedQueue);
-                    newQ.queueSubscriptions = removedSubscriptions;
-                    newRDP.queues.push(newQ);
-                    removedConfigSet.restDeliveryPoints.push(newRDP);
-                }
-            }
-        }
-
-        const removedClientConnectExceptions = _.differenceWith(previousConfigSet.aclProfile.clientConnectExceptions, configSet.aclProfile.clientConnectExceptions, _.isEqual);
-        if (removedClientConnectExceptions) {
-            removedConfigSet.aclProfile.clientConnectExceptions = removedClientConnectExceptions;
-        }
-
-        const removedPublishTopicExceptions = _.differenceWith(previousConfigSet.aclProfile.publishExceptions, configSet.aclProfile.publishExceptions, _.isEqual);
-        if (removedPublishTopicExceptions) {
-            removedConfigSet.aclProfile.publishExceptions = removedPublishTopicExceptions;
-        }
-        const removedSubscribeTopicExceptions = _.differenceWith(previousConfigSet.aclProfile.subscribeExceptions, configSet.aclProfile.subscribeExceptions, _.isEqual);
-        if (removedSubscribeTopicExceptions) {
-            removedConfigSet.aclProfile.subscribeExceptions = removedSubscribeTopicExceptions;
-        }
+        const removedConfigSet = this.buildRemovedConfigSet(previousConfigSet, configSet);
         ////////////////////////////////
         // apply the changes
         ////////////////////////////////
-        if (removedConfigSet.services && removedConfigSet.services.length > 1) {
-            this.doDeleteConfigSet(serviceDeletedSet);
-        }
+        await this.deleteConfigSetFromPreviousEnvironments(previousConfigSet, configSet);
 
         for (const service of configSet.services) {
 
-            if (removed) {
+            if (removedConfigSet) {
                 const mqttAbsent = mqttsessionBuilder.build(removedConfigSet, service, TaskState.ABSENT);
                 tasks.appendTaskSet(mqttAbsent);
                 tasks.appendTaskSet(queueBuilder.build(removedConfigSet, service, TaskState.ABSENT));
@@ -298,11 +238,125 @@ export class SolaceConfigService {
 
     }
 
+    /**
+     * Builds a temporary config set that contains all the deletions form the previous config set
+     * @param previousConfigSet 
+     * @param configSet 
+     * @returns the delat config set of removed items or null if no change was detected
+     */
+    private buildRemovedConfigSet(previousConfigSet: AppConfigSet, configSet: AppConfigSet): AppConfigSet {
+        const removedConfigSet = _.cloneDeep(previousConfigSet);
+        removedConfigSet.mqttSession = null;
+        removedConfigSet.queues = [];
+        removedConfigSet.restDeliveryPoints = [];
+        removedConfigSet.aclProfile.subscribeExceptions = [];
+        removedConfigSet.aclProfile.publishExceptions = [];
+        removedConfigSet.aclProfile.clientConnectExceptions = [];
+        let removed: boolean = false;
+        if (previousConfigSet.mqttSession && !_.isEqualWith(previousConfigSet.mqttSession.mqttSessionClientId, configSet.mqttSession?.mqttSessionClientId)) {
+            removedConfigSet.mqttSession = previousConfigSet.mqttSession;
+            removed = true;
+        }
+        const removedQueues: MsgVpnQueue[] = _.differenceWith(previousConfigSet.queues, configSet.queues, (a: any, b: any) => { return (a.queueName == b.queueName); });
+        if (removedQueues) {
+            removed = true;
+            for (const removedQ of removedQueues) {
+                const newQ = _.cloneDeep(removedQ);
+                // need to reset subscriptions as only queues without subscriptions are to be removed
+                newQ.queueSubscriptions = [];
+                removedConfigSet.queues.push(newQ);
+            }
+        }
+        // find queues still shared between previous and new set and compare their subscriptions
+        const sharedQueues = _.intersectionWith(previousConfigSet.queues, configSet.queues, (a: any, b: any) => { return (a.queueName == b.queueName); });
+        for (const sharedQueue of sharedQueues) {
+            const previousSubscriptions = previousConfigSet.queues.find(q => q.queueName == sharedQueue.queueName).queueSubscriptions;
+            const subscribeExceptions = configSet.queues.find(q => q.queueName == sharedQueue.queueName).queueSubscriptions;
+            const removedSubscriptions = _.differenceWith(previousSubscriptions, subscribeExceptions, _.isEqual);
+            if (removedSubscriptions && removedSubscriptions.length > 0) {
+                removed = true;
+                const newQ = _.cloneDeep(sharedQueue);
+                newQ.queueSubscriptions = removedSubscriptions;
+                removedConfigSet.queues.push(newQ);
+            }
+        }
+        const removedRDPs = _.differenceWith(previousConfigSet.restDeliveryPoints, configSet.restDeliveryPoints, _.isEqual);
+        if (removedRDPs) {
+            removedConfigSet.restDeliveryPoints = removedRDPs;
+            removed = true;
+        }
+
+        const sharedRDPs = _.intersectionWith(previousConfigSet.restDeliveryPoints, configSet.restDeliveryPoints, (a, b) => { return (a.environments[0] == b.environments[0]); });
+        for (const rdp of sharedRDPs) {
+            for (const sharedQueue of rdp.queues) {
+                const previousSubscriptions = previousConfigSet.restDeliveryPoints.find(r => (r.restDeliveryPointName == rdp.restDeliveryPointName && r.environments[0] == rdp.environments[0])).queues.find(q => q.queueName == sharedQueue.queueName).queueSubscriptions;
+                const subscribeExceptions = configSet.restDeliveryPoints.find(r => (r.restDeliveryPointName == rdp.restDeliveryPointName && r.environments[0] == rdp.environments[0])).queues.find(q => q.queueName == sharedQueue.queueName).queueSubscriptions;
+                const removedSubscriptions = _.differenceWith(previousSubscriptions, subscribeExceptions, _.isEqual);
+                if (removedSubscriptions && removedSubscriptions.length > 0) {
+                    removed = true;
+                    const newRDP = _.cloneDeep(rdp);
+                    const newQ = _.cloneDeep(sharedQueue);
+                    newQ.queueSubscriptions = removedSubscriptions;
+                    newRDP.queues.push(newQ);
+                    removedConfigSet.restDeliveryPoints.push(newRDP);
+                }
+            }
+        }
+
+        const removedClientConnectExceptions = _.differenceWith(previousConfigSet.aclProfile.clientConnectExceptions, configSet.aclProfile.clientConnectExceptions, _.isEqual);
+        if (removedClientConnectExceptions) {
+            removedConfigSet.aclProfile.clientConnectExceptions = removedClientConnectExceptions;
+        }
+
+        const removedPublishTopicExceptions = _.differenceWith(previousConfigSet.aclProfile.publishExceptions, configSet.aclProfile.publishExceptions, _.isEqual);
+        if (removedPublishTopicExceptions) {
+            removedConfigSet.aclProfile.publishExceptions = removedPublishTopicExceptions;
+        }
+        const removedSubscribeTopicExceptions = _.differenceWith(previousConfigSet.aclProfile.subscribeExceptions, configSet.aclProfile.subscribeExceptions, _.isEqual);
+        if (removedSubscribeTopicExceptions) {
+            removedConfigSet.aclProfile.subscribeExceptions = removedSubscribeTopicExceptions;
+        }
+        if (removed){
+            return removedConfigSet;
+        } else {
+            return null;
+        }
+    }
+
+    private async deleteConfigSetFromPreviousEnvironments(previousConfigSet: AppConfigSet, configSet: AppConfigSet) {
+        const serviceDeletedSet = _.cloneDeep(previousConfigSet);
+        serviceDeletedSet.services = [];
+        const removedServices = _.differenceWith(previousConfigSet.services, configSet.services, _.isEqual);
+        if (removedServices) {
+            serviceDeletedSet.services = removedServices;
+            await this.doDeleteConfigSet(serviceDeletedSet);
+        }
+    }
+
     private async doDeleteConfigSet(configSet: AppConfigSet) {
         // remove all broker objects
         const state: TaskState = TaskState.ABSENT;
         const tasks: TaskSet = new TaskSet();
-        // prep config set
+       
+        this.prepareConfigSetQueuesForDeletion(configSet);
+        for (const service of configSet.services) {
+            tasks.appendTaskSet(this.buildDeleteConfigSet(configSet, service, state));
+        }
+        const result = await tasks.execute();
+        if (!result.success) {
+            const errors: string[] = [];
+            result.results.filter(r => !r.success).forEach(r => errors.push(`${r.log.action} ${r.log.info}`));
+            configSet.state = {
+                applied: false,
+                appliedAt: (new Date()).getTime(),
+                appliedBy: 'system',
+                errors: errors,
+            }
+        }
+    }
+
+    private prepareConfigSetQueuesForDeletion(configSet: AppConfigSet) {
+         // prep config set - only queues with no subscriptions are marked for deletion
         if (configSet.queues) {
             for (const q of configSet.queues) {
                 q.queueSubscriptions = [];
@@ -317,34 +371,25 @@ export class SolaceConfigService {
                 }
             }
         }
-        for (const service of configSet.services) {
-            const mqttSession = mqttsessionBuilder.build(configSet, service, state);
-            tasks.appendTaskSet(mqttSession);
-            const queueTasks = queueBuilder.build(configSet, service, state);
-            tasks.appendTaskSet(queueTasks);
-            tasks.appendTaskSet(restdeliverypointBuilder.build(configSet, service, state));
+    }
 
-            const authzGroup = authorizationgroupBuilder.build(configSet, service, state);
-            tasks.appendTaskSet(authzGroup);
+    private buildDeleteConfigSet(configSet: AppConfigSet, service: EnvironmentServce, state: TaskState): TaskSet {
+        const tasks = new TaskSet();
+        const mqttSession = mqttsessionBuilder.build(configSet, service, state);
+        tasks.appendTaskSet(mqttSession);
+        const queueTasks = queueBuilder.build(configSet, service, state);
+        tasks.appendTaskSet(queueTasks);
+        tasks.appendTaskSet(restdeliverypointBuilder.build(configSet, service, state));
 
-            const clientUserName = clientusernameBuilder.build(configSet, service, state);
-            tasks.appendTaskSet(clientUserName);
+        const authzGroup = authorizationgroupBuilder.build(configSet, service, state);
+        tasks.appendTaskSet(authzGroup);
 
-            const acl = aclprofileBuilder.build(configSet, service, state);
-            tasks.appendTaskSet(acl);
-        }
-        const result = await tasks.execute();
-        if (!result.success) {
-            const errors: string[] = [];
-            result.results.filter(r => !r.success).forEach(r => errors.push(`${r.log.action} ${r.log.info}`));
-            // fatal failure, flip all tasks to absent and run task set again
-            configSet.state = {
-                applied: false,
-                appliedAt: (new Date()).getTime(),
-                appliedBy: 'system',
-                errors: errors,
-            }
-        }
+        const clientUserName = clientusernameBuilder.build(configSet, service, state);
+        tasks.appendTaskSet(clientUserName);
+
+        const acl = aclprofileBuilder.build(configSet, service, state);
+        tasks.appendTaskSet(acl);
+        return tasks;
     }
 
     public async delete(name: string): Promise<number> {
