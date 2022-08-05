@@ -73,9 +73,9 @@ export class SolaceBrokerService implements Broker {
     L.info(`API Products looked up, processing provisioning`);
     L.trace(productResults);
     try {
+      const products: APIProduct[] = [];
+      let environmentNames: string[] = [];
       if (productResults && productResults.length > 0) {
-        const products: APIProduct[] = [];
-        let environmentNames: string[] = [];
         for (const product of productResults) {
           product.environments.forEach((e: string) => {
             environmentNames.push(e);
@@ -83,19 +83,9 @@ export class SolaceBrokerService implements Broker {
           L.info(`env: ${JSON.stringify(product.environments)}`);
           products.push(product);
         }
-        environmentNames = Array.from(new Set(environmentNames));
-        await this.doProvision(app, environmentNames, products, ownerAttributes);
-      } else {
-        try {
-          await this.deprovision(app);
-        } catch (e) {
-          const err = e as ErrorResponseInternal;
-          if (err.statusCode != 404) {
-            throw e;
-          }
-        }
       }
-
+      environmentNames = Array.from(new Set(environmentNames));
+      await this.doProvision(app, environmentNames, products, ownerAttributes);
     } catch (e) {
       if (e.body) {
         L.error(`Provisioning error ${e.message}, body ${JSON.stringify(e.body)}`);
@@ -104,11 +94,6 @@ export class SolaceBrokerService implements Broker {
       }
 
       L.error(e.stack);
-      try {
-        await this.deprovision(app);
-      } catch (e) {
-        // things may go wrong here, that's fine. we are just trying to clean up
-      }
       throw new ErrorResponseInternal(500, e);
     }
 
@@ -126,7 +111,7 @@ export class SolaceBrokerService implements Broker {
     let queues = await QueueManager.createAPIProductQueues(app, products, ownerAttributes);
     queues = queues.concat(await QueueManager.createAPIQueues(app, products, ownerAttributes));
     L.info(`created acl profile ${app.name}`);
-    const appConfig : AppConfigSet= {
+    const appConfig: AppConfigSet = {
       aclProfile: a,
       authorizationGroup: authzGroup,
       clientProfile: clientProfile,
@@ -139,7 +124,7 @@ export class SolaceBrokerService implements Broker {
       queues: queues,
       mqttSession: await MQTTSessionManager.create(app, products, environmentNames)
     };
-    for (const service of services){
+    for (const service of services) {
       appConfig.services.push({
         environment: service['environment'],
         service: (service as Components.Schemas.Service)
@@ -147,6 +132,9 @@ export class SolaceBrokerService implements Broker {
     }
     const result = await SolaceConfigService.apply(appConfig);
     L.error(result);
+    if (!result.applied) {
+      throw new ErrorResponseInternal(500, `App ${app.name} could not be provisioned (${JSON.stringify(result.errors)})`);
+    }
   }
 
   public async deprovision(app: App) {
