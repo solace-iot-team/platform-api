@@ -50,8 +50,9 @@ export default class RdpConsumerTask extends SEMPv2Task {
     protected async update(): Promise<TaskResult> {
         const config: TaskConfigAlias = this.config() as TaskConfigAlias;
         try {
-            const disableRdpRequest = {...config.configObject};
-            disableRdpRequest.enabled = false;
+            const disableRdpRequest: TaskServiceRequest = {
+                enabled: false
+            };
             let response: TaskServiceResponse = await this.apiClient.updateMsgVpnRestDeliveryPointRestConsumer(config.environment.service.msgVpnName, config.rdp.restDeliveryPointName, config.configObject.restConsumerName, _.omit(disableRdpRequest, this.paths) as TaskServiceRequest);
             response = await this.apiClient.updateMsgVpnRestDeliveryPointRestConsumer(config.environment.service.msgVpnName, config.rdp.restDeliveryPointName, config.configObject.restConsumerName, _.omit(config.configObject, this.paths) as TaskServiceRequest);
             return super.createSuccessfulTaskResult(`update${this.operationName}`, config.configObject.restConsumerName, config.state, response);

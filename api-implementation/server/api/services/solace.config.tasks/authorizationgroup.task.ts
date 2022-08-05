@@ -48,7 +48,12 @@ export default class AuthorizationGroupTask extends SEMPv2Task {
     protected async update(): Promise<TaskResult> {
         const config: TaskConfigAlias = this.config() as TaskConfigAlias;
         try {
-            const response: TaskServiceResponse = await this.apiClient.updateMsgVpnAuthorizationGroup(config.environment.service.msgVpnName, config.configObject.authorizationGroupName, _.omit(config.configObject, this.paths) as TaskServiceRequest);
+            const requestObject = _.omit(config.configObject, this.paths);
+            const disableRequest: TaskServiceRequest = {
+                enabled: false
+            };
+            const disableResponse: TaskServiceResponse = await this.apiClient.updateMsgVpnAuthorizationGroup(config.environment.service.msgVpnName, config.configObject.authorizationGroupName, disableRequest as TaskServiceRequest);
+            const response: TaskServiceResponse = await this.apiClient.updateMsgVpnAuthorizationGroup(config.environment.service.msgVpnName, config.configObject.authorizationGroupName, requestObject as TaskServiceRequest);
             return super.createSuccessfulTaskResult(`update${this.operationName}`, config.configObject.authorizationGroupName, config.state, response);
         } catch (e) {
             L.error(e);

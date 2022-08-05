@@ -48,9 +48,10 @@ export default class QueueTask extends SEMPv2Task {
     protected async update(): Promise<TaskResult> {
         const config: TaskConfigAlias = this.config() as TaskConfigAlias;
         try {
-            const disableQueueRequest = {...config.configObject};
-            disableQueueRequest.ingressEnabled = false;
-            disableQueueRequest.egressEnabled = false;
+            const disableQueueRequest: TaskServiceRequest = {
+                ingressEnabled: false,
+                egressEnabled: false,
+            };
             let response: TaskServiceResponse = await this.apiClient.updateMsgVpnQueue(config.environment.service.msgVpnName, config.configObject.queueName, _.omit(disableQueueRequest, this.paths) as TaskServiceRequest);
             response = await this.apiClient.updateMsgVpnQueue(config.environment.service.msgVpnName, config.configObject.queueName, _.omit(config.configObject, this.paths) as TaskServiceRequest);
             return super.createSuccessfulTaskResult(`update${this.operationName}`, config.configObject.queueName, config.state, response);

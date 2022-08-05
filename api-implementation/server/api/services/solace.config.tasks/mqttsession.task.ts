@@ -48,7 +48,13 @@ export default class MqttSessionTask extends SEMPv2Task {
     protected async update(): Promise<TaskResult> {
         const config: TaskConfigAlias = this.config() as TaskConfigAlias;
         try {
-            const response: TaskServiceResponse = await this.apiClient.updateMsgVpnMqttSession(config.environment.service.msgVpnName, config.configObject.mqttSessionClientId, config.configObject.mqttSessionVirtualRouter, _.omit(config.configObject, this.paths) as TaskServiceRequest) as TaskServiceResponse;
+            const requestObject = _.omit(config.configObject, this.paths);
+            const disableRequest: TaskServiceRequest = {
+                enabled: false,
+                mqttSessionClientId: requestObject.mqttSessionClientId
+            }
+            const disableResponse: TaskServiceResponse = await this.apiClient.updateMsgVpnMqttSession(config.environment.service.msgVpnName, config.configObject.mqttSessionClientId, config.configObject.mqttSessionVirtualRouter, disableRequest as TaskServiceRequest) as TaskServiceResponse;
+            const response: TaskServiceResponse = await this.apiClient.updateMsgVpnMqttSession(config.environment.service.msgVpnName, config.configObject.mqttSessionClientId, config.configObject.mqttSessionVirtualRouter, requestObject as TaskServiceRequest) as TaskServiceResponse;
             return super.createSuccessfulTaskResult(`update${this.operationName}`, config.configObject.mqttSessionClientId, config.state, response);
         } catch (e) {
             L.error(e);

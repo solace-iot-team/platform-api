@@ -48,7 +48,12 @@ export default class ClientUsernameTask extends SEMPv2Task {
     protected async update(): Promise<TaskResult> {
         const config: TaskConfigAlias = this.config() as TaskConfigAlias;
         try {
-            const response: TaskServiceResponse = await this.apiClient.updateMsgVpnClientUsername(config.environment.service.msgVpnName, config.configObject.clientUsername, _.omit(config.configObject, this.paths) as TaskServiceRequest);
+            const requestObject = _.omit(config.configObject, this.paths);
+            const disableRequest: TaskServiceRequest = {
+                enabled: false,
+            }
+            const disableResponse: TaskServiceResponse = await this.apiClient.updateMsgVpnClientUsername(config.environment.service.msgVpnName, config.configObject.clientUsername, disableRequest as TaskServiceRequest);
+            const response: TaskServiceResponse = await this.apiClient.updateMsgVpnClientUsername(config.environment.service.msgVpnName, config.configObject.clientUsername, requestObject as TaskServiceRequest);
             return super.createSuccessfulTaskResult(`update${this.operationName}`, config.configObject.clientUsername, config.state, response);
         } catch (e) {
             L.error(e);
