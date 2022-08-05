@@ -16,17 +16,6 @@ export class QueueHelper {
     }
   }
 
-  public areAppQueuesRequired(apiProducts: APIProduct[]): boolean {
-    for (const apiProduct of apiProducts) {
-      if (this.isAPIProductQueueRequired(apiProduct)) {
-        L.debug(`API Product ${apiProduct.name} requires a queue`)
-        return true;
-      }
-    }
-    L.debug(`app doesn't require queues`);
-    return false;
-  }
-
   public isAPIProductQueueRequired(apiProduct: APIProduct): boolean {
     if (!this.hasAPiProductRequiredGuaranteedMessagingProtocol(apiProduct)) {
       return false;
@@ -62,32 +51,6 @@ export class QueueHelper {
     }
 
   }
-
-  public filterServicesForWebHook(app: App, services: Service[]): Service[] {
-    let envNames = [];
-    if (app.webHooks) {
-      for (const webHook of app.webHooks) {
-        if (webHook.environments) {
-          envNames = envNames.concat(webHook.environments);
-        }
-      }
-      envNames = Array.from(new Set(envNames));
-    }
-    if (envNames.length == 0) {
-      return services;
-    } else {
-      return services.filter(s => envNames.find(e => e == s['environment']))
-    }
-  }
-
-  public fiterServicesWithoutWebHook(app: App, services: Service[]): Service[] {
-    const webHookServices = this.filterServicesForWebHook(app, services);
-    const webHooksToDelete = new Set(webHookServices);
-
-    return services.filter(s => !webHooksToDelete.has(s));
-
-  }
-
 }
 
 export default new QueueHelper();

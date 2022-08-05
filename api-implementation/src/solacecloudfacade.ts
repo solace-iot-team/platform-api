@@ -88,7 +88,7 @@ class SolaceCloudFacade {
     }
   }
 
-  public async createClientProfile(service: Service, clientProfile: MsgVpnClientProfile) {
+  public async createClientProfile(service: Service, clientProfile: MsgVpnClientProfile): Promise<any>{
     const clientProfileRequest: ClientProfileRequest = {
       clientProfile: clientProfile,
       operation: CloudRequestType.create
@@ -102,6 +102,7 @@ class SolaceCloudFacade {
         requestStatus = await this.cloudService.trackCloudRequestStatus(service.serviceId, requestStatus.data.id, true);
       }
       L.info(`completed client profile ${clientProfile.clientProfileName} progress ${requestStatus.data.adminProgress}`);
+      return requestStatus;
     } catch (e) {
       L.error(`error on client profile ${clientProfile.clientProfileName} on service ${service.serviceId}`, e);
       L.error(e);
