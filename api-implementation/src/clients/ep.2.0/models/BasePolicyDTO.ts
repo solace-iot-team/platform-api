@@ -5,9 +5,12 @@ import type { SolacePolicy } from './SolacePolicy';
 
 export type BasePolicyDTO = (SolacePolicy | {
     /**
-     * Id value of the object
+     * ID value of the object
      */
     readonly id?: string,
+    /**
+     * The type of this payload
+     */
     type?: string,
 });
 

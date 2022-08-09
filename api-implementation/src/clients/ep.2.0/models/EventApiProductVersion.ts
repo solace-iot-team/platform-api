@@ -16,13 +16,16 @@ export type EventApiProductVersion = {
     summary?: string;
     displayName?: string;
     /**
-     * List of Ids of associated eventApiVersion
+     * List of IDs of associated event API versions
      */
     eventApiVersionIds?: Array<string>;
     stateId?: string;
     plans?: Array<Plan>;
-    gatewayMessagingServices?: Array<BaseMessagingServiceDTO>;
-    type?: string;
+    readonly gatewayMessagingServices?: Array<BaseMessagingServiceDTO>;
+    /**
+     * The type of payload
+     */
+    readonly type?: string;
 }
 
 export namespace EventApiProductVersion {

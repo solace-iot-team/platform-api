@@ -7,22 +7,22 @@ export type EventApiProduct = {
     readonly createdBy?: string;
     readonly changedBy?: string;
     /**
-     * Primary key set by the server.
+     * Primary key set by the server
      */
     readonly id?: string;
     /**
-     * The name of the event api product.
+     * The name of the event API product
      */
     name?: string;
     applicationDomainId?: string;
     shared?: boolean;
     readonly numberOfVersions?: number;
     /**
-     * Broker type of the eventApiProduct
+     * Broker type of the event API product
      */
-    brokerType?: EventApiProduct.brokerType;
+    brokerType: EventApiProduct.brokerType;
     /**
-     * The type of this payload, eventApiProduct.
+     * The type of payload
      */
     readonly type?: string;
 }
@@ -35,7 +35,7 @@ export namespace EventApiProduct {
     export const discriminator = 'EventApiProduct';
 
     /**
-     * Broker type of the eventApiProduct
+     * Broker type of the event API product
      */
     export enum brokerType {
         solace = 'solace',

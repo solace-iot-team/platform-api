@@ -17,14 +17,14 @@ export class StatesServiceDefault implements StatesService {
         this.config = config;
     }
 
-    public async listStates(): Promise<any> {
-        const options = this.listStatesApiRequestOptions(
+    public async getStates(): Promise<any> {
+        const options = this.getStatesApiRequestOptions(
         );
         const result = await __request(options);
         return result.body;
     }
 
-    public listStatesApiRequestOptions(): ApiRequestOptions {
+    public getStatesApiRequestOptions(): ApiRequestOptions {
         return {
             ...this.config,
             method: 'GET',

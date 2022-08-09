@@ -1,22 +1,28 @@
 /* eslint-disable */
 
 
-import type { BaseAllowedProtocol } from './BaseAllowedProtocol';
 import type { SolaceMessagingService } from './SolaceMessagingService';
 
 export type BaseMessagingServiceDTO = (SolaceMessagingService | {
     /**
-     * Id value of the object
+     * ID value of the object
      */
     readonly id?: string,
     /**
-     * Value for allowed supported protocols
+     * ID of the Event Portal messaging service
      */
-    supportedProtocols?: Array<BaseAllowedProtocol>,
+    readonly messagingServiceId?: string,
+    /**
+     * Values for allowed supported protocols
+     */
+    supportedProtocols?: Array<string>,
     readonly environmentId?: string,
     readonly environmentName?: string,
     readonly eventMeshId?: string,
     readonly eventMeshName?: string,
+    /**
+     * The type of payload
+     */
     type?: string,
 });
 

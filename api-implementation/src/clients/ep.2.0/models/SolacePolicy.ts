@@ -1,30 +1,27 @@
 /* eslint-disable */
 
 
-export type SolacePolicy = {
+import type { BasePolicyDTO } from './BasePolicyDTO';
+
+export type SolacePolicy = (BasePolicyDTO & {
     /**
-     * Id value of the object
+     * Toggles between the use of a queue and direct messaging.
      */
-    readonly id?: string;
+    guaranteedMessaging?: boolean,
+    accessType?: SolacePolicy.accessType,
     /**
-     * Toggles on/off a queue.
+     * Duration in seconds of how long a message can live in a queue
      */
-    guaranteedMessaging?: boolean;
-    accessType?: SolacePolicy.accessType;
+    maximumTimeToLive?: number,
     /**
-     * Count in seconds of how long a message can live in a queue
+     * Toggles between one or more queues for each event API version in the current event API product version
      */
-    maximumTimeToLive?: number;
+    queuePerEventApi?: boolean,
     /**
-     * Indication whether a different queue exists for each eAPI version under the EAP
+     * Total number of MBs available for the queue to use
      */
-    queuePerEventApi?: boolean;
-    /**
-     * Count of the number of MBs available for the queue to use
-     */
-    spoolSize?: number;
-    readonly type: string;
-}
+    spoolSize?: number,
+});
 
 export namespace SolacePolicy {
 
