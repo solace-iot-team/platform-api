@@ -9,6 +9,7 @@ import App = Components.Schemas.App;
 import AppPatch = Components.Schemas.AppPatch;
 
 import ContextRunner from '../contextrunner';
+import organizationsService from '../../../server/api/services/organizations.service';
 import Organization = Components.Schemas.Organization;
 
 import { AgendaJobSpec, AgendaJobData } from '../taskscheduler';
@@ -59,10 +60,8 @@ export class OrganizationAppsRotateCredentials {
 
   static async rotateCredentials(job: Job) {
     const data: AgendaJobData = job.attrs.data as AgendaJobData;
-
     L.info(`rotating credentials in ${data.orgName}`);
-    const org: Organization = data.org;
+    const org: Organization = await organizationsService.byName(data.orgName);
     await ContextRunner(org, OrganizationAppsRotateCredentials.doRotateCredentials);
-
   }
 }
