@@ -104,6 +104,7 @@
     "@types/node-fetch": "^2.5.8",
     "@types/pino": "^6.3.2",
     "@types/semver": "^7.3.9",
+    "@types/semver-compare": "^1.0.1",
     "@types/sinon": "^9.0.11",
     "@types/sinon-chai": "^3.2.5",
     "@types/supertest": "^2.0.11",
