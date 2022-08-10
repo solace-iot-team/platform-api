@@ -23,9 +23,9 @@ class EventPortalFacade {
   }
 
   public async validate(token: string, baseUrl?: string): Promise<boolean> {
-    let url: string = `${await resolve(OpenAPI.BASE)}/api/v2/architecture/applicationDomains`;
+    let url: string = `${await resolve(OpenAPI.BASE)}/apiProducts`;
     if (baseUrl != null) {
-      url = `${baseUrl}/api/v2/architecture/applicationDomains`;
+      url = `${baseUrl}/apiProducts`;
     }
     return validateToken(token, url);
   }

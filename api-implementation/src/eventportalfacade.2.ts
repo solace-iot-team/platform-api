@@ -11,10 +11,9 @@ import { StateDTO } from './clients/ep.2.0/models/StateDTO';
 import { EventAPIAsyncAPIInfo } from './model/eventapiasyncapiinfo';
 import { EventApiProductVersion } from './clients/ep.2.0/models/EventApiProductVersion';
 
-var cmp = require('semver-compare');
-import { getEventPortalToken, getEventPortalBaseUrl } from './cloudtokenhelper';
+import cmp from 'semver-compare';
+import { getEventPortalToken, getEventPortalBaseUrl, validateToken, resolve } from './cloudtokenhelper';
 import { EventApiProduct } from './clients/ep.2.0/models/EventApiProduct';
-
 
 const opts: ApiOptions = {
   baseUrl: getEventPortalBaseUrl,
@@ -39,6 +38,14 @@ export class EventPortalfacade {
     this.statesService = new StatesServiceDefault(opts);
     this.eventApiProductsService = new EventApiProductsServiceDefault(opts);
     this.eventApIsService = new EventApIsServiceDefault(opts);
+  }
+
+  public async validate(token: string, baseUrl?: string): Promise<boolean> {
+    let url: string = `${await resolve(opts.baseUrl)}/api/v2/architecture/applicationDomains`;
+    if (baseUrl != null) {
+      url = `${baseUrl}/api/v2/architecture/applicationDomains`;
+    }
+    return validateToken(token, url);
   }
 
   public async getDraftStateId(): Promise<string> {
