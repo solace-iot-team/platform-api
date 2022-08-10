@@ -86,9 +86,14 @@ export class AsyncAPIHelper {
           }
 
           archiver.append(r as string, { name: name ? `${name}.${extension}` : `spec.${extension}` });
+          const schemaNames: string[] = [];
           for (const msg of d.allMessages()) {
-            const p: Buffer = Buffer.from(JSON.stringify(msg[1].originalPayload()));
-            archiver.append(p, { name: `schemas/${msg[0]}.json` });
+            const schemaName: string = msg[1].payload().json()["x-parser-schema-id"];
+            if (!schemaNames.find(s => s == schemaName)) {
+              const p: Buffer = Buffer.from(JSON.stringify(msg[1].originalPayload()));
+              archiver.append(p, { name: `schemas/${schemaName}.json` });
+              schemaNames.push(schemaName);
+            }
           }
           await archiver.finalize();
         } catch (e) {
