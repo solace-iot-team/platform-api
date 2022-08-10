@@ -10,6 +10,7 @@ import AppsService from './apps.service';
 import BrokerFactory from './broker.factory';
 import SolaceCloudFacade from '../../../src/solacecloudfacade';
 import EventPortalFacade from '../../../src/eventportalfacade';
+import EventPortal2Facade from '../../../src/eventportalfacade.2';
 import { isString } from '../../../src/typehelpers';
 import preconditionCheck from './persistence/preconditionhelper';
 import DatabaseBootstrapper from './persistence/databasebootstrapper';
@@ -17,6 +18,7 @@ import DatabaseBootstrapper from './persistence/databasebootstrapper';
 import { Cache, CacheContainer } from 'node-ts-cache';
 import { MemoryStorage } from 'node-ts-cache-storage-memory';
 import ContextRunner from '../../../src/scheduler/contextrunner';
+import { EventMeshesServiceDefault } from '../../../src/clients/ep.2.0/services/EventMeshesServiceDefault';
 
 const statusCache = new CacheContainer(new MemoryStorage());
 
@@ -138,18 +140,19 @@ export class OrganizationsService {
       if (isString(token)) {
         const isServiceToken: boolean = await SolaceCloudFacade.validate(token);
         const useProxyModeStr = process.env.APIS_PROXY_MODE || 'false';
+        const epVersion = process.env.EP_VERSION || '1';
         const useProxyMode = (useProxyModeStr.toLowerCase() == 'true') || (useProxyModeStr.toLowerCase() == '1');
         if (!useProxyMode) {
           return isServiceToken;
         } else {
-          return isServiceToken && (await EventPortalFacade.validate(token));
+          return isServiceToken && (await this.validateEventPortalToken(token));
         }
       } else {
         const isServiceToken: boolean = await SolaceCloudFacade.validate(token.cloud.token, token.cloud.baseUrl);
         let isPortalToken: boolean = true;
         if (token.eventPortal.token) {
 
-          isPortalToken = await EventPortalFacade.validate(token.eventPortal.token, token.eventPortal.baseUrl);
+          isPortalToken = await this.validateEventPortalToken(token.eventPortal.token, token.eventPortal.baseUrl);
         }
         return isServiceToken && isPortalToken;
       }
@@ -157,6 +160,17 @@ export class OrganizationsService {
     } catch (e) {
       L.warn(e);
       return false;
+    }
+  }
+
+  private async validateEventPortalToken(token: string, baseUrl?: string): Promise<boolean>{
+    const epVersion = process.env.EP_VERSION || '1';
+    if (epVersion == '1'){
+      return await EventPortalFacade.validate(token, baseUrl);
+    } else if (epVersion == '2'){
+      return await EventPortal2Facade.validate(token, baseUrl);
+    } else {
+      return await EventPortalFacade.validate(token, baseUrl);
     }
   }
 
@@ -175,10 +189,10 @@ export class OrganizationsService {
 
     if (isString(token)) {
       status.cloudConnectivity = await SolaceCloudFacade.validate(token);
-      status.eventPortalConnectivity = await EventPortalFacade.validate(token);
+      status.eventPortalConnectivity = await this.validateEventPortalToken(token);
     } else {
       status.cloudConnectivity = await SolaceCloudFacade.validate(token.cloud.token, token.cloud.baseUrl);
-      status.eventPortalConnectivity = await EventPortalFacade.validate(token.eventPortal.token, token.eventPortal.baseUrl);
+      status.eventPortalConnectivity = await this.validateEventPortalToken(token.eventPortal.token, token.eventPortal.baseUrl);
     }
 
     return status;
