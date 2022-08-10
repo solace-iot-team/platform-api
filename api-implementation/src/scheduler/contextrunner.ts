@@ -23,6 +23,7 @@ export default async function (org: Organization, task: (data?: any) => Promise<
       L.trace('finished task');
     } catch (e) {
       L.error(e);
+      result = e;
     }
     const end: number = Date.now();
     L.debug(`Duration: ${(end - start)} ms`);
