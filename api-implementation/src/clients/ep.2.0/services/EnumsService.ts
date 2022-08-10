@@ -184,7 +184,7 @@ export interface EnumsService {
      */
     getEnumVersionsForEnum(
         enumId: string,
-        pageSize?: number,
+        pageSize: number,
         pageNumber: number,
         ids?: Array<string>,
         versions?: Array<string>,
@@ -205,7 +205,7 @@ export interface EnumsService {
      */
     getEnumVersionsForEnumApiRequestOptions(
         enumId: string,
-        pageSize?: number,
+        pageSize: number,
         pageNumber: number,
         ids?: Array<string>,
         versions?: Array<string>,

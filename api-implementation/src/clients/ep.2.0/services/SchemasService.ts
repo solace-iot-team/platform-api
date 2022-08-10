@@ -204,7 +204,7 @@ export interface SchemasService {
      */
     getSchemaVersionsForSchema(
         schemaId: string,
-        pageSize?: number,
+        pageSize: number,
         pageNumber: number,
         versions?: Array<string>,
         displayName?: string,
@@ -225,7 +225,7 @@ export interface SchemasService {
      */
     getSchemaVersionsForSchemaApiRequestOptions(
         schemaId: string,
-        pageSize?: number,
+        pageSize: number,
         pageNumber: number,
         versions?: Array<string>,
         displayName?: string,

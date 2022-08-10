@@ -1,9 +1,6 @@
 /* eslint-disable */
 
-
-import type { SolacePolicy } from './SolacePolicy';
-
-export type BasePolicyDTO = (SolacePolicy | {
+export type BasePolicyDTO = ( {
     /**
      * ID value of the object
      */

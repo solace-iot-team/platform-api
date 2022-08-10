@@ -3,7 +3,7 @@
 
 import type { SolaceMessagingService } from './SolaceMessagingService';
 
-export type BaseMessagingServiceDTO = (SolaceMessagingService | {
+export type BaseMessagingServiceDTO = ( {
     /**
      * ID value of the object
      */
