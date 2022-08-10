@@ -96,6 +96,15 @@ export class ConnectorFacade {
           detail: e
         };
       }
+
+      // validate APi product
+      if (stage == 'retired' || semver.patch(apiProductVersion)>0){
+        return {
+          action: 'skipped',
+          message: `Event API Product is using invalid patch version (${semver.patch(apiProductVersion)}) or is in status retired.`,
+          success: true,
+        };
+      }
       // not found create
       const meta: Meta = {
         version: apiProductVersion,
@@ -134,7 +143,7 @@ export class ConnectorFacade {
     const logMessageSkipped: string = `Old version ${oldApiProduct.meta?.version} new version ${apiProductVersion}, diff ${versionDiff} compare ${cmp(apiProductVersion, oldApiProduct.meta.version)}, old stage ${oldApiProduct.meta.stage} new stage ${stage}`;
     L.info(logMessageSkipped);
     if (
-      (versionDiff == 'patch' || versionDiff == 'prepatch' || versionDiff == 'prerelease' || stage == 'retired')
+      (versionDiff == 'patch' || versionDiff == 'prepatch' || versionDiff == 'prerelease' || stage == 'retired' || semver.patch(apiProductVersion)>0)
       && (cmp(apiProductVersion, oldApiProduct.meta.version) > 0)
     ) {
       L.info(`update not relevant, will not update APi Product`);
