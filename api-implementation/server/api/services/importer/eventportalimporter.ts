@@ -10,7 +10,7 @@ import contextRunner from '../../../../src/scheduler/contextrunner';
 import L from '../../../common/logger';
 import EventPortalImporterTaskImpl from "./eventportalimportertaskimpl";
 import { ErrorResponseInternal } from "../../middlewares/error.handler";
-import organizationsService from "../organizations.service";
+
 // global consts
 
 const IMPORTER: string = 'EventPortalImporter';
@@ -66,8 +66,7 @@ export class EventPortalImporter implements Importer {
   }
   public async import(job: Job<JobAttributesData>): Promise<any> {
     const data: EventPortalImporterData = job.attrs.data as EventPortalImporterData;
-    const org = await organizationsService.byName(data.org.name)
-    return await contextRunner(org, EventPortalImporter.doImport, data);
+    return await contextRunner(data.org, EventPortalImporter.doImport, data);
   }
 
   public static async doImport(data: EventPortalImporterData): Promise<any> {
