@@ -12,6 +12,7 @@ import { EventAPIAsyncAPIInfo } from '../../../../src/model/eventapiasyncapiinfo
 
 import cmp from 'semver-compare';
 import semver from 'semver';
+import _ = require('lodash');
 export class EPSystemAttributes {
   public static EP_LIFEFYCLE_STATE: string = 'EP_LIFEFYCLE_STATE';
   public static EP_EAP_OBJECT: string = 'EP_EAP_OBJECT';
@@ -98,7 +99,7 @@ export class ConnectorFacade {
       }
 
       // validate APi product
-      if (stage == 'retired' || semver.patch(apiProductVersion)>0){
+      if (stage == 'retired' || semver.patch(apiProductVersion) > 0) {
         return {
           action: 'skipped',
           message: `Event API Product is using invalid patch version (${semver.patch(apiProductVersion)}) or is in status retired.`,
@@ -140,10 +141,10 @@ export class ConnectorFacade {
     const oldApiProduct = await apiProductsService.byName(apiProductId);
     // check the version change if it's a patch level change we reject the change, minor changes are reserved for the CPnecpt Portal so amendments can be made as required
     const versionDiff = semver.diff(oldApiProduct.meta?.version, apiProductVersion);
-    const logMessageSkipped: string = `Old version ${oldApiProduct.meta?.version} new version ${apiProductVersion}, diff ${versionDiff} compare ${cmp(apiProductVersion, oldApiProduct.meta.version)}, old stage ${oldApiProduct.meta.stage} new stage ${stage}`;
+    const logMessageSkipped: string = `Old version ${oldApiProduct.meta?.version} new version ${apiProductVersion}, diff ${versionDiff} compare ${cmp(apiProductVersion, oldApiProduct.meta.version)}, old stage ${oldApiProduct.meta.stage} new stage ${stage}, environment changed ${_.isEqual(apiProduct.environments, oldApiProduct.environments)}`;
     L.info(logMessageSkipped);
     if (
-      (versionDiff == 'patch' || versionDiff == 'prepatch' || versionDiff == 'prerelease' || stage == 'retired' || semver.patch(apiProductVersion)>0)
+      (versionDiff == 'patch' || versionDiff == 'prepatch' || versionDiff == 'prerelease' || stage == 'retired' || semver.patch(apiProductVersion) > 0)
       && (cmp(apiProductVersion, oldApiProduct.meta.version) > 0)
     ) {
       L.info(`update not relevant, will not update APi Product`);
@@ -190,7 +191,18 @@ export class ConnectorFacade {
         message: `API Product ${apiProduct.name} update from EP 2.0 resulted in new patch version ${oldApiProduct.meta.version} at stage ${oldApiProduct.meta.stage}`,
         success: true,
       };
-    } else {
+    } else if (!(_.isEqual(apiProduct.environments, oldApiProduct.environments))) {
+        const msg: string = `API Product ${apiProduct.name} (${apiProductVersion}) update from EP, environments changed ${JSON.stringify(apiProduct.environments)}, previously ${JSON.stringify(oldApiProduct.environments)}`;
+        L.info(msg);
+        oldApiProduct.meta.version = semver.inc(oldApiProduct.meta.version, 'patch');
+        oldApiProduct.environments = apiProduct.environments;
+        await apiProductsService.update(apiProductId, oldApiProduct);
+        return {
+          action: 'updated',
+          message: msg,
+          success: true,
+        };
+      } else {
       return {
         action: 'skipped',
         message: `API Product ${apiProduct.name} from EP 2.0 does not require any update`,
