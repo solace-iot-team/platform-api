@@ -112,13 +112,12 @@ export class ConnectorFacade {
         createdBy: apiProductCreatedBy,
         lastModifiedBy: apiProductChangedBy,
         stage: stage,
-        attributes: []
+        attributes: [{name: 'EP_LIFEFYCLE_STATE', value: stage}]
       }
 
       apiProduct.meta = meta;
       try {
         await apiProductsService.create(apiProduct);
-        await apiProductsService.createMetaAttribute(apiProductId, 'EP_LIFEFYCLE_STATE', stage)
         return {
           action: 'created',
           message: `API Product ${apiProduct.name} successfully created`,
