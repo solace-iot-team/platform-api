@@ -13,6 +13,7 @@ import { EventAPIAsyncAPIInfo } from '../../../../src/model/eventapiasyncapiinfo
 import cmp from 'semver-compare';
 import semver from 'semver';
 import _ = require('lodash');
+import { resourceLimits } from 'worker_threads';
 export class EPSystemAttributes {
   public static EP_LIFEFYCLE_STATE: string = 'EP_LIFEFYCLE_STATE';
   public static EP_EAP_OBJECT: string = 'EP_EAP_OBJECT';
@@ -20,45 +21,86 @@ export class EPSystemAttributes {
 
 export type APIProductUpsertAction = 'created' | 'updated' | 'skipped';
 
-export class APIProductUpsertResult {
+export interface APIProductUpsertResult {
   action: APIProductUpsertAction;
   success: boolean;
   message: string;
   detail?: any;
 }
 
+export interface APIProductEnvironmentUpsertResult{
+  environmentName: string,
+  results: APIProductUpsertResult[],
+}
+
 export class ConnectorFacade {
   constructor() {
   }
 
-  public async upsertAPI(asyncAPI: EventAPIAsyncAPIInfo, version: string, spec: string, attributes: Components.Schemas.Attributes): Promise<void> {
+  public async upsertAPI(asyncAPI: EventAPIAsyncAPIInfo, version: string, spec: string, attributes: Components.Schemas.Attributes): Promise<APIProductUpsertResult[]> {
     try {
       const targetAPIRevision = await apisService.revisionByVersion(asyncAPI.name, version);
+      return [{
+        action: 'skipped',
+        message: `API Revision ${asyncAPI.name} ${version} already exists, skipping import`,
+        success: true,
+      }];
     } catch (e) {
       if ((e as ErrorResponseInternal).statusCode != 404) {
-        throw e;
+        return [{
+          action: 'updated',
+          message: e.message,
+          success: false,
+          detail: e
+        }];
       }
       // uses api id from ep API Name. Not user friendly, should refactor API import instead to track id but have friendly name
       try {
         const apiInfo = await apisService.infoByName(asyncAPI.name);
         // api exists so we update
         await apisService.update(asyncAPI.name, spec);
+        return [{
+          action: 'updated',
+          message: `API updated ${asyncAPI.name} ${version}`,
+          success: true,
+          detail: e
+        }];
       } catch (err) {
         if ((err as ErrorResponseInternal).statusCode != 404) {
-          throw err;
+          return [{
+            action: 'updated',
+            message: err.message,
+            success: false,
+            detail: err
+          }];
         }
         // create API and add attributes
         await apisService.create(asyncAPI.name, spec);
         await apisService.updateInfo(asyncAPI.name, {
           attributes: attributes
         });
+        return [{
+          action: 'created',
+          message: `API created ${asyncAPI.name} ${version}`,
+          success: true,
+        }];
       }
     }
   }
 
-  public async upsertEnvironment(solaceMessagingServiceEnvironmentName: string, solaceMessagingServiceId: string): Promise<string> {
+  public async upsertEnvironment(solaceMessagingServiceEnvironmentName: string, solaceMessagingServiceId: string): Promise<APIProductEnvironmentUpsertResult> {
+    let envName: string = null;
+    const results: APIProductUpsertResult[] = [];
     if (!solaceMessagingServiceId) {
-      return null;
+      results.push({
+        action: 'skipped',
+        message: `No solaceMessagingServiceId available`,
+        success: true,
+      });
+      return  {
+        environmentName: null,
+        results: results,
+      };
     }
     const envs = await environmentsService.all();
     //make all protocols of the cloud service available
@@ -77,11 +119,37 @@ export class ConnectorFacade {
         serviceId: solaceMessagingServiceId,
         exposedProtocols: exposedProtocols,
       }
-      await environmentsService.create(connectorEnv);
-      return solaceMessagingServiceEnvironmentName;
+      try {
+        await environmentsService.create(connectorEnv);
+        envName = solaceMessagingServiceEnvironmentName;
+        results.push({
+          action: 'created',
+          message: `Environment created ${solaceMessagingServiceEnvironmentName}`,
+          success: true,
+        });
+        } catch (e){
+          results.push({
+            action: 'created',
+            message: `Environment creation failed: ${solaceMessagingServiceEnvironmentName} - ${solaceMessagingServiceId} = ${e.message}`,
+            success: false,
+            detail: e
+          });
+          }
     } else {
-      return envs.find(e => e.serviceId == solaceMessagingServiceId).name;
+      envName =  envs.find(e => e.serviceId == solaceMessagingServiceId).name;
+      results.push({
+        action: 'skipped',
+        message: `Found environment ${envName} for service ${solaceMessagingServiceId}`,
+        success: true,
+      });
     }
+
+    const result: APIProductEnvironmentUpsertResult = {
+      environmentName: envName,
+      results: results,
+    }
+    return result;
+
 
   }
 
