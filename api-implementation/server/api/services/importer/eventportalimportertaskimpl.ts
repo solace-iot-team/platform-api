@@ -14,7 +14,7 @@ import { EventAPIAsyncAPIInfo } from '../../../../src/model/eventapiasyncapiinfo
 
 
 export interface APIProductVersionImportResult {
-  result: APIProductUpsertResult
+  results: APIProductUpsertResult[]
   eventAPIProductVersion: ExportableEventApiProductVersion,
 }
 
@@ -102,7 +102,7 @@ export default class EventPortalImporterTaskImpl {
           const result = await connectorFacade.upsertAPIProduct(apiProductId, product, prodVersion.version.version, prodVersion.version.changedBy, prodVersion.version.createdBy, await StatesMapper.getMetaEntityStageByState(prodVersion.version.stateId));
           results.push({
             eventAPIProductVersion: prodVersion,
-            result: result,
+            results: result,
           })
         }
 
