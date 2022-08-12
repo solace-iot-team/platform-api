@@ -460,7 +460,11 @@ export class ApisService {
       return null;
     } catch (e) {
       L.debug(`invalid spec ${JSON.stringify(e)}`);
-      return JSON.stringify(e.validationErrors);
+      if (e.validationErrors){
+        return JSON.stringify(e.validationErrors);
+      } else {
+        return `${e.title}, ${e.message}`;
+      }
     };
   }
 
