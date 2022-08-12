@@ -67,6 +67,16 @@ export abstract class TaskTemplate implements TaskInterface{
             case 'ABSENT': {
                 if (await this.isPresent()){
                     return await this.delete();
+                } else {
+                    return {
+                        data: null,
+                        state: desiredState,
+                        success: true,
+                        log: {
+                            action: 'skipped',
+                            info: 'Object is not present'
+                        }
+                    };
                 }
             }
             default: {
