@@ -131,7 +131,7 @@ export class SolaceBrokerService implements Broker {
       })
     }
     const result = await SolaceConfigService.apply(appConfig);
-    L.error(result);
+    L.debug(result);
     if (!result.applied) {
       throw new ErrorResponseInternal(500, `App ${app.name} could not be provisioned (${JSON.stringify(result.errors)})`);
     }

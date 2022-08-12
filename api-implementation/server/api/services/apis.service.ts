@@ -237,7 +237,7 @@ export class ApisService {
   async createInternal(info: APIInfo, asyncapi: string, isImport: boolean = false): Promise<string> {
     const validationMessage = await this.getAPIValidationError(asyncapi);
     if (validationMessage) {
-      throw new ErrorResponseInternal(400, `Entity ${info.name} is not valid, ${validationMessage}`);
+      throw new ErrorResponseInternal(400, `${validationMessage}`);
     } else {
       const d: AsyncAPIDocument = await parser.parse(asyncapi);
 
@@ -460,7 +460,11 @@ export class ApisService {
       return null;
     } catch (e) {
       L.debug(`invalid spec ${JSON.stringify(e)}`);
-      return `${e.title}, ${e.detail}`;
+      if (e.validationErrors){
+        return JSON.stringify(e.validationErrors);
+      } else {
+        return `${e.title}, ${e.message}`;
+      }
     };
   }
 

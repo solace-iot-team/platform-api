@@ -1,22 +1,11 @@
 /* eslint-disable */
 
 
-export type SolaceMessagingService = {
-    /**
-     * Id value of the object
-     */
-    readonly id?: string;
-    /**
-     * Value for allowed supported protocols
-     */
-    supportedProtocols?: Array<'amqp' | 'amqps' | 'ssh' | 'semps' | 'mqtt' | 'mqtts' | 'mqttwss' | 'mqttws' | 'rest' | 'rests' | 'smfc' | 'smf' | 'smfs' | 'web' | 'webs'>;
-    readonly environmentId?: string;
-    readonly environmentName?: string;
-    readonly eventMeshId?: string;
-    readonly eventMeshName?: string;
-    solaceCloudMessagingServiceId?: string;
-    readonly type: string;
-}
+import type { BaseMessagingServiceDTO } from './BaseMessagingServiceDTO';
+
+export type SolaceMessagingService = (BaseMessagingServiceDTO & {
+    solaceCloudMessagingServiceId?: string,
+});
 
 export namespace SolaceMessagingService {
 

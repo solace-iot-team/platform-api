@@ -5,7 +5,7 @@ import type { BasePolicyDTO } from './BasePolicyDTO';
 
 export type Plan = {
     /**
-     * Id value of the object
+     * ID value of the object
      */
     readonly id?: string;
     /**
@@ -14,7 +14,7 @@ export type Plan = {
     name?: string;
     policies?: Array<BasePolicyDTO>;
     /**
-     * The type of this payload.
+     * The type of this payload
      */
     readonly type?: string;
 }

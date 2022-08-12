@@ -9,7 +9,7 @@ export interface StatesService {
      * Use this API to retrieve a list of Lifeycle States that match the given parameters.
      * @returns any Retrieve a list of lifecycle states and the accompanying metadata.
      */
-    listStates(): Promise<any>;
+    getStates(): Promise<any>;
 
     /**
      * **used to get the request options without making a http request**
@@ -17,6 +17,6 @@ export interface StatesService {
      * Use this API to retrieve a list of Lifeycle States that match the given parameters.
      * @returns ApiRequestOptions the request options to fulfill a http request
      */
-    listStatesApiRequestOptions(): ApiRequestOptions;
+    getStatesApiRequestOptions(): ApiRequestOptions;
 
 }

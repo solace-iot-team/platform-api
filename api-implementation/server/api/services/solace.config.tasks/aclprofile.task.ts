@@ -36,7 +36,6 @@ export default class ACLProfileTask extends SEMPv2Task {
             const response: TaskServiceResponse = await this.apiClient.createMsgVpnAclProfile(config.environment.service.msgVpnName, _.pick(config.profile, this.paths) as TaskServiceRequest);
             return super.createSuccessfulTaskResult(`create${this.operationName}`, config.profile.aclProfileName, config.state, response.data);
         } catch (e) {
-            L.error(e);
             return super.createFailureTaskResult(`create${this.operationName}`, config.profile.aclProfileName, config.state, e);
         }
 

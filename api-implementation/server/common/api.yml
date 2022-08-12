@@ -2,7 +2,7 @@ openapi: 3.0.0
 info:
   title: Solace API Management Connector
   description: 'Solace API Management Connector API. Note: basic authentication security mechanism is deprecated.'
-  version: 0.11.0
+  version: 0.11.1
   license: 
     name: MIT
     url: https://github.com/solace-iot-team/platform-api/blob/main/LICENSE
@@ -225,6 +225,17 @@ components:
       schema:
         type: integer        
 
+    create_mode:
+          name: mode
+          required: false
+          in: query
+          description: Set the mode that applies to a create (POST or PUT) operation, in test mode the data is validated but not persisted, any validation results are returned to the client. The server defaults to write mode itf parameter is omitted
+          schema:
+            type: string
+            enum: 
+              - test
+              - write        
+    
   responses:
     PreconditionFailed:
       description: PreConditon Failed, likely a mismatch between current etag and if-match header
@@ -3944,6 +3955,8 @@ paths:
       operationId: createApi
       tags:
       - apis
+      parameters:
+        - $ref: '#/components/parameters/create_mode'
       requestBody:
        description: "Async API specification"
        content:
