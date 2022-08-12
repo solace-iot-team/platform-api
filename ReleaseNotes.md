@@ -20,6 +20,7 @@
   - `apiProducts` track the life cycle states of the Event API Product (EAPI-Product). Caution is advised when retiring prodcuts in EP2.0 as these changes are not reversible in the Connector. Best practice is to create a new, released version of the EAPI-Product before retiring a previous version.
   - Some changes to EAPI-Products do not result in a new version number - such as state change or addition/removal of environment associations. The connector tracks these changes as revisions and will increment the patch version of the SemVer. Therefore EAPI-Product version numbers MUST set the patch version to zero and never modify the patch version. EAPI Products that do not meet this requirement are not imported.
   - Imports from EP2.0 are configurable via a new management resource `importers`. There is currently one type of importer `EventPortalImporter`. It can be configured with a filter (list of application domain ids) and a list of attribute mapping (attributes that should be applied to an imported `apiProduct` for  a specific application domain id). Multiple importer jobs with different configurations cna be configured. An importer cna be triggered via the `importers/{impoerter_name}/run` resource.
+  - The Connector can be configured to run against either EP2.0 or Event Portal 1.0. The environment variabel EP_VERSION is used as a switch with value "1" for EP1.0 and "2" for EP2.0, if omitted EP1.0 mode is activated. 
 
 * **refactor-provisioning-api-changes**
   - Broker provisioning is now executed in two distinct phases.
