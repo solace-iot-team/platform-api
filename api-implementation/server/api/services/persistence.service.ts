@@ -184,20 +184,25 @@ export class PersistenceService {
   }
 
   async create(_id: string, body: any): Promise<any> {
-    L.info(`adding ${this.collection} with _id ${_id}`);
-    const collection: mongodb.Collection = await this.getCollection();
-    body._id = _id;
-    // let opts: CollectionInsertOneOptions = {
-    //   w: 1,
-    //   j: true
-    // };
-    try {
-      const y: InsertOneResult = await collection.insertOne(body);
-      delete body._id;
+    let writeMode: string = null;
+    if (ns != null && ns.getStore() && ns.getStore().get(ContextConstants.WRITE_MODE)) {
+      writeMode = ns.getStore().get(ContextConstants.WRITE_MODE);
+    }
+    if (writeMode == 'test') {
+      L.info(`Test mode, skipping docuemnt creation for  ${this.collection} with _id ${_id}`);
       return body;
-    } catch (e) {
-      throw (this.createPublicErrorMessage(e));
-    };
+    } else {
+      L.info(`adding ${this.collection} with _id ${_id}`);
+      const collection: mongodb.Collection = await this.getCollection();
+      body._id = _id;
+      try {
+        const y: InsertOneResult = await collection.insertOne(body);
+        delete body._id;
+        return body;
+      } catch (e) {
+        throw (this.createPublicErrorMessage(e));
+      };
+    }
   }
 
   async update(_id: string, body: any, query?: any): Promise<any> {

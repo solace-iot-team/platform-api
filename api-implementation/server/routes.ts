@@ -21,6 +21,7 @@ import { Request, Response } from 'express';
 import pagingHandler from './api/middlewares/paging.handler';
 import searchHandler from './api/middlewares/search.handler';
 import sortHandler from './api/middlewares/sort.handler';
+import writeModeHandler from './api/middlewares/writemode.handler';
 import contextHandler, { ns } from './api/middlewares/context.handler';
 import Router from 'express';
 import PassportFactory from './api/middlewares/passport.authentication';
@@ -40,6 +41,7 @@ export default function routes(app: Application): void {
   router.use(pagingHandler);
   router.use(searchHandler);
   router.use(sortHandler);
+  router.use(writeModeHandler);
   router.use(ifMatchHandler);
   router.set('etag', etagHash);
   router.use('/*', passport.authenticate(['provider', 'basic'], PassportFactory.getAuthenticationOptions()));
