@@ -41,6 +41,8 @@
   - returning the response of a client profile creation request for improved error reporting
 * **fix-solace-cloudfacade-use-fetch-proxy**
   - cloud facade bypassed HTTP proxy, proxy settings are now taken into account
+* **fix-attribute-max-length**
+  - Allow large attributes values in APi Products and APIs (up to 32K characters)
 
 
 ## Version 0.6.0
