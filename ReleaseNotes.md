@@ -1,5 +1,51 @@
 # Release Notes
 
+## Version 0.7.0
+* OpenAPI: 0.11.1
+* API Management Connector Server: 0.7.0
+
+### Features
+
+* **feat-create-operations-test-mode**
+  - Added a "test" mode for write operations which allows to test object creation and obtain validation results without data being persisted
+  - Currenlty only exposed on `apis` resource so validation results for an AsyncAPI can be obtained without attempting to persist the document
+* **feat-api-apiproducts-meta-attributes**
+  - Added ability to set un-versioned attributes in the meta object of `apiProduct` and `apiInfo` resources
+* **feat-ep.2.0-import-beta**
+  - *This is a beta feature, subject to change and only partially tested*
+  - Intitial Event Portal 2.0 (EP2.0) integration  (based on EP 2.0 beta REST APIs)
+  - Imports shared and released "Event API Product Versions" from EP2.0  as `apiProducts` including their dependencies
+  - Dependencies imported are Event APIs as `apis` and Gateway Messaging Services in Associated Modeled Event Mesh as `environments`.
+  - "Event API Product Versions" in EP2.0 suitable for import must meet these criteria: marked as `shared`, in status `released`, latest version (highest SemVer).
+  - `apiProducts` track the life cycle states of the Event API Product (EAPI-Product). Caution is advised when retiring prodcuts in EP2.0 as these changes are not reversible in the Connector. Best practice is to create a new, released version of the EAPI-Product before retiring a previous version.
+  - Some changes to EAPI-Products do not result in a new version number - such as state change or addition/removal of environment associations. The connector tracks these changes as revisions and will increment the patch version of the SemVer. Therefore EAPI-Product version numbers MUST set the patch version to zero and never modify the patch version. EAPI Products that do not meet this requirement are not imported.
+  - Imports from EP2.0 are configurable via a new management resource `importers`. There is currently one type of importer `EventPortalImporter`. It can be configured with a filter (list of application domain ids) and a list of attribute mapping (attributes that should be applied to an imported `apiProduct` for  a specific application domain id). Multiple importer jobs with different configurations cna be configured. An importer cna be triggered via the `importers/{impoerter_name}/run` resource.
+  - The Connector can be configured to run against either EP2.0 or Event Portal 1.0. The environment variabel EP_VERSION is used as a switch with value "1" for EP1.0 and "2" for EP2.0, if omitted EP1.0 mode is activated. 
+
+* **refactor-provisioning-api-changes**
+  - Broker provisioning is now executed in two distinct phases.
+  - First phase creates an "Application Configuration Set" from the information available to the connector (APIs, API Products, Environments, Applications). This config set lists out the PS+ objects that should be created.
+  - The second phase constructs a task set to execute against one or multiple PS+ services tracking additions and deletions and ensuring a consistent state is set up on the PS+ service or any changes are rolled back in case of failure.
+  - A new read only resource `configSets` is available to obtain information about currently applied configSets and previous revisions.
+
+### Fixes
+
+* **fix-api-validation-error-reporting**
+  - Improved error reporting, handling different detail of error messages returned by the asyncapi parser for different errors
+* **fix-asyncapi-download-zip-schemas**
+  - The ZIP file that is generated now only contains one file for each schema regardless if it is associated with one or multiple messages. The file names use the ids assigned in the schemas section of the AsyncAPI.
+* **fix-context-runner-propagate-error-result**
+  - return any errors caught as result from the context runner for better traceability of job errors
+* **fix-scheduled-jobs-obtain-org-details-from-db**
+  - Job ContextRunner looks up the org details when executing the job instead of relying on information stored in job data. This avoids usage of stale API tokens for Solace Cloud APIs
+* **fix-solaceloud-facade-return-value**
+  - returning the response of a client profile creation request for improved error reporting
+* **fix-solace-cloudfacade-use-fetch-proxy**
+  - cloud facade bypassed HTTP proxy, proxy settings are now taken into account
+* **fix-attribute-max-length**
+  - Allow large attributes values in APi Products and APIs (up to 32K characters)
+
+
 ## Version 0.6.0
 * OpenAPI: 0.10.0
 * API Management Connector Server: 0.6.0
