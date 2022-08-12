@@ -1,32 +1,33 @@
-import { AllService } from "../../../../src/clients/sempv2";
+import L from '../../../common/logger';
+import { AllService, SempMetaOnlyResponse } from "../../../../src/clients/sempv2";
 import { TaskConfig, TaskResult, TaskState, TaskTemplate } from "../../../../src/tasks/task.interface";
 import SempV2ClientFactory from "../broker/sempv2clientfactory";
 import { Service } from '../../../../src/clients/solacecloud/models/Service'
 import EnvironmentService = Components.Schemas.EnvironmentService;
-export interface SEMPv2TaskConfig extends TaskConfig{
+export interface SEMPv2TaskConfig extends TaskConfig {
     environment: EnvironmentService,
 
 }
 
-export abstract class SEMPv2Task  extends TaskTemplate{
+export abstract class SEMPv2Task extends TaskTemplate {
     protected apiClient: AllService;
     protected paths: string[] = ["tags", "attributes", 'environments'];
 
-    constructor(taskConfig: SEMPv2TaskConfig){
+    constructor(taskConfig: SEMPv2TaskConfig) {
         super(taskConfig);
         this.apiClient = SempV2ClientFactory.getSEMPv2Client(taskConfig.environment.service as Service);
     }
 
     protected isApplicableEnvironment(configObject: any): boolean {
         const envs: string[] = configObject.environments;
-        if (!envs){
+        if (!envs) {
             return true;
-        } 
+        }
         const envName: string = (this.taskConfig as SEMPv2TaskConfig).environment.environment;
         return envs.includes(envName);
     }
 
-    protected createSuccessfulTaskResult(operationName: string, name: string, state: TaskState, data: any): TaskResult{
+    protected createSuccessfulTaskResult(operationName: string, name: string, state: TaskState, data: any): TaskResult {
         const result: TaskResult = {
             data: data,
             log: {
@@ -38,12 +39,23 @@ export abstract class SEMPv2Task  extends TaskTemplate{
         };
         return result;
     }
-    protected createFailureTaskResult(operationName: string, name: string, state: TaskState, e: Error): TaskResult{
+    protected createFailureTaskResult(operationName: string, name: string, state: TaskState, e: Error): TaskResult {
+        let data: any = e;
+        let msg: string = `${name} failure: ${e.message}`;
+        if (e['body']) {
+            const err: SempMetaOnlyResponse = e['body'];
+            L.error(err.meta.error.status);
+            L.error(err.meta.error.description);
+            data = err.meta.error;
+            msg = `${name} failure: ${err.meta.error.status} ${err.meta.error.description}`;
+        } else {
+            L.error(e);
+        }
         const result: TaskResult = {
-            data: e,
+            data: data,
             log: {
                 action: operationName,
-                info: `${name} failure: ${e.message}`,
+                info: msg,
             },
             state: state,
             success: false,
