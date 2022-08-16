@@ -14,7 +14,7 @@ import { ErrorResponseInternal } from "../../middlewares/error.handler";
 // global consts
 
 const IMPORTER: string = 'EventPortalImporter';
-const INTERVAL: string = '1 minute';
+const INTERVAL: number = 5;
 
 
 // internal types
@@ -66,7 +66,7 @@ export class EventPortalImporter implements Importer {
   }
   public async import(job: Job<JobAttributesData>): Promise<any> {
     const data: EventPortalImporterData = job.attrs.data as EventPortalImporterData;
-    return await contextRunner(data.org, EventPortalImporter.doImport, data);
+    return await contextRunner(data.orgName, EventPortalImporter.doImport, data);
   }
 
   public static async doImport(data: EventPortalImporterData): Promise<any> {
