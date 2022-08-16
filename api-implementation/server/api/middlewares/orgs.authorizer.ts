@@ -13,13 +13,21 @@ export default async function orgAuthorizer(req, res, next, org) {
   L.trace("param org is " + org + ' ' + ns.getStore().get(ContextConstants.REQUEST_ID) + ` ${JSON.stringify(ns)}`);
   let user: User = req['user'] as User;
   let err: ErrorResponseInternal = null;
-  if (user.groups !== null && !user.groups.includes(org)) {
+  if (user && user.groups !== null && !user.groups.includes(org)) {
     err = new ErrorResponseInternal(401,
       `User ${user.name} is not a member of [${org}]`
     );
     next(err);
     return;
   }
+  if (!user) {
+    err = new ErrorResponseInternal(401,
+      `User principal missing`
+    );
+    next(err);
+    return;
+  }
+
   try {
     const r: Organization = await OrganizationsService.byName(org);
     L.trace(`router.param org is  ${JSON.stringify(r)}`);
