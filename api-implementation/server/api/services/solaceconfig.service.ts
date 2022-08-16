@@ -169,7 +169,7 @@ export class SolaceConfigService {
         }
         configSet.attributes.push({
             name: 'diff',
-            value: JSON.stringify(appDiff).substring(0, 1048576),
+            value: JSON.stringify(appDiff).substring(0, 30000),
         });
 
         // get everything that was replaced and figure out which of the replacements need an absent task for old object
