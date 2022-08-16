@@ -138,7 +138,7 @@ export class ApiProductsService {
   }
   async apiByName(apiProductName: string, name: string): Promise<string> {
     const apiList = await this.apiList(apiProductName);
-    if (apiList.find(n => n == name)) {
+    if (apiList.find(n => n &&  n == name)) {
       const apiProduct = await this.byName(apiProductName);
       return asyncapigenerator.getSpecificationByApiProduct(name, apiProduct);
     } else {
@@ -211,7 +211,7 @@ export class ApiProductsService {
 
   async revisionByVersion(apiProductName: string, version: string): Promise<APIProduct> {
     const revisionList = await this.revisionList(apiProductName);
-    if (revisionList.find(n => n == version)) {
+    if (revisionList.find(n => n && n == version)) {
       const id = Versioning.createRevisionId(apiProductName, version);
 
       const apiProduct = await this.revisionPersistenceService.byName(id);
@@ -244,7 +244,7 @@ export class ApiProductsService {
     if (!product.meta?.attributes){
       throw new ErrorResponseInternal(404, `Unversioned attribute [${name}] is not set for API Product [${apiProductName}]`); 
     }
-    const attr = product.meta?.attributes.find(n => n.name == name);
+    const attr = product.meta?.attributes.find(n => n && n.name == name);
     if (attr) {
       return attr.value;
     } else {
@@ -257,7 +257,7 @@ export class ApiProductsService {
     if (!product.meta?.attributes){
       product.meta.attributes = [];
     }
-    const attr = product.meta?.attributes.find(n => n.name == name);
+    const attr = product.meta?.attributes.find(n => n && n.name == name);
     if (!attr) {
       product.meta?.attributes.push({
         name: name,
@@ -275,10 +275,10 @@ export class ApiProductsService {
     if (!product.meta?.attributes){
       product.meta.attributes = [];
     }
-    const attr = product.meta?.attributes.find(n => n.name == attributeName);
+    const attr = product.meta?.attributes.find(n => n && n.name == attributeName);
     if (attr && product.meta) {
       attr.value = attributeValue;
-      product.meta.attributes[product.attributes.findIndex(n => n.name == attributeName)] = attr;
+      product.meta.attributes[product.attributes.findIndex(n => n && n.name == attributeName)] = attr;
       await this.persistenceService.update(apiProductName, product);
       return attributeValue;
     } else {
@@ -291,7 +291,7 @@ export class ApiProductsService {
     if (!product.meta?.attributes){
       product.meta.attributes = [];
     }
-    const attr = product.meta?.attributes.find(n => n.name == attributeName);
+    const attr = product.meta?.attributes.find(n => n && n.name == attributeName);
     if (attr && product.meta) {
       const newAttributes = product.meta?.attributes.filter(n => n.name != attributeName);
       product.meta.attributes = newAttributes;
@@ -322,7 +322,7 @@ export class ApiProductsService {
     if (!product.attributes){
       throw new ErrorResponseInternal(404, `Attribute [${name}] is not set for API Product [${apiProductName}]`); 
     }
-    const attr = product.attributes.find(n => n.name == name);
+    const attr = product.attributes.find(n => n && n.name == name);
     if (attr) {
       return attr.value;
     } else {
@@ -335,7 +335,7 @@ export class ApiProductsService {
     if (!product.attributes){
       product.attributes = [];
     }
-    const attr = product.attributes.find(n => n.name == name);
+    const attr = product.attributes.find(n => n && n.name == name);
     if (!attr) {
       product.attributes.push({
         name: name,
@@ -353,10 +353,10 @@ export class ApiProductsService {
     if (!product.attributes){
       product.attributes = [];
     }
-    const attr = product.attributes.find(n => n.name == attributeName);
+    const attr = product.attributes.find(n => n && n.name == attributeName);
     if (attr) {
       attr.value = attributeValue;
-      product.attributes[product.attributes.findIndex(n => n.name == attributeName)] = attr;
+      product.attributes[product.attributes.findIndex(n => n && n.name == attributeName)] = attr;
       await this.updateProductAttributes(apiProductName, product);
       return attributeValue;
     } else {
@@ -369,7 +369,7 @@ export class ApiProductsService {
     if (!product.attributes){
       product.attributes = [];
     }
-    const attr = product.attributes.find(n => n.name == attributeName);
+    const attr = product.attributes.find(n => n && n.name == attributeName);
     if (attr) {
       const newAttributes = product.attributes.filter(n => n.name != attributeName);
       product.attributes = newAttributes;
