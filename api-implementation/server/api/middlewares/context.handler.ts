@@ -3,9 +3,9 @@ import L from '../../common/logger';
 import {logger} from  '../../common/logger';
 import { v4 } from 'uuid';
 import { ContextConstants } from '../../common/constants';
-const { AsyncLocalStorage } = require('async_hooks');
+import  { AsyncLocalStorage } from 'async_hooks';
 
-export const ns = new AsyncLocalStorage();
+export const ns = new AsyncLocalStorage<Map<string, any>>();
 
 export default function contextHandler(
   req: Request,
