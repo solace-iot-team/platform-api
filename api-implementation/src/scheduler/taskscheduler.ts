@@ -86,6 +86,11 @@ export default class TaskScheduler {
   }
 
   private async onNewOrganization(orgName: string) {
+    const agenda: Agenda = this.#agendas.get(orgName);
+    if (agenda){
+      L.info(`agenda already exists, this is an org updated, exiting`);
+      return;
+    }
     L.info(`creating job for new org  ${orgName} `);
     const o = await OrganizationService.byName(orgName);
     const orgAgenda: Agenda = await this.createAgenda(o.name);
