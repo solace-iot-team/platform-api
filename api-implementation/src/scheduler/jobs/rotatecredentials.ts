@@ -30,31 +30,36 @@ export class OrganizationAppsRotateCredentials {
     const now: number = Date.now();
     const apps: App[] = await AppsService.all({ "credentials.expiresAt": { $gt: -1, $lt: now } });
     L.info(`results ${apps.length}`);
-    for (const app of apps) {
-      if (app.credentials && app.credentials.secret) {
-        L.debug(`now: ${now} expiresAt: ${app.credentials.expiresAt}`);
-        app.credentials.secret.consumerSecret = AppHelper.generateConsumerSecret();
-        AppHelper.resetCredentialsDates(app);
-        const appUpdate: AppPatch = {
-          credentials: app.credentials,
-        };
-        switch (app['appType']) {
-          case 'team': {
-            await TeamsService.updateApp(app['ownerId'], app.name, appUpdate);
-            break;
-          }
-          case 'developer': {
-            await DevelopersService.updateApp(app['ownerId'], app.name, appUpdate);
-            break;
-          }
-          default: {
-            break;
+    try {
+      for (const app of apps) {
+        if (app.credentials && app.credentials.secret) {
+          L.debug(`now: ${now} expiresAt: ${app.credentials.expiresAt}`);
+          app.credentials.secret.consumerSecret = AppHelper.generateConsumerSecret();
+          AppHelper.resetCredentialsDates(app);
+          const appUpdate: AppPatch = {
+            credentials: app.credentials,
+          };
+          switch (app['appType']) {
+            case 'team': {
+              await TeamsService.updateApp(app['ownerId'], app.name, appUpdate);
+              break;
+            }
+            case 'developer': {
+              await DevelopersService.updateApp(app['ownerId'], app.name, appUpdate);
+              break;
+            }
+            default: {
+              break;
+            }
           }
         }
+
       }
+      return true;
+    } catch (e) {
+      L.error(e);
+      return e;
     }
-
-
   }
 
   static async rotateCredentials(job: Job) {
@@ -62,7 +67,7 @@ export class OrganizationAppsRotateCredentials {
 
     L.info(`rotating credentials in ${data.orgName}`);
     const org: Organization = data.org;
-    await ContextRunner(org, OrganizationAppsRotateCredentials.doRotateCredentials);
+    return await ContextRunner(org.name, OrganizationAppsRotateCredentials.doRotateCredentials);
 
   }
 }
