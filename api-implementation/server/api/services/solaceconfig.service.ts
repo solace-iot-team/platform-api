@@ -163,13 +163,13 @@ export class SolaceConfigService {
     private async doApplyDeltaConfigSet(configSet: AppConfigSet, previousConfigSet: AppConfigSet) {
         const tasks: TaskSet = new TaskSet();
         const appDiff = diff(configSet, previousConfigSet, jsonPatchPathConverter);
-        L.debug(appDiff);
+       // L.debug(appDiff);
         if (!configSet.attributes) {
             configSet.attributes = [];
         }
         configSet.attributes.push({
             name: 'diff',
-            value: JSON.stringify(appDiff),
+            value: JSON.stringify(appDiff).substring(0, 1048576),
         });
 
         // get everything that was replaced and figure out which of the replacements need an absent task for old object
