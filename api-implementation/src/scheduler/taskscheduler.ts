@@ -15,7 +15,7 @@ import ImporterRegistry from '../../server/api/services/importer/importerregistr
 import { ErrorResponseInternal } from '../../server/api/middlewares/error.handler';
 
 
-const DEFAULT_JOB_INTERVAL = `15 minutes`;
+const DEFAULT_JOB_INTERVAL = 15;
 
 export interface AgendaJobSpec {
   jobName: string,
@@ -66,7 +66,11 @@ export default class TaskScheduler {
         const job = orgAgenda.create(jobSpec.jobName, jobSpec.data);
         const startAt = new Date();
         startAt.setMinutes(startAt.getMinutes() + i);
-        job.repeatEvery(DEFAULT_JOB_INTERVAL, { skipImmediate: true, startDate: startAt });
+        const offset = i;
+        const cron: string = `${(DEFAULT_JOB_INTERVAL*0+offset)},${(DEFAULT_JOB_INTERVAL*1+offset)},${(DEFAULT_JOB_INTERVAL*2+offset)},${(DEFAULT_JOB_INTERVAL*3+offset)}  * * * * `; 
+        L.info(cron);
+        job.repeatEvery(cron, { skipImmediate: true, startDate: startAt });
+    
         await job.save();
         i++
       }
@@ -94,9 +98,12 @@ export default class TaskScheduler {
     };
     jobSpec.orgName = o.name;
     const startAt = new Date();
-    startAt.setMilliseconds(startAt.getMilliseconds() + this.randomIntFromInterval(30000, 120000));
+    startAt.setMinutes(startAt.getMinutes() + this.randomIntFromInterval(0, 3));
     const job = orgAgenda.create(jobSpec.jobName, jobSpec.data);
-    job.repeatEvery(DEFAULT_JOB_INTERVAL, { skipImmediate: true, startDate: startAt });
+    const offset = this.randomIntFromInterval(0, 14);
+    const cron: string = `${(DEFAULT_JOB_INTERVAL*0+offset)},${(DEFAULT_JOB_INTERVAL*1+offset)},${(DEFAULT_JOB_INTERVAL*2+offset)},${(DEFAULT_JOB_INTERVAL*3+offset)}  * * * *`; 
+    L.info(cron);
+    job.repeatEvery(cron, { skipImmediate: true, startDate: startAt });
     await job.save();
 
   }
@@ -117,7 +124,7 @@ export default class TaskScheduler {
     }
   }
 
-  public async scheduleJobAtInterval(spec: AgendaJobSpec, interval: string) {
+  public async scheduleJobAtInterval(spec: AgendaJobSpec, interval: number) {
     L.info(`Schedule job ${spec.jobName} in ${spec.orgName}`);
     const agenda: Agenda = this.#agendas.get(spec.orgName);
     const inFlight: boolean = await this.isJobDefined(spec.data.name, spec.data.orgName);
@@ -134,8 +141,9 @@ export default class TaskScheduler {
         await existingJob.disable().remove();
       }
       const job = agenda.create(spec.jobName, spec.data);
-
-      await job.repeatAt(interval).save();
+      const cron: string = `*/${interval} * * * *`; 
+  
+      await job.repeatEvery(cron).save();
 
     } else if (!agenda) {
       L.error(`No agenda for ${spec.orgName}, could not queue job`);
