@@ -1,5 +1,16 @@
 # Release Notes
 
+## Version 0.7.1
+* OpenAPI: 0.11.1
+* API Management Connector Server: 0.7.1
+
+### Fixes
+* **fix-scheduler-randomized-staggered-execution**
+- fixed logic to stagger regular app credential rotation jobs, creating cron expressions with randomised offsets to avoid too many concurrent job executions
+* **fix-org-bootstrapping-task-scheduling**
+- to avoid org updates setting up additional scheduled jobs for an org
+
+
 ## Version 0.7.0
 * OpenAPI: 0.11.1
 * API Management Connector Server: 0.7.0
