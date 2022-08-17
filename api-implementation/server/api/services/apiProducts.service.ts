@@ -19,6 +19,7 @@ import preconditionCheck from './persistence/preconditionhelper';
 import AppUpdateEventEmitter from './apiProducts/appUpdateEventEmitter';
 import { ns } from '../middlewares/context.handler';
 import { ContextConstants } from '../../common/constants';
+import { AttributesValidator } from '../../../src/validators';
 
 export class ApiProductsService {
 
@@ -138,7 +139,7 @@ export class ApiProductsService {
   }
   async apiByName(apiProductName: string, name: string): Promise<string> {
     const apiList = await this.apiList(apiProductName);
-    if (apiList.find(n => n == name)) {
+    if (apiList.find(n => n && n == name)) {
       const apiProduct = await this.byName(apiProductName);
       return asyncapigenerator.getSpecificationByApiProduct(name, apiProduct);
     } else {
@@ -211,7 +212,7 @@ export class ApiProductsService {
 
   async revisionByVersion(apiProductName: string, version: string): Promise<APIProduct> {
     const revisionList = await this.revisionList(apiProductName);
-    if (revisionList.find(n => n == version)) {
+    if (revisionList.find(n => n && n == version)) {
       const id = Versioning.createRevisionId(apiProductName, version);
 
       const apiProduct = await this.revisionPersistenceService.byName(id);
@@ -241,11 +242,11 @@ export class ApiProductsService {
    */
   async metaAttributeByName(apiProductName: string, name: string): Promise<string> {
     const product: APIProduct = await this.persistenceService.byName(apiProductName);
-    if (!product.meta?.attributes){
-      throw new ErrorResponseInternal(404, `Unversioned attribute [${name}] is not set for API Product [${apiProductName}]`); 
+    if (!product.meta?.attributes) {
+      throw new ErrorResponseInternal(404, `Unversioned attribute [${name}] is not set for API Product [${apiProductName}]`);
     }
-    const attr = product.meta?.attributes.find(n => n.name == name);
-    if (attr) {
+    const attr = product.meta?.attributes.find(n => n && n.name == name);
+    if (attr && attr.name) {
       return attr.value;
     } else {
       throw new ErrorResponseInternal(404, `Unversioned attribute [${name}] is not set for API Product [${apiProductName}]`);
@@ -254,10 +255,10 @@ export class ApiProductsService {
 
   async createMetaAttribute(apiProductName: string, name: string, value: string): Promise<string> {
     const product: APIProduct = await this.persistenceService.byName(apiProductName);
-    if (!product.meta?.attributes){
+    if (!product.meta?.attributes) {
       product.meta.attributes = [];
     }
-    const attr = product.meta?.attributes.find(n => n.name == name);
+    const attr = product.meta?.attributes.find(n => n && n.name == name);
     if (!attr) {
       product.meta?.attributes.push({
         name: name,
@@ -268,61 +269,61 @@ export class ApiProductsService {
     } else {
       throw new ErrorResponseInternal(422, `Unversioned attribute [${name}] is already set for API Product [${apiProductName}]`);
     }
-  }  
+  }
 
   async updateMetaAttribute(apiProductName: string, attributeName: string, attributeValue: string): Promise<string> {
     const product: APIProduct = await this.persistenceService.byName(apiProductName);
-    if (!product.meta?.attributes){
+    if (!product.meta?.attributes) {
       product.meta.attributes = [];
     }
-    const attr = product.meta?.attributes.find(n => n.name == attributeName);
-    if (attr && product.meta) {
+    const attr = product.meta?.attributes.find(n => n && n.name == attributeName);
+    if (attr  && attr.name && product.meta) {
       attr.value = attributeValue;
-      product.meta.attributes[product.attributes.findIndex(n => n.name == attributeName)] = attr;
+      product.meta.attributes[product.attributes.findIndex(n => n && n.name == attributeName)] = attr;
       await this.persistenceService.update(apiProductName, product);
       return attributeValue;
     } else {
       throw new ErrorResponseInternal(404, `Unversioned attribute [${attributeName}] is not set for API Product [${apiProductName}]`);
     }
-  }  
+  }
 
   async deleteMetaAttribute(apiProductName: string, attributeName: string): Promise<number> {
-    const product: APIProduct  = await this.persistenceService.byName(apiProductName);
-    if (!product.meta?.attributes){
+    const product: APIProduct = await this.persistenceService.byName(apiProductName);
+    if (!product.meta?.attributes) {
       product.meta.attributes = [];
     }
-    const attr = product.meta?.attributes.find(n => n.name == attributeName);
-    if (attr && product.meta) {
-      const newAttributes = product.meta?.attributes.filter(n => n.name != attributeName);
+    const attr = product.meta?.attributes.find(n => n && n.name == attributeName);
+    if (attr  && attr.name && product.meta) {
+      const newAttributes = product.meta?.attributes.filter(n => (n && (n.name != attributeName)));
       product.meta.attributes = newAttributes;
       await this.persistenceService.update(apiProductName, product);
       return 204;
     } else {
       throw new ErrorResponseInternal(404, `Unversioned attribute [${attributeName}] is not set for API Product [${apiProductName}]`);
     }
-  } 
+  }
   /**
    * Update an API Product after an attribute has been updated. Auto increments the minor version of the API Product
    * @param apiProductName 
    * @param product 
    */
-  private async updateProductAttributes (apiProductName: string, product: APIProduct) : Promise<APIProduct>{
-      if (product.meta && product.meta.version){
-        product.meta.version = Versioning.incrementVersion(product.meta.version);
-      }
-      return this.update(apiProductName, product);
+  private async updateProductAttributes(apiProductName: string, product: APIProduct): Promise<APIProduct> {
+    if (product.meta && product.meta.version) {
+      product.meta.version = Versioning.incrementVersion(product.meta.version);
+    }
+    return this.update(apiProductName, product);
   }
 
   /**
    * Attributes methods
    * 
    */
-   async attributeByName(apiProductName: string, name: string): Promise<string> {
+  async attributeByName(apiProductName: string, name: string): Promise<string> {
     const product: APIProduct = await this.persistenceService.byName(apiProductName);
-    if (!product.attributes){
-      throw new ErrorResponseInternal(404, `Attribute [${name}] is not set for API Product [${apiProductName}]`); 
+    if (!product.attributes) {
+      throw new ErrorResponseInternal(404, `Attribute [${name}] is not set for API Product [${apiProductName}]`);
     }
-    const attr = product.attributes.find(n => n.name == name);
+    const attr = product.attributes.find(n => n && n.name == name);
     if (attr) {
       return attr.value;
     } else {
@@ -332,10 +333,10 @@ export class ApiProductsService {
 
   async createAttribute(apiProductName: string, name: string, value: string): Promise<string> {
     const product: APIProduct = await this.persistenceService.byName(apiProductName);
-    if (!product.attributes){
+    if (!product.attributes) {
       product.attributes = [];
     }
-    const attr = product.attributes.find(n => n.name == name);
+    const attr = product.attributes.find(n => n && n.name == name);
     if (!attr) {
       product.attributes.push({
         name: name,
@@ -346,30 +347,30 @@ export class ApiProductsService {
     } else {
       throw new ErrorResponseInternal(422, `Attribute [${name}] is already set for API Product [${apiProductName}]`);
     }
-  }  
+  }
 
   async updateAttribute(apiProductName: string, attributeName: string, attributeValue: string): Promise<string> {
     const product: APIProduct = await this.persistenceService.byName(apiProductName);
-    if (!product.attributes){
+    if (!product.attributes) {
       product.attributes = [];
     }
-    const attr = product.attributes.find(n => n.name == attributeName);
+    const attr = product.attributes.find(n => n && n.name == attributeName);
     if (attr) {
       attr.value = attributeValue;
-      product.attributes[product.attributes.findIndex(n => n.name == attributeName)] = attr;
+      product.attributes[product.attributes.findIndex(n => n && n.name == attributeName)] = attr;
       await this.updateProductAttributes(apiProductName, product);
       return attributeValue;
     } else {
       throw new ErrorResponseInternal(404, `Attribute [${attributeName}] is not set for API Product [${apiProductName}]`);
     }
-  }  
+  }
 
   async deleteAttribute(apiProductName: string, attributeName: string): Promise<number> {
-    const product: APIProduct  = await this.persistenceService.byName(apiProductName);
-    if (!product.attributes){
+    const product: APIProduct = await this.persistenceService.byName(apiProductName);
+    if (!product.attributes) {
       product.attributes = [];
     }
-    const attr = product.attributes.find(n => n.name == attributeName);
+    const attr = product.attributes.find(n => n && n.name == attributeName);
     if (attr) {
       const newAttributes = product.attributes.filter(n => n.name != attributeName);
       product.attributes = newAttributes;
@@ -378,14 +379,14 @@ export class ApiProductsService {
     } else {
       throw new ErrorResponseInternal(404, `Attribute [${attributeName}] is not set for API Product [${apiProductName}]`);
     }
-  } 
+  }
 
   /**
    * Private methods
    * 
    */
 
-   private async canDelete(name: string): Promise<boolean> {
+  private async canDelete(name: string): Promise<boolean> {
     const apps = await this.listAppsReferencingProduct(name);
     if (apps == null || apps.length == 0) {
       return true;
@@ -419,7 +420,11 @@ export class ApiProductsService {
   }
 
   private async validateReferences(product: APIProduct): Promise<boolean> {
-
+    const attributesValidator: AttributesValidator = new AttributesValidator();
+    attributesValidator.validate(product.attributes);
+    if (product.meta?.attributes) {
+      attributesValidator.validate(product.meta?.attributes);
+    }
     if (product.apis != null) {
       for (const apiName of product.apis) {
         const errMsg = `Referenced API ${apiName} does not exist`;

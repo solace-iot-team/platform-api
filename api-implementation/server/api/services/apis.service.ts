@@ -25,6 +25,7 @@ import AppUpdateEventEmitter from './apiProducts/appUpdateEventEmitter';
 import { cloneDeep, parseInt } from 'lodash';
 import Meta = Components.Schemas.Meta;
 import jsonPath from 'jsonpath';
+import { AttributesValidator } from '../../../src/validators';
 
 const DEPRECATED_TAG = 'deprecated';
 
@@ -75,8 +76,10 @@ export class ApisService {
   }
 
   async updateInfo(name: string, info: APIInfoPatch) {
+    const attributesValidator: AttributesValidator = new AttributesValidator();
     const oldInfo: APIInfo = await this.apiInfoPersistenceService.byName(name);
     if (info.attributes) {
+      attributesValidator.validate(info.attributes);
       oldInfo.attributes = info.attributes;
     }
     if (info.meta) {
@@ -88,6 +91,7 @@ export class ApisService {
       }
       oldInfo.meta = metaUpdate;
       if (info.meta?.attributes){
+        attributesValidator.validate(info.meta.attributes);
         oldInfo.meta.attributes = info.meta.attributes;
       }
     }
@@ -591,7 +595,7 @@ export class ApisService {
     if (!info.attributes){
       throw new ErrorResponseInternal(404, `Attribute [${name}] is not set for API  [${apiName}]`); 
     }
-    const attr = info.attributes.find(n => n.name == name);
+    const attr = info.attributes.find(n => n && n.name == name);
     if (attr) {
       return attr.value;
     } else {
@@ -604,7 +608,7 @@ export class ApisService {
     if (!info.attributes){
       info.attributes = [];
     }
-    const attr = info.attributes.find(n => n.name == name);
+    const attr = info.attributes.find(n => n && n.name == name);
     if (!attr) {
       info.attributes.push({
         name: name,
@@ -623,9 +627,9 @@ export class ApisService {
       info.attributes = [];
     }
     const attr = info.attributes.find(n => n.name == attributeName);
-    if (attr) {
+    if (attr && attr.name) {
       attr.value = attributeValue;
-      info.attributes[info.attributes.findIndex(n => n.name == attributeName)] = attr;
+      info.attributes[info.attributes.findIndex(n => n && n.name == attributeName)] = attr;
       await this.updateAPIAttributes(apiName, info);
       return attributeValue;
     } else {
@@ -638,9 +642,9 @@ export class ApisService {
     if (!info.attributes){
       info.attributes = [];
     }
-    const attr = info.attributes.find(n => n.name == attributeName);
-    if (attr) {
-      const newAttributes = info.attributes.filter(n => n.name != attributeName);
+    const attr = info.attributes.find(n => n && n.name == attributeName);
+    if (attr && attr.name) {
+      const newAttributes = info.attributes.filter(n => n && n.name != attributeName);
       info.attributes = newAttributes;
       await this.updateAPIAttributes(apiName, info);
       return 204;
@@ -666,7 +670,7 @@ export class ApisService {
       if (!info.meta?.attributes){
         throw new ErrorResponseInternal(404, `Attribute [${name}] is not set for API  [${apiName}]`); 
       }
-      const attr = info.meta?.attributes.find(n => n.name == name);
+      const attr = info.meta?.attributes.find(n => n && n.name == name);
       if (attr) {
         return attr.value;
       } else {
@@ -679,8 +683,8 @@ export class ApisService {
       if (!info.meta?.attributes){
         info.meta.attributes = [];
       }
-      const attr = info.meta.attributes.find(n => n.name == name);
-      if (!attr && info.meta?.attributes) {
+      const attr = info.meta.attributes.find(n => n && n.name == name);
+      if (!attr && attr.name && info.meta?.attributes) {
         info.meta.attributes.push({
           name: name,
           value: value
@@ -698,9 +702,9 @@ export class ApisService {
         info.meta.attributes = [];
       }
       const attr = info.meta?.attributes.find(n => n.name == attributeName);
-      if (attr && info.meta?.attributes) {
+      if (attr && attr.name && info.meta?.attributes) {
         attr.value = attributeValue;
-        info.meta.attributes[info.meta.attributes.findIndex(n => n.name == attributeName)] = attr;
+        info.meta.attributes[info.meta.attributes.findIndex(n => n && n.name == attributeName)] = attr;
         await this.updateAPIAttributes(apiName, info);
         return attributeValue;
       } else {
@@ -714,8 +718,8 @@ export class ApisService {
         info.meta.attributes = [];
       }
       const attr = info.meta.attributes.find(n => n.name == attributeName);
-      if (attr) {
-        const newAttributes = info.meta?.attributes.filter(n => n.name != attributeName);
+      if (attr && attr.name) {
+        const newAttributes = info.meta?.attributes.filter(n => n && (n.name != attributeName));
         info.meta.attributes = newAttributes;
         await this.updateAPIAttributes(apiName, info);
         return 204;
