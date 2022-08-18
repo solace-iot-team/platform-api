@@ -294,6 +294,10 @@ declare namespace Components {
              */
             APIS_PROXY_MODE?: boolean;
             /**
+             * indicates if the Connector is running in Event Portal 1 or Event Portal 2.0 mode
+             */
+            EVENT_PORTAL_VERSION?: "1" | "2";
+            /**
              * version information
              * example:
              * {
