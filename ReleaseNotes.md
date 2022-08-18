@@ -1,14 +1,27 @@
 # Release Notes
 
+## Version 0.7.2
+* OpenAPI: 0.11.1
+* API Management Connector Server: 0.7.2
+
+### Fixes
+* **fix-apiproducts-meta-attributes-null-guard**
+  - added more null value checks on attributes arrays in api products
+* **fix-apiproducts-attributes-validation**
+  - reject attributes containing null values or duplicate entries
+* **fix-apiInfo-attributes-validation**
+  - reject attributes containing null values or duplicate entries
+  - added guards against potential null values in attributes
+
 ## Version 0.7.1
 * OpenAPI: 0.11.1
 * API Management Connector Server: 0.7.1
 
 ### Fixes
 * **fix-scheduler-randomized-staggered-execution**
-- fixed logic to stagger regular app credential rotation jobs, creating cron expressions with randomised offsets to avoid too many concurrent job executions
+  - fixed logic to stagger regular app credential rotation jobs, creating cron expressions with randomised offsets to avoid too many concurrent job executions
 * **fix-org-bootstrapping-task-scheduling**
-- to avoid org updates setting up additional scheduled jobs for an org
+  - to avoid org updates setting up additional scheduled jobs for an org
 
 
 ## Version 0.7.0
