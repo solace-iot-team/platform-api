@@ -26,6 +26,9 @@ declare namespace Components {
         namespace ConfigSnapshotRevision {
             export type ConfigSnapshotRevision = number;
         }
+        namespace CreateMode {
+            export type Mode = "test" | "write";
+        }
         namespace DeveloperUsername {
             export type DeveloperUsername = Schemas.CommonUserName; // ^[.a-zA-Z0-9@_-]*$
         }
@@ -290,6 +293,10 @@ declare namespace Components {
              * true
              */
             APIS_PROXY_MODE?: boolean;
+            /**
+             * indicates if the Connector is running in Event Portal 1 or Event Portal 2.0 mode
+             */
+            EVENT_PORTAL_VERSION?: "1" | "2";
             /**
              * version information
              * example:

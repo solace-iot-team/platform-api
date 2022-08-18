@@ -2,7 +2,7 @@ openapi: 3.0.0
 info:
   title: Solace API Management Connector
   description: 'Solace API Management Connector API. Note: basic authentication security mechanism is deprecated.'
-  version: 0.11.1
+  version: 0.11.2
   license: 
     name: MIT
     url: https://github.com/solace-iot-team/platform-api/blob/main/LICENSE
@@ -1986,7 +1986,6 @@ components:
           - finished
         name: 
           type: string
-
         app:
           "$ref": "#/components/schemas/AppResponse"
  
@@ -2206,6 +2205,12 @@ components:
           type: boolean
           example: true
           description: indicates if the Connector is running in Proxy Mode. In this mode all published Event API Products in Event Portal are automatically available as APIs in the connector
+        EVENT_PORTAL_VERSION:
+          type: string
+          description: indicates if the Connector is running in Event Portal 1 or Event Portal 2.0 mode
+          enum:
+          - '1'
+          - '2'
         version:
           type: object
           description: version information

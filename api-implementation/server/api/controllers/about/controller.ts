@@ -8,8 +8,10 @@ export class Controller {
   about(req: Request, res: Response, next: NextFunction): void {
     let useProxyModeStr = process.env.APIS_PROXY_MODE || 'false';
     let useProxyMode: boolean = (useProxyModeStr.toLowerCase() == 'true') || (useProxyModeStr.toLowerCase() == '1');
+    let epVersion: string  = process.env.EP_VERSION || '1';
     let response: About = {
       APIS_PROXY_MODE: useProxyMode,
+      EVENT_PORTAL_VERSION: epVersion as any,
       version: loadAboutJSON(),
     }
 
