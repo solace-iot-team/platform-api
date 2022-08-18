@@ -11,6 +11,7 @@ import connectorFacade, { APIProductUpsertResult, EPSystemAttributes } from './c
 import { StatesMapper } from './statesmapper';
 import ImporterConfiguration = Components.Schemas.ImporterConfiguration;
 import { EventAPIAsyncAPIInfo } from '../../../../src/model/eventapiasyncapiinfo';
+import { ProtocolMapper } from '../../../../src/protocolmapper';
 
 
 export interface APIProductVersionImportResult {
@@ -59,19 +60,20 @@ export default class EventPortalImporterTaskImpl {
         // check an environment exists in the connector for the cloud service id in the EP API Product
         const envNames: string[] = [];
         const apiProductProtocols: Protocol[] = [];
-        for (const gateWayMessagingService of prodVersion.version.gatewayMessagingServices){
+        for (const gateWayMessagingService of prodVersion.version.gatewayMessagingServices) {
           const solaceMessagingService: SolaceMessagingService = (gateWayMessagingService as SolaceMessagingService);
           if (solaceMessagingService) {
-            const envResult = await connectorFacade.upsertEnvironment(`${solaceMessagingService.environmentName}-${solaceMessagingService.eventMeshName}-${solaceMessagingService.id}`, solaceMessagingService.solaceCloudMessagingServiceId);
+            const requiredEnvProtocols: Protocol[] = [];
             for (const supportedProtocol of solaceMessagingService.supportedProtocols) {
-              const protName = EventPortalImporterTaskImpl.mapProtocol(supportedProtocol);
-              if (protName) {
-                const p: Protocol = {
-                  name: protName
+              const protocol = ProtocolMapper.findAsyncAPIProtocolByEventPortalProtocol(supportedProtocol);
+              if (protocol) {
+                if (!apiProductProtocols.find(apiProtocol => protocol.name == apiProtocol.name)) {
+                  apiProductProtocols.push(protocol);
                 }
-                apiProductProtocols.push(p);
+                requiredEnvProtocols.push(protocol);
               }
             }
+            const envResult = await connectorFacade.upsertEnvironment(`${solaceMessagingService.environmentName}-${solaceMessagingService.eventMeshName}-${solaceMessagingService.id}`, solaceMessagingService.solaceCloudMessagingServiceId, requiredEnvProtocols);
             envNames.push(envResult.environmentName);
             versionResults.push(...envResult.results);
           }
@@ -127,32 +129,4 @@ export default class EventPortalImporterTaskImpl {
 
   }
 
-  private static mapProtocol(epProtocol: any): "amqp" | "amqps" | "http" | "https" | "jms" | "secure-jms" | "mqtt" | "secure-mqtt" | "ws-mqtt" | "wss-mqtt" | "ws" | "wss" | "smf" | "smfs" | "compressed-smf" {
-    const prot = epProtocol.toString();
-    switch (prot) {
-      case 'mqtts':
-        return 'secure-mqtt';
-      case 'mqttws':
-        return 'ws-mqtt';
-      case 'mqttwss':
-        return 'wss-mqtt';
-      case 'rest':
-        return 'http';
-      case 'rests':
-        return 'https';
-      case 'web':
-        return 'http';
-      case 'webs':
-        return 'https';
-      case 'smfc':
-        return 'compressed-smf';
-      case 'semps':
-        return null;
-      case 'ssh':
-        return null;
-      default:
-        return prot;
-    }
-
-  }
 }

@@ -13,7 +13,7 @@ import { EventAPIAsyncAPIInfo } from '../../../../src/model/eventapiasyncapiinfo
 import cmp from 'semver-compare';
 import semver from 'semver';
 import _ = require('lodash');
-import { resourceLimits } from 'worker_threads';
+
 export class EPSystemAttributes {
   public static EP_LIFEFYCLE_STATE: string = 'EP_LIFEFYCLE_STATE';
   public static EP_EAP_OBJECT: string = 'EP_EAP_OBJECT';
@@ -88,7 +88,7 @@ export class ConnectorFacade {
     }
   }
 
-  public async upsertEnvironment(solaceMessagingServiceEnvironmentName: string, solaceMessagingServiceId: string): Promise<APIProductEnvironmentUpsertResult> {
+  public async upsertEnvironment(solaceMessagingServiceEnvironmentName: string, solaceMessagingServiceId: string, protocols: Protocol[]): Promise<APIProductEnvironmentUpsertResult> {
     let envName: string = null;
     const results: APIProductUpsertResult[] = [];
     if (!solaceMessagingServiceId) {
@@ -105,19 +105,12 @@ export class ConnectorFacade {
     const envs = await environmentsService.all();
     //make all protocols of the cloud service available
     if (!envs.find(e => e.serviceId == solaceMessagingServiceId)) {
-      const endpoints = (await environmentsService.all())
-        .find(s => s.serviceId == solaceMessagingServiceId).messagingProtocols;
-
-      const exposedProtocols: Protocol[] = [];
-      for (const endpoint of endpoints) {
-        exposedProtocols.push(endpoint.protocol);
-      }
       const connectorEnv: Environment = {
         name: solaceMessagingServiceEnvironmentName,
         displayName: solaceMessagingServiceEnvironmentName,
         description: solaceMessagingServiceEnvironmentName,
         serviceId: solaceMessagingServiceId,
-        exposedProtocols: exposedProtocols,
+        exposedProtocols: protocols,
       }
       try {
         await environmentsService.create(connectorEnv);
