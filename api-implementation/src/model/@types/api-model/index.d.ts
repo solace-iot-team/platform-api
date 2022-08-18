@@ -26,6 +26,9 @@ declare namespace Components {
         namespace ConfigSnapshotRevision {
             export type ConfigSnapshotRevision = number;
         }
+        namespace CreateMode {
+            export type Mode = "test" | "write";
+        }
         namespace DeveloperUsername {
             export type DeveloperUsername = Schemas.CommonUserName; // ^[.a-zA-Z0-9@_-]*$
         }
