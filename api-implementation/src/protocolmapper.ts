@@ -7,7 +7,8 @@ interface ProtocolMapping {
   name: string,
   version?: string,
   protocolKeys: SolaceProtocolIdentifiers,
-  clientProtocol: SolaceClientProtocol
+  clientProtocol: SolaceClientProtocol,
+  epProtocol: 'amqp'| 'amqps'| 'ssh' | 'semps'| 'mqtt' | 'mqtts' | 'mqttwss' | 'mqttws' | 'rest'| 'rests'| 'smfc' | 'smf'| 'smfs'| 'web' | 'webs'
 }
 
 interface SolaceProtocolIdentifiers {
@@ -32,7 +33,8 @@ export class ProtocolMapper {
       clientProtocol: {
         name: 'mqtt',
         tls: false
-      }
+      },
+      epProtocol: 'mqtt'
     };
     map.push(mqtt);
 
@@ -46,7 +48,8 @@ export class ProtocolMapper {
       clientProtocol: {
         name: 'mqtt',
         tls: true
-      }
+      },
+      epProtocol: 'mqtts'
 
     };
     map.push(mqtts);
@@ -61,7 +64,8 @@ export class ProtocolMapper {
       clientProtocol: {
         name: 'ws-mqtt',
         tls: false
-      }
+      }, 
+      epProtocol: 'mqttws'
 
     };
     map.push(wsMqtt);
@@ -76,7 +80,8 @@ export class ProtocolMapper {
       clientProtocol: {
         name: 'wss-mqtt',
         tls: true
-      }
+      },
+      epProtocol: 'mqttwss'
     };
     map.push(wssMqtt);
 
@@ -91,7 +96,8 @@ export class ProtocolMapper {
       clientProtocol: {
         name: 'amqp',
         tls: false
-      }
+      },
+      epProtocol: 'amqp'
     };
     map.push(amqp);
 
@@ -105,7 +111,8 @@ export class ProtocolMapper {
       clientProtocol: {
         name: 'amqp',
         tls: true
-      }
+      },
+      epProtocol: 'amqps'
     };
     map.push(amqps);
 
@@ -119,7 +126,8 @@ export class ProtocolMapper {
       clientProtocol: {
         name: 'rest',
         tls: false
-      }
+      },
+      epProtocol: 'rest'
     };
     map.push(http);
 
@@ -133,7 +141,8 @@ export class ProtocolMapper {
       clientProtocol: {
         name: 'rest',
         tls: true
-      }
+      },
+      epProtocol: 'rests'
     };
     map.push(https);
 
@@ -147,7 +156,8 @@ export class ProtocolMapper {
       clientProtocol: {
         name: 'smf',
         tls: false
-      }
+      },
+      epProtocol: 'smf'
     };
     map.push(smf);
 
@@ -161,7 +171,8 @@ export class ProtocolMapper {
       clientProtocol: {
         name: 'smf',
         tls: true
-      }
+      },
+      epProtocol: 'smfs'
     };
     map.push(smfs);
 
@@ -175,7 +186,8 @@ export class ProtocolMapper {
       clientProtocol: {
         name: 'compressed-smf',
         tls: false
-      }
+      }, 
+      epProtocol: 'smfc'
     };
     map.push(compressedsmf);
 
@@ -189,7 +201,8 @@ export class ProtocolMapper {
       clientProtocol: {
         name: 'jms',
         tls: false
-      }
+      },
+      epProtocol: 'smf'
     };
     map.push(jms);
 
@@ -203,7 +216,8 @@ export class ProtocolMapper {
       clientProtocol: {
         name: 'jms',
         tls: true
-      }
+      },
+      epProtocol: 'smfs'
     };
     map.push(secureJms);
     return map;
@@ -213,6 +227,17 @@ export class ProtocolMapper {
     return ProtocolMapper.getProtocolMappings().find(element => element.name == protocol.name);
   }
 
+  public static findAsyncAPIProtocolByEventPortalProtocol(protocol: string): Protocol {
+    const p = ProtocolMapper.getProtocolMappings().find(element => element.epProtocol == protocol);
+    if (p){
+      return {
+        name: p.name as any,
+        version: p.version
+      }
+    } else {
+      return null;
+    }
+  }  
   public static async mapSolaceMessagingProtocolsToAsyncAPI(service, serverProtocols): Promise<Endpoint[]> {
     const endpoints: Endpoint[] = [];
     const mappings = ProtocolMapper.getProtocolMappings();
