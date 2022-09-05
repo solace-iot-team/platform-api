@@ -8,6 +8,7 @@ import { ErrorResponseInternal } from '../middlewares/error.handler';
 import { Importer } from './importer/importer';
 import Organization = Components.Schemas.Organization;
 import { scheduler } from '../../index';
+import { Job } from 'agenda';
 
 export class ImporterService {
 
@@ -27,6 +28,7 @@ export class ImporterService {
     for (const t of ImporterRegistry.getTypes()) {
       const jobs = await scheduler.allJobsWithName(t);
       for (const j of jobs) {
+        if (j.attrs.repeatInterval)
         results.push(j.attrs.data.configuration);
       }
     }
