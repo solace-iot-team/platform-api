@@ -4101,7 +4101,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n \"exposedProtocols\": [\n  {\n   \"name\": \"mqtt\",\n   \"version\": \"3.1.1\"\n  },\n  {\n   \"name\": \"wss-mqtt\",\n   \"version\": \"3.1.1\"\n  },\n  {\n   \"name\": \"secure-jms\",\n   \"version\": \"1.1\"\n  },\n  {\n   \"name\": \"https\",\n   \"version\": \"1.1\"\n  },\n  {\n   \"name\": \"amqps\",\n   \"version\": \"1.0.0\"\n  },\n  {\n   \"name\": \"smfs\",\n   \"version\": \"smfs\"\n  },\n  {\n   \"name\": \"compressed-smf\",\n   \"version\": \"smf\"\n  }\n ]\n}",
+							"raw": "{\n \"exposedProtocols\": [\n  {\n   \"name\": \"mqtt\",\n   \"version\": \"3.1.1\"\n  },\n  {\n   \"name\": \"wss-mqtt\",\n   \"version\": \"3.1.1\"\n  },\n  {\n   \"name\": \"secure-jms\",\n   \"version\": \"1.1\"\n  },\n  {\n   \"name\": \"https\",\n   \"version\": \"1.1\"\n  },\n  {\n   \"name\": \"smfs\",\n   \"version\": \"smfs\"\n  },\n  {\n   \"name\": \"compressed-smf\",\n   \"version\": \"smf\"\n  }\n ]\n}",
 							"options": {
 								"raw": {
 									"language": "json"
