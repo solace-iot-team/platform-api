@@ -2,7 +2,7 @@ openapi: 3.0.0
 info:
   title: Solace API Management Connector
   description: 'Solace API Management Connector API. Note: basic authentication security mechanism is deprecated.'
-  version: 0.11.2
+  version: 0.11.3
   license: 
     name: MIT
     url: https://github.com/solace-iot-team/platform-api/blob/main/LICENSE
@@ -1985,6 +1985,8 @@ components:
           - pending
           - finished
         name: 
+          type: string
+        instanceName: 
           type: string
         app:
           "$ref": "#/components/schemas/AppResponse"

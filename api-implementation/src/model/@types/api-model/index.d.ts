@@ -943,6 +943,7 @@ declare namespace Components {
             } | string | boolean | number | number | any[];
             status?: "pending" | "finished";
             name: string;
+            instanceName?: string;
             app?: AppResponse;
         }
         /**
