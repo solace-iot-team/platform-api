@@ -3,7 +3,7 @@ import L from '../../server/common/logger';
 import OrganizationService from '../../server/api/services/organizations.service';
 import DatabaseBootstrapper from '../../server/api/services/persistence/databasebootstrapper';
 
-import { Agenda, Processor } from "agenda";
+import { Agenda, Job, Processor } from "agenda";
 import { databaseaccess } from '../databaseaccess';
 import { AppProvisioningJob } from './jobs/appprovisioningjob';
 import { AppRotateCredentialsJobSpec, OrganizationAppsRotateCredentials } from './jobs/rotatecredentials';
@@ -113,7 +113,7 @@ export default class TaskScheduler {
 
   }
 
-  public async queueJob(spec: AgendaJobSpec) {
+  public async queueJob(spec: AgendaJobSpec): Promise<Job>{
     const agenda: Agenda = this.#agendas.get(spec.orgName);
     const inFlight: boolean = await this.isJobAlreadyQueued(spec);
     L.debug(`Job ${spec.jobName} for ${spec.orgName} ${spec.data.name} in flight ${inFlight}`);
@@ -123,7 +123,8 @@ export default class TaskScheduler {
       const job = agenda.create(spec.jobName, spec.data);
       const runAt = new Date();
       runAt.setMilliseconds(runAt.getMilliseconds() + delay);
-      await job.schedule(runAt).save();
+      const j = await job.schedule(runAt).save();
+      return j;
     } else if (!agenda) {
       L.error(`No agenda for ${spec.orgName}, could not queue job`);
     }
@@ -188,7 +189,7 @@ export default class TaskScheduler {
     }
 
   }
-  public async allJobsWithName(name: string, organization?: string): Promise<any[]> {
+  public async allJobsWithName(name: string, organization?: string): Promise<Job[]> {
     let org = organization;
     if (!org && ns != null && ns.getStore() && ns.getStore().get(ContextConstants.ORG_NAME)) {
       org = ns.getStore().get(ContextConstants.ORG_NAME);
