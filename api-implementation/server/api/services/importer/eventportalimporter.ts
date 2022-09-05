@@ -53,16 +53,17 @@ export class EventPortalImporter implements Importer {
     try {
       const job = await scheduler.findJobInstanceWithName(name);
       const spec = this.buildJobSpec(job.attrs.data.configuration, org, `${name}-${new Date()}`);
-      await scheduler.queueJob(spec);
-    } catch (e) {
+      const j: Job = await scheduler.queueJob(spec);
+      L.info(j.attrs._id.toString());
+      return {
+        id: j.attrs._id.toString(),
+        message: `${name} queued for execution`,
+  
+      }    } catch (e) {
       L.error(e);
       throw new ErrorResponseInternal(500, `Error executing importer`);
     }
-    return {
-      id: '200',
-      message: `${name} queued for execution`,
 
-    }
   }
   public async import(job: Job<JobAttributesData>): Promise<any> {
     const data: EventPortalImporterData = job.attrs.data as EventPortalImporterData;
