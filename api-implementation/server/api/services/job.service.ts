@@ -1,5 +1,6 @@
 import L from '../../common/logger';
 import { PersistenceService } from './persistence.service';
+import { Job as AgendaJob } from 'agenda';
 import Job = Components.Schemas.Job;
 
 export class HistoryService {
@@ -25,6 +26,9 @@ export class HistoryService {
       const job: Job = {
         id: `${rawJob['_id']}`,
         name: rawJob.name,
+      }
+      if (rawJob['data']['name'] ){
+        job.instanceName = rawJob['data']['name'];
       }
       if (rawJob.app) {
         job.app = rawJob.app;
