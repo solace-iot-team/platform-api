@@ -83,7 +83,7 @@ export default class EventPortalImporterTaskImpl {
         }
 
         for (const plan of prodVersion.version.plans) {
-          const apiProductId = `${prodVersion.version.eventApiProductId}-${plan.name}`;
+          const apiProductId = connectorFacade.createInternalName(`${prodVersion.version.eventApiProductId}-${plan.name}`);
           const policy = plan.policies[0] as SolacePolicy;
           const clientOptions: ClientOptions = {
             guaranteedMessagingEnabled: policy.guaranteedMessaging,
@@ -100,7 +100,7 @@ export default class EventPortalImporterTaskImpl {
             }
           }
 
-          const apiNames: string[] = apis.map(api => { return api.name });
+          const apiNames: string[] = apis.map(api => { return connectorFacade.createInternalName(api.name) });
           mappedAttributes.push({ name: EPSystemAttributes.EP_EAP_OBJECT, value: JSON.stringify(prodVersion) });
           const product: APIProduct = {
             apis: apiNames,

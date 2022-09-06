@@ -38,14 +38,19 @@ export class ConnectorFacade {
   }
 
   public async upsertAPI(asyncAPI: EventAPIAsyncAPIInfo, version: string, spec: string, attributes: Components.Schemas.Attributes): Promise<APIProductUpsertResult[]> {
+    const apiName = this.createInternalName(asyncAPI.name);
+
+    // check if API already exists, if so update it
     try {
-      const targetAPIRevision = await apisService.revisionByVersion(asyncAPI.name, version);
+      // attempt to update the APi, if it fails check if it;s due to the API not existing or zome other error
+      const targetAPIRevision = await apisService.revisionByVersion(apiName, version);
       return [{
         action: 'skipped',
-        message: `API Revision ${asyncAPI.name} ${version} already exists, skipping import`,
+        message: `API Revision ${asyncAPI.name} ${version} (${apiName}) already exists, skipping import`,
         success: true,
       }];
     } catch (e) {
+      // it;s Ok if the API was not found, any other error signals a failed update
       if ((e as ErrorResponseInternal).statusCode != 404) {
         return [{
           action: 'updated',
@@ -54,14 +59,13 @@ export class ConnectorFacade {
           detail: e
         }];
       }
-      // uses api id from ep API Name. Not user friendly, should refactor API import instead to track id but have friendly name
       try {
-        const apiInfo = await apisService.infoByName(asyncAPI.name);
+        const apiInfo = await apisService.infoByName(apiName);
         // api exists so we update
-        await apisService.update(asyncAPI.name, spec);
+        await apisService.update(apiName, spec);
         return [{
           action: 'updated',
-          message: `API updated ${asyncAPI.name} ${version}`,
+          message: `API updated ${asyncAPI.name} ${version} (${apiName})`,
           success: true,
           detail: e
         }];
@@ -75,13 +79,13 @@ export class ConnectorFacade {
           }];
         }
         // create API and add attributes
-        await apisService.create(asyncAPI.name, spec);
-        await apisService.updateInfo(asyncAPI.name, {
+        await apisService.create(apiName, spec);
+        await apisService.updateInfo(apiName, {
           attributes: attributes
         });
         return [{
           action: 'created',
-          message: `API created ${asyncAPI.name} ${version}`,
+          message: `API created ${asyncAPI.name} ${version} (${apiName})`,
           success: true,
         }];
       }
@@ -90,6 +94,7 @@ export class ConnectorFacade {
 
   public async upsertEnvironment(solaceMessagingServiceEnvironmentName: string, solaceMessagingServiceId: string, protocols: Protocol[]): Promise<APIProductEnvironmentUpsertResult> {
     let envName: string = null;
+    const cleanSolaceMessagingServiceEnvironmentName = this.createInternalName(solaceMessagingServiceEnvironmentName);
     const results: APIProductUpsertResult[] = [];
     if (!solaceMessagingServiceId) {
       results.push({
@@ -106,7 +111,7 @@ export class ConnectorFacade {
     //make all protocols of the cloud service available
     if (!envs.find(e => e.serviceId == solaceMessagingServiceId)) {
       const connectorEnv: Environment = {
-        name: solaceMessagingServiceEnvironmentName,
+        name: cleanSolaceMessagingServiceEnvironmentName,
         displayName: solaceMessagingServiceEnvironmentName,
         description: solaceMessagingServiceEnvironmentName,
         serviceId: solaceMessagingServiceId,
@@ -114,7 +119,7 @@ export class ConnectorFacade {
       }
       try {
         await environmentsService.create(connectorEnv);
-        envName = solaceMessagingServiceEnvironmentName;
+        envName = cleanSolaceMessagingServiceEnvironmentName;
         results.push({
           action: 'created',
           message: `Environment created ${solaceMessagingServiceEnvironmentName}`,
@@ -138,7 +143,7 @@ export class ConnectorFacade {
     }
 
     const result: APIProductEnvironmentUpsertResult = {
-      environmentName: envName,
+      environmentName: this.createInternalName(envName),
       results: results,
     }
     return result;
@@ -303,6 +308,10 @@ export class ConnectorFacade {
     } else {
       return null;
     }
+  }
+
+  public createInternalName(name: string){
+    return name.replace(/[^a-zA-Z0-9_-]+/g, '-');
   }
 }
 
