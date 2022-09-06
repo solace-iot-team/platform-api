@@ -29,7 +29,10 @@ export default class EventPortalImporterTaskImpl {
         const versionResults: APIProductUpsertResult[] = []
         let mappedAttributes: Components.Schemas.Attributes = [];
         if (configuration.attributeMap) {
-          mappedAttributes = configuration.attributeMap[await EventPortalFacade.getApplicationDomainIdByAPIProductVersion(prodVersion.version)];
+          const configuredMappedAttributes = configuration.attributeMap.find(m=>m.name == prodVersion.product.applicationDomainId);
+          if (configuredMappedAttributes){
+            mappedAttributes = configuredMappedAttributes.attributes;
+          }
         }
         // check referenced API version presence in Connector, Create if missing 
         const apis: EventAPIAsyncAPIInfo[] = [];
