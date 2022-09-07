@@ -2,12 +2,11 @@ import L from '../../../common/logger';
 import EventPortalFacade, { ExportableEventApiProductVersion } from '../../../../src/eventportalfacade.2';
 import { isString } from '../../../../src/typehelpers';
 import parser, { AsyncAPIDocument } from '@asyncapi/parser';
-import { SolacePolicy } from '../../../../src/clients/ep.2.0/models/SolacePolicy';
 import { SolaceMessagingService } from '../../../../src/clients/ep.2.0/models/SolaceMessagingService';
 import ClientOptions = Components.Schemas.ClientOptions;
 import Protocol = Components.Schemas.Protocol;
 import APIProduct = Components.Schemas.APIProduct;
-import connectorFacade, { APIProductUpsertResult, EPSystemAttributes } from './connectorfacade';
+import connectorFacade, { APIProductUpsertResult, EPSystemAttributes, APIProductAttributes } from './connectorfacade';
 import { StatesMapper } from './statesmapper';
 import ImporterConfiguration = Components.Schemas.ImporterConfiguration;
 import { EventAPIAsyncAPIInfo } from '../../../../src/model/eventapiasyncapiinfo';
@@ -29,8 +28,8 @@ export default class EventPortalImporterTaskImpl {
         const versionResults: APIProductUpsertResult[] = []
         let mappedAttributes: Components.Schemas.Attributes = [];
         if (configuration.attributeMap) {
-          const configuredMappedAttributes = configuration.attributeMap.find(m=>m.name == prodVersion.product.applicationDomainId);
-          if (configuredMappedAttributes){
+          const configuredMappedAttributes = configuration.attributeMap.find(m => m.name == prodVersion.product.applicationDomainId);
+          if (configuredMappedAttributes) {
             mappedAttributes = configuredMappedAttributes.attributes;
           }
         }
@@ -63,8 +62,8 @@ export default class EventPortalImporterTaskImpl {
         // check an environment exists in the connector for the cloud service id in the EP API Product
         const envNames: string[] = [];
         const apiProductProtocols: Protocol[] = [];
-        for (const gateWayMessagingService of prodVersion.version.gatewayMessagingServices) {
-          const solaceMessagingService: SolaceMessagingService = (gateWayMessagingService as SolaceMessagingService);
+        if (prodVersion.version.solaceMessagingService) {
+          const solaceMessagingService: SolaceMessagingService = prodVersion.version.solaceMessagingService;
           if (solaceMessagingService) {
             const requiredEnvProtocols: Protocol[] = [];
             for (const supportedProtocol of solaceMessagingService.supportedProtocols) {
@@ -84,7 +83,7 @@ export default class EventPortalImporterTaskImpl {
 
         for (const plan of prodVersion.version.plans) {
           const apiProductId = connectorFacade.createInternalName(`${prodVersion.version.eventApiProductId}-${plan.name}`);
-          const policy = plan.policies[0] as SolacePolicy;
+          const policy = plan.solaceClassOfServicePolicy;
           const clientOptions: ClientOptions = {
             guaranteedMessagingEnabled: policy.guaranteedMessaging,
           };
@@ -102,6 +101,9 @@ export default class EventPortalImporterTaskImpl {
 
           const apiNames: string[] = apis.map(api => { return connectorFacade.createInternalName(api.name) });
           mappedAttributes.push({ name: EPSystemAttributes.EP_EAP_OBJECT, value: JSON.stringify(prodVersion) });
+          mappedAttributes.push({ name: APIProductAttributes.EAP_NAME, value: prodVersion.product.name });
+          mappedAttributes.push({ name: APIProductAttributes.APP_DOMAIN, value: (await EventPortalFacade.getApplicationDomain(prodVersion.product.applicationDomainId)).name });
+
           const product: APIProduct = {
             apis: apiNames,
             attributes: mappedAttributes,
@@ -120,7 +122,6 @@ export default class EventPortalImporterTaskImpl {
             results: versionResults,
           })
         }
-
       }
       L.info(`Job ${configuration.name} of ${configuration.importerType} executed`);
       return results;
