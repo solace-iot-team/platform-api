@@ -26,13 +26,22 @@ export default class EventPortalImporterTaskImpl {
 
       for (const prodVersion of prodVersions) {
         const versionResults: APIProductUpsertResult[] = []
-        let mappedAttributes: Components.Schemas.Attributes = [];
+        const mappedAttributes: Components.Schemas.Attributes = [];
         if (configuration.attributeMap) {
           const configuredMappedAttributes = configuration.attributeMap.find(m => m.name == prodVersion.product.applicationDomainId);
           if (configuredMappedAttributes) {
-            mappedAttributes = configuredMappedAttributes.attributes;
+            for (const att of configuredMappedAttributes.attributes){
+              mappedAttributes.push ({
+                name: att.name,
+                value: att.value
+              });
+            }
           }
         }
+        mappedAttributes.push({ name: EPSystemAttributes.EP_EAP_OBJECT, value: JSON.stringify(prodVersion) });
+        mappedAttributes.push({ name: APIProductAttributes.EAP_NAME, value: prodVersion.product.name });
+        mappedAttributes.push({ name: APIProductAttributes.APP_DOMAIN, value: (await EventPortalFacade.getApplicationDomain(prodVersion.product.applicationDomainId)).name });
+
         // check referenced API version presence in Connector, Create if missing 
         const apis: EventAPIAsyncAPIInfo[] = [];
         for (const apiVersionId of prodVersion.version.eventApiVersionIds) {
@@ -51,6 +60,7 @@ export default class EventPortalImporterTaskImpl {
             apis.push(api);
           } else {
             versionResults.push({
+              resource: 'API',
               action: 'skipped',
               message: `No verson could be extracted from AsyncAPI for Event Portal Event API  at version ${apiVersionId}`,
               success: false,
@@ -75,7 +85,7 @@ export default class EventPortalImporterTaskImpl {
                 requiredEnvProtocols.push(protocol);
               }
             }
-            const envResult = await connectorFacade.upsertEnvironment(`${solaceMessagingService.environmentName}-${solaceMessagingService.eventMeshName}-${solaceMessagingService.id}`, solaceMessagingService.solaceCloudMessagingServiceId, requiredEnvProtocols);
+            const envResult = await connectorFacade.upsertEnvironment(`${solaceMessagingService.environmentName}-${solaceMessagingService.eventMeshName}-${solaceMessagingService.id}`, solaceMessagingService.solaceCloudMessagingServiceId);
             envNames.push(envResult.environmentName);
             versionResults.push(...envResult.results);
           }
@@ -100,9 +110,6 @@ export default class EventPortalImporterTaskImpl {
           }
 
           const apiNames: string[] = apis.map(api => { return connectorFacade.createInternalName(api.name) });
-          mappedAttributes.push({ name: EPSystemAttributes.EP_EAP_OBJECT, value: JSON.stringify(prodVersion) });
-          mappedAttributes.push({ name: APIProductAttributes.EAP_NAME, value: prodVersion.product.name });
-          mappedAttributes.push({ name: APIProductAttributes.APP_DOMAIN, value: (await EventPortalFacade.getApplicationDomain(prodVersion.product.applicationDomainId)).name });
 
           const product: APIProduct = {
             apis: apiNames,

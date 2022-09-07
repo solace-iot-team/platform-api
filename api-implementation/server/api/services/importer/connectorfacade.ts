@@ -8,15 +8,20 @@ import Meta = Components.Schemas.Meta;
 import MetaEntityStage = Components.Schemas.MetaEntityStage;
 import APIProduct = Components.Schemas.APIProduct;
 import APIInfo = Components.Schemas.APIInfo;
+import Endpoint = Components.Schemas.Endpoint;
 import { ErrorResponseInternal } from '../../middlewares/error.handler';
 import { EventAPIAsyncAPIInfo } from '../../../../src/model/eventapiasyncapiinfo';
+import solacecloudfacade from '../../../../src/solacecloudfacade';
 
 import cmp from 'semver-compare';
 import semver from 'semver';
 import _ from 'lodash';
+import { ProtocolMapper } from '../../../../src/protocolmapper';
 
 export class EPSystemAttributes {
   public static EP_LIFEFYCLE_STATE: string = '_EP_LIFEFYCLE_STATE_';
+  public static IMP_SOURCE_ATTRIBUTE: string = '_IMP_SOURCE_';
+  public static EP_SOURCE_INDICATOR: string = 'Solace Event Portal (2)';
   public static EP_EAP_OBJECT: string = '_EP_EAP_OBJECT_';
 }
 
@@ -26,8 +31,10 @@ export class APIProductAttributes {
 }
 
 export type APIProductUpsertAction = 'created' | 'updated' | 'skipped';
+export type ConnectorResource = 'API' | 'Environment' | 'APIProduct';
 
 export interface APIProductUpsertResult {
+  resource: ConnectorResource,
   action: APIProductUpsertAction;
   success: boolean;
   message: string;
@@ -51,6 +58,7 @@ export class ConnectorFacade {
       // attempt to update the APi, if it fails check if it;s due to the API not existing or zome other error
       const targetAPIRevision = await apisService.revisionByVersion(apiName, version);
       return [{
+        resource: 'API',
         action: 'skipped',
         message: `API Revision ${asyncAPI.name} ${version} (${apiName}) already exists, skipping import`,
         success: true,
@@ -59,6 +67,7 @@ export class ConnectorFacade {
       // it;s Ok if the API was not found, any other error signals a failed update
       if ((e as ErrorResponseInternal).statusCode != 404) {
         return [{
+          resource: 'API',
           action: 'updated',
           message: e.message,
           success: false,
@@ -73,6 +82,7 @@ export class ConnectorFacade {
             attributes: attributes
           });
         return [{
+          resource: 'API',
           action: 'updated',
           message: `API updated ${asyncAPI.name} ${version} (${apiName})`,
           success: true,
@@ -81,6 +91,7 @@ export class ConnectorFacade {
       } catch (err) {
         if ((err as ErrorResponseInternal).statusCode != 404) {
           return [{
+            resource: 'API',
             action: 'updated',
             message: err.message,
             success: false,
@@ -103,6 +114,7 @@ export class ConnectorFacade {
 
         await apisService.create(apiName, spec, info);
         return [{
+          resource: 'API',
           action: 'created',
           message: `API created ${asyncAPI.name} ${version} (${apiName})`,
           success: true,
@@ -111,12 +123,13 @@ export class ConnectorFacade {
     }
   }
 
-  public async upsertEnvironment(solaceMessagingServiceEnvironmentName: string, solaceMessagingServiceId: string, protocols: Protocol[]): Promise<APIProductEnvironmentUpsertResult> {
+  public async upsertEnvironment(solaceMessagingServiceEnvironmentName: string, solaceMessagingServiceId: string): Promise<APIProductEnvironmentUpsertResult> {
     let envName: string = null;
     const cleanSolaceMessagingServiceEnvironmentName = this.createInternalName(solaceMessagingServiceEnvironmentName);
     const results: APIProductUpsertResult[] = [];
     if (!solaceMessagingServiceId) {
       results.push({
+        resource: 'Environment',
         action: 'skipped',
         message: `No solaceMessagingServiceId available`,
         success: true,
@@ -129,6 +142,9 @@ export class ConnectorFacade {
     const envs = await environmentsService.all();
     //make all protocols of the cloud service available
     if (!envs.find(e => e.serviceId == solaceMessagingServiceId)) {
+      const cloudService = await solacecloudfacade.getServiceById(solaceMessagingServiceId);
+      const endpoints: Endpoint[] = await ProtocolMapper.mapSolaceMessagingProtocolsToAsyncAPI(cloudService, cloudService.messagingProtocols);
+      const protocols = endpoints.map(e=> e.protocol);
       const connectorEnv: Environment = {
         name: cleanSolaceMessagingServiceEnvironmentName,
         displayName: solaceMessagingServiceEnvironmentName,
@@ -140,12 +156,14 @@ export class ConnectorFacade {
         await environmentsService.create(connectorEnv);
         envName = cleanSolaceMessagingServiceEnvironmentName;
         results.push({
+          resource: 'Environment',
           action: 'created',
           message: `Environment created ${solaceMessagingServiceEnvironmentName}`,
           success: true,
         });
         } catch (e){
           results.push({
+            resource: 'Environment',
             action: 'created',
             message: `Environment creation failed: ${solaceMessagingServiceEnvironmentName} - ${solaceMessagingServiceId} = ${e.message}`,
             success: false,
@@ -155,6 +173,7 @@ export class ConnectorFacade {
     } else {
       envName =  envs.find(e => e.serviceId == solaceMessagingServiceId).name;
       results.push({
+        resource: 'Environment',
         action: 'skipped',
         message: `Found environment ${envName} for service ${solaceMessagingServiceId}`,
         success: true,
@@ -176,6 +195,7 @@ export class ConnectorFacade {
     } catch (e) {
       if ((e as ErrorResponseInternal).statusCode != 404) {
         return [{
+          resource: 'APIProduct',
           action: 'updated',
           message: e.message,
           success: false,
@@ -186,6 +206,7 @@ export class ConnectorFacade {
       // validate APi product
       if (stage == 'retired' || semver.patch(apiProductVersion) > 0) {
         return [{
+          resource: 'APIProduct',
           action: 'skipped',
           message: `Event API Product is using invalid patch version (${semver.patch(apiProductVersion)}) or is in status retired.`,
           success: true,
@@ -203,7 +224,9 @@ export class ConnectorFacade {
       try {
         await apiProductsService.create(apiProduct);
         await apiProductsService.createMetaAttribute(apiProductId, EPSystemAttributes.EP_LIFEFYCLE_STATE, stage);
+        await apiProductsService.createMetaAttribute(apiProductId, EPSystemAttributes.IMP_SOURCE_ATTRIBUTE, EPSystemAttributes.EP_SOURCE_INDICATOR);
         return [{
+          resource: 'APIProduct',
           action: 'created',
           message: `API Product ${apiProduct.name} successfully created`,
           success: true,
@@ -212,6 +235,7 @@ export class ConnectorFacade {
 
         L.error(e);
         return [{
+          resource: 'APIProduct',
           action: 'created',
           message: e.message,
           success: false,
@@ -235,6 +259,7 @@ export class ConnectorFacade {
     ) {
       L.info(`update not relevant, will not update AP Product`);
       return [{
+        resource: 'APIProduct',
         action: 'skipped',
         message: `API Product ${apiProduct.name} update is not relevant`,
         success: true,
@@ -259,6 +284,7 @@ export class ConnectorFacade {
       return results;
     } else {
       return [{
+        resource: 'APIProduct',
         action: 'skipped',
         message: `API Product ${apiProduct.name} from EP 2.0 does not require any update`,
         success: true,
@@ -274,6 +300,7 @@ export class ConnectorFacade {
       oldApiProduct.environments = apiProduct.environments;
       await apiProductsService.update(apiProductId, oldApiProduct);
       return {
+        resource: 'APIProduct',
         action: 'updated',
         message: msg,
         success: true,
@@ -293,6 +320,7 @@ export class ConnectorFacade {
       await apiProductsService.update(apiProductId, oldApiProduct);
       await apiProductsService.updateMetaAttribute(apiProductId, 'EP_LIFEFYCLE_STATE', stage);
       stageResult = ({
+        resource: 'APIProduct',
         action: 'updated',
         message: `API Product ${apiProduct.name} update from EP 2.0 resulted in new patch version ${oldApiProduct.meta.version} at stage ${oldApiProduct.meta.stage}`,
         success: true,
@@ -318,6 +346,7 @@ export class ConnectorFacade {
       await apiProductsService.update(apiProductId, apiProduct);
       await apiProductsService.updateMetaAttribute(apiProductId, EPSystemAttributes.EP_LIFEFYCLE_STATE, stage);
       return {
+        resource: 'APIProduct',
         action: 'updated',
         message: `API Product ${apiProduct.name} update from EP 2.0 applied`,
         success: true,
@@ -328,9 +357,9 @@ export class ConnectorFacade {
   }
 
   private patchAttribute(attributeName: string, oldApiProduct: APIProduct, apiProduct: APIProduct) {
-    const epObjectIndex = oldApiProduct.attributes.findIndex(a => a.name = attributeName);
-    const newObjectIndex = apiProduct.attributes.findIndex(a => a.name = attributeName);
-    if (epObjectIndex > -1 && newObjectIndex <= 0) {
+    const epObjectIndex = oldApiProduct.attributes.findIndex(a => a.name == attributeName);
+    const newObjectIndex = apiProduct.attributes.findIndex(a => a.name == attributeName);
+    if (epObjectIndex > -1 && newObjectIndex > -1) {
       oldApiProduct.attributes[epObjectIndex] = { name: attributeName, value: apiProduct.attributes[newObjectIndex].value };
     }
   }
