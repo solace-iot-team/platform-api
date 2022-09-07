@@ -131,7 +131,7 @@ export class EventPortalfacade {
   public async getApplicationDomains(pageSize: number, pageNumber: number): Promise<ApplicationDomainList> {
     const domains: ApplicationDomainList = [];
     try {
-      const applicationDomains: ApplicationDomainsResponse = await this.applicationDomainsService.getApplicationDomains(isNaN(pageSize)?null:pageSize, isNaN(pageNumber)?null:pageNumber); if (applicationDomains.data && applicationDomains.data.length > 0) {
+      const applicationDomains: ApplicationDomainsResponse = await this.applicationDomainsService.getApplicationDomains(isNaN(pageSize)?100:pageSize, isNaN(pageNumber)?1:pageNumber); if (applicationDomains.data && applicationDomains.data.length > 0) {
         for (const appDomain of applicationDomains.data) {
           domains.push(appDomain);
         }
