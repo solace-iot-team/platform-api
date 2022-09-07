@@ -501,4 +501,89 @@ export class ApplicationsServiceDefault implements ApplicationsService {
         };
     }
 
+    public async getApplicationVersionAsyncApiForApplication(
+        applicationId: string,
+        id: string,
+        asyncApiVersion: '2.0.0' = '2.0.0',
+        format: 'json' | 'yaml' = 'json',
+    ): Promise<any> {
+        const options = this.getApplicationVersionAsyncApiForApplicationApiRequestOptions(
+            applicationId,
+            id,
+            asyncApiVersion,
+            format,
+        );
+        const result = await __request(options);
+        return result.body;
+    }
+
+    public getApplicationVersionAsyncApiForApplicationApiRequestOptions(
+        applicationId: string,
+        id: string,
+        asyncApiVersion: '2.0.0' = '2.0.0',
+        format: 'json' | 'yaml' = 'json',
+    ): ApiRequestOptions {
+        return {
+            ...this.config,
+            method: 'GET',
+            path: `/api/v2/architecture/applications/${applicationId}/versions/${id}/asyncApi`,
+            query: {
+                'asyncApiVersion': asyncApiVersion,
+                'format': format,
+            },
+            errors: {
+                400: `Bad Request.`,
+                401: `Unauthorized.`,
+                403: `Forbidden.`,
+                404: `Not Found.`,
+                405: `Method Not Allowed`,
+                500: `Internal Server Error.`,
+                501: `Not Implemented`,
+                503: `Service Unavailable.`,
+                504: `Gateway Timeout.`,
+            },
+        };
+    }
+
+    public async getAsyncApiForApplicationVersion(
+        applicationVersionId: string,
+        format: 'json' | 'yaml' = 'json',
+        asyncApiVersion: '2.0.0' = '2.0.0',
+    ): Promise<any> {
+        const options = this.getAsyncApiForApplicationVersionApiRequestOptions(
+            applicationVersionId,
+            format,
+            asyncApiVersion,
+        );
+        const result = await __request(options);
+        return result.body;
+    }
+
+    public getAsyncApiForApplicationVersionApiRequestOptions(
+        applicationVersionId: string,
+        format: 'json' | 'yaml' = 'json',
+        asyncApiVersion: '2.0.0' = '2.0.0',
+    ): ApiRequestOptions {
+        return {
+            ...this.config,
+            method: 'GET',
+            path: `/api/v2/architecture/applicationVersions/${applicationVersionId}/asyncApi`,
+            query: {
+                'format': format,
+                'asyncApiVersion': asyncApiVersion,
+            },
+            errors: {
+                400: `Bad Request.`,
+                401: `Unauthorized.`,
+                403: `Forbidden.`,
+                404: `Not Found.`,
+                405: `Method Not Allowed`,
+                500: `Internal Server Error.`,
+                501: `Not Implemented`,
+                503: `Service Unavailable.`,
+                504: `Gateway Timeout.`,
+            },
+        };
+    }
+
 }

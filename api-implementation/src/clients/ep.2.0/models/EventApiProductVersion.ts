@@ -1,8 +1,8 @@
 /* eslint-disable */
 
 
-import type { BaseMessagingServiceDTO } from './BaseMessagingServiceDTO';
 import type { Plan } from './Plan';
+import type { SolaceMessagingService } from './SolaceMessagingService';
 
 export type EventApiProductVersion = {
     readonly createdTime?: string;
@@ -21,7 +21,7 @@ export type EventApiProductVersion = {
     eventApiVersionIds?: Array<string>;
     stateId?: string;
     plans?: Array<Plan>;
-    readonly gatewayMessagingServices?: Array<BaseMessagingServiceDTO>;
+    solaceMessagingService?: SolaceMessagingService;
     /**
      * The type of payload
      */

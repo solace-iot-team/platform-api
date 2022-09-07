@@ -2,10 +2,11 @@
 
 
 import type { EventApiProductVersion } from './EventApiProductVersion';
+import type { meta } from './meta';
 
 export type EventApiProductVersionsResponse = {
     data?: Array<EventApiProductVersion>;
-    meta?: Record<string, any>;
+    meta?: meta;
 }
 
 export namespace EventApiProductVersionsResponse {

@@ -1,15 +1,16 @@
 /* eslint-disable */
 
-export type BasePolicyDTO = ( {
+
+export type BasePolicyDTO = {
     /**
      * ID value of the object
      */
-    readonly id?: string,
+    readonly id?: string;
     /**
      * The type of this payload
      */
-    type?: string,
-});
+    type?: string;
+}
 
 export namespace BasePolicyDTO {
 

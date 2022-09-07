@@ -1,9 +1,9 @@
 /* eslint-disable */
 
 
-import type { EnumValue } from './EnumValue';
+import type { TopicAddressEnumValue } from './TopicAddressEnumValue';
 
-export type EnumVersion = {
+export type TopicAddressEnumVersion = {
     readonly createdTime?: string;
     readonly updatedTime?: string;
     readonly createdBy?: string;
@@ -13,19 +13,19 @@ export type EnumVersion = {
     description?: string;
     version: string;
     displayName?: string;
-    values: Array<EnumValue>;
+    values: Array<TopicAddressEnumValue>;
     readonly referencedByEventVersionIds?: Array<string>;
     readonly referencedByTopicDomainIds?: Array<string>;
     readonly stateId?: string;
     readonly type?: string;
 }
 
-export namespace EnumVersion {
+export namespace TopicAddressEnumVersion {
 
     /**
      * the discriminator for the model if required for more complex api's
      */
-    export const discriminator = 'EnumVersion';
+    export const discriminator = 'TopicAddressEnumVersion';
 
 
 }

@@ -353,4 +353,66 @@ export interface ApplicationsService {
         requestBody: any,
     ): ApiRequestOptions;
 
+    /**
+     * Retrieves the AsyncAPI specification for an application version
+     * Use this API to retrieve the AsyncAPI specification for an application version using the parent ID and the version's ID.
+     * @param applicationId The ID of the parent application.
+     * @param id The ID of the application version.
+     * @param asyncApiVersion The version of AsyncAPI to use
+     * @param format The format in which to retrieve the AsyncAPI specification. Possible values are yaml and json.
+     * @returns any The AsyncAPI specification for the application version.
+     */
+    getApplicationVersionAsyncApiForApplication(
+        applicationId: string,
+        id: string,
+        asyncApiVersion: '2.0.0',
+        format: 'json' | 'yaml',
+    ): Promise<any>;
+
+    /**
+     * **used to get the request options without making a http request**
+     * Retrieves the AsyncAPI specification for an application version
+     * Use this API to retrieve the AsyncAPI specification for an application version using the parent ID and the version's ID.
+     * @param applicationId The ID of the parent application.
+     * @param id The ID of the application version.
+     * @param asyncApiVersion The version of AsyncAPI to use
+     * @param format The format in which to retrieve the AsyncAPI specification. Possible values are yaml and json.
+     * @returns ApiRequestOptions the request options to fulfill a http request
+     */
+    getApplicationVersionAsyncApiForApplicationApiRequestOptions(
+        applicationId: string,
+        id: string,
+        asyncApiVersion: '2.0.0',
+        format: 'json' | 'yaml',
+    ): ApiRequestOptions;
+
+    /**
+     * Retrieves the AsyncAPI specification for an application version
+     * Use this API to retrieve the AsyncAPI specification for an application version.
+     * @param applicationVersionId The ID of the application version.
+     * @param format The format in which to retrieve the AsyncAPI specification. Possible values are yaml and json.
+     * @param asyncApiVersion The version of AsyncAPI to use.
+     * @returns any The AsyncAPI specification for the application version.
+     */
+    getAsyncApiForApplicationVersion(
+        applicationVersionId: string,
+        format: 'json' | 'yaml',
+        asyncApiVersion: '2.0.0',
+    ): Promise<any>;
+
+    /**
+     * **used to get the request options without making a http request**
+     * Retrieves the AsyncAPI specification for an application version
+     * Use this API to retrieve the AsyncAPI specification for an application version.
+     * @param applicationVersionId The ID of the application version.
+     * @param format The format in which to retrieve the AsyncAPI specification. Possible values are yaml and json.
+     * @param asyncApiVersion The version of AsyncAPI to use.
+     * @returns ApiRequestOptions the request options to fulfill a http request
+     */
+    getAsyncApiForApplicationVersionApiRequestOptions(
+        applicationVersionId: string,
+        format: 'json' | 'yaml',
+        asyncApiVersion: '2.0.0',
+    ): ApiRequestOptions;
+
 }

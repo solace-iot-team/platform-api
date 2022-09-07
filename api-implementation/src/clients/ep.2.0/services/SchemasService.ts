@@ -194,9 +194,9 @@ export interface SchemasService {
     /**
      * Gets the schema version objects for a schema
      * Use this API to retrieve a list of schema versions that match the given parameters.
-     * @param schemaId
-     * @param pageSize The number of schemas to get per page. Min: 1 Max: 100
+     * @param schemaId The ID of the schema object.
      * @param pageNumber The page number to get. Min: 1
+     * @param pageSize The number of schemas to get per page. Min: 1 Max: 100
      * @param versions Match only with schema versions.
      * @param displayName Match only schema versions with the given display name.
      * @param ids Match only schema versions with the given IDs separated by commas.
@@ -204,8 +204,8 @@ export interface SchemasService {
      */
     getSchemaVersionsForSchema(
         schemaId: string,
-        pageSize: number,
         pageNumber: number,
+        pageSize?: number,
         versions?: Array<string>,
         displayName?: string,
         ids?: Array<string>,
@@ -215,9 +215,9 @@ export interface SchemasService {
      * **used to get the request options without making a http request**
      * Gets the schema version objects for a schema
      * Use this API to retrieve a list of schema versions that match the given parameters.
-     * @param schemaId
-     * @param pageSize The number of schemas to get per page. Min: 1 Max: 100
+     * @param schemaId The ID of the schema object.
      * @param pageNumber The page number to get. Min: 1
+     * @param pageSize The number of schemas to get per page. Min: 1 Max: 100
      * @param versions Match only with schema versions.
      * @param displayName Match only schema versions with the given display name.
      * @param ids Match only schema versions with the given IDs separated by commas.
@@ -225,8 +225,8 @@ export interface SchemasService {
      */
     getSchemaVersionsForSchemaApiRequestOptions(
         schemaId: string,
-        pageSize: number,
         pageNumber: number,
+        pageSize?: number,
         versions?: Array<string>,
         displayName?: string,
         ids?: Array<string>,

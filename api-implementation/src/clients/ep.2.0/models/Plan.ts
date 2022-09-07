@@ -1,7 +1,7 @@
 /* eslint-disable */
 
 
-import type { BasePolicyDTO } from './BasePolicyDTO';
+import type { SolaceClassOfServicePolicy } from './SolaceClassOfServicePolicy';
 
 export type Plan = {
     /**
@@ -12,7 +12,7 @@ export type Plan = {
      * Title of the object
      */
     name?: string;
-    policies?: Array<BasePolicyDTO>;
+    solaceClassOfServicePolicy?: SolaceClassOfServicePolicy;
     /**
      * The type of this payload
      */

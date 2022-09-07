@@ -7,6 +7,7 @@ export type ApplicationDomainStats = {
     applicationCount?: number;
     enumCount?: number;
     eventApiCount?: number;
+    eventApiProductCount?: number;
 }
 
 export namespace ApplicationDomainStats {

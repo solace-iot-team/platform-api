@@ -161,6 +161,7 @@ export interface EventApiProductsService {
      * @param ids Match event API product versions with the given IDs separated by commas.
      * @param include A list of additional entities to include in the response.
      * @param stateId Match event API product versions with the given state ID.
+     * @param messagingServiceId Match event API product versions with the given messagingServiceId.
      * @returns EventApiProductVersionsResponse Retrieve a list of event API product versions.
      */
     getEventApiProductVersions(
@@ -169,6 +170,7 @@ export interface EventApiProductsService {
         ids?: Array<string>,
         include?: string,
         stateId?: string,
+        messagingServiceId?: string,
     ): Promise<EventApiProductVersionsResponse>;
 
     /**
@@ -180,6 +182,7 @@ export interface EventApiProductsService {
      * @param ids Match event API product versions with the given IDs separated by commas.
      * @param include A list of additional entities to include in the response.
      * @param stateId Match event API product versions with the given state ID.
+     * @param messagingServiceId Match event API product versions with the given messagingServiceId.
      * @returns ApiRequestOptions the request options to fulfill a http request
      */
     getEventApiProductVersionsApiRequestOptions(
@@ -188,6 +191,7 @@ export interface EventApiProductsService {
         ids?: Array<string>,
         include?: string,
         stateId?: string,
+        messagingServiceId?: string,
     ): ApiRequestOptions;
 
     /**
@@ -213,6 +217,77 @@ export interface EventApiProductsService {
     getEventApiProductVersionApiRequestOptions(
         versionId: string,
         include: string,
+    ): ApiRequestOptions;
+
+    /**
+     * Deletes an event API product version by ID
+     * Use this API to delete an event API product version by ID.
+     * @param versionId The ID of the event API product version
+     * @returns void
+     */
+    deleteEventApiProductVersionByVersionId(
+        versionId: string,
+    ): Promise<void>;
+
+    /**
+     * **used to get the request options without making a http request**
+     * Deletes an event API product version by ID
+     * Use this API to delete an event API product version by ID.
+     * @param versionId The ID of the event API product version
+     * @returns ApiRequestOptions the request options to fulfill a http request
+     */
+    deleteEventApiProductVersionByVersionIdApiRequestOptions(
+        versionId: string,
+    ): ApiRequestOptions;
+
+    /**
+     * Updates an event API product version by version ID
+     * Use this API to update an event API product version. You only need to specify the fields that need to be updated.
+     * @param versionId The ID of the event API product version.
+     * @param requestBody The event API product version.
+     * @returns EventApiProductVersionResponse The updated event API product version.
+     */
+    updateEventApiProductVersionByVersionId(
+        versionId: string,
+        requestBody: EventApiProductVersion,
+    ): Promise<EventApiProductVersionResponse>;
+
+    /**
+     * **used to get the request options without making a http request**
+     * Updates an event API product version by version ID
+     * Use this API to update an event API product version. You only need to specify the fields that need to be updated.
+     * @param versionId The ID of the event API product version.
+     * @param requestBody The event API product version.
+     * @returns ApiRequestOptions the request options to fulfill a http request
+     */
+    updateEventApiProductVersionByVersionIdApiRequestOptions(
+        versionId: string,
+        requestBody: EventApiProductVersion,
+    ): ApiRequestOptions;
+
+    /**
+     * Updates the state of an event API product version by ID
+     * Use this API to update the state of an event API product version. You only need to specify the state ID field with the desired state ID.
+     * @param versionId The ID of the event API product version.
+     * @param requestBody The event API product version.
+     * @returns VersionedObjectStateChangeRequest The updated state of the event API product version.
+     */
+    updateEventApiProductVersionStateByEventApiProductVersionId(
+        versionId: string,
+        requestBody: EventApiProductVersion,
+    ): Promise<VersionedObjectStateChangeRequest>;
+
+    /**
+     * **used to get the request options without making a http request**
+     * Updates the state of an event API product version by ID
+     * Use this API to update the state of an event API product version. You only need to specify the state ID field with the desired state ID.
+     * @param versionId The ID of the event API product version.
+     * @param requestBody The event API product version.
+     * @returns ApiRequestOptions the request options to fulfill a http request
+     */
+    updateEventApiProductVersionStateByEventApiProductVersionIdApiRequestOptions(
+        versionId: string,
+        requestBody: EventApiProductVersion,
     ): ApiRequestOptions;
 
     /**
@@ -279,6 +354,27 @@ export interface EventApiProductsService {
     createEventApiProductVersionForEventApiProductApiRequestOptions(
         eventApiProductId: string,
         requestBody: EventApiProductVersion,
+    ): ApiRequestOptions;
+
+    /**
+     * Disassociates a gateway messaging service from an event API product version by association ID
+     * Use this API to disassociate an event API product version and gateway messaging service by  association ID.
+     * @param memAssociationId The association ID to perform the disassociation for
+     * @returns void
+     */
+    disassociateGatewayMessagingServiceFromEventApiProductVersionById(
+        memAssociationId: string,
+    ): Promise<void>;
+
+    /**
+     * **used to get the request options without making a http request**
+     * Disassociates a gateway messaging service from an event API product version by association ID
+     * Use this API to disassociate an event API product version and gateway messaging service by  association ID.
+     * @param memAssociationId The association ID to perform the disassociation for
+     * @returns ApiRequestOptions the request options to fulfill a http request
+     */
+    disassociateGatewayMessagingServiceFromEventApiProductVersionByIdApiRequestOptions(
+        memAssociationId: string,
     ): ApiRequestOptions;
 
     /**

@@ -2,10 +2,11 @@
 
 
 import type { EventApi } from './EventApi';
+import type { meta } from './meta';
 
 export type EventApisResponse = {
     data?: Array<EventApi>;
-    meta?: Record<string, any>;
+    meta?: meta;
 }
 
 export namespace EventApisResponse {

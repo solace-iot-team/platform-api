@@ -1,6 +1,6 @@
 /* eslint-disable */
 
-import type { EnumVersion } from '../models/EnumVersion';
+import type { TopicAddressEnumVersion } from '../models/TopicAddressEnumVersion';
 import type { ApiRequestOptions } from '../core/ApiRequestOptions';
 
 export interface EnumsService {
@@ -174,9 +174,9 @@ export interface EnumsService {
     /**
      * Lists enums
      * Use this API to list enum versions based on certain criteria.
-     * @param enumId
-     * @param pageSize The number of enum versions to get per page. Min: 1 Max: 100
+     * @param enumId The ID of the enum object.
      * @param pageNumber The page number to get. Min: 1
+     * @param pageSize The number of enum versions to get per page. Min: 1 Max: 100
      * @param ids The ids of the enum versions.
      * @param versions The versions of the enum version.
      * @param displayName The display name of the enum versions.
@@ -184,8 +184,8 @@ export interface EnumsService {
      */
     getEnumVersionsForEnum(
         enumId: string,
-        pageSize: number,
         pageNumber: number,
+        pageSize?: number,
         ids?: Array<string>,
         versions?: Array<string>,
         displayName?: string,
@@ -195,9 +195,9 @@ export interface EnumsService {
      * **used to get the request options without making a http request**
      * Lists enums
      * Use this API to list enum versions based on certain criteria.
-     * @param enumId
-     * @param pageSize The number of enum versions to get per page. Min: 1 Max: 100
+     * @param enumId The ID of the enum object.
      * @param pageNumber The page number to get. Min: 1
+     * @param pageSize The number of enum versions to get per page. Min: 1 Max: 100
      * @param ids The ids of the enum versions.
      * @param versions The versions of the enum version.
      * @param displayName The display name of the enum versions.
@@ -205,8 +205,8 @@ export interface EnumsService {
      */
     getEnumVersionsForEnumApiRequestOptions(
         enumId: string,
-        pageSize: number,
         pageNumber: number,
+        pageSize?: number,
         ids?: Array<string>,
         versions?: Array<string>,
         displayName?: string,
@@ -261,26 +261,26 @@ export interface EnumsService {
     /**
      * Retrieves an enum version object
      * Use this API to retrieve a single enum version by its ID.
+     * @param enumId The ID of the enum object.
      * @param id The ID of the enum version object.
-     * @param enumId
      * @returns any The enum version object.
      */
     getEnumVersionForEnum(
-        id: string,
         enumId: string,
+        id: string,
     ): Promise<any>;
 
     /**
      * **used to get the request options without making a http request**
      * Retrieves an enum version object
      * Use this API to retrieve a single enum version by its ID.
+     * @param enumId The ID of the enum object.
      * @param id The ID of the enum version object.
-     * @param enumId
      * @returns ApiRequestOptions the request options to fulfill a http request
      */
     getEnumVersionForEnumApiRequestOptions(
-        id: string,
         enumId: string,
+        id: string,
     ): ApiRequestOptions;
 
     /**
@@ -319,7 +319,7 @@ export interface EnumsService {
     updateEnumVersionForEnum(
         enumId: string,
         id: string,
-        requestBody: EnumVersion,
+        requestBody: TopicAddressEnumVersion,
     ): Promise<any>;
 
     /**
@@ -334,7 +334,7 @@ export interface EnumsService {
     updateEnumVersionForEnumApiRequestOptions(
         enumId: string,
         id: string,
-        requestBody: EnumVersion,
+        requestBody: TopicAddressEnumVersion,
     ): ApiRequestOptions;
 
     /**
@@ -348,7 +348,7 @@ export interface EnumsService {
     updateEnumVersionStateForEnum(
         enumId: string,
         id: string,
-        requestBody: EnumVersion,
+        requestBody: TopicAddressEnumVersion,
     ): Promise<any>;
 
     /**
@@ -363,7 +363,7 @@ export interface EnumsService {
     updateEnumVersionStateForEnumApiRequestOptions(
         enumId: string,
         id: string,
-        requestBody: EnumVersion,
+        requestBody: TopicAddressEnumVersion,
     ): ApiRequestOptions;
 
 }
