@@ -1,6 +1,6 @@
 /* eslint-disable */
 
-import type { EnumVersion } from '../models/EnumVersion';
+import type { TopicAddressEnumVersion } from '../models/TopicAddressEnumVersion';
 import type { EnumsService } from './EnumsService';
 import type { ApiRequestOptions } from '../core/ApiRequestOptions';
 import { request as __request } from '../core/request';
@@ -253,16 +253,16 @@ export class EnumsServiceDefault implements EnumsService {
 
     public async getEnumVersionsForEnum(
         enumId: string,
-        pageSize?: number,
         pageNumber: number = 1,
+        pageSize?: number,
         ids?: Array<string>,
         versions?: Array<string>,
         displayName?: string,
     ): Promise<any> {
         const options = this.getEnumVersionsForEnumApiRequestOptions(
             enumId,
-            pageSize,
             pageNumber,
+            pageSize,
             ids,
             versions,
             displayName,
@@ -273,8 +273,8 @@ export class EnumsServiceDefault implements EnumsService {
 
     public getEnumVersionsForEnumApiRequestOptions(
         enumId: string,
-        pageSize?: number,
         pageNumber: number = 1,
+        pageSize?: number,
         ids?: Array<string>,
         versions?: Array<string>,
         displayName?: string,
@@ -284,8 +284,8 @@ export class EnumsServiceDefault implements EnumsService {
             method: 'GET',
             path: `/api/v2/architecture/enums/${enumId}/versions`,
             query: {
-                'pageSize': pageSize,
                 'pageNumber': pageNumber,
+                'pageSize': pageSize,
                 'ids': ids,
                 'versions': versions,
                 'displayName': displayName,
@@ -371,20 +371,20 @@ export class EnumsServiceDefault implements EnumsService {
     }
 
     public async getEnumVersionForEnum(
-        id: string,
         enumId: string,
+        id: string,
     ): Promise<any> {
         const options = this.getEnumVersionForEnumApiRequestOptions(
-            id,
             enumId,
+            id,
         );
         const result = await __request(options);
         return result.body;
     }
 
     public getEnumVersionForEnumApiRequestOptions(
-        id: string,
         enumId: string,
+        id: string,
     ): ApiRequestOptions {
         return {
             ...this.config,
@@ -441,7 +441,7 @@ export class EnumsServiceDefault implements EnumsService {
     public async updateEnumVersionForEnum(
         enumId: string,
         id: string,
-        requestBody: EnumVersion,
+        requestBody: TopicAddressEnumVersion,
     ): Promise<any> {
         const options = this.updateEnumVersionForEnumApiRequestOptions(
             enumId,
@@ -455,7 +455,7 @@ export class EnumsServiceDefault implements EnumsService {
     public updateEnumVersionForEnumApiRequestOptions(
         enumId: string,
         id: string,
-        requestBody: EnumVersion,
+        requestBody: TopicAddressEnumVersion,
     ): ApiRequestOptions {
         return {
             ...this.config,
@@ -480,7 +480,7 @@ export class EnumsServiceDefault implements EnumsService {
     public async updateEnumVersionStateForEnum(
         enumId: string,
         id: string,
-        requestBody: EnumVersion,
+        requestBody: TopicAddressEnumVersion,
     ): Promise<any> {
         const options = this.updateEnumVersionStateForEnumApiRequestOptions(
             enumId,
@@ -494,7 +494,7 @@ export class EnumsServiceDefault implements EnumsService {
     public updateEnumVersionStateForEnumApiRequestOptions(
         enumId: string,
         id: string,
-        requestBody: EnumVersion,
+        requestBody: TopicAddressEnumVersion,
     ): ApiRequestOptions {
         return {
             ...this.config,

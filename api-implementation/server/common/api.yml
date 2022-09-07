@@ -2,7 +2,7 @@ openapi: 3.0.0
 info:
   title: Solace API Management Connector
   description: 'Solace API Management Connector API. Note: basic authentication security mechanism is deprecated.'
-  version: 0.11.3
+  version: 0.12.0
   license: 
     name: MIT
     url: https://github.com/solace-iot-team/platform-api/blob/main/LICENSE
@@ -70,6 +70,16 @@ components:
         pattern: "^[a-z0-9]*$"
         minLength: 4
         maxLength: 32
+    application_domain_id:
+      name: application_domain_id
+      description: the id of the appication domain in the Event Portal
+      in: path
+      required: true
+      schema:
+        type: string
+        pattern: "^[a-z0-9]*$"
+        minLength: 4
+        maxLength: 32    
     developer_username:
       name: developer_username
       description: username of developer
@@ -3104,6 +3114,58 @@ components:
       minLength: 1
       maxLength: 1024
       
+    ApplicationDomain:
+      required:
+      - name
+      type: object
+      properties:
+        createdTime:
+            type: string
+            readOnly: true
+            example: '2021-12-31T20:30:57.920Z'
+        updatedTime:
+          type: string
+          readOnly: true
+          example: '2021-12-31T20:30:57.920Z'
+        createdBy:
+          type: string
+          readOnly: true
+          example: '12345678'
+        changedBy:
+            type: string
+            readOnly: true
+            example: '12345678'
+        id:
+            type: string
+            readOnly: true
+            example: '12345678'
+        name:
+            maxLength: 255
+            minLength: 1
+            type: string
+            example: My First Application Domain
+        description:
+            maxLength: 10000
+            type: string
+            example: Application Domain created by the Solace PubSub+ Cloud API documentation
+        uniqueTopicAddressEnforcementEnabled:
+            type: boolean
+            description: Forces all topic addresses within the application domain to
+              be unique.
+            example: true
+        topicDomainEnforcementEnabled:
+            type: boolean
+            description: Forces all topic addresses within the application domain to
+              be prefixed with one of the application domain’s configured topic domains.
+            example: false
+        type:
+            type: string
+    ApplicationDomainList:
+      type: array
+      minItems: 0
+      maxItems: 32768
+      items:
+          $ref: '#/components/schemas/ApplicationDomain'        
 security:
   - OpenId: []
   - BasicAuth: []
@@ -3125,8 +3187,11 @@ tags:
     description: "Manage organization settings, audit history"
   - name: administration
     description: "Manage tenants/orgs. Requires admin access level."
+  - name: eventPortal-2.0
+    description: "Provides read-only access to the Solace Event Portal 2.0  associated with the account."
   - name: eventPortal
     description: "Provides read-only access to the Solace Event Portal associated with the account."
+
 paths:
   /organizations:
     get:
@@ -7734,6 +7799,7 @@ paths:
     parameters:
     - $ref: '#/components/parameters/organization'
     get:
+     deprecated: true
      operationId: listEventAPIProducts
      tags:
       - eventPortal
@@ -7770,6 +7836,7 @@ paths:
     - $ref: '#/components/parameters/organization'
     - $ref: '#/components/parameters/event_api_product_id'
     get:
+     deprecated: true
      operationId: getEventAPIProduct
      tags:
       - eventPortal
@@ -7803,6 +7870,7 @@ paths:
     - $ref: '#/components/parameters/organization'
     - $ref: '#/components/parameters/event_api_product_id'
     get:
+     deprecated: true
      operationId: getEventAPIProductAsyncAPI
      tags:
       - eventPortal
@@ -7999,3 +8067,72 @@ paths:
           $ref: '#/components/responses/ServiceUnavailable'
         '504':
           $ref: '#/components/responses/GatewayTimeout'
+  /{organization_name}/applicationDomains:
+    parameters:
+    - $ref: '#/components/parameters/organization'
+    get:
+     operationId: listEPApplicationDomains
+     tags:
+      - eventPortal-2.0
+     parameters:
+      - $ref: '#/components/parameters/page_size'
+      - $ref: '#/components/parameters/page_number'
+     responses:
+        '200':
+          description: list of application domains in the associated Event Portal
+          content:
+            application/json:
+              schema:
+               $ref: '#/components/schemas/ApplicationDomainList'
+        '400':
+           $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '406':
+          $ref: '#/components/responses/NotAcceptable'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
+        '504':
+          $ref: '#/components/responses/GatewayTimeout'
+  /{organization_name}/applicationDomains/{application_domain_id}:
+    parameters:
+    - $ref: '#/components/parameters/organization'
+    - $ref: '#/components/parameters/application_domain_id'
+    get:
+     operationId: getEPApplicationDomain
+     tags:
+      - eventPortal-2.0
+     responses:
+        '200':
+          description: an event api products defined in the associated Event Portal
+          content:
+            application/json:
+              schema:
+               $ref: '#/components/schemas/ApplicationDomain'
+        '400':
+           $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '406':
+          $ref: '#/components/responses/NotAcceptable'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
+        '504':
+          $ref: '#/components/responses/GatewayTimeout'
+

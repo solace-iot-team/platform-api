@@ -308,6 +308,73 @@ export class EventApIsServiceDefault implements EventApIsService {
         };
     }
 
+    public async deleteEventApiVersionByVersionId(
+        versionId: string,
+    ): Promise<void> {
+        const options = this.deleteEventApiVersionByVersionIdApiRequestOptions(
+            versionId,
+        );
+        const result = await __request(options);
+        return result.body;
+    }
+
+    public deleteEventApiVersionByVersionIdApiRequestOptions(
+        versionId: string,
+    ): ApiRequestOptions {
+        return {
+            ...this.config,
+            method: 'DELETE',
+            path: `/api/v2/architecture/eventApiVersions/${versionId}`,
+            errors: {
+                400: `Bad Request.`,
+                401: `Unauthorized.`,
+                403: `Forbidden.`,
+                404: `Not Found.`,
+                405: `Method Not Allowed`,
+                500: `Internal Server Error.`,
+                501: `Not Implemented`,
+                503: `Service Unavailable.`,
+                504: `Gateway Timeout.`,
+            },
+        };
+    }
+
+    public async updateEventApiVersionByVersionId(
+        versionId: string,
+        requestBody: EventApiVersion,
+    ): Promise<EventApiVersionResponse> {
+        const options = this.updateEventApiVersionByVersionIdApiRequestOptions(
+            versionId,
+            requestBody,
+        );
+        const result = await __request(options);
+        return result.body;
+    }
+
+    public updateEventApiVersionByVersionIdApiRequestOptions(
+        versionId: string,
+        requestBody: EventApiVersion,
+    ): ApiRequestOptions {
+        return {
+            ...this.config,
+            method: 'PATCH',
+            path: `/api/v2/architecture/eventApiVersions/${versionId}`,
+            body: requestBody,
+            mediaType: 'application/json',
+            errors: {
+                400: `Bad Request.`,
+                401: `Unauthorized.`,
+                403: `Forbidden.`,
+                404: `Not Found.`,
+                405: `Method Not Allowed`,
+                500: `Internal Server Error.`,
+                501: `Not Implemented`,
+                503: `Service Unavailable.`,
+                504: `Gateway Timeout.`,
+            },
+        };
+    }
+
     public async getEventApiVersionsForEventApi(
         eventApiId: string,
         id: string,
@@ -381,6 +448,42 @@ export class EventApIsServiceDefault implements EventApIsService {
             ...this.config,
             method: 'POST',
             path: `/api/v2/architecture/eventApis/${eventApiId}/versions`,
+            body: requestBody,
+            mediaType: 'application/json',
+            errors: {
+                400: `Bad Request.`,
+                401: `Unauthorized.`,
+                403: `Forbidden.`,
+                404: `Not Found.`,
+                405: `Method Not Allowed`,
+                500: `Internal Server Error.`,
+                501: `Not Implemented`,
+                503: `Service Unavailable.`,
+                504: `Gateway Timeout.`,
+            },
+        };
+    }
+
+    public async updateEventApiVersionStateByEventApiVersionId(
+        versionId: string,
+        requestBody: EventApiVersion,
+    ): Promise<VersionedObjectStateChangeRequest> {
+        const options = this.updateEventApiVersionStateByEventApiVersionIdApiRequestOptions(
+            versionId,
+            requestBody,
+        );
+        const result = await __request(options);
+        return result.body;
+    }
+
+    public updateEventApiVersionStateByEventApiVersionIdApiRequestOptions(
+        versionId: string,
+        requestBody: EventApiVersion,
+    ): ApiRequestOptions {
+        return {
+            ...this.config,
+            method: 'PATCH',
+            path: `/api/v2/architecture/eventApiVersions/${versionId}/state`,
             body: requestBody,
             mediaType: 'application/json',
             errors: {

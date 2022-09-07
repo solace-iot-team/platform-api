@@ -20,8 +20,8 @@ export class EnvironmentsServiceDefault implements EnvironmentsService {
     public async getEnvironments(
         pageSize: number = 20,
         pageNumber: number = 1,
-        sort: string = '',
-        like: string = '',
+        sort?: string,
+        like?: string,
     ): Promise<any> {
         const options = this.getEnvironmentsApiRequestOptions(
             pageSize,
@@ -36,8 +36,8 @@ export class EnvironmentsServiceDefault implements EnvironmentsService {
     public getEnvironmentsApiRequestOptions(
         pageSize: number = 20,
         pageNumber: number = 1,
-        sort: string = '',
-        like: string = '',
+        sort?: string,
+        like?: string,
     ): ApiRequestOptions {
         return {
             ...this.config,

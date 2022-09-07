@@ -215,6 +215,52 @@ export interface EventApIsService {
     ): ApiRequestOptions;
 
     /**
+     * Deletes an event API version
+     * Use this API to delete an event API version by event API version ID.
+     * @param versionId The ID of the event API version
+     * @returns void
+     */
+    deleteEventApiVersionByVersionId(
+        versionId: string,
+    ): Promise<void>;
+
+    /**
+     * **used to get the request options without making a http request**
+     * Deletes an event API version
+     * Use this API to delete an event API version by event API version ID.
+     * @param versionId The ID of the event API version
+     * @returns ApiRequestOptions the request options to fulfill a http request
+     */
+    deleteEventApiVersionByVersionIdApiRequestOptions(
+        versionId: string,
+    ): ApiRequestOptions;
+
+    /**
+     * Updates an event API by event API version ID
+     * Use this API to update an event API version by event API version ID.You only need to specify the fields that need to be updated.
+     * @param versionId The ID of the event API version.
+     * @param requestBody The event API version.
+     * @returns EventApiVersionResponse The updated event API version.
+     */
+    updateEventApiVersionByVersionId(
+        versionId: string,
+        requestBody: EventApiVersion,
+    ): Promise<EventApiVersionResponse>;
+
+    /**
+     * **used to get the request options without making a http request**
+     * Updates an event API by event API version ID
+     * Use this API to update an event API version by event API version ID.You only need to specify the fields that need to be updated.
+     * @param versionId The ID of the event API version.
+     * @param requestBody The event API version.
+     * @returns ApiRequestOptions the request options to fulfill a http request
+     */
+    updateEventApiVersionByVersionIdApiRequestOptions(
+        versionId: string,
+        requestBody: EventApiVersion,
+    ): ApiRequestOptions;
+
+    /**
      * Retrieves a list of event API versions
      * Use this API to retrieve a list of event API versions under a particular event API matching the given parameters.
      * @param eventApiId The ID of the parent event API.
@@ -277,6 +323,31 @@ export interface EventApIsService {
      */
     createEventApiVersionForEventApiApiRequestOptions(
         eventApiId: string,
+        requestBody: EventApiVersion,
+    ): ApiRequestOptions;
+
+    /**
+     * Updates the state of an event API version by event API version ID
+     * Use this API to update the state of an event API version. You only need to specify the state ID field with the desired state ID.
+     * @param versionId The ID of the event API version.
+     * @param requestBody The Event API version.
+     * @returns VersionedObjectStateChangeRequest The updated state of the event API version.
+     */
+    updateEventApiVersionStateByEventApiVersionId(
+        versionId: string,
+        requestBody: EventApiVersion,
+    ): Promise<VersionedObjectStateChangeRequest>;
+
+    /**
+     * **used to get the request options without making a http request**
+     * Updates the state of an event API version by event API version ID
+     * Use this API to update the state of an event API version. You only need to specify the state ID field with the desired state ID.
+     * @param versionId The ID of the event API version.
+     * @param requestBody The Event API version.
+     * @returns ApiRequestOptions the request options to fulfill a http request
+     */
+    updateEventApiVersionStateByEventApiVersionIdApiRequestOptions(
+        versionId: string,
         requestBody: EventApiVersion,
     ): ApiRequestOptions;
 

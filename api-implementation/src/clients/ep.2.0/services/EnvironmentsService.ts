@@ -16,8 +16,8 @@ export interface EnvironmentsService {
     getEnvironments(
         pageSize: number,
         pageNumber: number,
-        sort: string,
-        like: string,
+        sort?: string,
+        like?: string,
     ): Promise<any>;
 
     /**
@@ -33,8 +33,8 @@ export interface EnvironmentsService {
     getEnvironmentsApiRequestOptions(
         pageSize: number,
         pageNumber: number,
-        sort: string,
-        like: string,
+        sort?: string,
+        like?: string,
     ): ApiRequestOptions;
 
     /**

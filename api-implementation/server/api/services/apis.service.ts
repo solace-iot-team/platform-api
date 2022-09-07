@@ -176,7 +176,7 @@ export class ApisService {
     }
   }
 
-  async create(name: string, body: string): Promise<string> {
+  async create(name: string, body: string, apiInfo?: APIInfo): Promise<string> {
     const canCreate: boolean = await this.readStrategy.canCreate(name);
     if (!canCreate) {
       throw new ErrorResponseInternal(
@@ -194,7 +194,7 @@ export class ApisService {
       version: "1",
       deprecated: false,
     }
-    return await this.createInternal(info, body);
+    return await this.createInternal(apiInfo?apiInfo:info, body);
   }
 
   async import(body: Components.Schemas.APIImport): Promise<string> {
@@ -515,7 +515,7 @@ export class ApisService {
   }
 
   private addAsyncAPIExtensionInfo(spec: any) {
-    L.error(JSON.stringify(spec));
+    L.debug(JSON.stringify(spec));
     if (spec.info['x-origin']) {
       return;
     }

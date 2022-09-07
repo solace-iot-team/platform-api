@@ -3,12 +3,15 @@
 
 import type { BasePolicyDTO } from './BasePolicyDTO';
 
-export type SolacePolicy = (BasePolicyDTO & {
+/**
+ * Solace class of service policy
+ */
+export type SolaceClassOfServicePolicy = (BasePolicyDTO & {
     /**
      * Toggles between the use of a queue and direct messaging.
      */
     guaranteedMessaging?: boolean,
-    accessType?: SolacePolicy.accessType,
+    accessType?: SolaceClassOfServicePolicy.accessType,
     /**
      * Duration in seconds of how long a message can live in a queue
      */
@@ -23,12 +26,12 @@ export type SolacePolicy = (BasePolicyDTO & {
     spoolSize?: number,
 });
 
-export namespace SolacePolicy {
+export namespace SolaceClassOfServicePolicy {
 
     /**
      * the discriminator for the model if required for more complex api's
      */
-    export const discriminator = 'SolacePolicy';
+    export const discriminator = 'SolaceClassOfServicePolicy';
 
     export enum accessType {
         exclusive = 'exclusive',

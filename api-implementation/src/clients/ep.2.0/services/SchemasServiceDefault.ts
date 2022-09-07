@@ -283,16 +283,16 @@ export class SchemasServiceDefault implements SchemasService {
 
     public async getSchemaVersionsForSchema(
         schemaId: string,
-        pageSize?: number,
         pageNumber: number = 1,
+        pageSize?: number,
         versions?: Array<string>,
         displayName?: string,
         ids?: Array<string>,
     ): Promise<any> {
         const options = this.getSchemaVersionsForSchemaApiRequestOptions(
             schemaId,
-            pageSize,
             pageNumber,
+            pageSize,
             versions,
             displayName,
             ids,
@@ -303,8 +303,8 @@ export class SchemasServiceDefault implements SchemasService {
 
     public getSchemaVersionsForSchemaApiRequestOptions(
         schemaId: string,
-        pageSize?: number,
         pageNumber: number = 1,
+        pageSize?: number,
         versions?: Array<string>,
         displayName?: string,
         ids?: Array<string>,
@@ -314,8 +314,8 @@ export class SchemasServiceDefault implements SchemasService {
             method: 'GET',
             path: `/api/v2/architecture/schemas/${schemaId}/versions`,
             query: {
-                'pageSize': pageSize,
                 'pageNumber': pageNumber,
+                'pageSize': pageSize,
                 'versions': versions,
                 'displayName': displayName,
                 'ids': ids,

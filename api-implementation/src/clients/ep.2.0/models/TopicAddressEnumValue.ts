@@ -1,26 +1,24 @@
 /* eslint-disable */
 
 
-export type Enum = {
+export type TopicAddressEnumValue = {
     readonly createdTime?: string;
     readonly updatedTime?: string;
     readonly createdBy?: string;
     readonly changedBy?: string;
     readonly id?: string;
-    applicationDomainId: string;
-    name: string;
-    shared?: boolean;
-    readonly numberOfVersions?: number;
-    readonly eventVersionRefCount?: number;
+    enumVersionId?: string;
+    value: string;
+    label?: string;
     readonly type?: string;
 }
 
-export namespace Enum {
+export namespace TopicAddressEnumValue {
 
     /**
      * the discriminator for the model if required for more complex api's
      */
-    export const discriminator = 'Enum';
+    export const discriminator = 'TopicAddressEnumValue';
 
 
 }

@@ -7,16 +7,22 @@ import Environment = Components.Schemas.Environment;
 import Meta = Components.Schemas.Meta;
 import MetaEntityStage = Components.Schemas.MetaEntityStage;
 import APIProduct = Components.Schemas.APIProduct;
+import APIInfo = Components.Schemas.APIInfo;
 import { ErrorResponseInternal } from '../../middlewares/error.handler';
 import { EventAPIAsyncAPIInfo } from '../../../../src/model/eventapiasyncapiinfo';
 
 import cmp from 'semver-compare';
 import semver from 'semver';
-import _ = require('lodash');
+import _ from 'lodash';
 
 export class EPSystemAttributes {
-  public static EP_LIFEFYCLE_STATE: string = 'EP_LIFEFYCLE_STATE';
-  public static EP_EAP_OBJECT: string = 'EP_EAP_OBJECT';
+  public static EP_LIFEFYCLE_STATE: string = '_EP_LIFEFYCLE_STATE_';
+  public static EP_EAP_OBJECT: string = '_EP_EAP_OBJECT_';
+}
+
+export class APIProductAttributes {
+  public static EAP_NAME: string = 'Event API Product Name';
+  public static APP_DOMAIN: string = 'Application Domain';
 }
 
 export type APIProductUpsertAction = 'created' | 'updated' | 'skipped';
@@ -63,6 +69,9 @@ export class ConnectorFacade {
         const apiInfo = await apisService.infoByName(apiName);
         // api exists so we update
         await apisService.update(apiName, spec);
+        await apisService.updateInfo(apiName, {
+            attributes: attributes
+          });
         return [{
           action: 'updated',
           message: `API updated ${asyncAPI.name} ${version} (${apiName})`,
@@ -79,10 +88,20 @@ export class ConnectorFacade {
           }];
         }
         // create API and add attributes
-        await apisService.create(apiName, spec);
-        await apisService.updateInfo(apiName, {
+        const info: APIInfo = {
+          createdBy: asyncAPI.apiInfo.createdBy,
+          createdTime: Date.now(),
+          description: `${asyncAPI.name} ${version} (${apiName})`,
+          name: apiName,
+          source: 'EventAPIProduct',
+          sourceId: asyncAPI.apiInfo.id,
+          summary: `${asyncAPI.name} ${version} (${apiName})`,
+          version: "1",
+          deprecated: false,
           attributes: attributes
-        });
+        }
+
+        await apisService.create(apiName, spec, info);
         return [{
           action: 'created',
           message: `API created ${asyncAPI.name} ${version} (${apiName})`,
@@ -178,12 +197,12 @@ export class ConnectorFacade {
         createdBy: apiProductCreatedBy,
         lastModifiedBy: apiProductChangedBy,
         stage: stage,
-        attributes: [{ name: 'EP_LIFEFYCLE_STATE', value: stage }]
       }
 
       apiProduct.meta = meta;
       try {
         await apiProductsService.create(apiProduct);
+        await apiProductsService.createMetaAttribute(apiProductId, EPSystemAttributes.EP_LIFEFYCLE_STATE, stage);
         return [{
           action: 'created',
           message: `API Product ${apiProduct.name} successfully created`,
@@ -292,14 +311,12 @@ export class ConnectorFacade {
         attributes: oldApiProduct.meta?.attributes
       };
       apiProduct.meta = meta;
-      const epObjectIndex = oldApiProduct.attributes.findIndex(a => a.name = EPSystemAttributes.EP_EAP_OBJECT);
-      const newObjectIndex = apiProduct.attributes.findIndex(a => a.name = EPSystemAttributes.EP_EAP_OBJECT);
-      if (epObjectIndex > -1 && newObjectIndex <= 0) {
-        oldApiProduct.attributes[epObjectIndex] = { name: EPSystemAttributes.EP_EAP_OBJECT, value: apiProduct.attributes[newObjectIndex].value };
-      }
+      this.patchAttribute(EPSystemAttributes.EP_EAP_OBJECT, oldApiProduct, apiProduct);
+      this.patchAttribute(APIProductAttributes.APP_DOMAIN, oldApiProduct, apiProduct);
+      this.patchAttribute(APIProductAttributes.EAP_NAME, oldApiProduct, apiProduct);
       apiProduct.attributes = oldApiProduct.attributes;
       await apiProductsService.update(apiProductId, apiProduct);
-      await apiProductsService.updateMetaAttribute(apiProductId, 'EP_LIFEFYCLE_STATE', stage);
+      await apiProductsService.updateMetaAttribute(apiProductId, EPSystemAttributes.EP_LIFEFYCLE_STATE, stage);
       return {
         action: 'updated',
         message: `API Product ${apiProduct.name} update from EP 2.0 applied`,
@@ -310,8 +327,18 @@ export class ConnectorFacade {
     }
   }
 
-  public createInternalName(name: string){
-    return name.replace(/[^a-zA-Z0-9_-]+/g, '-');
+  private patchAttribute(attributeName: string, oldApiProduct: APIProduct, apiProduct: APIProduct) {
+    const epObjectIndex = oldApiProduct.attributes.findIndex(a => a.name = attributeName);
+    const newObjectIndex = apiProduct.attributes.findIndex(a => a.name = attributeName);
+    if (epObjectIndex > -1 && newObjectIndex <= 0) {
+      oldApiProduct.attributes[epObjectIndex] = { name: attributeName, value: apiProduct.attributes[newObjectIndex].value };
+    }
+  }
+
+  public createInternalName(name: string): string {
+    const internalName = name.replace(/[^a-zA-Z0-9_-]+/g, '-');
+    L.debug(`Created internal name [${internalName}]`);
+    return internalName;
   }
 }
 
