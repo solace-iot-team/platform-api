@@ -12,6 +12,9 @@ declare namespace Components {
         namespace AppName {
             export type AppName = string; // ^[a-zA-Z0-9_-]*$
         }
+        namespace ApplicationDomainId {
+            export type ApplicationDomainId = string; // ^[a-z0-9]*$
+        }
         namespace AttributeName {
             /**
              * Attribute name, access is a special value as it governs access control to the product.
@@ -484,6 +487,57 @@ declare namespace Components {
             ownerId?: string; // .*
         }
         export type AppStatus = "approved" | "pending" | "revoked";
+        export interface ApplicationDomain {
+            /**
+             * example:
+             * 2021-12-31T20:30:57.920Z
+             */
+            readonly createdTime?: string;
+            /**
+             * example:
+             * 2021-12-31T20:30:57.920Z
+             */
+            readonly updatedTime?: string;
+            /**
+             * example:
+             * 12345678
+             */
+            readonly createdBy?: string;
+            /**
+             * example:
+             * 12345678
+             */
+            readonly changedBy?: string;
+            /**
+             * example:
+             * 12345678
+             */
+            readonly id?: string;
+            /**
+             * example:
+             * My First Application Domain
+             */
+            name: string;
+            /**
+             * example:
+             * Application Domain created by the Solace PubSub+ Cloud API documentation
+             */
+            description?: string;
+            /**
+             * Forces all topic addresses within the application domain to be unique.
+             * example:
+             * true
+             */
+            uniqueTopicAddressEnforcementEnabled?: boolean;
+            /**
+             * Forces all topic addresses within the application domain to be prefixed with one of the application domain’s configured topic domains.
+             * example:
+             * false
+             */
+            topicDomainEnforcementEnabled?: boolean;
+            type?: string;
+        }
+        export type ApplicationDomainList = ApplicationDomain[];
         /**
          * Value of the attribute.
          * example:
@@ -2410,6 +2464,20 @@ declare namespace Paths {
             export type $504 = Components.Responses.GatewayTimeout;
         }
     }
+    namespace GetEPApplicationDomain {
+        namespace Responses {
+            export type $200 = Components.Schemas.ApplicationDomain;
+            export type $400 = Components.Responses.BadRequest;
+            export type $401 = Components.Responses.Unauthorized;
+            export type $403 = Components.Responses.Forbidden;
+            export type $404 = Components.Responses.NotFound;
+            export type $406 = Components.Responses.NotAcceptable;
+            export type $429 = Components.Responses.TooManyRequests;
+            export type $500 = Components.Responses.InternalServerError;
+            export type $503 = Components.Responses.ServiceUnavailable;
+            export type $504 = Components.Responses.GatewayTimeout;
+        }
+    }
     namespace GetEnvironment {
         namespace Responses {
             export type $200 = Components.Schemas.EnvironmentResponse;
@@ -2836,6 +2904,20 @@ declare namespace Paths {
     namespace ListDevelopers {
         namespace Responses {
             export type $200 = Components.Schemas.Developer[];
+            export type $400 = Components.Responses.BadRequest;
+            export type $401 = Components.Responses.Unauthorized;
+            export type $403 = Components.Responses.Forbidden;
+            export type $404 = Components.Responses.NotFound;
+            export type $406 = Components.Responses.NotAcceptable;
+            export type $429 = Components.Responses.TooManyRequests;
+            export type $500 = Components.Responses.InternalServerError;
+            export type $503 = Components.Responses.ServiceUnavailable;
+            export type $504 = Components.Responses.GatewayTimeout;
+        }
+    }
+    namespace ListEPApplicationDomains {
+        namespace Responses {
+            export type $200 = Components.Schemas.ApplicationDomainList;
             export type $400 = Components.Responses.BadRequest;
             export type $401 = Components.Responses.Unauthorized;
             export type $403 = Components.Responses.Forbidden;
