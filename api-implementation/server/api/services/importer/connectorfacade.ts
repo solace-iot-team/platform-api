@@ -298,6 +298,7 @@ export class ConnectorFacade {
       L.info(msg);
       oldApiProduct.meta.version = semver.inc(oldApiProduct.meta.version, 'patch');
       oldApiProduct.environments = apiProduct.environments;
+      oldApiProduct.protocols = apiProduct.protocols;
       await apiProductsService.update(apiProductId, oldApiProduct);
       return {
         resource: 'APIProduct',
