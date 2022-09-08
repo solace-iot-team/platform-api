@@ -30,8 +30,8 @@ export default class EventPortalImporterTaskImpl {
         if (configuration.attributeMap) {
           const configuredMappedAttributes = configuration.attributeMap.find(m => m.name == prodVersion.product.applicationDomainId);
           if (configuredMappedAttributes) {
-            for (const att of configuredMappedAttributes.attributes){
-              mappedAttributes.push ({
+            for (const att of configuredMappedAttributes.attributes) {
+              mappedAttributes.push({
                 name: att.name,
                 value: att.value
               });
@@ -72,21 +72,19 @@ export default class EventPortalImporterTaskImpl {
         // check an environment exists in the connector for the cloud service id in the EP API Product
         const envNames: string[] = [];
         const apiProductProtocols: Protocol[] = [];
-        if (prodVersion.version.solaceMessagingService) {
+        if (prodVersion.version?.solaceMessagingService) {
           const solaceMessagingService: SolaceMessagingService = prodVersion.version.solaceMessagingService;
-          if (solaceMessagingService) {
-            const requiredEnvProtocols: Protocol[] = [];
-            for (const supportedProtocol of solaceMessagingService.supportedProtocols) {
-              const protocol = ProtocolMapper.findAsyncAPIProtocolByEventPortalProtocol(supportedProtocol);
-              if (protocol) {
-                if (!apiProductProtocols.find(apiProtocol => protocol.name == apiProtocol.name)) {
-                  apiProductProtocols.push(protocol);
-                }
-                requiredEnvProtocols.push(protocol);
+          for (const supportedProtocol of solaceMessagingService.supportedProtocols) {
+            const protocol = ProtocolMapper.findAsyncAPIProtocolByEventPortalProtocol(supportedProtocol);
+            if (protocol) {
+              if (!apiProductProtocols.find(apiProtocol => protocol.name == apiProtocol.name)) {
+                apiProductProtocols.push(protocol);
               }
             }
             const envResult = await connectorFacade.upsertEnvironment(`${solaceMessagingService.environmentName}-${solaceMessagingService.eventMeshName}-${solaceMessagingService.id}`, solaceMessagingService.solaceCloudMessagingServiceId);
-            envNames.push(envResult.environmentName);
+            if (!envNames.find(s => s == envResult.environmentName)) {
+              envNames.push(envResult.environmentName);
+            }
             versionResults.push(...envResult.results);
           }
         }
