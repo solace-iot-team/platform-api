@@ -26,8 +26,8 @@ export class EPSystemAttributes {
 }
 
 export class APIProductAttributes {
-  public static EAP_NAME: string = 'Event API Product Name';
-  public static APP_DOMAIN: string = 'Application Domain';
+  public static EAP_NAME: string = 'Event-API-Product-Name';
+  public static APP_DOMAIN: string = 'Application-Domain';
 }
 
 export type APIProductUpsertAction = 'created' | 'updated' | 'skipped';
