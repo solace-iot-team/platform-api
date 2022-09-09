@@ -21,7 +21,7 @@ export type EventApiProductVersion = {
     eventApiVersionIds?: Array<string>;
     stateId?: string;
     plans?: Array<Plan>;
-    solaceMessagingService?: SolaceMessagingService;
+    solaceMessagingServices?: SolaceMessagingService[];
     /**
      * The type of payload
      */
