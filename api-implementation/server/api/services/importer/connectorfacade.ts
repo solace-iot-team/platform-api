@@ -20,7 +20,7 @@ import { ProtocolMapper } from '../../../../src/protocolmapper';
 
 export class EPSystemAttributes {
   public static EP_LIFEFYCLE_STATE: string = '_EP_LIFEFYCLE_STATE_';
-  public static IMP_SOURCE_ATTRIBUTE: string = '_IMP_SOURCE_';
+  public static IMP_SOURCE_ATTRIBUTE: string = '_AC_IMP_SOURCE_';
   public static EP_SOURCE_INDICATOR: string = 'Solace Event Portal (2)';
   public static EP_EAP_OBJECT: string = '_EP_EAP_OBJECT_';
 }
