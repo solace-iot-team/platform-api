@@ -8,7 +8,7 @@ import AppConnectionStatus = Components.Schemas.AppConnectionStatus;
 
 export default interface Broker {
   provision(app: App, ownerAttributes: Attributes, isUpdate?: boolean): Promise<void>;
-  reprovision(appPatch: App, appUnmodified: App, ownerAttributes: Attributes): Promise<boolean>;
+  reprovision(appPatch: App, appUnmodified: App, ownerAttributes: Attributes): Promise<void>;
   deprovision(app: App);
   getPermissions(app: App, ownerAttributes: Attributes, envName: string, syntax: TopicSyntax): Promise<Permissions>;
   getAppStatus(app: App): Promise<AppConnectionStatus>;

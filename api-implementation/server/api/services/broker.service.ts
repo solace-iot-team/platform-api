@@ -48,23 +48,22 @@ export class SolaceBrokerService implements Broker {
     }
   }
 
-  public async reprovision(appPatch: App, appUnmodified: App, ownerAttributes: Attributes): Promise<boolean> {
+  public async reprovision(appPatch: App, appUnmodified: App, ownerAttributes: Attributes): Promise<void> {
     L.debug(`Attempting to reprovision ${appPatch.name}`);
     if ((appPatch as AppPatch).status != 'approved') {
       L.debug(`App ${appPatch.name} is not approved`);
-      return false;
+      return;
     }
 
     // try to provision the modified app, if it fails roll back to previous version and provision the previous version
     try {
       const r = await this.provision(appPatch as App, ownerAttributes, true);
-      return true;
     }
     catch (e) {
       L.error(`Error reprovisioning app `, e);
       L.error(e);
       const r = await this.provision(appUnmodified as App, ownerAttributes, true);
-      return false;
+      throw e;
     }
 
   }
@@ -92,9 +91,8 @@ export class SolaceBrokerService implements Broker {
       } else {
         L.error(`Provisioning error ${e}`);
       }
-
       L.error(e.stack);
-      throw new ErrorResponseInternal(500, e);
+      throw e;
     }
 
   }
