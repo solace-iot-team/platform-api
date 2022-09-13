@@ -291,14 +291,15 @@ export class AppsService {
     // we only take action if the app is in approved status
 
     if (appPatch.status == 'approved') {
-      const result: boolean = await BrokerFactory.getBroker().reprovision(appPatch as App, appNotModified as App, ownerAttributes);
-      // roll back database changes
-      if (!result) {
+      try {
+        await BrokerFactory.getBroker().reprovision(appPatch as App, appNotModified as App, ownerAttributes);
+      } catch (e) {
+        // roll back database changes
         appPatch = await this.persistenceService.update(
           name,
           appNotModified
         );
-        throw new ErrorResponseInternal(500, 'App provisioning failed');
+        throw e;
       }
     }
     return appPatch;
@@ -403,9 +404,9 @@ export class AppsService {
                 `Referenced environment ${envName} is not associated with any API Product`
               );
             }
-           let webHooksPerDev: WebHook[] = [];
+            let webHooksPerDev: WebHook[] = [];
             webHooksPerDev = app.webHooks.filter((w: { environments: any[]; }) => w.environments == null || w.environments.find(e => e == envName));
-            if (webHooksPerDev.length>1){
+            if (webHooksPerDev.length > 1) {
               throw new ErrorResponseInternal(
                 400,
                 `Multiple webHooks for  ${envName} are not supported`
