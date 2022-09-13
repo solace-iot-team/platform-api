@@ -14,6 +14,7 @@ import { PersistenceService } from './persistence.service';
 import { ErrorResponseInternal } from '../middlewares/error.handler';
 import preconditionCheck from './persistence/preconditionhelper';
 import { updateProtectionByObject } from './persistence/preconditionhelper';
+import { Body } from 'node-fetch';
 
 export interface DeveloperApp extends App {
   appType?: string;
@@ -241,7 +242,7 @@ export class DevelopersService {
     if (app) {
       let webHook = null;
       try {
-        webHook = WebHookHelpers.getWebHookByName(name, app);
+        webHook = WebHookHelpers.getWebHookByExample(name, body, app);
 
       } catch (e) {
 

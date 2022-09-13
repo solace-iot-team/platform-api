@@ -28,6 +28,7 @@ import APIProductsTypeHelper from '../../../src/apiproductstypehelper';
 import AppHelper from '../../../src/apphelper';
 
 import { scheduler } from '../../index';
+import WebHookHelpers from './apps/webhookhelpers';
 
 
 export interface APISpecification {
@@ -402,8 +403,19 @@ export class AppsService {
                 `Referenced environment ${envName} is not associated with any API Product`
               );
             }
+           let webHooksPerDev: WebHook[] = [];
+            webHooksPerDev = app.webHooks.filter((w: { environments: any[]; }) => w.environments == null || w.environments.find(e => e == envName));
+            if (webHooksPerDev.length>1){
+              throw new ErrorResponseInternal(
+                400,
+                `Multiple webHooks for  ${envName} are not supported`
+              );
+            }
           });
+
         }
+
+
       });
     }
 

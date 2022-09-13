@@ -246,7 +246,7 @@ export class TeamsService {
     if (app) {
       let webHook = null;
       try {
-        webHook = WebHookHelpers.getWebHookByName(name, app);
+        webHook = WebHookHelpers.getWebHookByExample(name, body, app);
 
       } catch (e) {
 

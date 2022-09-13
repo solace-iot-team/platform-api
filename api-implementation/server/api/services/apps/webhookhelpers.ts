@@ -4,6 +4,8 @@ import WebHook = Components.Schemas.WebHook;
 import AppResponse = Components.Schemas.AppResponse;
 import { ErrorResponseInternal } from '../../middlewares/error.handler';
 import L from '../../../common/logger';
+import _ from 'lodash';
+
 export class WebHookHelpers {
 
   public getWebHookListFromApp(app: AppResponse): WebHookNameList {
@@ -36,6 +38,23 @@ export class WebHookHelpers {
     } else {
       throw new ErrorResponseInternal(404, `WebHook ${decodedName} not found`);
     }
+  }
+
+  public getWebHookByExample(name: string, newWebHook: WebHook, app: AppResponse): WebHook {
+    try {
+      return this.getWebHookByName(name, app);
+    } catch (e) {
+      if (app.webHooks) {
+        for (const wh of app.webHooks) {
+          if (_.intersection(newWebHook.environments, wh.environments).length > 0) {
+            return wh;
+
+          }
+        }
+      }
+
+    }
+    throw new ErrorResponseInternal(404, `WebHook ${decodeURIComponent(newWebHook.name)} not found`);
   }
 
   public patchAppWebHook(name: string, app: AppResponse, webHook: WebHook) {
