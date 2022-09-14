@@ -133,10 +133,12 @@ export class RestdDeliveryPointBuilder {
     
             const queue = await QueueManager.createWebHookQueue(app, apiProducts, ownerAttributes);
             queue.environments = [service['environment']];
+            const cp = {...GuaranteedMessagingReceiveSendProfile};
+            cp.environments = [service['environment']];
             //create RDPs
             const newRDP: MsgVpnRestDeliveryPoint = {
               restDeliveryPointName: objectName,
-              clientProfile: GuaranteedMessagingReceiveSendProfile,
+              clientProfile: cp,
               enabled: true,
               restConsumers: [newRDPConsumer],
               queueBindings: [newRDPQueueBinding],
