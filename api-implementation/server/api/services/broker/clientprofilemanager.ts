@@ -38,7 +38,7 @@ const GuaranteedMessagingSendOnlyProfile: MsgVpnClientProfile = {
   environments: [],
 }
 
-const GuaranteedMessagingReceiveSendProfile: MsgVpnClientProfile = {
+export const GuaranteedMessagingReceiveSendProfile: MsgVpnClientProfile = {
   clientProfileName: GUARANTEED_MESSAGING_RECEIVE_SEND,
   allowGuaranteedMsgSendEnabled: true,
   allowTransactedSessionsEnabled: true,
