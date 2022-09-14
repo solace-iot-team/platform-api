@@ -4,6 +4,7 @@ import RdpTask, { RdpTaskConfig } from "../solace.config.tasks/rdp.task";
 import RdpConsumerTask, { RdpConsumerTaskConfig } from "../solace.config.tasks/rdpconsumer.task";
 import RdpConsumerTlsComonNameTask, { RdpConsumerTlsComonNameTaskConfig } from "../solace.config.tasks/rdpconsumertlscommonname.task";
 import RdpQueueBindingTask, { RdpQueueBindingTaskConfig } from "../solace.config.tasks/rdpqueuebinding.task";
+import RdpQueueBindingRequestHeaderTask, { RdpQueueBindingHeaderTaskConfig } from "../solace.config.tasks/rdpqueuebindingheader.task";
 import { QueueBuilder } from "./queue.taskset";
 
 class RestDeliveryPointBuilder extends QueueBuilder {
@@ -88,8 +89,21 @@ class RestDeliveryPointBuilder extends QueueBuilder {
                         environment: envService,
                         state: state
                     }
-                    const consumerTask = taskFactory(RdpQueueBindingTask, rdpQueueBindingConfig);
-                    tasks.add(consumerTask);
+                    const bindingTask = taskFactory(RdpQueueBindingTask, rdpQueueBindingConfig);
+                    tasks.add(bindingTask);
+                    if (queueBinding.requestHeaders){
+                        for (const header of queueBinding.requestHeaders){
+                            const rdpQueueBindingHeaderConfig: RdpQueueBindingHeaderTaskConfig = {
+                                configObject: header,
+                                queueBinding: queueBinding,
+                                rdp: rdp,
+                                environment: envService,
+                                state: state
+                            }
+                            const headerTask = taskFactory(RdpQueueBindingRequestHeaderTask, rdpQueueBindingHeaderConfig);
+                            tasks.add(headerTask);
+                        }
+                    }
                 }
 
                 const rdpConfigEnabled: RdpTaskConfig = {
