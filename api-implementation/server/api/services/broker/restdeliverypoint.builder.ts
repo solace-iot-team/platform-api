@@ -15,6 +15,7 @@ import MsgVpnRestDeliveryPointRestConsumerTlsTrustedCommonName = Components.Sche
 import MsgVpnRestDeliveryPointRestConsumerAuthenticationSchema = Components.Schemas.MsgVpnRestDeliveryPointRestConsumerAuthenticationScheme;
 import MsgVpnRestDeliveryPointRestConsumerHttpMethod = Components.Schemas.MsgVpnRestDeliveryPointRestConsumerHttpMethod;
 import { ErrorResponseInternal } from '../../middlewares/error.handler';
+import { GuaranteedMessagingReceiveSendProfile } from './clientprofilemanager';
 
 export class RestdDeliveryPointBuilder {
     public async build(app: App, services: Service[], apiProducts: APIProduct[], ownerAttributes: Attributes): Promise<MsgVpnRestDeliveryPoint[]> {
@@ -135,6 +136,7 @@ export class RestdDeliveryPointBuilder {
             //create RDPs
             const newRDP: MsgVpnRestDeliveryPoint = {
               restDeliveryPointName: objectName,
+              clientProfile: GuaranteedMessagingReceiveSendProfile,
               enabled: true,
               restConsumers: [newRDPConsumer],
               queueBindings: [newRDPQueueBinding],

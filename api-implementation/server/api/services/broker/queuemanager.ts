@@ -19,7 +19,10 @@ export class QueueManager {
   public async createWebHookQueue(app: App,
     apiProducts: APIProduct[], ownerAttributes: Attributes): Promise<MsgVpnQueue> {
     const clientOpts = BrokerUtils.getAppAggregatedClientOptions(apiProducts);
-    return await this.createQueue(app, apiProducts, ownerAttributes, undefined, clientOpts);
+    // consumer for a webhook queue is a syntehtic, internal user, the queue must allow non owner consumes
+    const q = await this.createQueue(app, apiProducts, ownerAttributes, undefined, clientOpts);
+    q.permission = 'consume';
+    return q;
   }
 
   public async createAPIProductQueues(app: App,

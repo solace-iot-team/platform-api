@@ -22,7 +22,7 @@ export default class RdpConsumerTlsComonNameTask extends SEMPv2Task {
         super(taskConfig);
     }
 
-    public isApplicable(): boolean {
+    public async isApplicable(): Promise<boolean> {
         const config: TaskConfigAlias = this.config() as TaskConfigAlias;
         return this.isApplicableEnvironment(config.configObject)
     }

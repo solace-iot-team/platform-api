@@ -1,5 +1,6 @@
 import { taskFactory, TaskState } from "../../../../src/tasks/task.interface";
 import { TaskSet } from "../../../../src/tasks/task.set";
+import ClientProfileTask, { ClientProfileTaskConfig } from "../solace.config.tasks/clientprofile.task";
 import RdpTask, { RdpTaskConfig } from "../solace.config.tasks/rdp.task";
 import RdpConsumerTask, { RdpConsumerTaskConfig } from "../solace.config.tasks/rdpconsumer.task";
 import RdpConsumerTlsComonNameTask, { RdpConsumerTlsComonNameTaskConfig } from "../solace.config.tasks/rdpconsumertlscommonname.task";
@@ -37,6 +38,14 @@ class RestDeliveryPointBuilder extends QueueBuilder {
                 && rdp.queues && rdp.queues.length > 0
                 && rdp.environments.includes(envService.environment)
             ) {
+                const clientProfile: ClientProfileTaskConfig = {
+                    profile: rdp.clientProfile,
+                    environment: envService,
+                    state: state
+                };
+                const cProfile = taskFactory(ClientProfileTask, clientProfile);
+                tasks.add(cProfile);
+        
                 const disabledRdp = { ...rdp };
                 disabledRdp.enabled = false;
                 const rdpConfig: RdpTaskConfig = {

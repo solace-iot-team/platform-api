@@ -16,7 +16,7 @@ export default class ACLProfileTask extends SEMPv2Task {
         super(taskConfig);
     }
 
-    public isApplicable(): boolean {
+    public async isApplicable(): Promise<boolean> {
         const config: ACLProfileTaskConfig = this.config() as ACLProfileTaskConfig;
         return this.isApplicableEnvironment(config.profile)
     }

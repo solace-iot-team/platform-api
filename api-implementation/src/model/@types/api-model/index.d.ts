@@ -1118,7 +1118,7 @@ declare namespace Components {
             ingressEnabled: boolean;
             egressEnabled: boolean;
             owner: CommonName; // ^[a-zA-Z0-9_\-]*(@[ |\S]*)?$
-            permission: "no-access" | "read-only";
+            permission: "no-access" | "read-only" | "consume";
             accessType: "exclusive" | "non-exclusive";
             maxTtl?: number;
             maxMsgSpoolUsage?: number;
@@ -1136,6 +1136,7 @@ declare namespace Components {
         }
         export interface MsgVpnRestDeliveryPoint {
             restDeliveryPointName: CommonName; // ^[a-zA-Z0-9_\-]*(@[ |\S]*)?$
+            clientProfile?: MsgVpnClientProfile;
             enabled: boolean;
             restConsumers: MsgVpnRestDeliveryPointRestConsumer[];
             queueBindings: MsgVpnRestDeliveryPointQueueBinding[];

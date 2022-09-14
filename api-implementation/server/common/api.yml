@@ -2,7 +2,7 @@ openapi: 3.0.0
 info:
   title: Solace API Management Connector
   description: 'Solace API Management Connector API. Note: basic authentication security mechanism is deprecated.'
-  version: 0.13.0
+  version: 0.13.1
   license: 
     name: MIT
     url: https://github.com/solace-iot-team/platform-api/blob/main/LICENSE
@@ -2800,6 +2800,7 @@ components:
           enum:
           - 'no-access'
           - 'read-only'
+          - 'consume'
         accessType:
           type: string
           enum:
@@ -2863,6 +2864,8 @@ components:
       properties:
         restDeliveryPointName:
           $ref: '#/components/schemas/CommonName'
+        clientProfile:
+          $ref: '#/components/schemas/MsgVpnClientProfile'
         enabled:
           type: boolean
         restConsumers:

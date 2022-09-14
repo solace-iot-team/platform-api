@@ -33,7 +33,7 @@ export interface TaskConstructor {
 export interface TaskInterface {
     config(): TaskConfig;
     execute(): Promise<TaskResult>;
-    isApplicable(): boolean;
+    isApplicable(): Promise<boolean>;
 }
 
 
@@ -52,7 +52,7 @@ export abstract class TaskTemplate implements TaskInterface{
         return this.taskConfig;
     }
 
-    public abstract isApplicable(): boolean;
+    public abstract isApplicable(): Promise<boolean>;
 
     public async execute(): Promise<TaskResult> {
         const desiredState: TaskState = this.taskConfig.state;

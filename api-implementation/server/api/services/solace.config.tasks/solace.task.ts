@@ -11,11 +11,15 @@ export interface SEMPv2TaskConfig extends TaskConfig {
 
 export abstract class SEMPv2Task extends TaskTemplate {
     protected apiClient: AllService;
+    protected apiVersion: string;
     protected paths: string[] = ["tags", "attributes", 'environments'];
 
     constructor(taskConfig: SEMPv2TaskConfig) {
         super(taskConfig);
         this.apiClient = SempV2ClientFactory.getSEMPv2Client(taskConfig.environment.service as Service);
+        SempV2ClientFactory.getSEMPv2ClientVersion(taskConfig.environment.service as Service).then(p=>{
+            this.apiVersion = p;
+        });
     }
 
     protected isApplicableEnvironment(configObject: any): boolean {
