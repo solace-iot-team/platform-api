@@ -7,17 +7,25 @@ export type MsgVpnLinks = {
      */
     aclProfilesUri?: string;
     /**
-     * The URI of this Message VPN's collection of OAuth Provider objects. Available since 2.13.
+     * The URI of this Message VPN's collection of OAuth Profile objects. Available since 2.25.
+     */
+    authenticationOauthProfilesUri?: string;
+    /**
+     * The URI of this Message VPN's collection of OAuth Provider objects. Deprecated since 2.25. Replaced by authenticationOauthProfiles.
      */
     authenticationOauthProvidersUri?: string;
     /**
-     * The URI of this Message VPN's collection of LDAP Authorization Group objects.
+     * The URI of this Message VPN's collection of Authorization Group objects.
      */
     authorizationGroupsUri?: string;
     /**
      * The URI of this Message VPN's collection of Bridge objects.
      */
     bridgesUri?: string;
+    /**
+     * The URI of this Message VPN's collection of Certificate Matching Rule objects. Available since 2.27.
+     */
+    certMatchingRulesUri?: string;
     /**
      * The URI of this Message VPN's collection of Client Profile objects.
      */

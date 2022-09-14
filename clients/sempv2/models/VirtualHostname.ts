@@ -3,11 +3,11 @@
 
 export type VirtualHostname = {
     /**
-     * Enable or disable Virtual Hostname to Message VPN mapping. The default value is `false`.
+     * Enable or disable Virtual Hostname to Message VPN mapping. Changes to this attribute are synchronized to HA mates via config-sync. The default value is `false`.
      */
     enabled?: boolean;
     /**
-     * The message VPN to which this virtual hostname is mapped. The default value is `""`.
+     * The message VPN to which this virtual hostname is mapped. Changes to this attribute are synchronized to HA mates via config-sync. The default value is `""`.
      */
     msgVpnName?: string;
     /**

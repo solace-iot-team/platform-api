@@ -7,7 +7,7 @@ export type MsgVpnDmrBridge = {
      */
     msgVpnName?: string;
     /**
-     * The remote Message VPN of the DMR Bridge. The default value is `""`.
+     * The remote Message VPN of the DMR Bridge. Changes to this attribute are synchronized to HA mates and replication sites via config-sync. The default value is `""`.
      */
     remoteMsgVpnName?: string;
     /**

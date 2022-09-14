@@ -3,13 +3,13 @@
 
 export type SystemInformation = {
     /**
-     * The platform running the SEMP API.
+     * The platform running the SEMP API. Deprecated since 2.2. /systemInformation was replaced by /about/api.
      */
-    platform: string;
+    platform?: string;
     /**
-     * The version of the SEMP API.
+     * The version of the SEMP API. Deprecated since 2.2. /systemInformation was replaced by /about/api.
      */
-    sempVersion: string;
+    sempVersion?: string;
 }
 
 export namespace SystemInformation {

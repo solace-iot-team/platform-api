@@ -3,7 +3,7 @@
 
 export type MsgVpnDistributedCacheClusterInstance = {
     /**
-     * Enable or disable auto-start for the Cache Instance. When enabled, the Cache Instance will automatically attempt to transition from the Stopped operational state to Up whenever it restarts or reconnects to the message broker. The default value is `false`.
+     * Enable or disable auto-start for the Cache Instance. When enabled, the Cache Instance will automatically attempt to transition from the Stopped operational state to Up whenever it restarts or reconnects to the message broker. Changes to this attribute are synchronized to HA mates and replication sites via config-sync. The default value is `false`.
      */
     autoStartEnabled?: boolean;
     /**
@@ -15,7 +15,7 @@ export type MsgVpnDistributedCacheClusterInstance = {
      */
     clusterName?: string;
     /**
-     * Enable or disable the Cache Instance. The default value is `false`.
+     * Enable or disable the Cache Instance. Changes to this attribute are synchronized to HA mates and replication sites via config-sync. The default value is `false`.
      */
     enabled?: boolean;
     /**
@@ -27,7 +27,7 @@ export type MsgVpnDistributedCacheClusterInstance = {
      */
     msgVpnName?: string;
     /**
-     * Enable or disable stop-on-lost-message for the Cache Instance. When enabled, the Cache Instance will transition to the stopped operational state upon losing a message. When stopped, it cannot accept or respond to cache requests, but continues to cache messages. The default value is `true`.
+     * Enable or disable stop-on-lost-message for the Cache Instance. When enabled, the Cache Instance will transition to the stopped operational state upon losing a message. When stopped, it cannot accept or respond to cache requests, but continues to cache messages. Changes to this attribute are synchronized to HA mates and replication sites via config-sync. The default value is `true`.
      */
     stopOnLostMsgEnabled?: boolean;
 }

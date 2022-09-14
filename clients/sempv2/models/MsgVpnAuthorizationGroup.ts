@@ -3,19 +3,19 @@
 
 export type MsgVpnAuthorizationGroup = {
     /**
-     * The ACL Profile of the LDAP Authorization Group. The default value is `"default"`.
+     * The ACL Profile of the Authorization Group. Changes to this attribute are synchronized to HA mates and replication sites via config-sync. The default value is `"default"`.
      */
     aclProfileName?: string;
     /**
-     * The name of the LDAP Authorization Group. Special care is needed if the group name contains special characters such as '#', '+', ';', '=' as the value of the group name returned from the LDAP server might prepend those characters with '\'. For example a group name called 'test#,lab,com' will be returned from the LDAP server as 'test\#,lab,com'.
+     * The name of the Authorization Group. For LDAP groups, special care is needed if the group name contains special characters such as '#', '+', ';', '=' as the value of the group name returned from the LDAP server might prepend those characters with '\'. For example a group name called 'test#,lab,com' will be returned from the LDAP server as 'test\#,lab,com'.
      */
     authorizationGroupName?: string;
     /**
-     * The Client Profile of the LDAP Authorization Group. The default value is `"default"`.
+     * The Client Profile of the Authorization Group. Changes to this attribute are synchronized to HA mates and replication sites via config-sync. The default value is `"default"`.
      */
     clientProfileName?: string;
     /**
-     * Enable or disable the LDAP Authorization Group in the Message VPN. The default value is `false`.
+     * Enable or disable the Authorization Group in the Message VPN. Changes to this attribute are synchronized to HA mates and replication sites via config-sync. The default value is `false`.
      */
     enabled?: boolean;
     /**
@@ -23,11 +23,11 @@ export type MsgVpnAuthorizationGroup = {
      */
     msgVpnName?: string;
     /**
-     * Lower the priority to be less than this group. This attribute is absent from a GET and not updated when absent in a PUT, subject to the exceptions in note 4. The default is not applicable.
+     * Lower the priority to be less than this group. This attribute is absent from a GET and not updated when absent in a PUT, subject to the exceptions in note 4. Changes to this attribute are synchronized to HA mates and replication sites via config-sync. The default is not applicable.
      */
     orderAfterAuthorizationGroupName?: string;
     /**
-     * Raise the priority to be greater than this group. This attribute is absent from a GET and not updated when absent in a PUT, subject to the exceptions in note 4. The default is not applicable.
+     * Raise the priority to be greater than this group. This attribute is absent from a GET and not updated when absent in a PUT, subject to the exceptions in note 4. Changes to this attribute are synchronized to HA mates and replication sites via config-sync. The default is not applicable.
      */
     orderBeforeAuthorizationGroupName?: string;
 }

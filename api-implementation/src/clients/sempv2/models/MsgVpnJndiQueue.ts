@@ -7,7 +7,7 @@ export type MsgVpnJndiQueue = {
      */
     msgVpnName?: string;
     /**
-     * The physical name of the JMS Queue. The default value is `""`.
+     * The physical name of the JMS Queue. Changes to this attribute are synchronized to HA mates and replication sites via config-sync. The default value is `""`.
      */
     physicalName?: string;
     /**

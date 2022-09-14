@@ -5,7 +5,7 @@ import type { EventThreshold } from './EventThreshold';
 
 export type MsgVpnQueueTemplate = {
     /**
-     * The access type for delivering messages to consumer flows. The default value is `"exclusive"`. The allowed values and their meaning are:
+     * The access type for delivering messages to consumer flows. Changes to this attribute are synchronized to HA mates and replication sites via config-sync. The default value is `"exclusive"`. The allowed values and their meaning are:
      *
      * <pre>
      * "exclusive" - Exclusive delivery of messages to the first bound consumer flow.
@@ -15,15 +15,19 @@ export type MsgVpnQueueTemplate = {
      */
     accessType?: MsgVpnQueueTemplate.accessType;
     /**
-     * Enable or disable the propagation of consumer acknowledgements (ACKs) received on the active replication Message VPN to the standby replication Message VPN. The default value is `true`.
+     * Enable or disable the propagation of consumer acknowledgements (ACKs) received on the active replication Message VPN to the standby replication Message VPN. Changes to this attribute are synchronized to HA mates and replication sites via config-sync. The default value is `true`.
      */
     consumerAckPropagationEnabled?: boolean;
     /**
-     * The name of the Dead Message Queue (DMQ). The default value is `"#DEAD_MSG_QUEUE"`.
+     * The name of the Dead Message Queue (DMQ). Changes to this attribute are synchronized to HA mates and replication sites via config-sync. The default value is `"#DEAD_MSG_QUEUE"`.
      */
     deadMsgQueue?: string;
     /**
-     * Controls the durability of queues created from this template. If non-durable, the created queue will be non-durable, regardless of the specified durability. If none, the created queue will have the requested durability. The default value is `"none"`. The allowed values and their meaning are:
+     * The delay, in seconds, to apply to messages arriving on the Queue before the messages are eligible for delivery. This attribute does not apply to MQTT queues created from this template, but it may apply in future releases. Therefore, to maintain forward compatibility, do not set this value on templates that might be used for MQTT queues. Changes to this attribute are synchronized to HA mates and replication sites via config-sync. The default value is `0`. Available since 2.22.
+     */
+    deliveryDelay?: number;
+    /**
+     * Controls the durability of queues created from this template. If non-durable, the created queue will be non-durable, regardless of the specified durability. If none, the created queue will have the requested durability. Changes to this attribute are synchronized to HA mates and replication sites via config-sync. The default value is `"none"`. The allowed values and their meaning are:
      *
      * <pre>
      * "none" - The durability of the endpoint will be as requested on create.
@@ -36,27 +40,27 @@ export type MsgVpnQueueTemplate = {
     eventMsgSpoolUsageThreshold?: EventThreshold;
     eventRejectLowPriorityMsgLimitThreshold?: EventThreshold;
     /**
-     * The maximum number of consumer flows that can bind. The default value is `1000`.
+     * The maximum number of consumer flows that can bind. Changes to this attribute are synchronized to HA mates and replication sites via config-sync. The default value is `1000`.
      */
     maxBindCount?: number;
     /**
-     * The maximum number of messages delivered but not acknowledged per flow. The default value is `10000`.
+     * The maximum number of messages delivered but not acknowledged per flow. Changes to this attribute are synchronized to HA mates and replication sites via config-sync. The default value is `10000`.
      */
     maxDeliveredUnackedMsgsPerFlow?: number;
     /**
-     * The maximum message size allowed, in bytes (B). The default value is `10000000`.
+     * The maximum message size allowed, in bytes (B). Changes to this attribute are synchronized to HA mates and replication sites via config-sync. The default value is `10000000`.
      */
     maxMsgSize?: number;
     /**
-     * The maximum message spool usage allowed, in megabytes (MB). A value of 0 only allows spooling of the last message received and disables quota checking. The default value is `1500`.
+     * The maximum message spool usage allowed, in megabytes (MB). A value of 0 only allows spooling of the last message received and disables quota checking. Changes to this attribute are synchronized to HA mates and replication sites via config-sync. The default value is `5000`.
      */
     maxMsgSpoolUsage?: number;
     /**
-     * The maximum number of message redelivery attempts that will occur prior to the message being discarded or moved to the DMQ. A value of 0 means to retry forever. The default value is `0`.
+     * The maximum number of message redelivery attempts that will occur prior to the message being discarded or moved to the DMQ. A value of 0 means to retry forever. Changes to this attribute are synchronized to HA mates and replication sites via config-sync. The default value is `0`.
      */
     maxRedeliveryCount?: number;
     /**
-     * The maximum time in seconds a message can stay in a Queue when `respectTtlEnabled` is `"true"`. A message expires when the lesser of the sender assigned time-to-live (TTL) in the message and the `maxTtl` configured for the Queue, is exceeded. A value of 0 disables expiry. The default value is `0`.
+     * The maximum time in seconds a message can stay in a Queue when `respectTtlEnabled` is `"true"`. A message expires when the lesser of the sender assigned time-to-live (TTL) in the message and the `maxTtl` configured for the Queue, is exceeded. A value of 0 disables expiry. Changes to this attribute are synchronized to HA mates and replication sites via config-sync. The default value is `0`.
      */
     maxTtl?: number;
     /**
@@ -64,7 +68,7 @@ export type MsgVpnQueueTemplate = {
      */
     msgVpnName?: string;
     /**
-     * The permission level for all consumers, excluding the owner. The default value is `"no-access"`. The allowed values and their meaning are:
+     * The permission level for all consumers, excluding the owner. Changes to this attribute are synchronized to HA mates and replication sites via config-sync. The default value is `"no-access"`. The allowed values and their meaning are:
      *
      * <pre>
      * "no-access" - Disallows all access.
@@ -77,7 +81,7 @@ export type MsgVpnQueueTemplate = {
      */
     permission?: MsgVpnQueueTemplate.permission;
     /**
-     * A wildcardable pattern used to determine which Queues use settings from this Template. Two different wildcards are supported: * and >. Similar to topic filters or subscription patterns, a > matches anything (but only when used at the end), and a * matches zero or more characters but never a slash (/). A > is only a wildcard when used at the end, after a /. A * is only allowed at the end, after a slash (/). The default value is `""`.
+     * A wildcardable pattern used to determine which Queues use settings from this Template. Two different wildcards are supported: * and >. Similar to topic filters or subscription patterns, a > matches anything (but only when used at the end), and a * matches zero or more characters but never a slash (/). A > is only a wildcard when used at the end, after a /. A * is only allowed at the end, after a slash (/). Changes to this attribute are synchronized to HA mates and replication sites via config-sync. The default value is `""`.
      */
     queueNameFilter?: string;
     /**
@@ -85,19 +89,19 @@ export type MsgVpnQueueTemplate = {
      */
     queueTemplateName?: string;
     /**
-     * Enable or disable message redelivery. When enabled, the number of redelivery attempts is controlled by maxRedeliveryCount. When disabled, the message will never be delivered from the queue more than once. The default value is `true`. Available since 2.18.
+     * Enable or disable message redelivery. When enabled, the number of redelivery attempts is controlled by maxRedeliveryCount. When disabled, the message will never be delivered from the queue more than once. Changes to this attribute are synchronized to HA mates and replication sites via config-sync. The default value is `true`. Available since 2.18.
      */
     redeliveryEnabled?: boolean;
     /**
-     * Enable or disable the checking of low priority messages against the `rejectLowPriorityMsgLimit`. This may only be enabled if `rejectMsgToSenderOnDiscardBehavior` does not have a value of `"never"`. The default value is `false`.
+     * Enable or disable the checking of low priority messages against the `rejectLowPriorityMsgLimit`. This may only be enabled if `rejectMsgToSenderOnDiscardBehavior` does not have a value of `"never"`. Changes to this attribute are synchronized to HA mates and replication sites via config-sync. The default value is `false`.
      */
     rejectLowPriorityMsgEnabled?: boolean;
     /**
-     * The number of messages of any priority above which low priority messages are not admitted but higher priority messages are allowed. The default value is `0`.
+     * The number of messages of any priority above which low priority messages are not admitted but higher priority messages are allowed. Changes to this attribute are synchronized to HA mates and replication sites via config-sync. The default value is `0`.
      */
     rejectLowPriorityMsgLimit?: number;
     /**
-     * Determines when to return negative acknowledgements (NACKs) to sending clients on message discards. Note that NACKs prevent the message from being delivered to any destination and Transacted Session commits to fail. The default value is `"when-queue-enabled"`. The allowed values and their meaning are:
+     * Determines when to return negative acknowledgements (NACKs) to sending clients on message discards. Note that NACKs prevent the message from being delivered to any destination and Transacted Session commits to fail. Changes to this attribute are synchronized to HA mates and replication sites via config-sync. The default value is `"when-queue-enabled"`. The allowed values and their meaning are:
      *
      * <pre>
      * "always" - Always return a negative acknowledgment (NACK) to the sending client on message discard.
@@ -108,11 +112,11 @@ export type MsgVpnQueueTemplate = {
      */
     rejectMsgToSenderOnDiscardBehavior?: MsgVpnQueueTemplate.rejectMsgToSenderOnDiscardBehavior;
     /**
-     * Enable or disable the respecting of message priority. When enabled, messages are delivered in priority order, from 9 (highest) to 0 (lowest). The default value is `false`.
+     * Enable or disable the respecting of message priority. When enabled, messages are delivered in priority order, from 9 (highest) to 0 (lowest). Changes to this attribute are synchronized to HA mates and replication sites via config-sync. The default value is `false`.
      */
     respectMsgPriorityEnabled?: boolean;
     /**
-     * Enable or disable the respecting of the time-to-live (TTL) for messages. When enabled, expired messages are discarded or moved to the DMQ. The default value is `false`.
+     * Enable or disable the respecting of the time-to-live (TTL) for messages. When enabled, expired messages are discarded or moved to the DMQ. Changes to this attribute are synchronized to HA mates and replication sites via config-sync. The default value is `false`.
      */
     respectTtlEnabled?: boolean;
 }
@@ -125,7 +129,7 @@ export namespace MsgVpnQueueTemplate {
     export const discriminator = 'MsgVpnQueueTemplate';
 
     /**
-     * The access type for delivering messages to consumer flows. The default value is `"exclusive"`. The allowed values and their meaning are:
+     * The access type for delivering messages to consumer flows. Changes to this attribute are synchronized to HA mates and replication sites via config-sync. The default value is `"exclusive"`. The allowed values and their meaning are:
      *
      * <pre>
      * "exclusive" - Exclusive delivery of messages to the first bound consumer flow.
@@ -139,7 +143,7 @@ export namespace MsgVpnQueueTemplate {
     }
 
     /**
-     * Controls the durability of queues created from this template. If non-durable, the created queue will be non-durable, regardless of the specified durability. If none, the created queue will have the requested durability. The default value is `"none"`. The allowed values and their meaning are:
+     * Controls the durability of queues created from this template. If non-durable, the created queue will be non-durable, regardless of the specified durability. If none, the created queue will have the requested durability. Changes to this attribute are synchronized to HA mates and replication sites via config-sync. The default value is `"none"`. The allowed values and their meaning are:
      *
      * <pre>
      * "none" - The durability of the endpoint will be as requested on create.
@@ -153,7 +157,7 @@ export namespace MsgVpnQueueTemplate {
     }
 
     /**
-     * The permission level for all consumers, excluding the owner. The default value is `"no-access"`. The allowed values and their meaning are:
+     * The permission level for all consumers, excluding the owner. Changes to this attribute are synchronized to HA mates and replication sites via config-sync. The default value is `"no-access"`. The allowed values and their meaning are:
      *
      * <pre>
      * "no-access" - Disallows all access.
@@ -173,7 +177,7 @@ export namespace MsgVpnQueueTemplate {
     }
 
     /**
-     * Determines when to return negative acknowledgements (NACKs) to sending clients on message discards. Note that NACKs prevent the message from being delivered to any destination and Transacted Session commits to fail. The default value is `"when-queue-enabled"`. The allowed values and their meaning are:
+     * Determines when to return negative acknowledgements (NACKs) to sending clients on message discards. Note that NACKs prevent the message from being delivered to any destination and Transacted Session commits to fail. Changes to this attribute are synchronized to HA mates and replication sites via config-sync. The default value is `"when-queue-enabled"`. The allowed values and their meaning are:
      *
      * <pre>
      * "always" - Always return a negative acknowledgment (NACK) to the sending client on message discard.

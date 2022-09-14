@@ -20,7 +20,19 @@ import type { ClientCertAuthorityOcspTlsTrustedCommonNameResponse } from '../mod
 import type { ClientCertAuthorityOcspTlsTrustedCommonNamesResponse } from '../models/ClientCertAuthorityOcspTlsTrustedCommonNamesResponse';
 import type { ClientCertAuthorityResponse } from '../models/ClientCertAuthorityResponse';
 import type { DmrCluster } from '../models/DmrCluster';
+import type { DmrClusterCertMatchingRule } from '../models/DmrClusterCertMatchingRule';
+import type { DmrClusterCertMatchingRuleAttributeFilter } from '../models/DmrClusterCertMatchingRuleAttributeFilter';
+import type { DmrClusterCertMatchingRuleAttributeFilterResponse } from '../models/DmrClusterCertMatchingRuleAttributeFilterResponse';
+import type { DmrClusterCertMatchingRuleAttributeFiltersResponse } from '../models/DmrClusterCertMatchingRuleAttributeFiltersResponse';
+import type { DmrClusterCertMatchingRuleCondition } from '../models/DmrClusterCertMatchingRuleCondition';
+import type { DmrClusterCertMatchingRuleConditionResponse } from '../models/DmrClusterCertMatchingRuleConditionResponse';
+import type { DmrClusterCertMatchingRuleConditionsResponse } from '../models/DmrClusterCertMatchingRuleConditionsResponse';
+import type { DmrClusterCertMatchingRuleResponse } from '../models/DmrClusterCertMatchingRuleResponse';
+import type { DmrClusterCertMatchingRulesResponse } from '../models/DmrClusterCertMatchingRulesResponse';
 import type { DmrClusterLink } from '../models/DmrClusterLink';
+import type { DmrClusterLinkAttribute } from '../models/DmrClusterLinkAttribute';
+import type { DmrClusterLinkAttributeResponse } from '../models/DmrClusterLinkAttributeResponse';
+import type { DmrClusterLinkAttributesResponse } from '../models/DmrClusterLinkAttributesResponse';
 import type { DmrClusterLinkRemoteAddress } from '../models/DmrClusterLinkRemoteAddress';
 import type { DmrClusterLinkRemoteAddressesResponse } from '../models/DmrClusterLinkRemoteAddressesResponse';
 import type { DmrClusterLinkRemoteAddressResponse } from '../models/DmrClusterLinkRemoteAddressResponse';
@@ -56,6 +68,15 @@ import type { MsgVpnAclProfileSubscribeShareNameExceptionsResponse } from '../mo
 import type { MsgVpnAclProfileSubscribeTopicException } from '../models/MsgVpnAclProfileSubscribeTopicException';
 import type { MsgVpnAclProfileSubscribeTopicExceptionResponse } from '../models/MsgVpnAclProfileSubscribeTopicExceptionResponse';
 import type { MsgVpnAclProfileSubscribeTopicExceptionsResponse } from '../models/MsgVpnAclProfileSubscribeTopicExceptionsResponse';
+import type { MsgVpnAuthenticationOauthProfile } from '../models/MsgVpnAuthenticationOauthProfile';
+import type { MsgVpnAuthenticationOauthProfileClientRequiredClaim } from '../models/MsgVpnAuthenticationOauthProfileClientRequiredClaim';
+import type { MsgVpnAuthenticationOauthProfileClientRequiredClaimResponse } from '../models/MsgVpnAuthenticationOauthProfileClientRequiredClaimResponse';
+import type { MsgVpnAuthenticationOauthProfileClientRequiredClaimsResponse } from '../models/MsgVpnAuthenticationOauthProfileClientRequiredClaimsResponse';
+import type { MsgVpnAuthenticationOauthProfileResourceServerRequiredClaim } from '../models/MsgVpnAuthenticationOauthProfileResourceServerRequiredClaim';
+import type { MsgVpnAuthenticationOauthProfileResourceServerRequiredClaimResponse } from '../models/MsgVpnAuthenticationOauthProfileResourceServerRequiredClaimResponse';
+import type { MsgVpnAuthenticationOauthProfileResourceServerRequiredClaimsResponse } from '../models/MsgVpnAuthenticationOauthProfileResourceServerRequiredClaimsResponse';
+import type { MsgVpnAuthenticationOauthProfileResponse } from '../models/MsgVpnAuthenticationOauthProfileResponse';
+import type { MsgVpnAuthenticationOauthProfilesResponse } from '../models/MsgVpnAuthenticationOauthProfilesResponse';
 import type { MsgVpnAuthenticationOauthProvider } from '../models/MsgVpnAuthenticationOauthProvider';
 import type { MsgVpnAuthenticationOauthProviderResponse } from '../models/MsgVpnAuthenticationOauthProviderResponse';
 import type { MsgVpnAuthenticationOauthProvidersResponse } from '../models/MsgVpnAuthenticationOauthProvidersResponse';
@@ -74,10 +95,22 @@ import type { MsgVpnBridgesResponse } from '../models/MsgVpnBridgesResponse';
 import type { MsgVpnBridgeTlsTrustedCommonName } from '../models/MsgVpnBridgeTlsTrustedCommonName';
 import type { MsgVpnBridgeTlsTrustedCommonNameResponse } from '../models/MsgVpnBridgeTlsTrustedCommonNameResponse';
 import type { MsgVpnBridgeTlsTrustedCommonNamesResponse } from '../models/MsgVpnBridgeTlsTrustedCommonNamesResponse';
+import type { MsgVpnCertMatchingRule } from '../models/MsgVpnCertMatchingRule';
+import type { MsgVpnCertMatchingRuleAttributeFilter } from '../models/MsgVpnCertMatchingRuleAttributeFilter';
+import type { MsgVpnCertMatchingRuleAttributeFilterResponse } from '../models/MsgVpnCertMatchingRuleAttributeFilterResponse';
+import type { MsgVpnCertMatchingRuleAttributeFiltersResponse } from '../models/MsgVpnCertMatchingRuleAttributeFiltersResponse';
+import type { MsgVpnCertMatchingRuleCondition } from '../models/MsgVpnCertMatchingRuleCondition';
+import type { MsgVpnCertMatchingRuleConditionResponse } from '../models/MsgVpnCertMatchingRuleConditionResponse';
+import type { MsgVpnCertMatchingRuleConditionsResponse } from '../models/MsgVpnCertMatchingRuleConditionsResponse';
+import type { MsgVpnCertMatchingRuleResponse } from '../models/MsgVpnCertMatchingRuleResponse';
+import type { MsgVpnCertMatchingRulesResponse } from '../models/MsgVpnCertMatchingRulesResponse';
 import type { MsgVpnClientProfile } from '../models/MsgVpnClientProfile';
 import type { MsgVpnClientProfileResponse } from '../models/MsgVpnClientProfileResponse';
 import type { MsgVpnClientProfilesResponse } from '../models/MsgVpnClientProfilesResponse';
 import type { MsgVpnClientUsername } from '../models/MsgVpnClientUsername';
+import type { MsgVpnClientUsernameAttribute } from '../models/MsgVpnClientUsernameAttribute';
+import type { MsgVpnClientUsernameAttributeResponse } from '../models/MsgVpnClientUsernameAttributeResponse';
+import type { MsgVpnClientUsernameAttributesResponse } from '../models/MsgVpnClientUsernameAttributesResponse';
 import type { MsgVpnClientUsernameResponse } from '../models/MsgVpnClientUsernameResponse';
 import type { MsgVpnClientUsernamesResponse } from '../models/MsgVpnClientUsernamesResponse';
 import type { MsgVpnDistributedCache } from '../models/MsgVpnDistributedCache';
@@ -131,16 +164,25 @@ import type { MsgVpnQueueTemplatesResponse } from '../models/MsgVpnQueueTemplate
 import type { MsgVpnReplayLog } from '../models/MsgVpnReplayLog';
 import type { MsgVpnReplayLogResponse } from '../models/MsgVpnReplayLogResponse';
 import type { MsgVpnReplayLogsResponse } from '../models/MsgVpnReplayLogsResponse';
+import type { MsgVpnReplayLogTopicFilterSubscription } from '../models/MsgVpnReplayLogTopicFilterSubscription';
+import type { MsgVpnReplayLogTopicFilterSubscriptionResponse } from '../models/MsgVpnReplayLogTopicFilterSubscriptionResponse';
+import type { MsgVpnReplayLogTopicFilterSubscriptionsResponse } from '../models/MsgVpnReplayLogTopicFilterSubscriptionsResponse';
 import type { MsgVpnReplicatedTopic } from '../models/MsgVpnReplicatedTopic';
 import type { MsgVpnReplicatedTopicResponse } from '../models/MsgVpnReplicatedTopicResponse';
 import type { MsgVpnReplicatedTopicsResponse } from '../models/MsgVpnReplicatedTopicsResponse';
 import type { MsgVpnResponse } from '../models/MsgVpnResponse';
 import type { MsgVpnRestDeliveryPoint } from '../models/MsgVpnRestDeliveryPoint';
 import type { MsgVpnRestDeliveryPointQueueBinding } from '../models/MsgVpnRestDeliveryPointQueueBinding';
+import type { MsgVpnRestDeliveryPointQueueBindingRequestHeader } from '../models/MsgVpnRestDeliveryPointQueueBindingRequestHeader';
+import type { MsgVpnRestDeliveryPointQueueBindingRequestHeaderResponse } from '../models/MsgVpnRestDeliveryPointQueueBindingRequestHeaderResponse';
+import type { MsgVpnRestDeliveryPointQueueBindingRequestHeadersResponse } from '../models/MsgVpnRestDeliveryPointQueueBindingRequestHeadersResponse';
 import type { MsgVpnRestDeliveryPointQueueBindingResponse } from '../models/MsgVpnRestDeliveryPointQueueBindingResponse';
 import type { MsgVpnRestDeliveryPointQueueBindingsResponse } from '../models/MsgVpnRestDeliveryPointQueueBindingsResponse';
 import type { MsgVpnRestDeliveryPointResponse } from '../models/MsgVpnRestDeliveryPointResponse';
 import type { MsgVpnRestDeliveryPointRestConsumer } from '../models/MsgVpnRestDeliveryPointRestConsumer';
+import type { MsgVpnRestDeliveryPointRestConsumerOauthJwtClaim } from '../models/MsgVpnRestDeliveryPointRestConsumerOauthJwtClaim';
+import type { MsgVpnRestDeliveryPointRestConsumerOauthJwtClaimResponse } from '../models/MsgVpnRestDeliveryPointRestConsumerOauthJwtClaimResponse';
+import type { MsgVpnRestDeliveryPointRestConsumerOauthJwtClaimsResponse } from '../models/MsgVpnRestDeliveryPointRestConsumerOauthJwtClaimsResponse';
 import type { MsgVpnRestDeliveryPointRestConsumerResponse } from '../models/MsgVpnRestDeliveryPointRestConsumerResponse';
 import type { MsgVpnRestDeliveryPointRestConsumersResponse } from '../models/MsgVpnRestDeliveryPointRestConsumersResponse';
 import type { MsgVpnRestDeliveryPointRestConsumerTlsTrustedCommonName } from '../models/MsgVpnRestDeliveryPointRestConsumerTlsTrustedCommonName';
@@ -157,7 +199,32 @@ import type { MsgVpnTopicEndpointsResponse } from '../models/MsgVpnTopicEndpoint
 import type { MsgVpnTopicEndpointTemplate } from '../models/MsgVpnTopicEndpointTemplate';
 import type { MsgVpnTopicEndpointTemplateResponse } from '../models/MsgVpnTopicEndpointTemplateResponse';
 import type { MsgVpnTopicEndpointTemplatesResponse } from '../models/MsgVpnTopicEndpointTemplatesResponse';
+import type { OauthProfile } from '../models/OauthProfile';
+import type { OauthProfileAccessLevelGroup } from '../models/OauthProfileAccessLevelGroup';
+import type { OauthProfileAccessLevelGroupMsgVpnAccessLevelException } from '../models/OauthProfileAccessLevelGroupMsgVpnAccessLevelException';
+import type { OauthProfileAccessLevelGroupMsgVpnAccessLevelExceptionResponse } from '../models/OauthProfileAccessLevelGroupMsgVpnAccessLevelExceptionResponse';
+import type { OauthProfileAccessLevelGroupMsgVpnAccessLevelExceptionsResponse } from '../models/OauthProfileAccessLevelGroupMsgVpnAccessLevelExceptionsResponse';
+import type { OauthProfileAccessLevelGroupResponse } from '../models/OauthProfileAccessLevelGroupResponse';
+import type { OauthProfileAccessLevelGroupsResponse } from '../models/OauthProfileAccessLevelGroupsResponse';
+import type { OauthProfileClientAllowedHost } from '../models/OauthProfileClientAllowedHost';
+import type { OauthProfileClientAllowedHostResponse } from '../models/OauthProfileClientAllowedHostResponse';
+import type { OauthProfileClientAllowedHostsResponse } from '../models/OauthProfileClientAllowedHostsResponse';
+import type { OauthProfileClientAuthorizationParameter } from '../models/OauthProfileClientAuthorizationParameter';
+import type { OauthProfileClientAuthorizationParameterResponse } from '../models/OauthProfileClientAuthorizationParameterResponse';
+import type { OauthProfileClientAuthorizationParametersResponse } from '../models/OauthProfileClientAuthorizationParametersResponse';
+import type { OauthProfileClientRequiredClaim } from '../models/OauthProfileClientRequiredClaim';
+import type { OauthProfileClientRequiredClaimResponse } from '../models/OauthProfileClientRequiredClaimResponse';
+import type { OauthProfileClientRequiredClaimsResponse } from '../models/OauthProfileClientRequiredClaimsResponse';
+import type { OauthProfileDefaultMsgVpnAccessLevelException } from '../models/OauthProfileDefaultMsgVpnAccessLevelException';
+import type { OauthProfileDefaultMsgVpnAccessLevelExceptionResponse } from '../models/OauthProfileDefaultMsgVpnAccessLevelExceptionResponse';
+import type { OauthProfileDefaultMsgVpnAccessLevelExceptionsResponse } from '../models/OauthProfileDefaultMsgVpnAccessLevelExceptionsResponse';
+import type { OauthProfileResourceServerRequiredClaim } from '../models/OauthProfileResourceServerRequiredClaim';
+import type { OauthProfileResourceServerRequiredClaimResponse } from '../models/OauthProfileResourceServerRequiredClaimResponse';
+import type { OauthProfileResourceServerRequiredClaimsResponse } from '../models/OauthProfileResourceServerRequiredClaimsResponse';
+import type { OauthProfileResponse } from '../models/OauthProfileResponse';
+import type { OauthProfilesResponse } from '../models/OauthProfilesResponse';
 import type { SempMetaOnlyResponse } from '../models/SempMetaOnlyResponse';
+import type { SystemInformationResponse } from '../models/SystemInformationResponse';
 import type { VirtualHostname } from '../models/VirtualHostname';
 import type { VirtualHostnameResponse } from '../models/VirtualHostnameResponse';
 import type { VirtualHostnamesResponse } from '../models/VirtualHostnamesResponse';
@@ -263,18 +330,30 @@ export class AllServiceDefault implements AllService {
         };
     }
 
-    public async getAboutApi(): Promise<AboutApiResponse | SempMetaOnlyResponse> {
+    public async getAboutApi(
+        opaquePassword?: string,
+        select?: Array<string>,
+    ): Promise<AboutApiResponse | SempMetaOnlyResponse> {
         const options = this.getAboutApiApiRequestOptions(
+            opaquePassword,
+            select,
         );
         const result = await __request(options);
         return result.body;
     }
 
-    public getAboutApiApiRequestOptions(): ApiRequestOptions {
+    public getAboutApiApiRequestOptions(
+        opaquePassword?: string,
+        select?: Array<string>,
+    ): ApiRequestOptions {
         return {
             ...this.config,
             method: 'GET',
             path: `/about/api`,
+            query: {
+                'opaquePassword': opaquePassword,
+                'select': select,
+            },
         };
     }
 
@@ -1186,6 +1265,580 @@ export class AllServiceDefault implements AllService {
         };
     }
 
+    public async getDmrClusterCertMatchingRules(
+        dmrClusterName: string,
+        count: number = 10,
+        cursor?: string,
+        opaquePassword?: string,
+        where?: Array<string>,
+        select?: Array<string>,
+    ): Promise<DmrClusterCertMatchingRulesResponse | SempMetaOnlyResponse> {
+        const options = this.getDmrClusterCertMatchingRulesApiRequestOptions(
+            dmrClusterName,
+            count,
+            cursor,
+            opaquePassword,
+            where,
+            select,
+        );
+        const result = await __request(options);
+        return result.body;
+    }
+
+    public getDmrClusterCertMatchingRulesApiRequestOptions(
+        dmrClusterName: string,
+        count: number = 10,
+        cursor?: string,
+        opaquePassword?: string,
+        where?: Array<string>,
+        select?: Array<string>,
+    ): ApiRequestOptions {
+        return {
+            ...this.config,
+            method: 'GET',
+            path: `/dmrClusters/${dmrClusterName}/certMatchingRules`,
+            query: {
+                'count': count,
+                'cursor': cursor,
+                'opaquePassword': opaquePassword,
+                'where': where,
+                'select': select,
+            },
+        };
+    }
+
+    public async createDmrClusterCertMatchingRule(
+        dmrClusterName: string,
+        body: DmrClusterCertMatchingRule,
+        opaquePassword?: string,
+        select?: Array<string>,
+    ): Promise<DmrClusterCertMatchingRuleResponse | SempMetaOnlyResponse> {
+        const options = this.createDmrClusterCertMatchingRuleApiRequestOptions(
+            dmrClusterName,
+            body,
+            opaquePassword,
+            select,
+        );
+        const result = await __request(options);
+        return result.body;
+    }
+
+    public createDmrClusterCertMatchingRuleApiRequestOptions(
+        dmrClusterName: string,
+        body: DmrClusterCertMatchingRule,
+        opaquePassword?: string,
+        select?: Array<string>,
+    ): ApiRequestOptions {
+        return {
+            ...this.config,
+            method: 'POST',
+            path: `/dmrClusters/${dmrClusterName}/certMatchingRules`,
+            query: {
+                'opaquePassword': opaquePassword,
+                'select': select,
+            },
+            body: body,
+        };
+    }
+
+    public async deleteDmrClusterCertMatchingRule(
+        dmrClusterName: string,
+        ruleName: string,
+    ): Promise<SempMetaOnlyResponse> {
+        const options = this.deleteDmrClusterCertMatchingRuleApiRequestOptions(
+            dmrClusterName,
+            ruleName,
+        );
+        const result = await __request(options);
+        return result.body;
+    }
+
+    public deleteDmrClusterCertMatchingRuleApiRequestOptions(
+        dmrClusterName: string,
+        ruleName: string,
+    ): ApiRequestOptions {
+        return {
+            ...this.config,
+            method: 'DELETE',
+            path: `/dmrClusters/${dmrClusterName}/certMatchingRules/${ruleName}`,
+        };
+    }
+
+    public async getDmrClusterCertMatchingRule(
+        dmrClusterName: string,
+        ruleName: string,
+        opaquePassword?: string,
+        select?: Array<string>,
+    ): Promise<DmrClusterCertMatchingRuleResponse | SempMetaOnlyResponse> {
+        const options = this.getDmrClusterCertMatchingRuleApiRequestOptions(
+            dmrClusterName,
+            ruleName,
+            opaquePassword,
+            select,
+        );
+        const result = await __request(options);
+        return result.body;
+    }
+
+    public getDmrClusterCertMatchingRuleApiRequestOptions(
+        dmrClusterName: string,
+        ruleName: string,
+        opaquePassword?: string,
+        select?: Array<string>,
+    ): ApiRequestOptions {
+        return {
+            ...this.config,
+            method: 'GET',
+            path: `/dmrClusters/${dmrClusterName}/certMatchingRules/${ruleName}`,
+            query: {
+                'opaquePassword': opaquePassword,
+                'select': select,
+            },
+        };
+    }
+
+    public async updateDmrClusterCertMatchingRule(
+        dmrClusterName: string,
+        ruleName: string,
+        body: DmrClusterCertMatchingRule,
+        opaquePassword?: string,
+        select?: Array<string>,
+    ): Promise<DmrClusterCertMatchingRuleResponse | SempMetaOnlyResponse> {
+        const options = this.updateDmrClusterCertMatchingRuleApiRequestOptions(
+            dmrClusterName,
+            ruleName,
+            body,
+            opaquePassword,
+            select,
+        );
+        const result = await __request(options);
+        return result.body;
+    }
+
+    public updateDmrClusterCertMatchingRuleApiRequestOptions(
+        dmrClusterName: string,
+        ruleName: string,
+        body: DmrClusterCertMatchingRule,
+        opaquePassword?: string,
+        select?: Array<string>,
+    ): ApiRequestOptions {
+        return {
+            ...this.config,
+            method: 'PATCH',
+            path: `/dmrClusters/${dmrClusterName}/certMatchingRules/${ruleName}`,
+            query: {
+                'opaquePassword': opaquePassword,
+                'select': select,
+            },
+            body: body,
+        };
+    }
+
+    public async replaceDmrClusterCertMatchingRule(
+        dmrClusterName: string,
+        ruleName: string,
+        body: DmrClusterCertMatchingRule,
+        opaquePassword?: string,
+        select?: Array<string>,
+    ): Promise<DmrClusterCertMatchingRuleResponse | SempMetaOnlyResponse> {
+        const options = this.replaceDmrClusterCertMatchingRuleApiRequestOptions(
+            dmrClusterName,
+            ruleName,
+            body,
+            opaquePassword,
+            select,
+        );
+        const result = await __request(options);
+        return result.body;
+    }
+
+    public replaceDmrClusterCertMatchingRuleApiRequestOptions(
+        dmrClusterName: string,
+        ruleName: string,
+        body: DmrClusterCertMatchingRule,
+        opaquePassword?: string,
+        select?: Array<string>,
+    ): ApiRequestOptions {
+        return {
+            ...this.config,
+            method: 'PUT',
+            path: `/dmrClusters/${dmrClusterName}/certMatchingRules/${ruleName}`,
+            query: {
+                'opaquePassword': opaquePassword,
+                'select': select,
+            },
+            body: body,
+        };
+    }
+
+    public async getDmrClusterCertMatchingRuleAttributeFilters(
+        dmrClusterName: string,
+        ruleName: string,
+        count: number = 10,
+        cursor?: string,
+        opaquePassword?: string,
+        where?: Array<string>,
+        select?: Array<string>,
+    ): Promise<DmrClusterCertMatchingRuleAttributeFiltersResponse | SempMetaOnlyResponse> {
+        const options = this.getDmrClusterCertMatchingRuleAttributeFiltersApiRequestOptions(
+            dmrClusterName,
+            ruleName,
+            count,
+            cursor,
+            opaquePassword,
+            where,
+            select,
+        );
+        const result = await __request(options);
+        return result.body;
+    }
+
+    public getDmrClusterCertMatchingRuleAttributeFiltersApiRequestOptions(
+        dmrClusterName: string,
+        ruleName: string,
+        count: number = 10,
+        cursor?: string,
+        opaquePassword?: string,
+        where?: Array<string>,
+        select?: Array<string>,
+    ): ApiRequestOptions {
+        return {
+            ...this.config,
+            method: 'GET',
+            path: `/dmrClusters/${dmrClusterName}/certMatchingRules/${ruleName}/attributeFilters`,
+            query: {
+                'count': count,
+                'cursor': cursor,
+                'opaquePassword': opaquePassword,
+                'where': where,
+                'select': select,
+            },
+        };
+    }
+
+    public async createDmrClusterCertMatchingRuleAttributeFilter(
+        dmrClusterName: string,
+        ruleName: string,
+        body: DmrClusterCertMatchingRuleAttributeFilter,
+        opaquePassword?: string,
+        select?: Array<string>,
+    ): Promise<DmrClusterCertMatchingRuleAttributeFilterResponse | SempMetaOnlyResponse> {
+        const options = this.createDmrClusterCertMatchingRuleAttributeFilterApiRequestOptions(
+            dmrClusterName,
+            ruleName,
+            body,
+            opaquePassword,
+            select,
+        );
+        const result = await __request(options);
+        return result.body;
+    }
+
+    public createDmrClusterCertMatchingRuleAttributeFilterApiRequestOptions(
+        dmrClusterName: string,
+        ruleName: string,
+        body: DmrClusterCertMatchingRuleAttributeFilter,
+        opaquePassword?: string,
+        select?: Array<string>,
+    ): ApiRequestOptions {
+        return {
+            ...this.config,
+            method: 'POST',
+            path: `/dmrClusters/${dmrClusterName}/certMatchingRules/${ruleName}/attributeFilters`,
+            query: {
+                'opaquePassword': opaquePassword,
+                'select': select,
+            },
+            body: body,
+        };
+    }
+
+    public async deleteDmrClusterCertMatchingRuleAttributeFilter(
+        dmrClusterName: string,
+        ruleName: string,
+        filterName: string,
+    ): Promise<SempMetaOnlyResponse> {
+        const options = this.deleteDmrClusterCertMatchingRuleAttributeFilterApiRequestOptions(
+            dmrClusterName,
+            ruleName,
+            filterName,
+        );
+        const result = await __request(options);
+        return result.body;
+    }
+
+    public deleteDmrClusterCertMatchingRuleAttributeFilterApiRequestOptions(
+        dmrClusterName: string,
+        ruleName: string,
+        filterName: string,
+    ): ApiRequestOptions {
+        return {
+            ...this.config,
+            method: 'DELETE',
+            path: `/dmrClusters/${dmrClusterName}/certMatchingRules/${ruleName}/attributeFilters/${filterName}`,
+        };
+    }
+
+    public async getDmrClusterCertMatchingRuleAttributeFilter(
+        dmrClusterName: string,
+        ruleName: string,
+        filterName: string,
+        opaquePassword?: string,
+        select?: Array<string>,
+    ): Promise<DmrClusterCertMatchingRuleAttributeFilterResponse | SempMetaOnlyResponse> {
+        const options = this.getDmrClusterCertMatchingRuleAttributeFilterApiRequestOptions(
+            dmrClusterName,
+            ruleName,
+            filterName,
+            opaquePassword,
+            select,
+        );
+        const result = await __request(options);
+        return result.body;
+    }
+
+    public getDmrClusterCertMatchingRuleAttributeFilterApiRequestOptions(
+        dmrClusterName: string,
+        ruleName: string,
+        filterName: string,
+        opaquePassword?: string,
+        select?: Array<string>,
+    ): ApiRequestOptions {
+        return {
+            ...this.config,
+            method: 'GET',
+            path: `/dmrClusters/${dmrClusterName}/certMatchingRules/${ruleName}/attributeFilters/${filterName}`,
+            query: {
+                'opaquePassword': opaquePassword,
+                'select': select,
+            },
+        };
+    }
+
+    public async updateDmrClusterCertMatchingRuleAttributeFilter(
+        dmrClusterName: string,
+        ruleName: string,
+        filterName: string,
+        body: DmrClusterCertMatchingRuleAttributeFilter,
+        opaquePassword?: string,
+        select?: Array<string>,
+    ): Promise<DmrClusterCertMatchingRuleAttributeFilterResponse | SempMetaOnlyResponse> {
+        const options = this.updateDmrClusterCertMatchingRuleAttributeFilterApiRequestOptions(
+            dmrClusterName,
+            ruleName,
+            filterName,
+            body,
+            opaquePassword,
+            select,
+        );
+        const result = await __request(options);
+        return result.body;
+    }
+
+    public updateDmrClusterCertMatchingRuleAttributeFilterApiRequestOptions(
+        dmrClusterName: string,
+        ruleName: string,
+        filterName: string,
+        body: DmrClusterCertMatchingRuleAttributeFilter,
+        opaquePassword?: string,
+        select?: Array<string>,
+    ): ApiRequestOptions {
+        return {
+            ...this.config,
+            method: 'PATCH',
+            path: `/dmrClusters/${dmrClusterName}/certMatchingRules/${ruleName}/attributeFilters/${filterName}`,
+            query: {
+                'opaquePassword': opaquePassword,
+                'select': select,
+            },
+            body: body,
+        };
+    }
+
+    public async replaceDmrClusterCertMatchingRuleAttributeFilter(
+        dmrClusterName: string,
+        ruleName: string,
+        filterName: string,
+        body: DmrClusterCertMatchingRuleAttributeFilter,
+        opaquePassword?: string,
+        select?: Array<string>,
+    ): Promise<DmrClusterCertMatchingRuleAttributeFilterResponse | SempMetaOnlyResponse> {
+        const options = this.replaceDmrClusterCertMatchingRuleAttributeFilterApiRequestOptions(
+            dmrClusterName,
+            ruleName,
+            filterName,
+            body,
+            opaquePassword,
+            select,
+        );
+        const result = await __request(options);
+        return result.body;
+    }
+
+    public replaceDmrClusterCertMatchingRuleAttributeFilterApiRequestOptions(
+        dmrClusterName: string,
+        ruleName: string,
+        filterName: string,
+        body: DmrClusterCertMatchingRuleAttributeFilter,
+        opaquePassword?: string,
+        select?: Array<string>,
+    ): ApiRequestOptions {
+        return {
+            ...this.config,
+            method: 'PUT',
+            path: `/dmrClusters/${dmrClusterName}/certMatchingRules/${ruleName}/attributeFilters/${filterName}`,
+            query: {
+                'opaquePassword': opaquePassword,
+                'select': select,
+            },
+            body: body,
+        };
+    }
+
+    public async getDmrClusterCertMatchingRuleConditions(
+        dmrClusterName: string,
+        ruleName: string,
+        count: number = 10,
+        cursor?: string,
+        opaquePassword?: string,
+        where?: Array<string>,
+        select?: Array<string>,
+    ): Promise<DmrClusterCertMatchingRuleConditionsResponse | SempMetaOnlyResponse> {
+        const options = this.getDmrClusterCertMatchingRuleConditionsApiRequestOptions(
+            dmrClusterName,
+            ruleName,
+            count,
+            cursor,
+            opaquePassword,
+            where,
+            select,
+        );
+        const result = await __request(options);
+        return result.body;
+    }
+
+    public getDmrClusterCertMatchingRuleConditionsApiRequestOptions(
+        dmrClusterName: string,
+        ruleName: string,
+        count: number = 10,
+        cursor?: string,
+        opaquePassword?: string,
+        where?: Array<string>,
+        select?: Array<string>,
+    ): ApiRequestOptions {
+        return {
+            ...this.config,
+            method: 'GET',
+            path: `/dmrClusters/${dmrClusterName}/certMatchingRules/${ruleName}/conditions`,
+            query: {
+                'count': count,
+                'cursor': cursor,
+                'opaquePassword': opaquePassword,
+                'where': where,
+                'select': select,
+            },
+        };
+    }
+
+    public async createDmrClusterCertMatchingRuleCondition(
+        dmrClusterName: string,
+        ruleName: string,
+        body: DmrClusterCertMatchingRuleCondition,
+        opaquePassword?: string,
+        select?: Array<string>,
+    ): Promise<DmrClusterCertMatchingRuleConditionResponse | SempMetaOnlyResponse> {
+        const options = this.createDmrClusterCertMatchingRuleConditionApiRequestOptions(
+            dmrClusterName,
+            ruleName,
+            body,
+            opaquePassword,
+            select,
+        );
+        const result = await __request(options);
+        return result.body;
+    }
+
+    public createDmrClusterCertMatchingRuleConditionApiRequestOptions(
+        dmrClusterName: string,
+        ruleName: string,
+        body: DmrClusterCertMatchingRuleCondition,
+        opaquePassword?: string,
+        select?: Array<string>,
+    ): ApiRequestOptions {
+        return {
+            ...this.config,
+            method: 'POST',
+            path: `/dmrClusters/${dmrClusterName}/certMatchingRules/${ruleName}/conditions`,
+            query: {
+                'opaquePassword': opaquePassword,
+                'select': select,
+            },
+            body: body,
+        };
+    }
+
+    public async deleteDmrClusterCertMatchingRuleCondition(
+        dmrClusterName: string,
+        ruleName: string,
+        source: string,
+    ): Promise<SempMetaOnlyResponse> {
+        const options = this.deleteDmrClusterCertMatchingRuleConditionApiRequestOptions(
+            dmrClusterName,
+            ruleName,
+            source,
+        );
+        const result = await __request(options);
+        return result.body;
+    }
+
+    public deleteDmrClusterCertMatchingRuleConditionApiRequestOptions(
+        dmrClusterName: string,
+        ruleName: string,
+        source: string,
+    ): ApiRequestOptions {
+        return {
+            ...this.config,
+            method: 'DELETE',
+            path: `/dmrClusters/${dmrClusterName}/certMatchingRules/${ruleName}/conditions/${source}`,
+        };
+    }
+
+    public async getDmrClusterCertMatchingRuleCondition(
+        dmrClusterName: string,
+        ruleName: string,
+        source: string,
+        opaquePassword?: string,
+        select?: Array<string>,
+    ): Promise<DmrClusterCertMatchingRuleConditionResponse | SempMetaOnlyResponse> {
+        const options = this.getDmrClusterCertMatchingRuleConditionApiRequestOptions(
+            dmrClusterName,
+            ruleName,
+            source,
+            opaquePassword,
+            select,
+        );
+        const result = await __request(options);
+        return result.body;
+    }
+
+    public getDmrClusterCertMatchingRuleConditionApiRequestOptions(
+        dmrClusterName: string,
+        ruleName: string,
+        source: string,
+        opaquePassword?: string,
+        select?: Array<string>,
+    ): ApiRequestOptions {
+        return {
+            ...this.config,
+            method: 'GET',
+            path: `/dmrClusters/${dmrClusterName}/certMatchingRules/${ruleName}/conditions/${source}`,
+            query: {
+                'opaquePassword': opaquePassword,
+                'select': select,
+            },
+        };
+    }
+
     public async getDmrClusterLinks(
         dmrClusterName: string,
         count: number = 10,
@@ -1389,6 +2042,156 @@ export class AllServiceDefault implements AllService {
                 'select': select,
             },
             body: body,
+        };
+    }
+
+    public async getDmrClusterLinkAttributes(
+        dmrClusterName: string,
+        remoteNodeName: string,
+        count: number = 10,
+        cursor?: string,
+        opaquePassword?: string,
+        where?: Array<string>,
+        select?: Array<string>,
+    ): Promise<DmrClusterLinkAttributesResponse | SempMetaOnlyResponse> {
+        const options = this.getDmrClusterLinkAttributesApiRequestOptions(
+            dmrClusterName,
+            remoteNodeName,
+            count,
+            cursor,
+            opaquePassword,
+            where,
+            select,
+        );
+        const result = await __request(options);
+        return result.body;
+    }
+
+    public getDmrClusterLinkAttributesApiRequestOptions(
+        dmrClusterName: string,
+        remoteNodeName: string,
+        count: number = 10,
+        cursor?: string,
+        opaquePassword?: string,
+        where?: Array<string>,
+        select?: Array<string>,
+    ): ApiRequestOptions {
+        return {
+            ...this.config,
+            method: 'GET',
+            path: `/dmrClusters/${dmrClusterName}/links/${remoteNodeName}/attributes`,
+            query: {
+                'count': count,
+                'cursor': cursor,
+                'opaquePassword': opaquePassword,
+                'where': where,
+                'select': select,
+            },
+        };
+    }
+
+    public async createDmrClusterLinkAttribute(
+        dmrClusterName: string,
+        remoteNodeName: string,
+        body: DmrClusterLinkAttribute,
+        opaquePassword?: string,
+        select?: Array<string>,
+    ): Promise<DmrClusterLinkAttributeResponse | SempMetaOnlyResponse> {
+        const options = this.createDmrClusterLinkAttributeApiRequestOptions(
+            dmrClusterName,
+            remoteNodeName,
+            body,
+            opaquePassword,
+            select,
+        );
+        const result = await __request(options);
+        return result.body;
+    }
+
+    public createDmrClusterLinkAttributeApiRequestOptions(
+        dmrClusterName: string,
+        remoteNodeName: string,
+        body: DmrClusterLinkAttribute,
+        opaquePassword?: string,
+        select?: Array<string>,
+    ): ApiRequestOptions {
+        return {
+            ...this.config,
+            method: 'POST',
+            path: `/dmrClusters/${dmrClusterName}/links/${remoteNodeName}/attributes`,
+            query: {
+                'opaquePassword': opaquePassword,
+                'select': select,
+            },
+            body: body,
+        };
+    }
+
+    public async deleteDmrClusterLinkAttribute(
+        dmrClusterName: string,
+        remoteNodeName: string,
+        attributeName: string,
+        attributeValue: string,
+    ): Promise<SempMetaOnlyResponse> {
+        const options = this.deleteDmrClusterLinkAttributeApiRequestOptions(
+            dmrClusterName,
+            remoteNodeName,
+            attributeName,
+            attributeValue,
+        );
+        const result = await __request(options);
+        return result.body;
+    }
+
+    public deleteDmrClusterLinkAttributeApiRequestOptions(
+        dmrClusterName: string,
+        remoteNodeName: string,
+        attributeName: string,
+        attributeValue: string,
+    ): ApiRequestOptions {
+        return {
+            ...this.config,
+            method: 'DELETE',
+            path: `/dmrClusters/${dmrClusterName}/links/${remoteNodeName}/attributes/${attributeName},${attributeValue}`,
+        };
+    }
+
+    public async getDmrClusterLinkAttribute(
+        dmrClusterName: string,
+        remoteNodeName: string,
+        attributeName: string,
+        attributeValue: string,
+        opaquePassword?: string,
+        select?: Array<string>,
+    ): Promise<DmrClusterLinkAttributeResponse | SempMetaOnlyResponse> {
+        const options = this.getDmrClusterLinkAttributeApiRequestOptions(
+            dmrClusterName,
+            remoteNodeName,
+            attributeName,
+            attributeValue,
+            opaquePassword,
+            select,
+        );
+        const result = await __request(options);
+        return result.body;
+    }
+
+    public getDmrClusterLinkAttributeApiRequestOptions(
+        dmrClusterName: string,
+        remoteNodeName: string,
+        attributeName: string,
+        attributeValue: string,
+        opaquePassword?: string,
+        select?: Array<string>,
+    ): ApiRequestOptions {
+        return {
+            ...this.config,
+            method: 'GET',
+            path: `/dmrClusters/${dmrClusterName}/links/${remoteNodeName}/attributes/${attributeName},${attributeValue}`,
+            query: {
+                'opaquePassword': opaquePassword,
+                'select': select,
+            },
         };
     }
 
@@ -3140,6 +3943,500 @@ export class AllServiceDefault implements AllService {
         };
     }
 
+    public async getMsgVpnAuthenticationOauthProfiles(
+        msgVpnName: string,
+        count: number = 10,
+        cursor?: string,
+        opaquePassword?: string,
+        where?: Array<string>,
+        select?: Array<string>,
+    ): Promise<MsgVpnAuthenticationOauthProfilesResponse | SempMetaOnlyResponse> {
+        const options = this.getMsgVpnAuthenticationOauthProfilesApiRequestOptions(
+            msgVpnName,
+            count,
+            cursor,
+            opaquePassword,
+            where,
+            select,
+        );
+        const result = await __request(options);
+        return result.body;
+    }
+
+    public getMsgVpnAuthenticationOauthProfilesApiRequestOptions(
+        msgVpnName: string,
+        count: number = 10,
+        cursor?: string,
+        opaquePassword?: string,
+        where?: Array<string>,
+        select?: Array<string>,
+    ): ApiRequestOptions {
+        return {
+            ...this.config,
+            method: 'GET',
+            path: `/msgVpns/${msgVpnName}/authenticationOauthProfiles`,
+            query: {
+                'count': count,
+                'cursor': cursor,
+                'opaquePassword': opaquePassword,
+                'where': where,
+                'select': select,
+            },
+        };
+    }
+
+    public async createMsgVpnAuthenticationOauthProfile(
+        msgVpnName: string,
+        body: MsgVpnAuthenticationOauthProfile,
+        opaquePassword?: string,
+        select?: Array<string>,
+    ): Promise<MsgVpnAuthenticationOauthProfileResponse | SempMetaOnlyResponse> {
+        const options = this.createMsgVpnAuthenticationOauthProfileApiRequestOptions(
+            msgVpnName,
+            body,
+            opaquePassword,
+            select,
+        );
+        const result = await __request(options);
+        return result.body;
+    }
+
+    public createMsgVpnAuthenticationOauthProfileApiRequestOptions(
+        msgVpnName: string,
+        body: MsgVpnAuthenticationOauthProfile,
+        opaquePassword?: string,
+        select?: Array<string>,
+    ): ApiRequestOptions {
+        return {
+            ...this.config,
+            method: 'POST',
+            path: `/msgVpns/${msgVpnName}/authenticationOauthProfiles`,
+            query: {
+                'opaquePassword': opaquePassword,
+                'select': select,
+            },
+            body: body,
+        };
+    }
+
+    public async deleteMsgVpnAuthenticationOauthProfile(
+        msgVpnName: string,
+        oauthProfileName: string,
+    ): Promise<SempMetaOnlyResponse> {
+        const options = this.deleteMsgVpnAuthenticationOauthProfileApiRequestOptions(
+            msgVpnName,
+            oauthProfileName,
+        );
+        const result = await __request(options);
+        return result.body;
+    }
+
+    public deleteMsgVpnAuthenticationOauthProfileApiRequestOptions(
+        msgVpnName: string,
+        oauthProfileName: string,
+    ): ApiRequestOptions {
+        return {
+            ...this.config,
+            method: 'DELETE',
+            path: `/msgVpns/${msgVpnName}/authenticationOauthProfiles/${oauthProfileName}`,
+        };
+    }
+
+    public async getMsgVpnAuthenticationOauthProfile(
+        msgVpnName: string,
+        oauthProfileName: string,
+        opaquePassword?: string,
+        select?: Array<string>,
+    ): Promise<MsgVpnAuthenticationOauthProfileResponse | SempMetaOnlyResponse> {
+        const options = this.getMsgVpnAuthenticationOauthProfileApiRequestOptions(
+            msgVpnName,
+            oauthProfileName,
+            opaquePassword,
+            select,
+        );
+        const result = await __request(options);
+        return result.body;
+    }
+
+    public getMsgVpnAuthenticationOauthProfileApiRequestOptions(
+        msgVpnName: string,
+        oauthProfileName: string,
+        opaquePassword?: string,
+        select?: Array<string>,
+    ): ApiRequestOptions {
+        return {
+            ...this.config,
+            method: 'GET',
+            path: `/msgVpns/${msgVpnName}/authenticationOauthProfiles/${oauthProfileName}`,
+            query: {
+                'opaquePassword': opaquePassword,
+                'select': select,
+            },
+        };
+    }
+
+    public async updateMsgVpnAuthenticationOauthProfile(
+        msgVpnName: string,
+        oauthProfileName: string,
+        body: MsgVpnAuthenticationOauthProfile,
+        opaquePassword?: string,
+        select?: Array<string>,
+    ): Promise<MsgVpnAuthenticationOauthProfileResponse | SempMetaOnlyResponse> {
+        const options = this.updateMsgVpnAuthenticationOauthProfileApiRequestOptions(
+            msgVpnName,
+            oauthProfileName,
+            body,
+            opaquePassword,
+            select,
+        );
+        const result = await __request(options);
+        return result.body;
+    }
+
+    public updateMsgVpnAuthenticationOauthProfileApiRequestOptions(
+        msgVpnName: string,
+        oauthProfileName: string,
+        body: MsgVpnAuthenticationOauthProfile,
+        opaquePassword?: string,
+        select?: Array<string>,
+    ): ApiRequestOptions {
+        return {
+            ...this.config,
+            method: 'PATCH',
+            path: `/msgVpns/${msgVpnName}/authenticationOauthProfiles/${oauthProfileName}`,
+            query: {
+                'opaquePassword': opaquePassword,
+                'select': select,
+            },
+            body: body,
+        };
+    }
+
+    public async replaceMsgVpnAuthenticationOauthProfile(
+        msgVpnName: string,
+        oauthProfileName: string,
+        body: MsgVpnAuthenticationOauthProfile,
+        opaquePassword?: string,
+        select?: Array<string>,
+    ): Promise<MsgVpnAuthenticationOauthProfileResponse | SempMetaOnlyResponse> {
+        const options = this.replaceMsgVpnAuthenticationOauthProfileApiRequestOptions(
+            msgVpnName,
+            oauthProfileName,
+            body,
+            opaquePassword,
+            select,
+        );
+        const result = await __request(options);
+        return result.body;
+    }
+
+    public replaceMsgVpnAuthenticationOauthProfileApiRequestOptions(
+        msgVpnName: string,
+        oauthProfileName: string,
+        body: MsgVpnAuthenticationOauthProfile,
+        opaquePassword?: string,
+        select?: Array<string>,
+    ): ApiRequestOptions {
+        return {
+            ...this.config,
+            method: 'PUT',
+            path: `/msgVpns/${msgVpnName}/authenticationOauthProfiles/${oauthProfileName}`,
+            query: {
+                'opaquePassword': opaquePassword,
+                'select': select,
+            },
+            body: body,
+        };
+    }
+
+    public async getMsgVpnAuthenticationOauthProfileClientRequiredClaims(
+        msgVpnName: string,
+        oauthProfileName: string,
+        count: number = 10,
+        cursor?: string,
+        opaquePassword?: string,
+        where?: Array<string>,
+        select?: Array<string>,
+    ): Promise<MsgVpnAuthenticationOauthProfileClientRequiredClaimsResponse | SempMetaOnlyResponse> {
+        const options = this.getMsgVpnAuthenticationOauthProfileClientRequiredClaimsApiRequestOptions(
+            msgVpnName,
+            oauthProfileName,
+            count,
+            cursor,
+            opaquePassword,
+            where,
+            select,
+        );
+        const result = await __request(options);
+        return result.body;
+    }
+
+    public getMsgVpnAuthenticationOauthProfileClientRequiredClaimsApiRequestOptions(
+        msgVpnName: string,
+        oauthProfileName: string,
+        count: number = 10,
+        cursor?: string,
+        opaquePassword?: string,
+        where?: Array<string>,
+        select?: Array<string>,
+    ): ApiRequestOptions {
+        return {
+            ...this.config,
+            method: 'GET',
+            path: `/msgVpns/${msgVpnName}/authenticationOauthProfiles/${oauthProfileName}/clientRequiredClaims`,
+            query: {
+                'count': count,
+                'cursor': cursor,
+                'opaquePassword': opaquePassword,
+                'where': where,
+                'select': select,
+            },
+        };
+    }
+
+    public async createMsgVpnAuthenticationOauthProfileClientRequiredClaim(
+        msgVpnName: string,
+        oauthProfileName: string,
+        body: MsgVpnAuthenticationOauthProfileClientRequiredClaim,
+        opaquePassword?: string,
+        select?: Array<string>,
+    ): Promise<MsgVpnAuthenticationOauthProfileClientRequiredClaimResponse | SempMetaOnlyResponse> {
+        const options = this.createMsgVpnAuthenticationOauthProfileClientRequiredClaimApiRequestOptions(
+            msgVpnName,
+            oauthProfileName,
+            body,
+            opaquePassword,
+            select,
+        );
+        const result = await __request(options);
+        return result.body;
+    }
+
+    public createMsgVpnAuthenticationOauthProfileClientRequiredClaimApiRequestOptions(
+        msgVpnName: string,
+        oauthProfileName: string,
+        body: MsgVpnAuthenticationOauthProfileClientRequiredClaim,
+        opaquePassword?: string,
+        select?: Array<string>,
+    ): ApiRequestOptions {
+        return {
+            ...this.config,
+            method: 'POST',
+            path: `/msgVpns/${msgVpnName}/authenticationOauthProfiles/${oauthProfileName}/clientRequiredClaims`,
+            query: {
+                'opaquePassword': opaquePassword,
+                'select': select,
+            },
+            body: body,
+        };
+    }
+
+    public async deleteMsgVpnAuthenticationOauthProfileClientRequiredClaim(
+        msgVpnName: string,
+        oauthProfileName: string,
+        clientRequiredClaimName: string,
+    ): Promise<SempMetaOnlyResponse> {
+        const options = this.deleteMsgVpnAuthenticationOauthProfileClientRequiredClaimApiRequestOptions(
+            msgVpnName,
+            oauthProfileName,
+            clientRequiredClaimName,
+        );
+        const result = await __request(options);
+        return result.body;
+    }
+
+    public deleteMsgVpnAuthenticationOauthProfileClientRequiredClaimApiRequestOptions(
+        msgVpnName: string,
+        oauthProfileName: string,
+        clientRequiredClaimName: string,
+    ): ApiRequestOptions {
+        return {
+            ...this.config,
+            method: 'DELETE',
+            path: `/msgVpns/${msgVpnName}/authenticationOauthProfiles/${oauthProfileName}/clientRequiredClaims/${clientRequiredClaimName}`,
+        };
+    }
+
+    public async getMsgVpnAuthenticationOauthProfileClientRequiredClaim(
+        msgVpnName: string,
+        oauthProfileName: string,
+        clientRequiredClaimName: string,
+        opaquePassword?: string,
+        select?: Array<string>,
+    ): Promise<MsgVpnAuthenticationOauthProfileClientRequiredClaimResponse | SempMetaOnlyResponse> {
+        const options = this.getMsgVpnAuthenticationOauthProfileClientRequiredClaimApiRequestOptions(
+            msgVpnName,
+            oauthProfileName,
+            clientRequiredClaimName,
+            opaquePassword,
+            select,
+        );
+        const result = await __request(options);
+        return result.body;
+    }
+
+    public getMsgVpnAuthenticationOauthProfileClientRequiredClaimApiRequestOptions(
+        msgVpnName: string,
+        oauthProfileName: string,
+        clientRequiredClaimName: string,
+        opaquePassword?: string,
+        select?: Array<string>,
+    ): ApiRequestOptions {
+        return {
+            ...this.config,
+            method: 'GET',
+            path: `/msgVpns/${msgVpnName}/authenticationOauthProfiles/${oauthProfileName}/clientRequiredClaims/${clientRequiredClaimName}`,
+            query: {
+                'opaquePassword': opaquePassword,
+                'select': select,
+            },
+        };
+    }
+
+    public async getMsgVpnAuthenticationOauthProfileResourceServerRequiredClaims(
+        msgVpnName: string,
+        oauthProfileName: string,
+        count: number = 10,
+        cursor?: string,
+        opaquePassword?: string,
+        where?: Array<string>,
+        select?: Array<string>,
+    ): Promise<MsgVpnAuthenticationOauthProfileResourceServerRequiredClaimsResponse | SempMetaOnlyResponse> {
+        const options = this.getMsgVpnAuthenticationOauthProfileResourceServerRequiredClaimsApiRequestOptions(
+            msgVpnName,
+            oauthProfileName,
+            count,
+            cursor,
+            opaquePassword,
+            where,
+            select,
+        );
+        const result = await __request(options);
+        return result.body;
+    }
+
+    public getMsgVpnAuthenticationOauthProfileResourceServerRequiredClaimsApiRequestOptions(
+        msgVpnName: string,
+        oauthProfileName: string,
+        count: number = 10,
+        cursor?: string,
+        opaquePassword?: string,
+        where?: Array<string>,
+        select?: Array<string>,
+    ): ApiRequestOptions {
+        return {
+            ...this.config,
+            method: 'GET',
+            path: `/msgVpns/${msgVpnName}/authenticationOauthProfiles/${oauthProfileName}/resourceServerRequiredClaims`,
+            query: {
+                'count': count,
+                'cursor': cursor,
+                'opaquePassword': opaquePassword,
+                'where': where,
+                'select': select,
+            },
+        };
+    }
+
+    public async createMsgVpnAuthenticationOauthProfileResourceServerRequiredClaim(
+        msgVpnName: string,
+        oauthProfileName: string,
+        body: MsgVpnAuthenticationOauthProfileResourceServerRequiredClaim,
+        opaquePassword?: string,
+        select?: Array<string>,
+    ): Promise<MsgVpnAuthenticationOauthProfileResourceServerRequiredClaimResponse | SempMetaOnlyResponse> {
+        const options = this.createMsgVpnAuthenticationOauthProfileResourceServerRequiredClaimApiRequestOptions(
+            msgVpnName,
+            oauthProfileName,
+            body,
+            opaquePassword,
+            select,
+        );
+        const result = await __request(options);
+        return result.body;
+    }
+
+    public createMsgVpnAuthenticationOauthProfileResourceServerRequiredClaimApiRequestOptions(
+        msgVpnName: string,
+        oauthProfileName: string,
+        body: MsgVpnAuthenticationOauthProfileResourceServerRequiredClaim,
+        opaquePassword?: string,
+        select?: Array<string>,
+    ): ApiRequestOptions {
+        return {
+            ...this.config,
+            method: 'POST',
+            path: `/msgVpns/${msgVpnName}/authenticationOauthProfiles/${oauthProfileName}/resourceServerRequiredClaims`,
+            query: {
+                'opaquePassword': opaquePassword,
+                'select': select,
+            },
+            body: body,
+        };
+    }
+
+    public async deleteMsgVpnAuthenticationOauthProfileResourceServerRequiredClaim(
+        msgVpnName: string,
+        oauthProfileName: string,
+        resourceServerRequiredClaimName: string,
+    ): Promise<SempMetaOnlyResponse> {
+        const options = this.deleteMsgVpnAuthenticationOauthProfileResourceServerRequiredClaimApiRequestOptions(
+            msgVpnName,
+            oauthProfileName,
+            resourceServerRequiredClaimName,
+        );
+        const result = await __request(options);
+        return result.body;
+    }
+
+    public deleteMsgVpnAuthenticationOauthProfileResourceServerRequiredClaimApiRequestOptions(
+        msgVpnName: string,
+        oauthProfileName: string,
+        resourceServerRequiredClaimName: string,
+    ): ApiRequestOptions {
+        return {
+            ...this.config,
+            method: 'DELETE',
+            path: `/msgVpns/${msgVpnName}/authenticationOauthProfiles/${oauthProfileName}/resourceServerRequiredClaims/${resourceServerRequiredClaimName}`,
+        };
+    }
+
+    public async getMsgVpnAuthenticationOauthProfileResourceServerRequiredClaim(
+        msgVpnName: string,
+        oauthProfileName: string,
+        resourceServerRequiredClaimName: string,
+        opaquePassword?: string,
+        select?: Array<string>,
+    ): Promise<MsgVpnAuthenticationOauthProfileResourceServerRequiredClaimResponse | SempMetaOnlyResponse> {
+        const options = this.getMsgVpnAuthenticationOauthProfileResourceServerRequiredClaimApiRequestOptions(
+            msgVpnName,
+            oauthProfileName,
+            resourceServerRequiredClaimName,
+            opaquePassword,
+            select,
+        );
+        const result = await __request(options);
+        return result.body;
+    }
+
+    public getMsgVpnAuthenticationOauthProfileResourceServerRequiredClaimApiRequestOptions(
+        msgVpnName: string,
+        oauthProfileName: string,
+        resourceServerRequiredClaimName: string,
+        opaquePassword?: string,
+        select?: Array<string>,
+    ): ApiRequestOptions {
+        return {
+            ...this.config,
+            method: 'GET',
+            path: `/msgVpns/${msgVpnName}/authenticationOauthProfiles/${oauthProfileName}/resourceServerRequiredClaims/${resourceServerRequiredClaimName}`,
+            query: {
+                'opaquePassword': opaquePassword,
+                'select': select,
+            },
+        };
+    }
+
     public async getMsgVpnAuthenticationOauthProviders(
         msgVpnName: string,
         count: number = 10,
@@ -4332,6 +5629,580 @@ export class AllServiceDefault implements AllService {
         };
     }
 
+    public async getMsgVpnCertMatchingRules(
+        msgVpnName: string,
+        count: number = 10,
+        cursor?: string,
+        opaquePassword?: string,
+        where?: Array<string>,
+        select?: Array<string>,
+    ): Promise<MsgVpnCertMatchingRulesResponse | SempMetaOnlyResponse> {
+        const options = this.getMsgVpnCertMatchingRulesApiRequestOptions(
+            msgVpnName,
+            count,
+            cursor,
+            opaquePassword,
+            where,
+            select,
+        );
+        const result = await __request(options);
+        return result.body;
+    }
+
+    public getMsgVpnCertMatchingRulesApiRequestOptions(
+        msgVpnName: string,
+        count: number = 10,
+        cursor?: string,
+        opaquePassword?: string,
+        where?: Array<string>,
+        select?: Array<string>,
+    ): ApiRequestOptions {
+        return {
+            ...this.config,
+            method: 'GET',
+            path: `/msgVpns/${msgVpnName}/certMatchingRules`,
+            query: {
+                'count': count,
+                'cursor': cursor,
+                'opaquePassword': opaquePassword,
+                'where': where,
+                'select': select,
+            },
+        };
+    }
+
+    public async createMsgVpnCertMatchingRule(
+        msgVpnName: string,
+        body: MsgVpnCertMatchingRule,
+        opaquePassword?: string,
+        select?: Array<string>,
+    ): Promise<MsgVpnCertMatchingRuleResponse | SempMetaOnlyResponse> {
+        const options = this.createMsgVpnCertMatchingRuleApiRequestOptions(
+            msgVpnName,
+            body,
+            opaquePassword,
+            select,
+        );
+        const result = await __request(options);
+        return result.body;
+    }
+
+    public createMsgVpnCertMatchingRuleApiRequestOptions(
+        msgVpnName: string,
+        body: MsgVpnCertMatchingRule,
+        opaquePassword?: string,
+        select?: Array<string>,
+    ): ApiRequestOptions {
+        return {
+            ...this.config,
+            method: 'POST',
+            path: `/msgVpns/${msgVpnName}/certMatchingRules`,
+            query: {
+                'opaquePassword': opaquePassword,
+                'select': select,
+            },
+            body: body,
+        };
+    }
+
+    public async deleteMsgVpnCertMatchingRule(
+        msgVpnName: string,
+        ruleName: string,
+    ): Promise<SempMetaOnlyResponse> {
+        const options = this.deleteMsgVpnCertMatchingRuleApiRequestOptions(
+            msgVpnName,
+            ruleName,
+        );
+        const result = await __request(options);
+        return result.body;
+    }
+
+    public deleteMsgVpnCertMatchingRuleApiRequestOptions(
+        msgVpnName: string,
+        ruleName: string,
+    ): ApiRequestOptions {
+        return {
+            ...this.config,
+            method: 'DELETE',
+            path: `/msgVpns/${msgVpnName}/certMatchingRules/${ruleName}`,
+        };
+    }
+
+    public async getMsgVpnCertMatchingRule(
+        msgVpnName: string,
+        ruleName: string,
+        opaquePassword?: string,
+        select?: Array<string>,
+    ): Promise<MsgVpnCertMatchingRuleResponse | SempMetaOnlyResponse> {
+        const options = this.getMsgVpnCertMatchingRuleApiRequestOptions(
+            msgVpnName,
+            ruleName,
+            opaquePassword,
+            select,
+        );
+        const result = await __request(options);
+        return result.body;
+    }
+
+    public getMsgVpnCertMatchingRuleApiRequestOptions(
+        msgVpnName: string,
+        ruleName: string,
+        opaquePassword?: string,
+        select?: Array<string>,
+    ): ApiRequestOptions {
+        return {
+            ...this.config,
+            method: 'GET',
+            path: `/msgVpns/${msgVpnName}/certMatchingRules/${ruleName}`,
+            query: {
+                'opaquePassword': opaquePassword,
+                'select': select,
+            },
+        };
+    }
+
+    public async updateMsgVpnCertMatchingRule(
+        msgVpnName: string,
+        ruleName: string,
+        body: MsgVpnCertMatchingRule,
+        opaquePassword?: string,
+        select?: Array<string>,
+    ): Promise<MsgVpnCertMatchingRuleResponse | SempMetaOnlyResponse> {
+        const options = this.updateMsgVpnCertMatchingRuleApiRequestOptions(
+            msgVpnName,
+            ruleName,
+            body,
+            opaquePassword,
+            select,
+        );
+        const result = await __request(options);
+        return result.body;
+    }
+
+    public updateMsgVpnCertMatchingRuleApiRequestOptions(
+        msgVpnName: string,
+        ruleName: string,
+        body: MsgVpnCertMatchingRule,
+        opaquePassword?: string,
+        select?: Array<string>,
+    ): ApiRequestOptions {
+        return {
+            ...this.config,
+            method: 'PATCH',
+            path: `/msgVpns/${msgVpnName}/certMatchingRules/${ruleName}`,
+            query: {
+                'opaquePassword': opaquePassword,
+                'select': select,
+            },
+            body: body,
+        };
+    }
+
+    public async replaceMsgVpnCertMatchingRule(
+        msgVpnName: string,
+        ruleName: string,
+        body: MsgVpnCertMatchingRule,
+        opaquePassword?: string,
+        select?: Array<string>,
+    ): Promise<MsgVpnCertMatchingRuleResponse | SempMetaOnlyResponse> {
+        const options = this.replaceMsgVpnCertMatchingRuleApiRequestOptions(
+            msgVpnName,
+            ruleName,
+            body,
+            opaquePassword,
+            select,
+        );
+        const result = await __request(options);
+        return result.body;
+    }
+
+    public replaceMsgVpnCertMatchingRuleApiRequestOptions(
+        msgVpnName: string,
+        ruleName: string,
+        body: MsgVpnCertMatchingRule,
+        opaquePassword?: string,
+        select?: Array<string>,
+    ): ApiRequestOptions {
+        return {
+            ...this.config,
+            method: 'PUT',
+            path: `/msgVpns/${msgVpnName}/certMatchingRules/${ruleName}`,
+            query: {
+                'opaquePassword': opaquePassword,
+                'select': select,
+            },
+            body: body,
+        };
+    }
+
+    public async getMsgVpnCertMatchingRuleAttributeFilters(
+        msgVpnName: string,
+        ruleName: string,
+        count: number = 10,
+        cursor?: string,
+        opaquePassword?: string,
+        where?: Array<string>,
+        select?: Array<string>,
+    ): Promise<MsgVpnCertMatchingRuleAttributeFiltersResponse | SempMetaOnlyResponse> {
+        const options = this.getMsgVpnCertMatchingRuleAttributeFiltersApiRequestOptions(
+            msgVpnName,
+            ruleName,
+            count,
+            cursor,
+            opaquePassword,
+            where,
+            select,
+        );
+        const result = await __request(options);
+        return result.body;
+    }
+
+    public getMsgVpnCertMatchingRuleAttributeFiltersApiRequestOptions(
+        msgVpnName: string,
+        ruleName: string,
+        count: number = 10,
+        cursor?: string,
+        opaquePassword?: string,
+        where?: Array<string>,
+        select?: Array<string>,
+    ): ApiRequestOptions {
+        return {
+            ...this.config,
+            method: 'GET',
+            path: `/msgVpns/${msgVpnName}/certMatchingRules/${ruleName}/attributeFilters`,
+            query: {
+                'count': count,
+                'cursor': cursor,
+                'opaquePassword': opaquePassword,
+                'where': where,
+                'select': select,
+            },
+        };
+    }
+
+    public async createMsgVpnCertMatchingRuleAttributeFilter(
+        msgVpnName: string,
+        ruleName: string,
+        body: MsgVpnCertMatchingRuleAttributeFilter,
+        opaquePassword?: string,
+        select?: Array<string>,
+    ): Promise<MsgVpnCertMatchingRuleAttributeFilterResponse | SempMetaOnlyResponse> {
+        const options = this.createMsgVpnCertMatchingRuleAttributeFilterApiRequestOptions(
+            msgVpnName,
+            ruleName,
+            body,
+            opaquePassword,
+            select,
+        );
+        const result = await __request(options);
+        return result.body;
+    }
+
+    public createMsgVpnCertMatchingRuleAttributeFilterApiRequestOptions(
+        msgVpnName: string,
+        ruleName: string,
+        body: MsgVpnCertMatchingRuleAttributeFilter,
+        opaquePassword?: string,
+        select?: Array<string>,
+    ): ApiRequestOptions {
+        return {
+            ...this.config,
+            method: 'POST',
+            path: `/msgVpns/${msgVpnName}/certMatchingRules/${ruleName}/attributeFilters`,
+            query: {
+                'opaquePassword': opaquePassword,
+                'select': select,
+            },
+            body: body,
+        };
+    }
+
+    public async deleteMsgVpnCertMatchingRuleAttributeFilter(
+        msgVpnName: string,
+        ruleName: string,
+        filterName: string,
+    ): Promise<SempMetaOnlyResponse> {
+        const options = this.deleteMsgVpnCertMatchingRuleAttributeFilterApiRequestOptions(
+            msgVpnName,
+            ruleName,
+            filterName,
+        );
+        const result = await __request(options);
+        return result.body;
+    }
+
+    public deleteMsgVpnCertMatchingRuleAttributeFilterApiRequestOptions(
+        msgVpnName: string,
+        ruleName: string,
+        filterName: string,
+    ): ApiRequestOptions {
+        return {
+            ...this.config,
+            method: 'DELETE',
+            path: `/msgVpns/${msgVpnName}/certMatchingRules/${ruleName}/attributeFilters/${filterName}`,
+        };
+    }
+
+    public async getMsgVpnCertMatchingRuleAttributeFilter(
+        msgVpnName: string,
+        ruleName: string,
+        filterName: string,
+        opaquePassword?: string,
+        select?: Array<string>,
+    ): Promise<MsgVpnCertMatchingRuleAttributeFilterResponse | SempMetaOnlyResponse> {
+        const options = this.getMsgVpnCertMatchingRuleAttributeFilterApiRequestOptions(
+            msgVpnName,
+            ruleName,
+            filterName,
+            opaquePassword,
+            select,
+        );
+        const result = await __request(options);
+        return result.body;
+    }
+
+    public getMsgVpnCertMatchingRuleAttributeFilterApiRequestOptions(
+        msgVpnName: string,
+        ruleName: string,
+        filterName: string,
+        opaquePassword?: string,
+        select?: Array<string>,
+    ): ApiRequestOptions {
+        return {
+            ...this.config,
+            method: 'GET',
+            path: `/msgVpns/${msgVpnName}/certMatchingRules/${ruleName}/attributeFilters/${filterName}`,
+            query: {
+                'opaquePassword': opaquePassword,
+                'select': select,
+            },
+        };
+    }
+
+    public async updateMsgVpnCertMatchingRuleAttributeFilter(
+        msgVpnName: string,
+        ruleName: string,
+        filterName: string,
+        body: MsgVpnCertMatchingRuleAttributeFilter,
+        opaquePassword?: string,
+        select?: Array<string>,
+    ): Promise<MsgVpnCertMatchingRuleAttributeFilterResponse | SempMetaOnlyResponse> {
+        const options = this.updateMsgVpnCertMatchingRuleAttributeFilterApiRequestOptions(
+            msgVpnName,
+            ruleName,
+            filterName,
+            body,
+            opaquePassword,
+            select,
+        );
+        const result = await __request(options);
+        return result.body;
+    }
+
+    public updateMsgVpnCertMatchingRuleAttributeFilterApiRequestOptions(
+        msgVpnName: string,
+        ruleName: string,
+        filterName: string,
+        body: MsgVpnCertMatchingRuleAttributeFilter,
+        opaquePassword?: string,
+        select?: Array<string>,
+    ): ApiRequestOptions {
+        return {
+            ...this.config,
+            method: 'PATCH',
+            path: `/msgVpns/${msgVpnName}/certMatchingRules/${ruleName}/attributeFilters/${filterName}`,
+            query: {
+                'opaquePassword': opaquePassword,
+                'select': select,
+            },
+            body: body,
+        };
+    }
+
+    public async replaceMsgVpnCertMatchingRuleAttributeFilter(
+        msgVpnName: string,
+        ruleName: string,
+        filterName: string,
+        body: MsgVpnCertMatchingRuleAttributeFilter,
+        opaquePassword?: string,
+        select?: Array<string>,
+    ): Promise<MsgVpnCertMatchingRuleAttributeFilterResponse | SempMetaOnlyResponse> {
+        const options = this.replaceMsgVpnCertMatchingRuleAttributeFilterApiRequestOptions(
+            msgVpnName,
+            ruleName,
+            filterName,
+            body,
+            opaquePassword,
+            select,
+        );
+        const result = await __request(options);
+        return result.body;
+    }
+
+    public replaceMsgVpnCertMatchingRuleAttributeFilterApiRequestOptions(
+        msgVpnName: string,
+        ruleName: string,
+        filterName: string,
+        body: MsgVpnCertMatchingRuleAttributeFilter,
+        opaquePassword?: string,
+        select?: Array<string>,
+    ): ApiRequestOptions {
+        return {
+            ...this.config,
+            method: 'PUT',
+            path: `/msgVpns/${msgVpnName}/certMatchingRules/${ruleName}/attributeFilters/${filterName}`,
+            query: {
+                'opaquePassword': opaquePassword,
+                'select': select,
+            },
+            body: body,
+        };
+    }
+
+    public async getMsgVpnCertMatchingRuleConditions(
+        msgVpnName: string,
+        ruleName: string,
+        count: number = 10,
+        cursor?: string,
+        opaquePassword?: string,
+        where?: Array<string>,
+        select?: Array<string>,
+    ): Promise<MsgVpnCertMatchingRuleConditionsResponse | SempMetaOnlyResponse> {
+        const options = this.getMsgVpnCertMatchingRuleConditionsApiRequestOptions(
+            msgVpnName,
+            ruleName,
+            count,
+            cursor,
+            opaquePassword,
+            where,
+            select,
+        );
+        const result = await __request(options);
+        return result.body;
+    }
+
+    public getMsgVpnCertMatchingRuleConditionsApiRequestOptions(
+        msgVpnName: string,
+        ruleName: string,
+        count: number = 10,
+        cursor?: string,
+        opaquePassword?: string,
+        where?: Array<string>,
+        select?: Array<string>,
+    ): ApiRequestOptions {
+        return {
+            ...this.config,
+            method: 'GET',
+            path: `/msgVpns/${msgVpnName}/certMatchingRules/${ruleName}/conditions`,
+            query: {
+                'count': count,
+                'cursor': cursor,
+                'opaquePassword': opaquePassword,
+                'where': where,
+                'select': select,
+            },
+        };
+    }
+
+    public async createMsgVpnCertMatchingRuleCondition(
+        msgVpnName: string,
+        ruleName: string,
+        body: MsgVpnCertMatchingRuleCondition,
+        opaquePassword?: string,
+        select?: Array<string>,
+    ): Promise<MsgVpnCertMatchingRuleConditionResponse | SempMetaOnlyResponse> {
+        const options = this.createMsgVpnCertMatchingRuleConditionApiRequestOptions(
+            msgVpnName,
+            ruleName,
+            body,
+            opaquePassword,
+            select,
+        );
+        const result = await __request(options);
+        return result.body;
+    }
+
+    public createMsgVpnCertMatchingRuleConditionApiRequestOptions(
+        msgVpnName: string,
+        ruleName: string,
+        body: MsgVpnCertMatchingRuleCondition,
+        opaquePassword?: string,
+        select?: Array<string>,
+    ): ApiRequestOptions {
+        return {
+            ...this.config,
+            method: 'POST',
+            path: `/msgVpns/${msgVpnName}/certMatchingRules/${ruleName}/conditions`,
+            query: {
+                'opaquePassword': opaquePassword,
+                'select': select,
+            },
+            body: body,
+        };
+    }
+
+    public async deleteMsgVpnCertMatchingRuleCondition(
+        msgVpnName: string,
+        ruleName: string,
+        source: string,
+    ): Promise<SempMetaOnlyResponse> {
+        const options = this.deleteMsgVpnCertMatchingRuleConditionApiRequestOptions(
+            msgVpnName,
+            ruleName,
+            source,
+        );
+        const result = await __request(options);
+        return result.body;
+    }
+
+    public deleteMsgVpnCertMatchingRuleConditionApiRequestOptions(
+        msgVpnName: string,
+        ruleName: string,
+        source: string,
+    ): ApiRequestOptions {
+        return {
+            ...this.config,
+            method: 'DELETE',
+            path: `/msgVpns/${msgVpnName}/certMatchingRules/${ruleName}/conditions/${source}`,
+        };
+    }
+
+    public async getMsgVpnCertMatchingRuleCondition(
+        msgVpnName: string,
+        ruleName: string,
+        source: string,
+        opaquePassword?: string,
+        select?: Array<string>,
+    ): Promise<MsgVpnCertMatchingRuleConditionResponse | SempMetaOnlyResponse> {
+        const options = this.getMsgVpnCertMatchingRuleConditionApiRequestOptions(
+            msgVpnName,
+            ruleName,
+            source,
+            opaquePassword,
+            select,
+        );
+        const result = await __request(options);
+        return result.body;
+    }
+
+    public getMsgVpnCertMatchingRuleConditionApiRequestOptions(
+        msgVpnName: string,
+        ruleName: string,
+        source: string,
+        opaquePassword?: string,
+        select?: Array<string>,
+    ): ApiRequestOptions {
+        return {
+            ...this.config,
+            method: 'GET',
+            path: `/msgVpns/${msgVpnName}/certMatchingRules/${ruleName}/conditions/${source}`,
+            query: {
+                'opaquePassword': opaquePassword,
+                'select': select,
+            },
+        };
+    }
+
     public async getMsgVpnClientProfiles(
         msgVpnName: string,
         count: number = 10,
@@ -4741,6 +6612,156 @@ export class AllServiceDefault implements AllService {
                 'select': select,
             },
             body: body,
+        };
+    }
+
+    public async getMsgVpnClientUsernameAttributes(
+        msgVpnName: string,
+        clientUsername: string,
+        count: number = 10,
+        cursor?: string,
+        opaquePassword?: string,
+        where?: Array<string>,
+        select?: Array<string>,
+    ): Promise<MsgVpnClientUsernameAttributesResponse | SempMetaOnlyResponse> {
+        const options = this.getMsgVpnClientUsernameAttributesApiRequestOptions(
+            msgVpnName,
+            clientUsername,
+            count,
+            cursor,
+            opaquePassword,
+            where,
+            select,
+        );
+        const result = await __request(options);
+        return result.body;
+    }
+
+    public getMsgVpnClientUsernameAttributesApiRequestOptions(
+        msgVpnName: string,
+        clientUsername: string,
+        count: number = 10,
+        cursor?: string,
+        opaquePassword?: string,
+        where?: Array<string>,
+        select?: Array<string>,
+    ): ApiRequestOptions {
+        return {
+            ...this.config,
+            method: 'GET',
+            path: `/msgVpns/${msgVpnName}/clientUsernames/${clientUsername}/attributes`,
+            query: {
+                'count': count,
+                'cursor': cursor,
+                'opaquePassword': opaquePassword,
+                'where': where,
+                'select': select,
+            },
+        };
+    }
+
+    public async createMsgVpnClientUsernameAttribute(
+        msgVpnName: string,
+        clientUsername: string,
+        body: MsgVpnClientUsernameAttribute,
+        opaquePassword?: string,
+        select?: Array<string>,
+    ): Promise<MsgVpnClientUsernameAttributeResponse | SempMetaOnlyResponse> {
+        const options = this.createMsgVpnClientUsernameAttributeApiRequestOptions(
+            msgVpnName,
+            clientUsername,
+            body,
+            opaquePassword,
+            select,
+        );
+        const result = await __request(options);
+        return result.body;
+    }
+
+    public createMsgVpnClientUsernameAttributeApiRequestOptions(
+        msgVpnName: string,
+        clientUsername: string,
+        body: MsgVpnClientUsernameAttribute,
+        opaquePassword?: string,
+        select?: Array<string>,
+    ): ApiRequestOptions {
+        return {
+            ...this.config,
+            method: 'POST',
+            path: `/msgVpns/${msgVpnName}/clientUsernames/${clientUsername}/attributes`,
+            query: {
+                'opaquePassword': opaquePassword,
+                'select': select,
+            },
+            body: body,
+        };
+    }
+
+    public async deleteMsgVpnClientUsernameAttribute(
+        msgVpnName: string,
+        clientUsername: string,
+        attributeName: string,
+        attributeValue: string,
+    ): Promise<SempMetaOnlyResponse> {
+        const options = this.deleteMsgVpnClientUsernameAttributeApiRequestOptions(
+            msgVpnName,
+            clientUsername,
+            attributeName,
+            attributeValue,
+        );
+        const result = await __request(options);
+        return result.body;
+    }
+
+    public deleteMsgVpnClientUsernameAttributeApiRequestOptions(
+        msgVpnName: string,
+        clientUsername: string,
+        attributeName: string,
+        attributeValue: string,
+    ): ApiRequestOptions {
+        return {
+            ...this.config,
+            method: 'DELETE',
+            path: `/msgVpns/${msgVpnName}/clientUsernames/${clientUsername}/attributes/${attributeName},${attributeValue}`,
+        };
+    }
+
+    public async getMsgVpnClientUsernameAttribute(
+        msgVpnName: string,
+        clientUsername: string,
+        attributeName: string,
+        attributeValue: string,
+        opaquePassword?: string,
+        select?: Array<string>,
+    ): Promise<MsgVpnClientUsernameAttributeResponse | SempMetaOnlyResponse> {
+        const options = this.getMsgVpnClientUsernameAttributeApiRequestOptions(
+            msgVpnName,
+            clientUsername,
+            attributeName,
+            attributeValue,
+            opaquePassword,
+            select,
+        );
+        const result = await __request(options);
+        return result.body;
+    }
+
+    public getMsgVpnClientUsernameAttributeApiRequestOptions(
+        msgVpnName: string,
+        clientUsername: string,
+        attributeName: string,
+        attributeValue: string,
+        opaquePassword?: string,
+        select?: Array<string>,
+    ): ApiRequestOptions {
+        return {
+            ...this.config,
+            method: 'GET',
+            path: `/msgVpns/${msgVpnName}/clientUsernames/${clientUsername}/attributes/${attributeName},${attributeValue}`,
+            query: {
+                'opaquePassword': opaquePassword,
+                'select': select,
+            },
         };
     }
 
@@ -8148,6 +10169,150 @@ export class AllServiceDefault implements AllService {
         };
     }
 
+    public async getMsgVpnReplayLogTopicFilterSubscriptions(
+        msgVpnName: string,
+        replayLogName: string,
+        count: number = 10,
+        cursor?: string,
+        opaquePassword?: string,
+        where?: Array<string>,
+        select?: Array<string>,
+    ): Promise<MsgVpnReplayLogTopicFilterSubscriptionsResponse | SempMetaOnlyResponse> {
+        const options = this.getMsgVpnReplayLogTopicFilterSubscriptionsApiRequestOptions(
+            msgVpnName,
+            replayLogName,
+            count,
+            cursor,
+            opaquePassword,
+            where,
+            select,
+        );
+        const result = await __request(options);
+        return result.body;
+    }
+
+    public getMsgVpnReplayLogTopicFilterSubscriptionsApiRequestOptions(
+        msgVpnName: string,
+        replayLogName: string,
+        count: number = 10,
+        cursor?: string,
+        opaquePassword?: string,
+        where?: Array<string>,
+        select?: Array<string>,
+    ): ApiRequestOptions {
+        return {
+            ...this.config,
+            method: 'GET',
+            path: `/msgVpns/${msgVpnName}/replayLogs/${replayLogName}/topicFilterSubscriptions`,
+            query: {
+                'count': count,
+                'cursor': cursor,
+                'opaquePassword': opaquePassword,
+                'where': where,
+                'select': select,
+            },
+        };
+    }
+
+    public async createMsgVpnReplayLogTopicFilterSubscription(
+        msgVpnName: string,
+        replayLogName: string,
+        body: MsgVpnReplayLogTopicFilterSubscription,
+        opaquePassword?: string,
+        select?: Array<string>,
+    ): Promise<MsgVpnReplayLogTopicFilterSubscriptionResponse | SempMetaOnlyResponse> {
+        const options = this.createMsgVpnReplayLogTopicFilterSubscriptionApiRequestOptions(
+            msgVpnName,
+            replayLogName,
+            body,
+            opaquePassword,
+            select,
+        );
+        const result = await __request(options);
+        return result.body;
+    }
+
+    public createMsgVpnReplayLogTopicFilterSubscriptionApiRequestOptions(
+        msgVpnName: string,
+        replayLogName: string,
+        body: MsgVpnReplayLogTopicFilterSubscription,
+        opaquePassword?: string,
+        select?: Array<string>,
+    ): ApiRequestOptions {
+        return {
+            ...this.config,
+            method: 'POST',
+            path: `/msgVpns/${msgVpnName}/replayLogs/${replayLogName}/topicFilterSubscriptions`,
+            query: {
+                'opaquePassword': opaquePassword,
+                'select': select,
+            },
+            body: body,
+        };
+    }
+
+    public async deleteMsgVpnReplayLogTopicFilterSubscription(
+        msgVpnName: string,
+        replayLogName: string,
+        topicFilterSubscription: string,
+    ): Promise<SempMetaOnlyResponse> {
+        const options = this.deleteMsgVpnReplayLogTopicFilterSubscriptionApiRequestOptions(
+            msgVpnName,
+            replayLogName,
+            topicFilterSubscription,
+        );
+        const result = await __request(options);
+        return result.body;
+    }
+
+    public deleteMsgVpnReplayLogTopicFilterSubscriptionApiRequestOptions(
+        msgVpnName: string,
+        replayLogName: string,
+        topicFilterSubscription: string,
+    ): ApiRequestOptions {
+        return {
+            ...this.config,
+            method: 'DELETE',
+            path: `/msgVpns/${msgVpnName}/replayLogs/${replayLogName}/topicFilterSubscriptions/${topicFilterSubscription}`,
+        };
+    }
+
+    public async getMsgVpnReplayLogTopicFilterSubscription(
+        msgVpnName: string,
+        replayLogName: string,
+        topicFilterSubscription: string,
+        opaquePassword?: string,
+        select?: Array<string>,
+    ): Promise<MsgVpnReplayLogTopicFilterSubscriptionResponse | SempMetaOnlyResponse> {
+        const options = this.getMsgVpnReplayLogTopicFilterSubscriptionApiRequestOptions(
+            msgVpnName,
+            replayLogName,
+            topicFilterSubscription,
+            opaquePassword,
+            select,
+        );
+        const result = await __request(options);
+        return result.body;
+    }
+
+    public getMsgVpnReplayLogTopicFilterSubscriptionApiRequestOptions(
+        msgVpnName: string,
+        replayLogName: string,
+        topicFilterSubscription: string,
+        opaquePassword?: string,
+        select?: Array<string>,
+    ): ApiRequestOptions {
+        return {
+            ...this.config,
+            method: 'GET',
+            path: `/msgVpns/${msgVpnName}/replayLogs/${replayLogName}/topicFilterSubscriptions/${topicFilterSubscription}`,
+            query: {
+                'opaquePassword': opaquePassword,
+                'select': select,
+            },
+        };
+    }
+
     public async getMsgVpnReplicatedTopics(
         msgVpnName: string,
         count: number = 10,
@@ -8784,6 +10949,248 @@ export class AllServiceDefault implements AllService {
         };
     }
 
+    public async getMsgVpnRestDeliveryPointQueueBindingRequestHeaders(
+        msgVpnName: string,
+        restDeliveryPointName: string,
+        queueBindingName: string,
+        count: number = 10,
+        cursor?: string,
+        opaquePassword?: string,
+        where?: Array<string>,
+        select?: Array<string>,
+    ): Promise<MsgVpnRestDeliveryPointQueueBindingRequestHeadersResponse | SempMetaOnlyResponse> {
+        const options = this.getMsgVpnRestDeliveryPointQueueBindingRequestHeadersApiRequestOptions(
+            msgVpnName,
+            restDeliveryPointName,
+            queueBindingName,
+            count,
+            cursor,
+            opaquePassword,
+            where,
+            select,
+        );
+        const result = await __request(options);
+        return result.body;
+    }
+
+    public getMsgVpnRestDeliveryPointQueueBindingRequestHeadersApiRequestOptions(
+        msgVpnName: string,
+        restDeliveryPointName: string,
+        queueBindingName: string,
+        count: number = 10,
+        cursor?: string,
+        opaquePassword?: string,
+        where?: Array<string>,
+        select?: Array<string>,
+    ): ApiRequestOptions {
+        return {
+            ...this.config,
+            method: 'GET',
+            path: `/msgVpns/${msgVpnName}/restDeliveryPoints/${restDeliveryPointName}/queueBindings/${queueBindingName}/requestHeaders`,
+            query: {
+                'count': count,
+                'cursor': cursor,
+                'opaquePassword': opaquePassword,
+                'where': where,
+                'select': select,
+            },
+        };
+    }
+
+    public async createMsgVpnRestDeliveryPointQueueBindingRequestHeader(
+        msgVpnName: string,
+        restDeliveryPointName: string,
+        queueBindingName: string,
+        body: MsgVpnRestDeliveryPointQueueBindingRequestHeader,
+        opaquePassword?: string,
+        select?: Array<string>,
+    ): Promise<MsgVpnRestDeliveryPointQueueBindingRequestHeaderResponse | SempMetaOnlyResponse> {
+        const options = this.createMsgVpnRestDeliveryPointQueueBindingRequestHeaderApiRequestOptions(
+            msgVpnName,
+            restDeliveryPointName,
+            queueBindingName,
+            body,
+            opaquePassword,
+            select,
+        );
+        const result = await __request(options);
+        return result.body;
+    }
+
+    public createMsgVpnRestDeliveryPointQueueBindingRequestHeaderApiRequestOptions(
+        msgVpnName: string,
+        restDeliveryPointName: string,
+        queueBindingName: string,
+        body: MsgVpnRestDeliveryPointQueueBindingRequestHeader,
+        opaquePassword?: string,
+        select?: Array<string>,
+    ): ApiRequestOptions {
+        return {
+            ...this.config,
+            method: 'POST',
+            path: `/msgVpns/${msgVpnName}/restDeliveryPoints/${restDeliveryPointName}/queueBindings/${queueBindingName}/requestHeaders`,
+            query: {
+                'opaquePassword': opaquePassword,
+                'select': select,
+            },
+            body: body,
+        };
+    }
+
+    public async deleteMsgVpnRestDeliveryPointQueueBindingRequestHeader(
+        msgVpnName: string,
+        restDeliveryPointName: string,
+        queueBindingName: string,
+        headerName: string,
+    ): Promise<SempMetaOnlyResponse> {
+        const options = this.deleteMsgVpnRestDeliveryPointQueueBindingRequestHeaderApiRequestOptions(
+            msgVpnName,
+            restDeliveryPointName,
+            queueBindingName,
+            headerName,
+        );
+        const result = await __request(options);
+        return result.body;
+    }
+
+    public deleteMsgVpnRestDeliveryPointQueueBindingRequestHeaderApiRequestOptions(
+        msgVpnName: string,
+        restDeliveryPointName: string,
+        queueBindingName: string,
+        headerName: string,
+    ): ApiRequestOptions {
+        return {
+            ...this.config,
+            method: 'DELETE',
+            path: `/msgVpns/${msgVpnName}/restDeliveryPoints/${restDeliveryPointName}/queueBindings/${queueBindingName}/requestHeaders/${headerName}`,
+        };
+    }
+
+    public async getMsgVpnRestDeliveryPointQueueBindingRequestHeader(
+        msgVpnName: string,
+        restDeliveryPointName: string,
+        queueBindingName: string,
+        headerName: string,
+        opaquePassword?: string,
+        select?: Array<string>,
+    ): Promise<MsgVpnRestDeliveryPointQueueBindingRequestHeaderResponse | SempMetaOnlyResponse> {
+        const options = this.getMsgVpnRestDeliveryPointQueueBindingRequestHeaderApiRequestOptions(
+            msgVpnName,
+            restDeliveryPointName,
+            queueBindingName,
+            headerName,
+            opaquePassword,
+            select,
+        );
+        const result = await __request(options);
+        return result.body;
+    }
+
+    public getMsgVpnRestDeliveryPointQueueBindingRequestHeaderApiRequestOptions(
+        msgVpnName: string,
+        restDeliveryPointName: string,
+        queueBindingName: string,
+        headerName: string,
+        opaquePassword?: string,
+        select?: Array<string>,
+    ): ApiRequestOptions {
+        return {
+            ...this.config,
+            method: 'GET',
+            path: `/msgVpns/${msgVpnName}/restDeliveryPoints/${restDeliveryPointName}/queueBindings/${queueBindingName}/requestHeaders/${headerName}`,
+            query: {
+                'opaquePassword': opaquePassword,
+                'select': select,
+            },
+        };
+    }
+
+    public async updateMsgVpnRestDeliveryPointQueueBindingRequestHeader(
+        msgVpnName: string,
+        restDeliveryPointName: string,
+        queueBindingName: string,
+        headerName: string,
+        body: MsgVpnRestDeliveryPointQueueBindingRequestHeader,
+        opaquePassword?: string,
+        select?: Array<string>,
+    ): Promise<MsgVpnRestDeliveryPointQueueBindingRequestHeaderResponse | SempMetaOnlyResponse> {
+        const options = this.updateMsgVpnRestDeliveryPointQueueBindingRequestHeaderApiRequestOptions(
+            msgVpnName,
+            restDeliveryPointName,
+            queueBindingName,
+            headerName,
+            body,
+            opaquePassword,
+            select,
+        );
+        const result = await __request(options);
+        return result.body;
+    }
+
+    public updateMsgVpnRestDeliveryPointQueueBindingRequestHeaderApiRequestOptions(
+        msgVpnName: string,
+        restDeliveryPointName: string,
+        queueBindingName: string,
+        headerName: string,
+        body: MsgVpnRestDeliveryPointQueueBindingRequestHeader,
+        opaquePassword?: string,
+        select?: Array<string>,
+    ): ApiRequestOptions {
+        return {
+            ...this.config,
+            method: 'PATCH',
+            path: `/msgVpns/${msgVpnName}/restDeliveryPoints/${restDeliveryPointName}/queueBindings/${queueBindingName}/requestHeaders/${headerName}`,
+            query: {
+                'opaquePassword': opaquePassword,
+                'select': select,
+            },
+            body: body,
+        };
+    }
+
+    public async replaceMsgVpnRestDeliveryPointQueueBindingRequestHeader(
+        msgVpnName: string,
+        restDeliveryPointName: string,
+        queueBindingName: string,
+        headerName: string,
+        body: MsgVpnRestDeliveryPointQueueBindingRequestHeader,
+        opaquePassword?: string,
+        select?: Array<string>,
+    ): Promise<MsgVpnRestDeliveryPointQueueBindingRequestHeaderResponse | SempMetaOnlyResponse> {
+        const options = this.replaceMsgVpnRestDeliveryPointQueueBindingRequestHeaderApiRequestOptions(
+            msgVpnName,
+            restDeliveryPointName,
+            queueBindingName,
+            headerName,
+            body,
+            opaquePassword,
+            select,
+        );
+        const result = await __request(options);
+        return result.body;
+    }
+
+    public replaceMsgVpnRestDeliveryPointQueueBindingRequestHeaderApiRequestOptions(
+        msgVpnName: string,
+        restDeliveryPointName: string,
+        queueBindingName: string,
+        headerName: string,
+        body: MsgVpnRestDeliveryPointQueueBindingRequestHeader,
+        opaquePassword?: string,
+        select?: Array<string>,
+    ): ApiRequestOptions {
+        return {
+            ...this.config,
+            method: 'PUT',
+            path: `/msgVpns/${msgVpnName}/restDeliveryPoints/${restDeliveryPointName}/queueBindings/${queueBindingName}/requestHeaders/${headerName}`,
+            query: {
+                'opaquePassword': opaquePassword,
+                'select': select,
+            },
+            body: body,
+        };
+    }
+
     public async getMsgVpnRestDeliveryPointRestConsumers(
         msgVpnName: string,
         restDeliveryPointName: string,
@@ -9005,6 +11412,162 @@ export class AllServiceDefault implements AllService {
                 'select': select,
             },
             body: body,
+        };
+    }
+
+    public async getMsgVpnRestDeliveryPointRestConsumerOauthJwtClaims(
+        msgVpnName: string,
+        restDeliveryPointName: string,
+        restConsumerName: string,
+        count: number = 10,
+        cursor?: string,
+        opaquePassword?: string,
+        where?: Array<string>,
+        select?: Array<string>,
+    ): Promise<MsgVpnRestDeliveryPointRestConsumerOauthJwtClaimsResponse | SempMetaOnlyResponse> {
+        const options = this.getMsgVpnRestDeliveryPointRestConsumerOauthJwtClaimsApiRequestOptions(
+            msgVpnName,
+            restDeliveryPointName,
+            restConsumerName,
+            count,
+            cursor,
+            opaquePassword,
+            where,
+            select,
+        );
+        const result = await __request(options);
+        return result.body;
+    }
+
+    public getMsgVpnRestDeliveryPointRestConsumerOauthJwtClaimsApiRequestOptions(
+        msgVpnName: string,
+        restDeliveryPointName: string,
+        restConsumerName: string,
+        count: number = 10,
+        cursor?: string,
+        opaquePassword?: string,
+        where?: Array<string>,
+        select?: Array<string>,
+    ): ApiRequestOptions {
+        return {
+            ...this.config,
+            method: 'GET',
+            path: `/msgVpns/${msgVpnName}/restDeliveryPoints/${restDeliveryPointName}/restConsumers/${restConsumerName}/oauthJwtClaims`,
+            query: {
+                'count': count,
+                'cursor': cursor,
+                'opaquePassword': opaquePassword,
+                'where': where,
+                'select': select,
+            },
+        };
+    }
+
+    public async createMsgVpnRestDeliveryPointRestConsumerOauthJwtClaim(
+        msgVpnName: string,
+        restDeliveryPointName: string,
+        restConsumerName: string,
+        body: MsgVpnRestDeliveryPointRestConsumerOauthJwtClaim,
+        opaquePassword?: string,
+        select?: Array<string>,
+    ): Promise<MsgVpnRestDeliveryPointRestConsumerOauthJwtClaimResponse | SempMetaOnlyResponse> {
+        const options = this.createMsgVpnRestDeliveryPointRestConsumerOauthJwtClaimApiRequestOptions(
+            msgVpnName,
+            restDeliveryPointName,
+            restConsumerName,
+            body,
+            opaquePassword,
+            select,
+        );
+        const result = await __request(options);
+        return result.body;
+    }
+
+    public createMsgVpnRestDeliveryPointRestConsumerOauthJwtClaimApiRequestOptions(
+        msgVpnName: string,
+        restDeliveryPointName: string,
+        restConsumerName: string,
+        body: MsgVpnRestDeliveryPointRestConsumerOauthJwtClaim,
+        opaquePassword?: string,
+        select?: Array<string>,
+    ): ApiRequestOptions {
+        return {
+            ...this.config,
+            method: 'POST',
+            path: `/msgVpns/${msgVpnName}/restDeliveryPoints/${restDeliveryPointName}/restConsumers/${restConsumerName}/oauthJwtClaims`,
+            query: {
+                'opaquePassword': opaquePassword,
+                'select': select,
+            },
+            body: body,
+        };
+    }
+
+    public async deleteMsgVpnRestDeliveryPointRestConsumerOauthJwtClaim(
+        msgVpnName: string,
+        restDeliveryPointName: string,
+        restConsumerName: string,
+        oauthJwtClaimName: string,
+    ): Promise<SempMetaOnlyResponse> {
+        const options = this.deleteMsgVpnRestDeliveryPointRestConsumerOauthJwtClaimApiRequestOptions(
+            msgVpnName,
+            restDeliveryPointName,
+            restConsumerName,
+            oauthJwtClaimName,
+        );
+        const result = await __request(options);
+        return result.body;
+    }
+
+    public deleteMsgVpnRestDeliveryPointRestConsumerOauthJwtClaimApiRequestOptions(
+        msgVpnName: string,
+        restDeliveryPointName: string,
+        restConsumerName: string,
+        oauthJwtClaimName: string,
+    ): ApiRequestOptions {
+        return {
+            ...this.config,
+            method: 'DELETE',
+            path: `/msgVpns/${msgVpnName}/restDeliveryPoints/${restDeliveryPointName}/restConsumers/${restConsumerName}/oauthJwtClaims/${oauthJwtClaimName}`,
+        };
+    }
+
+    public async getMsgVpnRestDeliveryPointRestConsumerOauthJwtClaim(
+        msgVpnName: string,
+        restDeliveryPointName: string,
+        restConsumerName: string,
+        oauthJwtClaimName: string,
+        opaquePassword?: string,
+        select?: Array<string>,
+    ): Promise<MsgVpnRestDeliveryPointRestConsumerOauthJwtClaimResponse | SempMetaOnlyResponse> {
+        const options = this.getMsgVpnRestDeliveryPointRestConsumerOauthJwtClaimApiRequestOptions(
+            msgVpnName,
+            restDeliveryPointName,
+            restConsumerName,
+            oauthJwtClaimName,
+            opaquePassword,
+            select,
+        );
+        const result = await __request(options);
+        return result.body;
+    }
+
+    public getMsgVpnRestDeliveryPointRestConsumerOauthJwtClaimApiRequestOptions(
+        msgVpnName: string,
+        restDeliveryPointName: string,
+        restConsumerName: string,
+        oauthJwtClaimName: string,
+        opaquePassword?: string,
+        select?: Array<string>,
+    ): ApiRequestOptions {
+        return {
+            ...this.config,
+            method: 'GET',
+            path: `/msgVpns/${msgVpnName}/restDeliveryPoints/${restDeliveryPointName}/restConsumers/${restConsumerName}/oauthJwtClaims/${oauthJwtClaimName}`,
+            query: {
+                'opaquePassword': opaquePassword,
+                'select': select,
+            },
         };
     }
 
@@ -9697,6 +12260,1459 @@ export class AllServiceDefault implements AllService {
                 'select': select,
             },
             body: body,
+        };
+    }
+
+    public async getOauthProfiles(
+        count: number = 10,
+        cursor?: string,
+        opaquePassword?: string,
+        where?: Array<string>,
+        select?: Array<string>,
+    ): Promise<OauthProfilesResponse | SempMetaOnlyResponse> {
+        const options = this.getOauthProfilesApiRequestOptions(
+            count,
+            cursor,
+            opaquePassword,
+            where,
+            select,
+        );
+        const result = await __request(options);
+        return result.body;
+    }
+
+    public getOauthProfilesApiRequestOptions(
+        count: number = 10,
+        cursor?: string,
+        opaquePassword?: string,
+        where?: Array<string>,
+        select?: Array<string>,
+    ): ApiRequestOptions {
+        return {
+            ...this.config,
+            method: 'GET',
+            path: `/oauthProfiles`,
+            query: {
+                'count': count,
+                'cursor': cursor,
+                'opaquePassword': opaquePassword,
+                'where': where,
+                'select': select,
+            },
+        };
+    }
+
+    public async createOauthProfile(
+        body: OauthProfile,
+        opaquePassword?: string,
+        select?: Array<string>,
+    ): Promise<OauthProfileResponse | SempMetaOnlyResponse> {
+        const options = this.createOauthProfileApiRequestOptions(
+            body,
+            opaquePassword,
+            select,
+        );
+        const result = await __request(options);
+        return result.body;
+    }
+
+    public createOauthProfileApiRequestOptions(
+        body: OauthProfile,
+        opaquePassword?: string,
+        select?: Array<string>,
+    ): ApiRequestOptions {
+        return {
+            ...this.config,
+            method: 'POST',
+            path: `/oauthProfiles`,
+            query: {
+                'opaquePassword': opaquePassword,
+                'select': select,
+            },
+            body: body,
+        };
+    }
+
+    public async deleteOauthProfile(
+        oauthProfileName: string,
+    ): Promise<SempMetaOnlyResponse> {
+        const options = this.deleteOauthProfileApiRequestOptions(
+            oauthProfileName,
+        );
+        const result = await __request(options);
+        return result.body;
+    }
+
+    public deleteOauthProfileApiRequestOptions(
+        oauthProfileName: string,
+    ): ApiRequestOptions {
+        return {
+            ...this.config,
+            method: 'DELETE',
+            path: `/oauthProfiles/${oauthProfileName}`,
+        };
+    }
+
+    public async getOauthProfile(
+        oauthProfileName: string,
+        opaquePassword?: string,
+        select?: Array<string>,
+    ): Promise<OauthProfileResponse | SempMetaOnlyResponse> {
+        const options = this.getOauthProfileApiRequestOptions(
+            oauthProfileName,
+            opaquePassword,
+            select,
+        );
+        const result = await __request(options);
+        return result.body;
+    }
+
+    public getOauthProfileApiRequestOptions(
+        oauthProfileName: string,
+        opaquePassword?: string,
+        select?: Array<string>,
+    ): ApiRequestOptions {
+        return {
+            ...this.config,
+            method: 'GET',
+            path: `/oauthProfiles/${oauthProfileName}`,
+            query: {
+                'opaquePassword': opaquePassword,
+                'select': select,
+            },
+        };
+    }
+
+    public async updateOauthProfile(
+        oauthProfileName: string,
+        body: OauthProfile,
+        opaquePassword?: string,
+        select?: Array<string>,
+    ): Promise<OauthProfileResponse | SempMetaOnlyResponse> {
+        const options = this.updateOauthProfileApiRequestOptions(
+            oauthProfileName,
+            body,
+            opaquePassword,
+            select,
+        );
+        const result = await __request(options);
+        return result.body;
+    }
+
+    public updateOauthProfileApiRequestOptions(
+        oauthProfileName: string,
+        body: OauthProfile,
+        opaquePassword?: string,
+        select?: Array<string>,
+    ): ApiRequestOptions {
+        return {
+            ...this.config,
+            method: 'PATCH',
+            path: `/oauthProfiles/${oauthProfileName}`,
+            query: {
+                'opaquePassword': opaquePassword,
+                'select': select,
+            },
+            body: body,
+        };
+    }
+
+    public async replaceOauthProfile(
+        oauthProfileName: string,
+        body: OauthProfile,
+        opaquePassword?: string,
+        select?: Array<string>,
+    ): Promise<OauthProfileResponse | SempMetaOnlyResponse> {
+        const options = this.replaceOauthProfileApiRequestOptions(
+            oauthProfileName,
+            body,
+            opaquePassword,
+            select,
+        );
+        const result = await __request(options);
+        return result.body;
+    }
+
+    public replaceOauthProfileApiRequestOptions(
+        oauthProfileName: string,
+        body: OauthProfile,
+        opaquePassword?: string,
+        select?: Array<string>,
+    ): ApiRequestOptions {
+        return {
+            ...this.config,
+            method: 'PUT',
+            path: `/oauthProfiles/${oauthProfileName}`,
+            query: {
+                'opaquePassword': opaquePassword,
+                'select': select,
+            },
+            body: body,
+        };
+    }
+
+    public async getOauthProfileAccessLevelGroups(
+        oauthProfileName: string,
+        count: number = 10,
+        cursor?: string,
+        opaquePassword?: string,
+        where?: Array<string>,
+        select?: Array<string>,
+    ): Promise<OauthProfileAccessLevelGroupsResponse | SempMetaOnlyResponse> {
+        const options = this.getOauthProfileAccessLevelGroupsApiRequestOptions(
+            oauthProfileName,
+            count,
+            cursor,
+            opaquePassword,
+            where,
+            select,
+        );
+        const result = await __request(options);
+        return result.body;
+    }
+
+    public getOauthProfileAccessLevelGroupsApiRequestOptions(
+        oauthProfileName: string,
+        count: number = 10,
+        cursor?: string,
+        opaquePassword?: string,
+        where?: Array<string>,
+        select?: Array<string>,
+    ): ApiRequestOptions {
+        return {
+            ...this.config,
+            method: 'GET',
+            path: `/oauthProfiles/${oauthProfileName}/accessLevelGroups`,
+            query: {
+                'count': count,
+                'cursor': cursor,
+                'opaquePassword': opaquePassword,
+                'where': where,
+                'select': select,
+            },
+        };
+    }
+
+    public async createOauthProfileAccessLevelGroup(
+        oauthProfileName: string,
+        body: OauthProfileAccessLevelGroup,
+        opaquePassword?: string,
+        select?: Array<string>,
+    ): Promise<OauthProfileAccessLevelGroupResponse | SempMetaOnlyResponse> {
+        const options = this.createOauthProfileAccessLevelGroupApiRequestOptions(
+            oauthProfileName,
+            body,
+            opaquePassword,
+            select,
+        );
+        const result = await __request(options);
+        return result.body;
+    }
+
+    public createOauthProfileAccessLevelGroupApiRequestOptions(
+        oauthProfileName: string,
+        body: OauthProfileAccessLevelGroup,
+        opaquePassword?: string,
+        select?: Array<string>,
+    ): ApiRequestOptions {
+        return {
+            ...this.config,
+            method: 'POST',
+            path: `/oauthProfiles/${oauthProfileName}/accessLevelGroups`,
+            query: {
+                'opaquePassword': opaquePassword,
+                'select': select,
+            },
+            body: body,
+        };
+    }
+
+    public async deleteOauthProfileAccessLevelGroup(
+        oauthProfileName: string,
+        groupName: string,
+    ): Promise<SempMetaOnlyResponse> {
+        const options = this.deleteOauthProfileAccessLevelGroupApiRequestOptions(
+            oauthProfileName,
+            groupName,
+        );
+        const result = await __request(options);
+        return result.body;
+    }
+
+    public deleteOauthProfileAccessLevelGroupApiRequestOptions(
+        oauthProfileName: string,
+        groupName: string,
+    ): ApiRequestOptions {
+        return {
+            ...this.config,
+            method: 'DELETE',
+            path: `/oauthProfiles/${oauthProfileName}/accessLevelGroups/${groupName}`,
+        };
+    }
+
+    public async getOauthProfileAccessLevelGroup(
+        oauthProfileName: string,
+        groupName: string,
+        opaquePassword?: string,
+        select?: Array<string>,
+    ): Promise<OauthProfileAccessLevelGroupResponse | SempMetaOnlyResponse> {
+        const options = this.getOauthProfileAccessLevelGroupApiRequestOptions(
+            oauthProfileName,
+            groupName,
+            opaquePassword,
+            select,
+        );
+        const result = await __request(options);
+        return result.body;
+    }
+
+    public getOauthProfileAccessLevelGroupApiRequestOptions(
+        oauthProfileName: string,
+        groupName: string,
+        opaquePassword?: string,
+        select?: Array<string>,
+    ): ApiRequestOptions {
+        return {
+            ...this.config,
+            method: 'GET',
+            path: `/oauthProfiles/${oauthProfileName}/accessLevelGroups/${groupName}`,
+            query: {
+                'opaquePassword': opaquePassword,
+                'select': select,
+            },
+        };
+    }
+
+    public async updateOauthProfileAccessLevelGroup(
+        oauthProfileName: string,
+        groupName: string,
+        body: OauthProfileAccessLevelGroup,
+        opaquePassword?: string,
+        select?: Array<string>,
+    ): Promise<OauthProfileAccessLevelGroupResponse | SempMetaOnlyResponse> {
+        const options = this.updateOauthProfileAccessLevelGroupApiRequestOptions(
+            oauthProfileName,
+            groupName,
+            body,
+            opaquePassword,
+            select,
+        );
+        const result = await __request(options);
+        return result.body;
+    }
+
+    public updateOauthProfileAccessLevelGroupApiRequestOptions(
+        oauthProfileName: string,
+        groupName: string,
+        body: OauthProfileAccessLevelGroup,
+        opaquePassword?: string,
+        select?: Array<string>,
+    ): ApiRequestOptions {
+        return {
+            ...this.config,
+            method: 'PATCH',
+            path: `/oauthProfiles/${oauthProfileName}/accessLevelGroups/${groupName}`,
+            query: {
+                'opaquePassword': opaquePassword,
+                'select': select,
+            },
+            body: body,
+        };
+    }
+
+    public async replaceOauthProfileAccessLevelGroup(
+        oauthProfileName: string,
+        groupName: string,
+        body: OauthProfileAccessLevelGroup,
+        opaquePassword?: string,
+        select?: Array<string>,
+    ): Promise<OauthProfileAccessLevelGroupResponse | SempMetaOnlyResponse> {
+        const options = this.replaceOauthProfileAccessLevelGroupApiRequestOptions(
+            oauthProfileName,
+            groupName,
+            body,
+            opaquePassword,
+            select,
+        );
+        const result = await __request(options);
+        return result.body;
+    }
+
+    public replaceOauthProfileAccessLevelGroupApiRequestOptions(
+        oauthProfileName: string,
+        groupName: string,
+        body: OauthProfileAccessLevelGroup,
+        opaquePassword?: string,
+        select?: Array<string>,
+    ): ApiRequestOptions {
+        return {
+            ...this.config,
+            method: 'PUT',
+            path: `/oauthProfiles/${oauthProfileName}/accessLevelGroups/${groupName}`,
+            query: {
+                'opaquePassword': opaquePassword,
+                'select': select,
+            },
+            body: body,
+        };
+    }
+
+    public async getOauthProfileAccessLevelGroupMsgVpnAccessLevelExceptions(
+        oauthProfileName: string,
+        groupName: string,
+        count: number = 10,
+        cursor?: string,
+        opaquePassword?: string,
+        where?: Array<string>,
+        select?: Array<string>,
+    ): Promise<OauthProfileAccessLevelGroupMsgVpnAccessLevelExceptionsResponse | SempMetaOnlyResponse> {
+        const options = this.getOauthProfileAccessLevelGroupMsgVpnAccessLevelExceptionsApiRequestOptions(
+            oauthProfileName,
+            groupName,
+            count,
+            cursor,
+            opaquePassword,
+            where,
+            select,
+        );
+        const result = await __request(options);
+        return result.body;
+    }
+
+    public getOauthProfileAccessLevelGroupMsgVpnAccessLevelExceptionsApiRequestOptions(
+        oauthProfileName: string,
+        groupName: string,
+        count: number = 10,
+        cursor?: string,
+        opaquePassword?: string,
+        where?: Array<string>,
+        select?: Array<string>,
+    ): ApiRequestOptions {
+        return {
+            ...this.config,
+            method: 'GET',
+            path: `/oauthProfiles/${oauthProfileName}/accessLevelGroups/${groupName}/msgVpnAccessLevelExceptions`,
+            query: {
+                'count': count,
+                'cursor': cursor,
+                'opaquePassword': opaquePassword,
+                'where': where,
+                'select': select,
+            },
+        };
+    }
+
+    public async createOauthProfileAccessLevelGroupMsgVpnAccessLevelException(
+        oauthProfileName: string,
+        groupName: string,
+        body: OauthProfileAccessLevelGroupMsgVpnAccessLevelException,
+        opaquePassword?: string,
+        select?: Array<string>,
+    ): Promise<OauthProfileAccessLevelGroupMsgVpnAccessLevelExceptionResponse | SempMetaOnlyResponse> {
+        const options = this.createOauthProfileAccessLevelGroupMsgVpnAccessLevelExceptionApiRequestOptions(
+            oauthProfileName,
+            groupName,
+            body,
+            opaquePassword,
+            select,
+        );
+        const result = await __request(options);
+        return result.body;
+    }
+
+    public createOauthProfileAccessLevelGroupMsgVpnAccessLevelExceptionApiRequestOptions(
+        oauthProfileName: string,
+        groupName: string,
+        body: OauthProfileAccessLevelGroupMsgVpnAccessLevelException,
+        opaquePassword?: string,
+        select?: Array<string>,
+    ): ApiRequestOptions {
+        return {
+            ...this.config,
+            method: 'POST',
+            path: `/oauthProfiles/${oauthProfileName}/accessLevelGroups/${groupName}/msgVpnAccessLevelExceptions`,
+            query: {
+                'opaquePassword': opaquePassword,
+                'select': select,
+            },
+            body: body,
+        };
+    }
+
+    public async deleteOauthProfileAccessLevelGroupMsgVpnAccessLevelException(
+        oauthProfileName: string,
+        groupName: string,
+        msgVpnName: string,
+    ): Promise<SempMetaOnlyResponse> {
+        const options = this.deleteOauthProfileAccessLevelGroupMsgVpnAccessLevelExceptionApiRequestOptions(
+            oauthProfileName,
+            groupName,
+            msgVpnName,
+        );
+        const result = await __request(options);
+        return result.body;
+    }
+
+    public deleteOauthProfileAccessLevelGroupMsgVpnAccessLevelExceptionApiRequestOptions(
+        oauthProfileName: string,
+        groupName: string,
+        msgVpnName: string,
+    ): ApiRequestOptions {
+        return {
+            ...this.config,
+            method: 'DELETE',
+            path: `/oauthProfiles/${oauthProfileName}/accessLevelGroups/${groupName}/msgVpnAccessLevelExceptions/${msgVpnName}`,
+        };
+    }
+
+    public async getOauthProfileAccessLevelGroupMsgVpnAccessLevelException(
+        oauthProfileName: string,
+        groupName: string,
+        msgVpnName: string,
+        opaquePassword?: string,
+        select?: Array<string>,
+    ): Promise<OauthProfileAccessLevelGroupMsgVpnAccessLevelExceptionResponse | SempMetaOnlyResponse> {
+        const options = this.getOauthProfileAccessLevelGroupMsgVpnAccessLevelExceptionApiRequestOptions(
+            oauthProfileName,
+            groupName,
+            msgVpnName,
+            opaquePassword,
+            select,
+        );
+        const result = await __request(options);
+        return result.body;
+    }
+
+    public getOauthProfileAccessLevelGroupMsgVpnAccessLevelExceptionApiRequestOptions(
+        oauthProfileName: string,
+        groupName: string,
+        msgVpnName: string,
+        opaquePassword?: string,
+        select?: Array<string>,
+    ): ApiRequestOptions {
+        return {
+            ...this.config,
+            method: 'GET',
+            path: `/oauthProfiles/${oauthProfileName}/accessLevelGroups/${groupName}/msgVpnAccessLevelExceptions/${msgVpnName}`,
+            query: {
+                'opaquePassword': opaquePassword,
+                'select': select,
+            },
+        };
+    }
+
+    public async updateOauthProfileAccessLevelGroupMsgVpnAccessLevelException(
+        oauthProfileName: string,
+        groupName: string,
+        msgVpnName: string,
+        body: OauthProfileAccessLevelGroupMsgVpnAccessLevelException,
+        opaquePassword?: string,
+        select?: Array<string>,
+    ): Promise<OauthProfileAccessLevelGroupMsgVpnAccessLevelExceptionResponse | SempMetaOnlyResponse> {
+        const options = this.updateOauthProfileAccessLevelGroupMsgVpnAccessLevelExceptionApiRequestOptions(
+            oauthProfileName,
+            groupName,
+            msgVpnName,
+            body,
+            opaquePassword,
+            select,
+        );
+        const result = await __request(options);
+        return result.body;
+    }
+
+    public updateOauthProfileAccessLevelGroupMsgVpnAccessLevelExceptionApiRequestOptions(
+        oauthProfileName: string,
+        groupName: string,
+        msgVpnName: string,
+        body: OauthProfileAccessLevelGroupMsgVpnAccessLevelException,
+        opaquePassword?: string,
+        select?: Array<string>,
+    ): ApiRequestOptions {
+        return {
+            ...this.config,
+            method: 'PATCH',
+            path: `/oauthProfiles/${oauthProfileName}/accessLevelGroups/${groupName}/msgVpnAccessLevelExceptions/${msgVpnName}`,
+            query: {
+                'opaquePassword': opaquePassword,
+                'select': select,
+            },
+            body: body,
+        };
+    }
+
+    public async replaceOauthProfileAccessLevelGroupMsgVpnAccessLevelException(
+        oauthProfileName: string,
+        groupName: string,
+        msgVpnName: string,
+        body: OauthProfileAccessLevelGroupMsgVpnAccessLevelException,
+        opaquePassword?: string,
+        select?: Array<string>,
+    ): Promise<OauthProfileAccessLevelGroupMsgVpnAccessLevelExceptionResponse | SempMetaOnlyResponse> {
+        const options = this.replaceOauthProfileAccessLevelGroupMsgVpnAccessLevelExceptionApiRequestOptions(
+            oauthProfileName,
+            groupName,
+            msgVpnName,
+            body,
+            opaquePassword,
+            select,
+        );
+        const result = await __request(options);
+        return result.body;
+    }
+
+    public replaceOauthProfileAccessLevelGroupMsgVpnAccessLevelExceptionApiRequestOptions(
+        oauthProfileName: string,
+        groupName: string,
+        msgVpnName: string,
+        body: OauthProfileAccessLevelGroupMsgVpnAccessLevelException,
+        opaquePassword?: string,
+        select?: Array<string>,
+    ): ApiRequestOptions {
+        return {
+            ...this.config,
+            method: 'PUT',
+            path: `/oauthProfiles/${oauthProfileName}/accessLevelGroups/${groupName}/msgVpnAccessLevelExceptions/${msgVpnName}`,
+            query: {
+                'opaquePassword': opaquePassword,
+                'select': select,
+            },
+            body: body,
+        };
+    }
+
+    public async getOauthProfileClientAllowedHosts(
+        oauthProfileName: string,
+        count: number = 10,
+        cursor?: string,
+        opaquePassword?: string,
+        where?: Array<string>,
+        select?: Array<string>,
+    ): Promise<OauthProfileClientAllowedHostsResponse | SempMetaOnlyResponse> {
+        const options = this.getOauthProfileClientAllowedHostsApiRequestOptions(
+            oauthProfileName,
+            count,
+            cursor,
+            opaquePassword,
+            where,
+            select,
+        );
+        const result = await __request(options);
+        return result.body;
+    }
+
+    public getOauthProfileClientAllowedHostsApiRequestOptions(
+        oauthProfileName: string,
+        count: number = 10,
+        cursor?: string,
+        opaquePassword?: string,
+        where?: Array<string>,
+        select?: Array<string>,
+    ): ApiRequestOptions {
+        return {
+            ...this.config,
+            method: 'GET',
+            path: `/oauthProfiles/${oauthProfileName}/clientAllowedHosts`,
+            query: {
+                'count': count,
+                'cursor': cursor,
+                'opaquePassword': opaquePassword,
+                'where': where,
+                'select': select,
+            },
+        };
+    }
+
+    public async createOauthProfileClientAllowedHost(
+        oauthProfileName: string,
+        body: OauthProfileClientAllowedHost,
+        opaquePassword?: string,
+        select?: Array<string>,
+    ): Promise<OauthProfileClientAllowedHostResponse | SempMetaOnlyResponse> {
+        const options = this.createOauthProfileClientAllowedHostApiRequestOptions(
+            oauthProfileName,
+            body,
+            opaquePassword,
+            select,
+        );
+        const result = await __request(options);
+        return result.body;
+    }
+
+    public createOauthProfileClientAllowedHostApiRequestOptions(
+        oauthProfileName: string,
+        body: OauthProfileClientAllowedHost,
+        opaquePassword?: string,
+        select?: Array<string>,
+    ): ApiRequestOptions {
+        return {
+            ...this.config,
+            method: 'POST',
+            path: `/oauthProfiles/${oauthProfileName}/clientAllowedHosts`,
+            query: {
+                'opaquePassword': opaquePassword,
+                'select': select,
+            },
+            body: body,
+        };
+    }
+
+    public async deleteOauthProfileClientAllowedHost(
+        oauthProfileName: string,
+        allowedHost: string,
+    ): Promise<SempMetaOnlyResponse> {
+        const options = this.deleteOauthProfileClientAllowedHostApiRequestOptions(
+            oauthProfileName,
+            allowedHost,
+        );
+        const result = await __request(options);
+        return result.body;
+    }
+
+    public deleteOauthProfileClientAllowedHostApiRequestOptions(
+        oauthProfileName: string,
+        allowedHost: string,
+    ): ApiRequestOptions {
+        return {
+            ...this.config,
+            method: 'DELETE',
+            path: `/oauthProfiles/${oauthProfileName}/clientAllowedHosts/${allowedHost}`,
+        };
+    }
+
+    public async getOauthProfileClientAllowedHost(
+        oauthProfileName: string,
+        allowedHost: string,
+        opaquePassword?: string,
+        select?: Array<string>,
+    ): Promise<OauthProfileClientAllowedHostResponse | SempMetaOnlyResponse> {
+        const options = this.getOauthProfileClientAllowedHostApiRequestOptions(
+            oauthProfileName,
+            allowedHost,
+            opaquePassword,
+            select,
+        );
+        const result = await __request(options);
+        return result.body;
+    }
+
+    public getOauthProfileClientAllowedHostApiRequestOptions(
+        oauthProfileName: string,
+        allowedHost: string,
+        opaquePassword?: string,
+        select?: Array<string>,
+    ): ApiRequestOptions {
+        return {
+            ...this.config,
+            method: 'GET',
+            path: `/oauthProfiles/${oauthProfileName}/clientAllowedHosts/${allowedHost}`,
+            query: {
+                'opaquePassword': opaquePassword,
+                'select': select,
+            },
+        };
+    }
+
+    public async getOauthProfileClientAuthorizationParameters(
+        oauthProfileName: string,
+        count: number = 10,
+        cursor?: string,
+        opaquePassword?: string,
+        where?: Array<string>,
+        select?: Array<string>,
+    ): Promise<OauthProfileClientAuthorizationParametersResponse | SempMetaOnlyResponse> {
+        const options = this.getOauthProfileClientAuthorizationParametersApiRequestOptions(
+            oauthProfileName,
+            count,
+            cursor,
+            opaquePassword,
+            where,
+            select,
+        );
+        const result = await __request(options);
+        return result.body;
+    }
+
+    public getOauthProfileClientAuthorizationParametersApiRequestOptions(
+        oauthProfileName: string,
+        count: number = 10,
+        cursor?: string,
+        opaquePassword?: string,
+        where?: Array<string>,
+        select?: Array<string>,
+    ): ApiRequestOptions {
+        return {
+            ...this.config,
+            method: 'GET',
+            path: `/oauthProfiles/${oauthProfileName}/clientAuthorizationParameters`,
+            query: {
+                'count': count,
+                'cursor': cursor,
+                'opaquePassword': opaquePassword,
+                'where': where,
+                'select': select,
+            },
+        };
+    }
+
+    public async createOauthProfileClientAuthorizationParameter(
+        oauthProfileName: string,
+        body: OauthProfileClientAuthorizationParameter,
+        opaquePassword?: string,
+        select?: Array<string>,
+    ): Promise<OauthProfileClientAuthorizationParameterResponse | SempMetaOnlyResponse> {
+        const options = this.createOauthProfileClientAuthorizationParameterApiRequestOptions(
+            oauthProfileName,
+            body,
+            opaquePassword,
+            select,
+        );
+        const result = await __request(options);
+        return result.body;
+    }
+
+    public createOauthProfileClientAuthorizationParameterApiRequestOptions(
+        oauthProfileName: string,
+        body: OauthProfileClientAuthorizationParameter,
+        opaquePassword?: string,
+        select?: Array<string>,
+    ): ApiRequestOptions {
+        return {
+            ...this.config,
+            method: 'POST',
+            path: `/oauthProfiles/${oauthProfileName}/clientAuthorizationParameters`,
+            query: {
+                'opaquePassword': opaquePassword,
+                'select': select,
+            },
+            body: body,
+        };
+    }
+
+    public async deleteOauthProfileClientAuthorizationParameter(
+        oauthProfileName: string,
+        authorizationParameterName: string,
+    ): Promise<SempMetaOnlyResponse> {
+        const options = this.deleteOauthProfileClientAuthorizationParameterApiRequestOptions(
+            oauthProfileName,
+            authorizationParameterName,
+        );
+        const result = await __request(options);
+        return result.body;
+    }
+
+    public deleteOauthProfileClientAuthorizationParameterApiRequestOptions(
+        oauthProfileName: string,
+        authorizationParameterName: string,
+    ): ApiRequestOptions {
+        return {
+            ...this.config,
+            method: 'DELETE',
+            path: `/oauthProfiles/${oauthProfileName}/clientAuthorizationParameters/${authorizationParameterName}`,
+        };
+    }
+
+    public async getOauthProfileClientAuthorizationParameter(
+        oauthProfileName: string,
+        authorizationParameterName: string,
+        opaquePassword?: string,
+        select?: Array<string>,
+    ): Promise<OauthProfileClientAuthorizationParameterResponse | SempMetaOnlyResponse> {
+        const options = this.getOauthProfileClientAuthorizationParameterApiRequestOptions(
+            oauthProfileName,
+            authorizationParameterName,
+            opaquePassword,
+            select,
+        );
+        const result = await __request(options);
+        return result.body;
+    }
+
+    public getOauthProfileClientAuthorizationParameterApiRequestOptions(
+        oauthProfileName: string,
+        authorizationParameterName: string,
+        opaquePassword?: string,
+        select?: Array<string>,
+    ): ApiRequestOptions {
+        return {
+            ...this.config,
+            method: 'GET',
+            path: `/oauthProfiles/${oauthProfileName}/clientAuthorizationParameters/${authorizationParameterName}`,
+            query: {
+                'opaquePassword': opaquePassword,
+                'select': select,
+            },
+        };
+    }
+
+    public async updateOauthProfileClientAuthorizationParameter(
+        oauthProfileName: string,
+        authorizationParameterName: string,
+        body: OauthProfileClientAuthorizationParameter,
+        opaquePassword?: string,
+        select?: Array<string>,
+    ): Promise<OauthProfileClientAuthorizationParameterResponse | SempMetaOnlyResponse> {
+        const options = this.updateOauthProfileClientAuthorizationParameterApiRequestOptions(
+            oauthProfileName,
+            authorizationParameterName,
+            body,
+            opaquePassword,
+            select,
+        );
+        const result = await __request(options);
+        return result.body;
+    }
+
+    public updateOauthProfileClientAuthorizationParameterApiRequestOptions(
+        oauthProfileName: string,
+        authorizationParameterName: string,
+        body: OauthProfileClientAuthorizationParameter,
+        opaquePassword?: string,
+        select?: Array<string>,
+    ): ApiRequestOptions {
+        return {
+            ...this.config,
+            method: 'PATCH',
+            path: `/oauthProfiles/${oauthProfileName}/clientAuthorizationParameters/${authorizationParameterName}`,
+            query: {
+                'opaquePassword': opaquePassword,
+                'select': select,
+            },
+            body: body,
+        };
+    }
+
+    public async replaceOauthProfileClientAuthorizationParameter(
+        oauthProfileName: string,
+        authorizationParameterName: string,
+        body: OauthProfileClientAuthorizationParameter,
+        opaquePassword?: string,
+        select?: Array<string>,
+    ): Promise<OauthProfileClientAuthorizationParameterResponse | SempMetaOnlyResponse> {
+        const options = this.replaceOauthProfileClientAuthorizationParameterApiRequestOptions(
+            oauthProfileName,
+            authorizationParameterName,
+            body,
+            opaquePassword,
+            select,
+        );
+        const result = await __request(options);
+        return result.body;
+    }
+
+    public replaceOauthProfileClientAuthorizationParameterApiRequestOptions(
+        oauthProfileName: string,
+        authorizationParameterName: string,
+        body: OauthProfileClientAuthorizationParameter,
+        opaquePassword?: string,
+        select?: Array<string>,
+    ): ApiRequestOptions {
+        return {
+            ...this.config,
+            method: 'PUT',
+            path: `/oauthProfiles/${oauthProfileName}/clientAuthorizationParameters/${authorizationParameterName}`,
+            query: {
+                'opaquePassword': opaquePassword,
+                'select': select,
+            },
+            body: body,
+        };
+    }
+
+    public async getOauthProfileClientRequiredClaims(
+        oauthProfileName: string,
+        count: number = 10,
+        cursor?: string,
+        opaquePassword?: string,
+        where?: Array<string>,
+        select?: Array<string>,
+    ): Promise<OauthProfileClientRequiredClaimsResponse | SempMetaOnlyResponse> {
+        const options = this.getOauthProfileClientRequiredClaimsApiRequestOptions(
+            oauthProfileName,
+            count,
+            cursor,
+            opaquePassword,
+            where,
+            select,
+        );
+        const result = await __request(options);
+        return result.body;
+    }
+
+    public getOauthProfileClientRequiredClaimsApiRequestOptions(
+        oauthProfileName: string,
+        count: number = 10,
+        cursor?: string,
+        opaquePassword?: string,
+        where?: Array<string>,
+        select?: Array<string>,
+    ): ApiRequestOptions {
+        return {
+            ...this.config,
+            method: 'GET',
+            path: `/oauthProfiles/${oauthProfileName}/clientRequiredClaims`,
+            query: {
+                'count': count,
+                'cursor': cursor,
+                'opaquePassword': opaquePassword,
+                'where': where,
+                'select': select,
+            },
+        };
+    }
+
+    public async createOauthProfileClientRequiredClaim(
+        oauthProfileName: string,
+        body: OauthProfileClientRequiredClaim,
+        opaquePassword?: string,
+        select?: Array<string>,
+    ): Promise<OauthProfileClientRequiredClaimResponse | SempMetaOnlyResponse> {
+        const options = this.createOauthProfileClientRequiredClaimApiRequestOptions(
+            oauthProfileName,
+            body,
+            opaquePassword,
+            select,
+        );
+        const result = await __request(options);
+        return result.body;
+    }
+
+    public createOauthProfileClientRequiredClaimApiRequestOptions(
+        oauthProfileName: string,
+        body: OauthProfileClientRequiredClaim,
+        opaquePassword?: string,
+        select?: Array<string>,
+    ): ApiRequestOptions {
+        return {
+            ...this.config,
+            method: 'POST',
+            path: `/oauthProfiles/${oauthProfileName}/clientRequiredClaims`,
+            query: {
+                'opaquePassword': opaquePassword,
+                'select': select,
+            },
+            body: body,
+        };
+    }
+
+    public async deleteOauthProfileClientRequiredClaim(
+        oauthProfileName: string,
+        clientRequiredClaimName: string,
+    ): Promise<SempMetaOnlyResponse> {
+        const options = this.deleteOauthProfileClientRequiredClaimApiRequestOptions(
+            oauthProfileName,
+            clientRequiredClaimName,
+        );
+        const result = await __request(options);
+        return result.body;
+    }
+
+    public deleteOauthProfileClientRequiredClaimApiRequestOptions(
+        oauthProfileName: string,
+        clientRequiredClaimName: string,
+    ): ApiRequestOptions {
+        return {
+            ...this.config,
+            method: 'DELETE',
+            path: `/oauthProfiles/${oauthProfileName}/clientRequiredClaims/${clientRequiredClaimName}`,
+        };
+    }
+
+    public async getOauthProfileClientRequiredClaim(
+        oauthProfileName: string,
+        clientRequiredClaimName: string,
+        opaquePassword?: string,
+        select?: Array<string>,
+    ): Promise<OauthProfileClientRequiredClaimResponse | SempMetaOnlyResponse> {
+        const options = this.getOauthProfileClientRequiredClaimApiRequestOptions(
+            oauthProfileName,
+            clientRequiredClaimName,
+            opaquePassword,
+            select,
+        );
+        const result = await __request(options);
+        return result.body;
+    }
+
+    public getOauthProfileClientRequiredClaimApiRequestOptions(
+        oauthProfileName: string,
+        clientRequiredClaimName: string,
+        opaquePassword?: string,
+        select?: Array<string>,
+    ): ApiRequestOptions {
+        return {
+            ...this.config,
+            method: 'GET',
+            path: `/oauthProfiles/${oauthProfileName}/clientRequiredClaims/${clientRequiredClaimName}`,
+            query: {
+                'opaquePassword': opaquePassword,
+                'select': select,
+            },
+        };
+    }
+
+    public async getOauthProfileDefaultMsgVpnAccessLevelExceptions(
+        oauthProfileName: string,
+        count: number = 10,
+        cursor?: string,
+        opaquePassword?: string,
+        where?: Array<string>,
+        select?: Array<string>,
+    ): Promise<OauthProfileDefaultMsgVpnAccessLevelExceptionsResponse | SempMetaOnlyResponse> {
+        const options = this.getOauthProfileDefaultMsgVpnAccessLevelExceptionsApiRequestOptions(
+            oauthProfileName,
+            count,
+            cursor,
+            opaquePassword,
+            where,
+            select,
+        );
+        const result = await __request(options);
+        return result.body;
+    }
+
+    public getOauthProfileDefaultMsgVpnAccessLevelExceptionsApiRequestOptions(
+        oauthProfileName: string,
+        count: number = 10,
+        cursor?: string,
+        opaquePassword?: string,
+        where?: Array<string>,
+        select?: Array<string>,
+    ): ApiRequestOptions {
+        return {
+            ...this.config,
+            method: 'GET',
+            path: `/oauthProfiles/${oauthProfileName}/defaultMsgVpnAccessLevelExceptions`,
+            query: {
+                'count': count,
+                'cursor': cursor,
+                'opaquePassword': opaquePassword,
+                'where': where,
+                'select': select,
+            },
+        };
+    }
+
+    public async createOauthProfileDefaultMsgVpnAccessLevelException(
+        oauthProfileName: string,
+        body: OauthProfileDefaultMsgVpnAccessLevelException,
+        opaquePassword?: string,
+        select?: Array<string>,
+    ): Promise<OauthProfileDefaultMsgVpnAccessLevelExceptionResponse | SempMetaOnlyResponse> {
+        const options = this.createOauthProfileDefaultMsgVpnAccessLevelExceptionApiRequestOptions(
+            oauthProfileName,
+            body,
+            opaquePassword,
+            select,
+        );
+        const result = await __request(options);
+        return result.body;
+    }
+
+    public createOauthProfileDefaultMsgVpnAccessLevelExceptionApiRequestOptions(
+        oauthProfileName: string,
+        body: OauthProfileDefaultMsgVpnAccessLevelException,
+        opaquePassword?: string,
+        select?: Array<string>,
+    ): ApiRequestOptions {
+        return {
+            ...this.config,
+            method: 'POST',
+            path: `/oauthProfiles/${oauthProfileName}/defaultMsgVpnAccessLevelExceptions`,
+            query: {
+                'opaquePassword': opaquePassword,
+                'select': select,
+            },
+            body: body,
+        };
+    }
+
+    public async deleteOauthProfileDefaultMsgVpnAccessLevelException(
+        oauthProfileName: string,
+        msgVpnName: string,
+    ): Promise<SempMetaOnlyResponse> {
+        const options = this.deleteOauthProfileDefaultMsgVpnAccessLevelExceptionApiRequestOptions(
+            oauthProfileName,
+            msgVpnName,
+        );
+        const result = await __request(options);
+        return result.body;
+    }
+
+    public deleteOauthProfileDefaultMsgVpnAccessLevelExceptionApiRequestOptions(
+        oauthProfileName: string,
+        msgVpnName: string,
+    ): ApiRequestOptions {
+        return {
+            ...this.config,
+            method: 'DELETE',
+            path: `/oauthProfiles/${oauthProfileName}/defaultMsgVpnAccessLevelExceptions/${msgVpnName}`,
+        };
+    }
+
+    public async getOauthProfileDefaultMsgVpnAccessLevelException(
+        oauthProfileName: string,
+        msgVpnName: string,
+        opaquePassword?: string,
+        select?: Array<string>,
+    ): Promise<OauthProfileDefaultMsgVpnAccessLevelExceptionResponse | SempMetaOnlyResponse> {
+        const options = this.getOauthProfileDefaultMsgVpnAccessLevelExceptionApiRequestOptions(
+            oauthProfileName,
+            msgVpnName,
+            opaquePassword,
+            select,
+        );
+        const result = await __request(options);
+        return result.body;
+    }
+
+    public getOauthProfileDefaultMsgVpnAccessLevelExceptionApiRequestOptions(
+        oauthProfileName: string,
+        msgVpnName: string,
+        opaquePassword?: string,
+        select?: Array<string>,
+    ): ApiRequestOptions {
+        return {
+            ...this.config,
+            method: 'GET',
+            path: `/oauthProfiles/${oauthProfileName}/defaultMsgVpnAccessLevelExceptions/${msgVpnName}`,
+            query: {
+                'opaquePassword': opaquePassword,
+                'select': select,
+            },
+        };
+    }
+
+    public async updateOauthProfileDefaultMsgVpnAccessLevelException(
+        oauthProfileName: string,
+        msgVpnName: string,
+        body: OauthProfileDefaultMsgVpnAccessLevelException,
+        opaquePassword?: string,
+        select?: Array<string>,
+    ): Promise<OauthProfileDefaultMsgVpnAccessLevelExceptionResponse | SempMetaOnlyResponse> {
+        const options = this.updateOauthProfileDefaultMsgVpnAccessLevelExceptionApiRequestOptions(
+            oauthProfileName,
+            msgVpnName,
+            body,
+            opaquePassword,
+            select,
+        );
+        const result = await __request(options);
+        return result.body;
+    }
+
+    public updateOauthProfileDefaultMsgVpnAccessLevelExceptionApiRequestOptions(
+        oauthProfileName: string,
+        msgVpnName: string,
+        body: OauthProfileDefaultMsgVpnAccessLevelException,
+        opaquePassword?: string,
+        select?: Array<string>,
+    ): ApiRequestOptions {
+        return {
+            ...this.config,
+            method: 'PATCH',
+            path: `/oauthProfiles/${oauthProfileName}/defaultMsgVpnAccessLevelExceptions/${msgVpnName}`,
+            query: {
+                'opaquePassword': opaquePassword,
+                'select': select,
+            },
+            body: body,
+        };
+    }
+
+    public async replaceOauthProfileDefaultMsgVpnAccessLevelException(
+        oauthProfileName: string,
+        msgVpnName: string,
+        body: OauthProfileDefaultMsgVpnAccessLevelException,
+        opaquePassword?: string,
+        select?: Array<string>,
+    ): Promise<OauthProfileDefaultMsgVpnAccessLevelExceptionResponse | SempMetaOnlyResponse> {
+        const options = this.replaceOauthProfileDefaultMsgVpnAccessLevelExceptionApiRequestOptions(
+            oauthProfileName,
+            msgVpnName,
+            body,
+            opaquePassword,
+            select,
+        );
+        const result = await __request(options);
+        return result.body;
+    }
+
+    public replaceOauthProfileDefaultMsgVpnAccessLevelExceptionApiRequestOptions(
+        oauthProfileName: string,
+        msgVpnName: string,
+        body: OauthProfileDefaultMsgVpnAccessLevelException,
+        opaquePassword?: string,
+        select?: Array<string>,
+    ): ApiRequestOptions {
+        return {
+            ...this.config,
+            method: 'PUT',
+            path: `/oauthProfiles/${oauthProfileName}/defaultMsgVpnAccessLevelExceptions/${msgVpnName}`,
+            query: {
+                'opaquePassword': opaquePassword,
+                'select': select,
+            },
+            body: body,
+        };
+    }
+
+    public async getOauthProfileResourceServerRequiredClaims(
+        oauthProfileName: string,
+        count: number = 10,
+        cursor?: string,
+        opaquePassword?: string,
+        where?: Array<string>,
+        select?: Array<string>,
+    ): Promise<OauthProfileResourceServerRequiredClaimsResponse | SempMetaOnlyResponse> {
+        const options = this.getOauthProfileResourceServerRequiredClaimsApiRequestOptions(
+            oauthProfileName,
+            count,
+            cursor,
+            opaquePassword,
+            where,
+            select,
+        );
+        const result = await __request(options);
+        return result.body;
+    }
+
+    public getOauthProfileResourceServerRequiredClaimsApiRequestOptions(
+        oauthProfileName: string,
+        count: number = 10,
+        cursor?: string,
+        opaquePassword?: string,
+        where?: Array<string>,
+        select?: Array<string>,
+    ): ApiRequestOptions {
+        return {
+            ...this.config,
+            method: 'GET',
+            path: `/oauthProfiles/${oauthProfileName}/resourceServerRequiredClaims`,
+            query: {
+                'count': count,
+                'cursor': cursor,
+                'opaquePassword': opaquePassword,
+                'where': where,
+                'select': select,
+            },
+        };
+    }
+
+    public async createOauthProfileResourceServerRequiredClaim(
+        oauthProfileName: string,
+        body: OauthProfileResourceServerRequiredClaim,
+        opaquePassword?: string,
+        select?: Array<string>,
+    ): Promise<OauthProfileResourceServerRequiredClaimResponse | SempMetaOnlyResponse> {
+        const options = this.createOauthProfileResourceServerRequiredClaimApiRequestOptions(
+            oauthProfileName,
+            body,
+            opaquePassword,
+            select,
+        );
+        const result = await __request(options);
+        return result.body;
+    }
+
+    public createOauthProfileResourceServerRequiredClaimApiRequestOptions(
+        oauthProfileName: string,
+        body: OauthProfileResourceServerRequiredClaim,
+        opaquePassword?: string,
+        select?: Array<string>,
+    ): ApiRequestOptions {
+        return {
+            ...this.config,
+            method: 'POST',
+            path: `/oauthProfiles/${oauthProfileName}/resourceServerRequiredClaims`,
+            query: {
+                'opaquePassword': opaquePassword,
+                'select': select,
+            },
+            body: body,
+        };
+    }
+
+    public async deleteOauthProfileResourceServerRequiredClaim(
+        oauthProfileName: string,
+        resourceServerRequiredClaimName: string,
+    ): Promise<SempMetaOnlyResponse> {
+        const options = this.deleteOauthProfileResourceServerRequiredClaimApiRequestOptions(
+            oauthProfileName,
+            resourceServerRequiredClaimName,
+        );
+        const result = await __request(options);
+        return result.body;
+    }
+
+    public deleteOauthProfileResourceServerRequiredClaimApiRequestOptions(
+        oauthProfileName: string,
+        resourceServerRequiredClaimName: string,
+    ): ApiRequestOptions {
+        return {
+            ...this.config,
+            method: 'DELETE',
+            path: `/oauthProfiles/${oauthProfileName}/resourceServerRequiredClaims/${resourceServerRequiredClaimName}`,
+        };
+    }
+
+    public async getOauthProfileResourceServerRequiredClaim(
+        oauthProfileName: string,
+        resourceServerRequiredClaimName: string,
+        opaquePassword?: string,
+        select?: Array<string>,
+    ): Promise<OauthProfileResourceServerRequiredClaimResponse | SempMetaOnlyResponse> {
+        const options = this.getOauthProfileResourceServerRequiredClaimApiRequestOptions(
+            oauthProfileName,
+            resourceServerRequiredClaimName,
+            opaquePassword,
+            select,
+        );
+        const result = await __request(options);
+        return result.body;
+    }
+
+    public getOauthProfileResourceServerRequiredClaimApiRequestOptions(
+        oauthProfileName: string,
+        resourceServerRequiredClaimName: string,
+        opaquePassword?: string,
+        select?: Array<string>,
+    ): ApiRequestOptions {
+        return {
+            ...this.config,
+            method: 'GET',
+            path: `/oauthProfiles/${oauthProfileName}/resourceServerRequiredClaims/${resourceServerRequiredClaimName}`,
+            query: {
+                'opaquePassword': opaquePassword,
+                'select': select,
+            },
+        };
+    }
+
+    public async getSystemInformation(
+        opaquePassword?: string,
+        select?: Array<string>,
+    ): Promise<SystemInformationResponse | SempMetaOnlyResponse> {
+        const options = this.getSystemInformationApiRequestOptions(
+            opaquePassword,
+            select,
+        );
+        const result = await __request(options);
+        return result.body;
+    }
+
+    public getSystemInformationApiRequestOptions(
+        opaquePassword?: string,
+        select?: Array<string>,
+    ): ApiRequestOptions {
+        return {
+            ...this.config,
+            method: 'GET',
+            path: `/systemInformation`,
+            query: {
+                'opaquePassword': opaquePassword,
+                'select': select,
+            },
         };
     }
 
