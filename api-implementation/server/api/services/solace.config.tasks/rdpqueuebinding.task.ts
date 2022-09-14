@@ -19,9 +19,9 @@ export default class RdpQueueBindingTask extends SEMPv2Task {
     constructor(taskConfig: RdpQueueBindingTaskConfig) {
         super(taskConfig);
     }
-    public isApplicable(): boolean {
+    public async isApplicable(): Promise<boolean> {
         const config: TaskConfigAlias = this.config() as TaskConfigAlias;
-        return this.isApplicableEnvironment(config.configObject)
+        return this.isApplicableEnvironment(config.configObject);
     }
 
     protected async isPresent(): Promise<boolean> {

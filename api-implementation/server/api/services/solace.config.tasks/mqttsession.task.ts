@@ -29,7 +29,7 @@ export default class MqttSessionTask extends SEMPv2Task {
         }
     }
 
-    public isApplicable(): boolean {
+    public async isApplicable(): Promise<boolean> {
         const config: TaskConfigAlias = this.config() as TaskConfigAlias;
         return this.isApplicableEnvironment(config.configObject)
     }

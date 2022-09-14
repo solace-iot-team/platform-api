@@ -29,7 +29,7 @@ export class TaskSet {
         const results: TaskResult[] = [];
         let success: boolean = true;
         for (const task of this.tasks) {
-            if (task.isApplicable()) {
+            if (await task.isApplicable()) {
                 try {
                     const r = await task.execute();
                     if (!r.success) {
