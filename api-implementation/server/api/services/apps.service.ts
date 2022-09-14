@@ -28,8 +28,11 @@ import APIProductsTypeHelper from '../../../src/apiproductstypehelper';
 import AppHelper from '../../../src/apphelper';
 
 import { scheduler } from '../../index';
-import WebHookHelpers from './apps/webhookhelpers';
-
+import solacecloudfacade from '../../../src/solacecloudfacade';
+import EnvironmentsService from './environments.service';
+import Environment = Components.Schemas.Environment;
+import sempv2clientfactory from './broker/sempv2clientfactory';
+import semVerCompare from 'semver-compare';
 
 export interface APISpecification {
   name: string;
@@ -390,34 +393,41 @@ export class AppsService {
     if (app.webHooks != null) {
       const webHooks: WebHook[] = app.webHooks as WebHook[];
 
-      webHooks.forEach((webHook) => {
-        if (
-          webHook.environments !== null &&
-          webHook.environments !== undefined
-        ) {
-          L.info(webHook.environments);
-          webHook.environments.forEach((envName) => {
-            const hasEnv = environments.has(envName);
-            if (!hasEnv) {
+      for (const webHook of webHooks) {
+        const webHookEnvs = webHook.environments?webHook.environments:environments;
+        L.info(webHookEnvs);
+        for (const envName of webHookEnvs) {
+          const hasEnv = environments.has(envName);
+          if (!hasEnv) {
+            throw new ErrorResponseInternal(
+              422,
+              `Referenced environment ${envName} is not associated with any API Product`
+            );
+          }
+          let webHooksPerDev: WebHook[] = [];
+          webHooksPerDev = app.webHooks.filter((w: { environments: any[]; }) => w.environments == null || w.environments.find(e => e == envName));
+          if (webHooksPerDev.length > 1) {
+            throw new ErrorResponseInternal(
+              400,
+              `Multiple webHooks for  ${envName} are not supported`
+            );
+          }
+          if (webHook.requestHeaders) {
+            // need to check if this env supports headers
+            const svc = await solacecloudfacade.getServiceByEnvironment(await EnvironmentsService.byName(envName) as Environment);
+            const sempVersion = await sempv2clientfactory.getSEMPv2ClientVersion(svc);
+            const unsupportedVersion = semVerCompare(sempVersion, '2.23') == -1;
+            if (unsupportedVersion) {
               throw new ErrorResponseInternal(
                 422,
-                `Referenced environment ${envName} is not associated with any API Product`
+                `WebHook HTTP Request Headers not supported in ${envName}`
               );
             }
-            let webHooksPerDev: WebHook[] = [];
-            webHooksPerDev = app.webHooks.filter((w: { environments: any[]; }) => w.environments == null || w.environments.find(e => e == envName));
-            if (webHooksPerDev.length > 1) {
-              throw new ErrorResponseInternal(
-                400,
-                `Multiple webHooks for  ${envName} are not supported`
-              );
-            }
-          });
-
+          }
         }
 
 
-      });
+      }
     }
 
     return isApproved;

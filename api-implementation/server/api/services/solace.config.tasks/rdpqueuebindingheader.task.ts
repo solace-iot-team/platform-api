@@ -7,7 +7,6 @@ import { SEMPv2Task, SEMPv2TaskConfig } from "./solace.task";
 import { MsgVpnRestDeliveryPointQueueBindingRequestHeader as TaskServiceRequest } from "../../../../src/clients/sempv2/models/MsgVpnRestDeliveryPointQueueBindingRequestHeader";
 import { MsgVpnRestDeliveryPointQueueBindingRequestHeaderResponse as TaskServiceResponse } from "../../../../src/clients/sempv2/models/MsgVpnRestDeliveryPointQueueBindingRequestHeaderResponse";
 import _ from "lodash";
-import { AboutApiResponse } from '../../../../src/clients/sempv2';
 import semVerCompare from 'semver-compare';
 export interface RdpQueueBindingHeaderTaskConfig extends SEMPv2TaskConfig {
     configObject: BrokerObjectConfig,
@@ -18,15 +17,14 @@ export interface RdpQueueBindingHeaderTaskConfig extends SEMPv2TaskConfig {
 type TaskConfigAlias = RdpQueueBindingHeaderTaskConfig;
 
 export default class RdpQueueBindingRequestHeaderTask extends SEMPv2Task {
-
+    private minSempVersion = '2.23';
     private operationName: string = 'MsgVpnRestDeliveryPointQueueBindingHeader';
     constructor(taskConfig: RdpQueueBindingHeaderTaskConfig) {
         super(taskConfig);
     }
     public async isApplicable(): Promise<boolean> {
         const config: TaskConfigAlias = this.config() as TaskConfigAlias;
-        const r = await this.apiClient.getAboutApi() as AboutApiResponse;
-        const unsupportedVersion =  semVerCompare(r.data.sempVersion, '2.22') == -1;
+        const unsupportedVersion =  semVerCompare(this.apiVersion, this.minSempVersion) == -1;
         if (unsupportedVersion){
             return false;
         } else {

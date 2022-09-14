@@ -9,6 +9,12 @@ import { ContextConstants } from '../../../common/constants';
 import { ApiRequestOptions } from '../../../../src/clients/sempv2/core/ApiRequestOptions';
 import Organization = Components.Schemas.Organization;
 import { ErrorResponseInternal } from '../../middlewares/error.handler';
+import { AboutApiResponse } from '../../../../src/clients/sempv2';
+
+import { Cache, CacheContainer } from 'node-ts-cache'
+import { MemoryStorage } from 'node-ts-cache-storage-memory'
+
+const sempvVersionCache = new CacheContainer(new MemoryStorage())
 
 type Headers = Record<string, string>;
 const SEMPV2_USER = 'sempv2UserName';
@@ -17,7 +23,7 @@ const SEMPV2_BASE = 'sempv2BaseUrl';
 export class SempV2ClientFactory {
   getSEMPv2Client(service: Service): AllServiceDefault {
     const sempProtocol = service.managementProtocols.find(i => i.name === "SEMP");
-    if (!sempProtocol){
+    if (!sempProtocol) {
       L.error(`Could not locate mmanagement protocols in ${service.name} `);
       L.debug(service.managementProtocols);
       throw new ErrorResponseInternal(500, `Could not resolve management endpoint`)
@@ -34,6 +40,13 @@ export class SempV2ClientFactory {
       defaultHeaders: getHeaders
     }
     return new AllServiceDefault(options);
+  }
+  
+  @Cache(sempvVersionCache, { ttl: 120 })
+  async getSEMPv2ClientVersion(service: Service): Promise<string> {
+    const client = this.getSEMPv2Client(service);
+    const r = await client.getAboutApi() as AboutApiResponse;
+    return r.data.sempVersion;
   }
 }
 
@@ -52,6 +65,7 @@ export async function getHeaders(options: ApiRequestOptions): Promise<Headers> {
   }
   return h;
 }
+
 
 function getValue(key: string): string {
   const val: string = ns.getStore().get(key);
