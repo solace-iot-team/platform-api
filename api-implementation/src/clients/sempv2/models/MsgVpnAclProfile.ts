@@ -7,7 +7,7 @@ export type MsgVpnAclProfile = {
      */
     aclProfileName?: string;
     /**
-     * The default action to take when a client using the ACL Profile connects to the Message VPN. The default value is `"disallow"`. The allowed values and their meaning are:
+     * The default action to take when a client using the ACL Profile connects to the Message VPN. Changes to this attribute are synchronized to HA mates and replication sites via config-sync. The default value is `"disallow"`. The allowed values and their meaning are:
      *
      * <pre>
      * "allow" - Allow client connection unless an exception is found for it.
@@ -21,7 +21,7 @@ export type MsgVpnAclProfile = {
      */
     msgVpnName?: string;
     /**
-     * The default action to take when a client using the ACL Profile publishes to a topic in the Message VPN. The default value is `"disallow"`. The allowed values and their meaning are:
+     * The default action to take when a client using the ACL Profile publishes to a topic in the Message VPN. Changes to this attribute are synchronized to HA mates and replication sites via config-sync. The default value is `"disallow"`. The allowed values and their meaning are:
      *
      * <pre>
      * "allow" - Allow topic unless an exception is found for it.
@@ -31,7 +31,7 @@ export type MsgVpnAclProfile = {
      */
     publishTopicDefaultAction?: MsgVpnAclProfile.publishTopicDefaultAction;
     /**
-     * The default action to take when a client using the ACL Profile subscribes to a share-name subscription in the Message VPN. The default value is `"allow"`. The allowed values and their meaning are:
+     * The default action to take when a client using the ACL Profile subscribes to a share-name subscription in the Message VPN. Changes to this attribute are synchronized to HA mates and replication sites via config-sync. The default value is `"allow"`. The allowed values and their meaning are:
      *
      * <pre>
      * "allow" - Allow topic unless an exception is found for it.
@@ -41,7 +41,7 @@ export type MsgVpnAclProfile = {
      */
     subscribeShareNameDefaultAction?: MsgVpnAclProfile.subscribeShareNameDefaultAction;
     /**
-     * The default action to take when a client using the ACL Profile subscribes to a topic in the Message VPN. The default value is `"disallow"`. The allowed values and their meaning are:
+     * The default action to take when a client using the ACL Profile subscribes to a topic in the Message VPN. Changes to this attribute are synchronized to HA mates and replication sites via config-sync. The default value is `"disallow"`. The allowed values and their meaning are:
      *
      * <pre>
      * "allow" - Allow topic unless an exception is found for it.
@@ -60,7 +60,7 @@ export namespace MsgVpnAclProfile {
     export const discriminator = 'MsgVpnAclProfile';
 
     /**
-     * The default action to take when a client using the ACL Profile connects to the Message VPN. The default value is `"disallow"`. The allowed values and their meaning are:
+     * The default action to take when a client using the ACL Profile connects to the Message VPN. Changes to this attribute are synchronized to HA mates and replication sites via config-sync. The default value is `"disallow"`. The allowed values and their meaning are:
      *
      * <pre>
      * "allow" - Allow client connection unless an exception is found for it.
@@ -74,7 +74,7 @@ export namespace MsgVpnAclProfile {
     }
 
     /**
-     * The default action to take when a client using the ACL Profile publishes to a topic in the Message VPN. The default value is `"disallow"`. The allowed values and their meaning are:
+     * The default action to take when a client using the ACL Profile publishes to a topic in the Message VPN. Changes to this attribute are synchronized to HA mates and replication sites via config-sync. The default value is `"disallow"`. The allowed values and their meaning are:
      *
      * <pre>
      * "allow" - Allow topic unless an exception is found for it.
@@ -88,7 +88,7 @@ export namespace MsgVpnAclProfile {
     }
 
     /**
-     * The default action to take when a client using the ACL Profile subscribes to a share-name subscription in the Message VPN. The default value is `"allow"`. The allowed values and their meaning are:
+     * The default action to take when a client using the ACL Profile subscribes to a share-name subscription in the Message VPN. Changes to this attribute are synchronized to HA mates and replication sites via config-sync. The default value is `"allow"`. The allowed values and their meaning are:
      *
      * <pre>
      * "allow" - Allow topic unless an exception is found for it.
@@ -102,7 +102,7 @@ export namespace MsgVpnAclProfile {
     }
 
     /**
-     * The default action to take when a client using the ACL Profile subscribes to a topic in the Message VPN. The default value is `"disallow"`. The allowed values and their meaning are:
+     * The default action to take when a client using the ACL Profile subscribes to a topic in the Message VPN. Changes to this attribute are synchronized to HA mates and replication sites via config-sync. The default value is `"disallow"`. The allowed values and their meaning are:
      *
      * <pre>
      * "allow" - Allow topic unless an exception is found for it.

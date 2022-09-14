@@ -8,23 +8,23 @@ export type MsgVpn = {
     /**
      * The name of another Message VPN which this Message VPN is an alias for. When this Message VPN is enabled, the alias has no effect. When this Message VPN is disabled, Clients (but not Bridges and routing Links) logging into this Message VPN are automatically logged in to the other Message VPN, and authentication and authorization take place in the context of the other Message VPN.
      *
-     * Aliases may form a non-circular chain, cascading one to the next. The default value is `""`. Available since 2.14.
+     * Aliases may form a non-circular chain, cascading one to the next. Changes to this attribute are synchronized to HA mates and replication sites via config-sync. The default value is `""`. Available since 2.14.
      */
     alias?: string;
     /**
-     * Enable or disable basic authentication for clients connecting to the Message VPN. Basic authentication is authentication that involves the use of a username and password to prove identity. If a user provides credentials for a different authentication scheme, this setting is not applicable. The default value is `true`.
+     * Enable or disable basic authentication for clients connecting to the Message VPN. Basic authentication is authentication that involves the use of a username and password to prove identity. If a user provides credentials for a different authentication scheme, this setting is not applicable. Changes to this attribute are synchronized to HA mates and replication sites via config-sync. The default value is `true`.
      */
     authenticationBasicEnabled?: boolean;
     /**
-     * The name of the RADIUS or LDAP Profile to use for basic authentication. The default value is `"default"`.
+     * The name of the RADIUS or LDAP Profile to use for basic authentication. Changes to this attribute are synchronized to HA mates and replication sites via config-sync. The default value is `"default"`.
      */
     authenticationBasicProfileName?: string;
     /**
-     * The RADIUS domain to use for basic authentication. The default value is `""`.
+     * The RADIUS domain to use for basic authentication. Changes to this attribute are synchronized to HA mates and replication sites via config-sync. The default value is `""`.
      */
     authenticationBasicRadiusDomain?: string;
     /**
-     * The type of basic authentication to use for clients connecting to the Message VPN. The default value is `"radius"`. The allowed values and their meaning are:
+     * The type of basic authentication to use for clients connecting to the Message VPN. Changes to this attribute are synchronized to HA mates and replication sites via config-sync. The default value is `"radius"`. The allowed values and their meaning are:
      *
      * <pre>
      * "internal" - Internal database. Authentication is against Client Usernames.
@@ -36,19 +36,23 @@ export type MsgVpn = {
      */
     authenticationBasicType?: MsgVpn.authenticationBasicType;
     /**
-     * Enable or disable allowing a client to specify a Client Username via the API connect method. When disabled, the certificate CN (Common Name) is always used. The default value is `false`.
+     * Enable or disable allowing a client to specify a Client Username via the API connect method. When disabled, the certificate CN (Common Name) is always used. Changes to this attribute are synchronized to HA mates and replication sites via config-sync. The default value is `false`.
      */
     authenticationClientCertAllowApiProvidedUsernameEnabled?: boolean;
     /**
-     * Enable or disable client certificate authentication in the Message VPN. The default value is `false`.
+     * Enable or disable certificate matching rules. When disabled, any valid certificate is accepted. Changes to this attribute are synchronized to HA mates and replication sites via config-sync. The default value is `false`. Available since 2.27.
+     */
+    authenticationClientCertCertificateMatchingRulesEnabled?: boolean;
+    /**
+     * Enable or disable client certificate authentication in the Message VPN. Changes to this attribute are synchronized to HA mates and replication sites via config-sync. The default value is `false`.
      */
     authenticationClientCertEnabled?: boolean;
     /**
-     * The maximum depth for a client certificate chain. The depth of a chain is defined as the number of signing CA certificates that are present in the chain back to a trusted self-signed root CA certificate. The default value is `3`.
+     * The maximum depth for a client certificate chain. The depth of a chain is defined as the number of signing CA certificates that are present in the chain back to a trusted self-signed root CA certificate. Changes to this attribute are synchronized to HA mates and replication sites via config-sync. The default value is `3`.
      */
     authenticationClientCertMaxChainDepth?: number;
     /**
-     * The desired behavior for client certificate revocation checking. The default value is `"allow-valid"`. The allowed values and their meaning are:
+     * The desired behavior for client certificate revocation checking. Changes to this attribute are synchronized to HA mates and replication sites via config-sync. The default value is `"allow-valid"`. The allowed values and their meaning are:
      *
      * <pre>
      * "allow-all" - Allow the client to authenticate, the result of client certificate revocation check is ignored.
@@ -59,49 +63,57 @@ export type MsgVpn = {
      */
     authenticationClientCertRevocationCheckMode?: MsgVpn.authenticationClientCertRevocationCheckMode;
     /**
-     * The field from the client certificate to use as the client username. The default value is `"common-name"`. The allowed values and their meaning are:
+     * The field from the client certificate to use as the client username. Changes to this attribute are synchronized to HA mates and replication sites via config-sync. The default value is `"common-name"`. The allowed values and their meaning are:
      *
      * <pre>
-     * "common-name" - The username is extracted from the certificate's Common Name.
+     * "certificate-thumbprint" - The username is computed as the SHA-1 hash over the entire DER-encoded contents of the client certificate.
+     * "common-name" - The username is extracted from the certificate's first instance of the Common Name attribute in the Subject DN.
+     * "common-name-last" - The username is extracted from the certificate's last instance of the Common Name attribute in the Subject DN.
      * "subject-alternate-name-msupn" - The username is extracted from the certificate's Other Name type of the Subject Alternative Name and must have the msUPN signature.
+     * "uid" - The username is extracted from the certificate's first instance of the User Identifier attribute in the Subject DN.
+     * "uid-last" - The username is extracted from the certificate's last instance of the User Identifier attribute in the Subject DN.
      * </pre>
      * Available since 2.6.
      */
     authenticationClientCertUsernameSource?: MsgVpn.authenticationClientCertUsernameSource;
     /**
-     * Enable or disable validation of the "Not Before" and "Not After" validity dates in the client certificate. The default value is `true`.
+     * Enable or disable validation of the "Not Before" and "Not After" validity dates in the client certificate. Changes to this attribute are synchronized to HA mates and replication sites via config-sync. The default value is `true`.
      */
     authenticationClientCertValidateDateEnabled?: boolean;
     /**
-     * Enable or disable allowing a client to specify a Client Username via the API connect method. When disabled, the Kerberos Principal name is always used. The default value is `false`.
+     * Enable or disable allowing a client to specify a Client Username via the API connect method. When disabled, the Kerberos Principal name is always used. Changes to this attribute are synchronized to HA mates and replication sites via config-sync. The default value is `false`.
      */
     authenticationKerberosAllowApiProvidedUsernameEnabled?: boolean;
     /**
-     * Enable or disable Kerberos authentication in the Message VPN. The default value is `false`.
+     * Enable or disable Kerberos authentication in the Message VPN. Changes to this attribute are synchronized to HA mates and replication sites via config-sync. The default value is `false`.
      */
     authenticationKerberosEnabled?: boolean;
     /**
-     * The name of the provider to use when the client does not supply a provider name. The default value is `""`. Available since 2.13.
+     * The name of the profile to use when the client does not supply a profile name. Changes to this attribute are synchronized to HA mates and replication sites via config-sync. The default value is `""`. Available since 2.25.
+     */
+    authenticationOauthDefaultProfileName?: string;
+    /**
+     * The name of the provider to use when the client does not supply a provider name. Changes to this attribute are synchronized to HA mates and replication sites via config-sync. The default value is `""`. Deprecated since 2.25. authenticationOauthDefaultProviderName and authenticationOauthProviders replaced by authenticationOauthDefaultProfileName and authenticationOauthProfiles.
      */
     authenticationOauthDefaultProviderName?: string;
     /**
-     * Enable or disable OAuth authentication. The default value is `false`. Available since 2.13.
+     * Enable or disable OAuth authentication. Changes to this attribute are synchronized to HA mates and replication sites via config-sync. The default value is `false`. Available since 2.13.
      */
     authenticationOauthEnabled?: boolean;
     /**
-     * The name of the attribute that is retrieved from the LDAP server as part of the LDAP search when authorizing a client connecting to the Message VPN. The default value is `"memberOf"`.
+     * The name of the attribute that is retrieved from the LDAP server as part of the LDAP search when authorizing a client connecting to the Message VPN. Changes to this attribute are synchronized to HA mates and replication sites via config-sync. The default value is `"memberOf"`.
      */
     authorizationLdapGroupMembershipAttributeName?: string;
     /**
-     * Enable or disable client-username domain trimming for LDAP lookups of client connections. When enabled, the value of $CLIENT_USERNAME (when used for searching) will be truncated at the first occurance of the @ character. For example, if the client-username is in the form of an email address, then the domain portion will be removed. The default value is `false`. Available since 2.13.
+     * Enable or disable client-username domain trimming for LDAP lookups of client connections. When enabled, the value of $CLIENT_USERNAME (when used for searching) will be truncated at the first occurance of the @ character. For example, if the client-username is in the form of an email address, then the domain portion will be removed. Changes to this attribute are synchronized to HA mates and replication sites via config-sync. The default value is `false`. Available since 2.13.
      */
     authorizationLdapTrimClientUsernameDomainEnabled?: boolean;
     /**
-     * The name of the LDAP Profile to use for client authorization. The default value is `""`.
+     * The name of the LDAP Profile to use for client authorization. Changes to this attribute are synchronized to HA mates and replication sites via config-sync. The default value is `""`.
      */
     authorizationProfileName?: string;
     /**
-     * The type of authorization to use for clients connecting to the Message VPN. The default value is `"internal"`. The allowed values and their meaning are:
+     * The type of authorization to use for clients connecting to the Message VPN. Changes to this attribute are synchronized to HA mates and replication sites via config-sync. The default value is `"internal"`. The allowed values and their meaning are:
      *
      * <pre>
      * "ldap" - LDAP authorization.
@@ -111,31 +123,31 @@ export type MsgVpn = {
      */
     authorizationType?: MsgVpn.authorizationType;
     /**
-     * Enable or disable validation of the Common Name (CN) in the server certificate from the remote broker. If enabled, the Common Name is checked against the list of Trusted Common Names configured for the Bridge. Common Name validation is not performed if Server Certificate Name Validation is enabled, even if Common Name validation is enabled. The default value is `true`. Deprecated since 2.18. Common Name validation has been replaced by Server Certificate Name validation.
+     * Enable or disable validation of the Common Name (CN) in the server certificate from the remote broker. If enabled, the Common Name is checked against the list of Trusted Common Names configured for the Bridge. Common Name validation is not performed if Server Certificate Name Validation is enabled, even if Common Name validation is enabled. Changes to this attribute are synchronized to HA mates and replication sites via config-sync. The default value is `false`. Deprecated since 2.18. Common Name validation has been replaced by Server Certificate Name validation.
      */
     bridgingTlsServerCertEnforceTrustedCommonNameEnabled?: boolean;
     /**
-     * The maximum depth for a server certificate chain. The depth of a chain is defined as the number of signing CA certificates that are present in the chain back to a trusted self-signed root CA certificate. The default value is `3`.
+     * The maximum depth for a server certificate chain. The depth of a chain is defined as the number of signing CA certificates that are present in the chain back to a trusted self-signed root CA certificate. Changes to this attribute are synchronized to HA mates and replication sites via config-sync. The default value is `3`.
      */
     bridgingTlsServerCertMaxChainDepth?: number;
     /**
-     * Enable or disable validation of the "Not Before" and "Not After" validity dates in the server certificate. When disabled, a certificate will be accepted even if the certificate is not valid based on these dates. The default value is `true`.
+     * Enable or disable validation of the "Not Before" and "Not After" validity dates in the server certificate. When disabled, a certificate will be accepted even if the certificate is not valid based on these dates. Changes to this attribute are synchronized to HA mates and replication sites via config-sync. The default value is `true`.
      */
     bridgingTlsServerCertValidateDateEnabled?: boolean;
     /**
-     * Enable or disable the standard TLS authentication mechanism of verifying the name used to connect to the bridge. If enabled, the name used to connect to the bridge is checked against the names specified in the certificate returned by the remote router. Legacy Common Name validation is not performed if Server Certificate Name Validation is enabled, even if Common Name validation is also enabled. The default value is `true`. Available since 2.18.
+     * Enable or disable the standard TLS authentication mechanism of verifying the name used to connect to the bridge. If enabled, the name used to connect to the bridge is checked against the names specified in the certificate returned by the remote router. Legacy Common Name validation is not performed if Server Certificate Name Validation is enabled, even if Common Name validation is also enabled. Changes to this attribute are synchronized to HA mates and replication sites via config-sync. The default value is `true`. Available since 2.18.
      */
     bridgingTlsServerCertValidateNameEnabled?: boolean;
     /**
-     * Enable or disable managing of cache instances over the message bus. The default value is `true`.
+     * Enable or disable managing of cache instances over the message bus. The default value is `true`. Deprecated since 2.28. Distributed cache mangement is now redundancy aware and thus no longer requires administrative intervention for operational state.
      */
     distributedCacheManagementEnabled?: boolean;
     /**
-     * Enable or disable Dynamic Message Routing (DMR) for the Message VPN. The default value is `false`. Available since 2.11.
+     * Enable or disable Dynamic Message Routing (DMR) for the Message VPN. Changes to this attribute are synchronized to HA mates and replication sites via config-sync. The default value is `false`. Available since 2.11.
      */
     dmrEnabled?: boolean;
     /**
-     * Enable or disable the Message VPN. The default value is `false`.
+     * Enable or disable the Message VPN. Changes to this attribute are synchronized to HA mates and replication sites via config-sync. The default value is `false`.
      */
     enabled?: boolean;
     eventConnectionCountThreshold?: EventThreshold;
@@ -145,24 +157,24 @@ export type MsgVpn = {
     eventIngressFlowCountThreshold?: EventThreshold;
     eventIngressMsgRateThreshold?: EventThresholdByValue;
     /**
-     * The threshold, in kilobytes, after which a message is considered to be large for the Message VPN. The default value is `1024`.
+     * The threshold, in kilobytes, after which a message is considered to be large for the Message VPN. Changes to this attribute are synchronized to HA mates and replication sites via config-sync. The default value is `1024`.
      */
     eventLargeMsgThreshold?: number;
     /**
-     * A prefix applied to all published Events in the Message VPN. The default value is `""`.
+     * A prefix applied to all published Events in the Message VPN. Changes to this attribute are synchronized to HA mates and replication sites via config-sync. The default value is `""`.
      */
     eventLogTag?: string;
     eventMsgSpoolUsageThreshold?: EventThreshold;
     /**
-     * Enable or disable Client level Event message publishing. The default value is `false`.
+     * Enable or disable Client level Event message publishing. Changes to this attribute are synchronized to HA mates and replication sites via config-sync. The default value is `false`.
      */
     eventPublishClientEnabled?: boolean;
     /**
-     * Enable or disable Message VPN level Event message publishing. The default value is `false`.
+     * Enable or disable Message VPN level Event message publishing. Changes to this attribute are synchronized to HA mates and replication sites via config-sync. The default value is `false`.
      */
     eventPublishMsgVpnEnabled?: boolean;
     /**
-     * Subscription level Event message publishing mode. The default value is `"off"`. The allowed values and their meaning are:
+     * Subscription level Event message publishing mode. Changes to this attribute are synchronized to HA mates and replication sites via config-sync. The default value is `"off"`. The allowed values and their meaning are:
      *
      * <pre>
      * "off" - Disable client level event message publishing.
@@ -175,11 +187,11 @@ export type MsgVpn = {
      */
     eventPublishSubscriptionMode?: MsgVpn.eventPublishSubscriptionMode;
     /**
-     * Enable or disable Event publish topics in MQTT format. The default value is `false`.
+     * Enable or disable Event publish topics in MQTT format. Changes to this attribute are synchronized to HA mates and replication sites via config-sync. The default value is `false`.
      */
     eventPublishTopicFormatMqttEnabled?: boolean;
     /**
-     * Enable or disable Event publish topics in SMF format. The default value is `true`.
+     * Enable or disable Event publish topics in SMF format. Changes to this attribute are synchronized to HA mates and replication sites via config-sync. The default value is `true`.
      */
     eventPublishTopicFormatSmfEnabled?: boolean;
     eventServiceAmqpConnectionCountThreshold?: EventThreshold;
@@ -191,47 +203,47 @@ export type MsgVpn = {
     eventTransactedSessionCountThreshold?: EventThreshold;
     eventTransactionCountThreshold?: EventThreshold;
     /**
-     * Enable or disable the export of subscriptions in the Message VPN to other routers in the network over Neighbor links. The default value is `false`.
+     * Enable or disable the export of subscriptions in the Message VPN to other routers in the network over Neighbor links. Changes to this attribute are synchronized to HA mates and replication sites via config-sync. The default value is `false`.
      */
     exportSubscriptionsEnabled?: boolean;
     /**
-     * Enable or disable JNDI access for clients in the Message VPN. The default value is `false`. Available since 2.2.
+     * Enable or disable JNDI access for clients in the Message VPN. Changes to this attribute are synchronized to HA mates and replication sites via config-sync. The default value is `false`. Available since 2.2.
      */
     jndiEnabled?: boolean;
     /**
-     * The maximum number of client connections to the Message VPN. The default is the maximum value supported by the platform.
+     * The maximum number of client connections to the Message VPN. Changes to this attribute are synchronized to HA mates and replication sites via config-sync. The default is the maximum value supported by the platform.
      */
     maxConnectionCount?: number;
     /**
-     * The maximum number of transmit flows that can be created in the Message VPN. The default value is `1000`.
+     * The maximum number of transmit flows that can be created in the Message VPN. Changes to this attribute are synchronized to HA mates and replication sites via config-sync. The default value is `1000`.
      */
     maxEgressFlowCount?: number;
     /**
-     * The maximum number of Queues and Topic Endpoints that can be created in the Message VPN. The default value is `1000`.
+     * The maximum number of Queues and Topic Endpoints that can be created in the Message VPN. Changes to this attribute are synchronized to HA mates and replication sites via config-sync. The default value is `1000`.
      */
     maxEndpointCount?: number;
     /**
-     * The maximum number of receive flows that can be created in the Message VPN. The default value is `1000`.
+     * The maximum number of receive flows that can be created in the Message VPN. Changes to this attribute are synchronized to HA mates and replication sites via config-sync. The default value is `1000`.
      */
     maxIngressFlowCount?: number;
     /**
-     * The maximum message spool usage by the Message VPN, in megabytes. The default value is `0`.
+     * The maximum message spool usage by the Message VPN, in megabytes. Changes to this attribute are synchronized to HA mates and replication sites via config-sync. The default value is `0`.
      */
     maxMsgSpoolUsage?: number;
     /**
-     * The maximum number of local client subscriptions that can be added to the Message VPN. This limit is not enforced when a subscription is added using a management interface, such as CLI or SEMP. The default varies by platform.
+     * The maximum number of local client subscriptions that can be added to the Message VPN. This limit is not enforced when a subscription is added using a management interface, such as CLI or SEMP. Changes to this attribute are synchronized to HA mates and replication sites via config-sync. The default varies by platform.
      */
     maxSubscriptionCount?: number;
     /**
-     * The maximum number of transacted sessions that can be created in the Message VPN. The default varies by platform.
+     * The maximum number of transacted sessions that can be created in the Message VPN. Changes to this attribute are synchronized to HA mates and replication sites via config-sync. The default varies by platform.
      */
     maxTransactedSessionCount?: number;
     /**
-     * The maximum number of transactions that can be created in the Message VPN. The default varies by platform.
+     * The maximum number of transactions that can be created in the Message VPN. Changes to this attribute are synchronized to HA mates and replication sites via config-sync. The default varies by platform.
      */
     maxTransactionCount?: number;
     /**
-     * The maximum total memory usage of the MQTT Retain feature for this Message VPN, in MB. If the maximum memory is reached, any arriving retain messages that require more memory are discarded. A value of -1 indicates that the memory is bounded only by the global max memory limit. A value of 0 prevents MQTT Retain from becoming operational. The default value is `-1`. Available since 2.11.
+     * The maximum total memory usage of the MQTT Retain feature for this Message VPN, in MB. If the maximum memory is reached, any arriving retain messages that require more memory are discarded. A value of -1 indicates that the memory is bounded only by the global max memory limit. A value of 0 prevents MQTT Retain from becoming operational. Changes to this attribute are synchronized to HA mates and replication sites via config-sync. The default value is `-1`. Available since 2.11.
      */
     mqttRetainMaxMemory?: number;
     /**
@@ -239,15 +251,15 @@ export type MsgVpn = {
      */
     msgVpnName?: string;
     /**
-     * The acknowledgement (ACK) propagation interval for the replication Bridge, in number of replicated messages. The default value is `20`.
+     * The acknowledgement (ACK) propagation interval for the replication Bridge, in number of replicated messages. Changes to this attribute are synchronized to HA mates and replication sites via config-sync. The default value is `20`.
      */
     replicationAckPropagationIntervalMsgCount?: number;
     /**
-     * The Client Username the replication Bridge uses to login to the remote Message VPN. The default value is `""`.
+     * The Client Username the replication Bridge uses to login to the remote Message VPN. Changes to this attribute are synchronized to HA mates via config-sync. The default value is `""`.
      */
     replicationBridgeAuthenticationBasicClientUsername?: string;
     /**
-     * The password for the Client Username. This attribute is absent from a GET and not updated when absent in a PUT, subject to the exceptions in note 4. The default value is `""`.
+     * The password for the Client Username. This attribute is absent from a GET and not updated when absent in a PUT, subject to the exceptions in note 4. Changes to this attribute are synchronized to HA mates via config-sync. The default value is `""`.
      */
     replicationBridgeAuthenticationBasicPassword?: string;
     /**
@@ -259,7 +271,7 @@ export type MsgVpn = {
      */
     replicationBridgeAuthenticationClientCertPassword?: string;
     /**
-     * The authentication scheme for the replication Bridge in the Message VPN. The default value is `"basic"`. The allowed values and their meaning are:
+     * The authentication scheme for the replication Bridge in the Message VPN. Changes to this attribute are synchronized to HA mates via config-sync. The default value is `"basic"`. The allowed values and their meaning are:
      *
      * <pre>
      * "basic" - Basic Authentication Scheme (via username and password).
@@ -269,31 +281,31 @@ export type MsgVpn = {
      */
     replicationBridgeAuthenticationScheme?: MsgVpn.replicationBridgeAuthenticationScheme;
     /**
-     * Enable or disable use of compression for the replication Bridge. The default value is `false`.
+     * Enable or disable use of compression for the replication Bridge. Changes to this attribute are synchronized to HA mates via config-sync. The default value is `false`.
      */
     replicationBridgeCompressedDataEnabled?: boolean;
     /**
-     * The size of the window used for guaranteed messages published to the replication Bridge, in messages. The default value is `255`.
+     * The size of the window used for guaranteed messages published to the replication Bridge, in messages. Changes to this attribute are synchronized to HA mates via config-sync. The default value is `255`.
      */
     replicationBridgeEgressFlowWindowSize?: number;
     /**
-     * The number of seconds that must pass before retrying the replication Bridge connection. The default value is `3`.
+     * The number of seconds that must pass before retrying the replication Bridge connection. Changes to this attribute are synchronized to HA mates via config-sync. The default value is `3`.
      */
     replicationBridgeRetryDelay?: number;
     /**
-     * Enable or disable use of encryption (TLS) for the replication Bridge connection. The default value is `false`.
+     * Enable or disable use of encryption (TLS) for the replication Bridge connection. Changes to this attribute are synchronized to HA mates via config-sync. The default value is `false`.
      */
     replicationBridgeTlsEnabled?: boolean;
     /**
-     * The Client Profile for the unidirectional replication Bridge in the Message VPN. It is used only for the TCP parameters. The default value is `"#client-profile"`.
+     * The Client Profile for the unidirectional replication Bridge in the Message VPN. It is used only for the TCP parameters. Changes to this attribute are synchronized to HA mates and replication sites via config-sync. The default value is `"#client-profile"`.
      */
     replicationBridgeUnidirectionalClientProfileName?: string;
     /**
-     * Enable or disable replication for the Message VPN. The default value is `false`.
+     * Enable or disable replication for the Message VPN. Changes to this attribute are synchronized to HA mates via config-sync. The default value is `false`.
      */
     replicationEnabled?: boolean;
     /**
-     * The behavior to take when enabling replication for the Message VPN, depending on the existence of the replication Queue. This attribute is absent from a GET and not updated when absent in a PUT, subject to the exceptions in note 4. The default value is `"fail-on-existing-queue"`. The allowed values and their meaning are:
+     * The behavior to take when enabling replication for the Message VPN, depending on the existence of the replication Queue. This attribute is absent from a GET and not updated when absent in a PUT, subject to the exceptions in note 4. Changes to this attribute are synchronized to HA mates via config-sync. The default value is `"fail-on-existing-queue"`. The allowed values and their meaning are:
      *
      * <pre>
      * "fail-on-existing-queue" - The data replication queue must not already exist.
@@ -304,19 +316,19 @@ export type MsgVpn = {
      */
     replicationEnabledQueueBehavior?: MsgVpn.replicationEnabledQueueBehavior;
     /**
-     * The maximum message spool usage by the replication Bridge local Queue (quota), in megabytes. The default value is `60000`.
+     * The maximum message spool usage by the replication Bridge local Queue (quota), in megabytes. Changes to this attribute are synchronized to HA mates and replication sites via config-sync. The default value is `60000`.
      */
     replicationQueueMaxMsgSpoolUsage?: number;
     /**
-     * Enable or disable whether messages discarded on the replication Bridge local Queue are rejected back to the sender. The default value is `true`.
+     * Enable or disable whether messages discarded on the replication Bridge local Queue are rejected back to the sender. Changes to this attribute are synchronized to HA mates and replication sites via config-sync. The default value is `true`.
      */
     replicationQueueRejectMsgToSenderOnDiscardEnabled?: boolean;
     /**
-     * Enable or disable whether guaranteed messages published to synchronously replicated Topics are rejected back to the sender when synchronous replication becomes ineligible. The default value is `false`.
+     * Enable or disable whether guaranteed messages published to synchronously replicated Topics are rejected back to the sender when synchronous replication becomes ineligible. Changes to this attribute are synchronized to HA mates and replication sites via config-sync. The default value is `false`.
      */
     replicationRejectMsgWhenSyncIneligibleEnabled?: boolean;
     /**
-     * The replication role for the Message VPN. The default value is `"standby"`. The allowed values and their meaning are:
+     * The replication role for the Message VPN. Changes to this attribute are synchronized to HA mates via config-sync. The default value is `"standby"`. The allowed values and their meaning are:
      *
      * <pre>
      * "active" - Assume the Active role in replication for the Message VPN.
@@ -326,7 +338,7 @@ export type MsgVpn = {
      */
     replicationRole?: MsgVpn.replicationRole;
     /**
-     * The transaction replication mode for all transactions within the Message VPN. Changing this value during operation will not affect existing transactions; it is only used upon starting a transaction. The default value is `"async"`. The allowed values and their meaning are:
+     * The transaction replication mode for all transactions within the Message VPN. Changing this value during operation will not affect existing transactions; it is only used upon starting a transaction. Changes to this attribute are synchronized to HA mates and replication sites via config-sync. The default value is `"async"`. The allowed values and their meaning are:
      *
      * <pre>
      * "sync" - Messages are acknowledged when replicated (spooled remotely).
@@ -336,99 +348,121 @@ export type MsgVpn = {
      */
     replicationTransactionMode?: MsgVpn.replicationTransactionMode;
     /**
-     * Enable or disable validation of the Common Name (CN) in the server certificate from the remote REST Consumer. If enabled, the Common Name is checked against the list of Trusted Common Names configured for the REST Consumer. Common Name validation is not performed if Server Certificate Name Validation is enabled, even if Common Name validation is enabled. The default value is `true`. Deprecated since 2.17. Common Name validation has been replaced by Server Certificate Name validation.
+     * Enable or disable validation of the Common Name (CN) in the server certificate from the remote REST Consumer. If enabled, the Common Name is checked against the list of Trusted Common Names configured for the REST Consumer. Common Name validation is not performed if Server Certificate Name Validation is enabled, even if Common Name validation is enabled. Changes to this attribute are synchronized to HA mates and replication sites via config-sync. The default value is `false`. Deprecated since 2.17. Common Name validation has been replaced by Server Certificate Name validation.
      */
     restTlsServerCertEnforceTrustedCommonNameEnabled?: boolean;
     /**
-     * The maximum depth for a REST Consumer server certificate chain. The depth of a chain is defined as the number of signing CA certificates that are present in the chain back to a trusted self-signed root CA certificate. The default value is `3`.
+     * The maximum depth for a REST Consumer server certificate chain. The depth of a chain is defined as the number of signing CA certificates that are present in the chain back to a trusted self-signed root CA certificate. Changes to this attribute are synchronized to HA mates and replication sites via config-sync. The default value is `3`.
      */
     restTlsServerCertMaxChainDepth?: number;
     /**
-     * Enable or disable validation of the "Not Before" and "Not After" validity dates in the REST Consumer server certificate. The default value is `true`.
+     * Enable or disable validation of the "Not Before" and "Not After" validity dates in the REST Consumer server certificate. Changes to this attribute are synchronized to HA mates and replication sites via config-sync. The default value is `true`.
      */
     restTlsServerCertValidateDateEnabled?: boolean;
     /**
-     * Enable or disable the standard TLS authentication mechanism of verifying the name used to connect to the remote REST Consumer. If enabled, the name used to connect to the remote REST Consumer is checked against the names specified in the certificate returned by the remote router. Legacy Common Name validation is not performed if Server Certificate Name Validation is enabled, even if Common Name validation is also enabled. The default value is `true`. Available since 2.17.
+     * Enable or disable the standard TLS authentication mechanism of verifying the name used to connect to the remote REST Consumer. If enabled, the name used to connect to the remote REST Consumer is checked against the names specified in the certificate returned by the remote router. Legacy Common Name validation is not performed if Server Certificate Name Validation is enabled, even if Common Name validation is also enabled. Changes to this attribute are synchronized to HA mates and replication sites via config-sync. The default value is `true`. Available since 2.17.
      */
     restTlsServerCertValidateNameEnabled?: boolean;
     /**
-     * Enable or disable "admin client" SEMP over the message bus commands for the current Message VPN. The default value is `false`.
+     * Enable or disable "admin client" SEMP over the message bus commands for the current Message VPN. Changes to this attribute are synchronized to HA mates and replication sites via config-sync. The default value is `false`.
      */
     sempOverMsgBusAdminClientEnabled?: boolean;
     /**
-     * Enable or disable "admin distributed-cache" SEMP over the message bus commands for the current Message VPN. The default value is `false`.
+     * Enable or disable "admin distributed-cache" SEMP over the message bus commands for the current Message VPN. Changes to this attribute are synchronized to HA mates and replication sites via config-sync. The default value is `false`.
      */
     sempOverMsgBusAdminDistributedCacheEnabled?: boolean;
     /**
-     * Enable or disable "admin" SEMP over the message bus commands for the current Message VPN. The default value is `false`.
+     * Enable or disable "admin" SEMP over the message bus commands for the current Message VPN. Changes to this attribute are synchronized to HA mates and replication sites via config-sync. The default value is `false`.
      */
     sempOverMsgBusAdminEnabled?: boolean;
     /**
-     * Enable or disable SEMP over the message bus for the current Message VPN. The default value is `true`.
+     * Enable or disable SEMP over the message bus for the current Message VPN. Changes to this attribute are synchronized to HA mates and replication sites via config-sync. The default value is `true`.
      */
     sempOverMsgBusEnabled?: boolean;
     /**
-     * Enable or disable "show" SEMP over the message bus commands for the current Message VPN. The default value is `false`.
+     * Enable or disable "show" SEMP over the message bus commands for the current Message VPN. Changes to this attribute are synchronized to HA mates and replication sites via config-sync. The default value is `false`.
      */
     sempOverMsgBusShowEnabled?: boolean;
     /**
-     * The maximum number of AMQP client connections that can be simultaneously connected to the Message VPN. This value may be higher than supported by the platform. The default is the maximum value supported by the platform. Available since 2.7.
+     * The maximum number of AMQP client connections that can be simultaneously connected to the Message VPN. This value may be higher than supported by the platform. Changes to this attribute are synchronized to HA mates and replication sites via config-sync. The default is the maximum value supported by the platform. Available since 2.7.
      */
     serviceAmqpMaxConnectionCount?: number;
     /**
-     * Enable or disable the plain-text AMQP service in the Message VPN. Disabling causes clients connected to the corresponding listen-port to be disconnected. The default value is `false`. Available since 2.7.
+     * Enable or disable the plain-text AMQP service in the Message VPN. Disabling causes clients connected to the corresponding listen-port to be disconnected. Changes to this attribute are synchronized to HA mates and replication sites via config-sync. The default value is `false`. Available since 2.7.
      */
     serviceAmqpPlainTextEnabled?: boolean;
     /**
-     * The port number for plain-text AMQP clients that connect to the Message VPN. The port must be unique across the message backbone. A value of 0 means that the listen-port is unassigned and cannot be enabled. The default value is `0`. Available since 2.7.
+     * The port number for plain-text AMQP clients that connect to the Message VPN. The port must be unique across the message backbone. A value of 0 means that the listen-port is unassigned and cannot be enabled. Changes to this attribute are synchronized to HA mates and replication sites via config-sync. The default value is `0`. Available since 2.7.
      */
     serviceAmqpPlainTextListenPort?: number;
     /**
-     * Enable or disable the use of encryption (TLS) for the AMQP service in the Message VPN. Disabling causes clients currently connected over TLS to be disconnected. The default value is `false`. Available since 2.7.
+     * Enable or disable the use of encryption (TLS) for the AMQP service in the Message VPN. Disabling causes clients currently connected over TLS to be disconnected. Changes to this attribute are synchronized to HA mates and replication sites via config-sync. The default value is `false`. Available since 2.7.
      */
     serviceAmqpTlsEnabled?: boolean;
     /**
-     * The port number for AMQP clients that connect to the Message VPN over TLS. The port must be unique across the message backbone. A value of 0 means that the listen-port is unassigned and cannot be enabled. The default value is `0`. Available since 2.7.
+     * The port number for AMQP clients that connect to the Message VPN over TLS. The port must be unique across the message backbone. A value of 0 means that the listen-port is unassigned and cannot be enabled. Changes to this attribute are synchronized to HA mates and replication sites via config-sync. The default value is `0`. Available since 2.7.
      */
     serviceAmqpTlsListenPort?: number;
     /**
-     * The maximum number of MQTT client connections that can be simultaneously connected to the Message VPN. The default is the maximum value supported by the platform. Available since 2.1.
+     * Determines when to request a client certificate from an incoming MQTT client connecting via a TLS port. Changes to this attribute are synchronized to HA mates and replication sites via config-sync. The default value is `"when-enabled-in-message-vpn"`. The allowed values and their meaning are:
+     *
+     * <pre>
+     * "always" - Always ask for a client certificate regardless of the "message-vpn > authentication > client-certificate > shutdown" configuration.
+     * "never" - Never ask for a client certificate regardless of the "message-vpn > authentication > client-certificate > shutdown" configuration.
+     * "when-enabled-in-message-vpn" - Only ask for a client-certificate if client certificate authentication is enabled under "message-vpn >  authentication > client-certificate > shutdown".
+     * </pre>
+     * Available since 2.21.
+     */
+    serviceMqttAuthenticationClientCertRequest?: MsgVpn.serviceMqttAuthenticationClientCertRequest;
+    /**
+     * The maximum number of MQTT client connections that can be simultaneously connected to the Message VPN. Changes to this attribute are synchronized to HA mates and replication sites via config-sync. The default is the maximum value supported by the platform. Available since 2.1.
      */
     serviceMqttMaxConnectionCount?: number;
     /**
-     * Enable or disable the plain-text MQTT service in the Message VPN. Disabling causes clients currently connected to be disconnected. The default value is `false`. Available since 2.1.
+     * Enable or disable the plain-text MQTT service in the Message VPN. Disabling causes clients currently connected to be disconnected. Changes to this attribute are synchronized to HA mates and replication sites via config-sync. The default value is `false`. Available since 2.1.
      */
     serviceMqttPlainTextEnabled?: boolean;
     /**
-     * The port number for plain-text MQTT clients that connect to the Message VPN. The port must be unique across the message backbone. A value of 0 means that the listen-port is unassigned and cannot be enabled. The default value is `0`. Available since 2.1.
+     * The port number for plain-text MQTT clients that connect to the Message VPN. The port must be unique across the message backbone. A value of 0 means that the listen-port is unassigned and cannot be enabled. Changes to this attribute are synchronized to HA mates and replication sites via config-sync. The default value is `0`. Available since 2.1.
      */
     serviceMqttPlainTextListenPort?: number;
     /**
-     * Enable or disable the use of encryption (TLS) for the MQTT service in the Message VPN. Disabling causes clients currently connected over TLS to be disconnected. The default value is `false`. Available since 2.1.
+     * Enable or disable the use of encryption (TLS) for the MQTT service in the Message VPN. Disabling causes clients currently connected over TLS to be disconnected. Changes to this attribute are synchronized to HA mates and replication sites via config-sync. The default value is `false`. Available since 2.1.
      */
     serviceMqttTlsEnabled?: boolean;
     /**
-     * The port number for MQTT clients that connect to the Message VPN over TLS. The port must be unique across the message backbone. A value of 0 means that the listen-port is unassigned and cannot be enabled. The default value is `0`. Available since 2.1.
+     * The port number for MQTT clients that connect to the Message VPN over TLS. The port must be unique across the message backbone. A value of 0 means that the listen-port is unassigned and cannot be enabled. Changes to this attribute are synchronized to HA mates and replication sites via config-sync. The default value is `0`. Available since 2.1.
      */
     serviceMqttTlsListenPort?: number;
     /**
-     * Enable or disable the use of encrypted WebSocket (WebSocket over TLS) for the MQTT service in the Message VPN. Disabling causes clients currently connected by encrypted WebSocket to be disconnected. The default value is `false`. Available since 2.1.
+     * Enable or disable the use of encrypted WebSocket (WebSocket over TLS) for the MQTT service in the Message VPN. Disabling causes clients currently connected by encrypted WebSocket to be disconnected. Changes to this attribute are synchronized to HA mates and replication sites via config-sync. The default value is `false`. Available since 2.1.
      */
     serviceMqttTlsWebSocketEnabled?: boolean;
     /**
-     * The port number for MQTT clients that connect to the Message VPN using WebSocket over TLS. The port must be unique across the message backbone. A value of 0 means that the listen-port is unassigned and cannot be enabled. The default value is `0`. Available since 2.1.
+     * The port number for MQTT clients that connect to the Message VPN using WebSocket over TLS. The port must be unique across the message backbone. A value of 0 means that the listen-port is unassigned and cannot be enabled. Changes to this attribute are synchronized to HA mates and replication sites via config-sync. The default value is `0`. Available since 2.1.
      */
     serviceMqttTlsWebSocketListenPort?: number;
     /**
-     * Enable or disable the use of WebSocket for the MQTT service in the Message VPN. Disabling causes clients currently connected by WebSocket to be disconnected. The default value is `false`. Available since 2.1.
+     * Enable or disable the use of WebSocket for the MQTT service in the Message VPN. Disabling causes clients currently connected by WebSocket to be disconnected. Changes to this attribute are synchronized to HA mates and replication sites via config-sync. The default value is `false`. Available since 2.1.
      */
     serviceMqttWebSocketEnabled?: boolean;
     /**
-     * The port number for plain-text MQTT clients that connect to the Message VPN using WebSocket. The port must be unique across the message backbone. A value of 0 means that the listen-port is unassigned and cannot be enabled. The default value is `0`. Available since 2.1.
+     * The port number for plain-text MQTT clients that connect to the Message VPN using WebSocket. The port must be unique across the message backbone. A value of 0 means that the listen-port is unassigned and cannot be enabled. Changes to this attribute are synchronized to HA mates and replication sites via config-sync. The default value is `0`. Available since 2.1.
      */
     serviceMqttWebSocketListenPort?: number;
     /**
-     * The handling of Authorization headers for incoming REST connections. The default value is `"drop"`. The allowed values and their meaning are:
+     * Determines when to request a client certificate from an incoming REST Producer connecting via a TLS port. Changes to this attribute are synchronized to HA mates and replication sites via config-sync. The default value is `"when-enabled-in-message-vpn"`. The allowed values and their meaning are:
+     *
+     * <pre>
+     * "always" - Always ask for a client certificate regardless of the "message-vpn > authentication > client-certificate > shutdown" configuration.
+     * "never" - Never ask for a client certificate regardless of the "message-vpn > authentication > client-certificate > shutdown" configuration.
+     * "when-enabled-in-message-vpn" - Only ask for a client-certificate if client certificate authentication is enabled under "message-vpn >  authentication > client-certificate > shutdown".
+     * </pre>
+     * Available since 2.21.
+     */
+    serviceRestIncomingAuthenticationClientCertRequest?: MsgVpn.serviceRestIncomingAuthenticationClientCertRequest;
+    /**
+     * The handling of Authorization headers for incoming REST connections. Changes to this attribute are synchronized to HA mates and replication sites via config-sync. The default value is `"drop"`. The allowed values and their meaning are:
      *
      * <pre>
      * "drop" - Do not attach the Authorization header to the message as a user property. This configuration is most secure.
@@ -439,27 +473,27 @@ export type MsgVpn = {
      */
     serviceRestIncomingAuthorizationHeaderHandling?: MsgVpn.serviceRestIncomingAuthorizationHeaderHandling;
     /**
-     * The maximum number of REST incoming client connections that can be simultaneously connected to the Message VPN. This value may be higher than supported by the platform. The default is the maximum value supported by the platform.
+     * The maximum number of REST incoming client connections that can be simultaneously connected to the Message VPN. This value may be higher than supported by the platform. Changes to this attribute are synchronized to HA mates and replication sites via config-sync. The default is the maximum value supported by the platform.
      */
     serviceRestIncomingMaxConnectionCount?: number;
     /**
-     * Enable or disable the plain-text REST service for incoming clients in the Message VPN. Disabling causes clients currently connected to be disconnected. The default value is `false`.
+     * Enable or disable the plain-text REST service for incoming clients in the Message VPN. Disabling causes clients currently connected to be disconnected. Changes to this attribute are synchronized to HA mates and replication sites via config-sync. The default value is `false`.
      */
     serviceRestIncomingPlainTextEnabled?: boolean;
     /**
-     * The port number for incoming plain-text REST clients that connect to the Message VPN. The port must be unique across the message backbone. A value of 0 means that the listen-port is unassigned and cannot be enabled. The default value is `0`.
+     * The port number for incoming plain-text REST clients that connect to the Message VPN. The port must be unique across the message backbone. A value of 0 means that the listen-port is unassigned and cannot be enabled. Changes to this attribute are synchronized to HA mates and replication sites via config-sync. The default value is `0`.
      */
     serviceRestIncomingPlainTextListenPort?: number;
     /**
-     * Enable or disable the use of encryption (TLS) for the REST service for incoming clients in the Message VPN. Disabling causes clients currently connected over TLS to be disconnected. The default value is `false`.
+     * Enable or disable the use of encryption (TLS) for the REST service for incoming clients in the Message VPN. Disabling causes clients currently connected over TLS to be disconnected. Changes to this attribute are synchronized to HA mates and replication sites via config-sync. The default value is `false`.
      */
     serviceRestIncomingTlsEnabled?: boolean;
     /**
-     * The port number for incoming REST clients that connect to the Message VPN over TLS. The port must be unique across the message backbone. A value of 0 means that the listen-port is unassigned and cannot be enabled. The default value is `0`.
+     * The port number for incoming REST clients that connect to the Message VPN over TLS. The port must be unique across the message backbone. A value of 0 means that the listen-port is unassigned and cannot be enabled. Changes to this attribute are synchronized to HA mates and replication sites via config-sync. The default value is `0`.
      */
     serviceRestIncomingTlsListenPort?: number;
     /**
-     * The REST service mode for incoming REST clients that connect to the Message VPN. The default value is `"messaging"`. The allowed values and their meaning are:
+     * The REST service mode for incoming REST clients that connect to the Message VPN. Changes to this attribute are synchronized to HA mates and replication sites via config-sync. The default value is `"messaging"`. The allowed values and their meaning are:
      *
      * <pre>
      * "gateway" - Act as a message gateway through which REST messages are propagated.
@@ -469,35 +503,46 @@ export type MsgVpn = {
      */
     serviceRestMode?: MsgVpn.serviceRestMode;
     /**
-     * The maximum number of REST Consumer (outgoing) client connections that can be simultaneously connected to the Message VPN. The default varies by platform.
+     * The maximum number of REST Consumer (outgoing) client connections that can be simultaneously connected to the Message VPN. Changes to this attribute are synchronized to HA mates and replication sites via config-sync. The default varies by platform.
      */
     serviceRestOutgoingMaxConnectionCount?: number;
     /**
-     * The maximum number of SMF client connections that can be simultaneously connected to the Message VPN. This value may be higher than supported by the platform. The default varies by platform.
+     * The maximum number of SMF client connections that can be simultaneously connected to the Message VPN. This value may be higher than supported by the platform. Changes to this attribute are synchronized to HA mates and replication sites via config-sync. The default varies by platform.
      */
     serviceSmfMaxConnectionCount?: number;
     /**
-     * Enable or disable the plain-text SMF service in the Message VPN. Disabling causes clients currently connected to be disconnected. The default value is `true`.
+     * Enable or disable the plain-text SMF service in the Message VPN. Disabling causes clients currently connected to be disconnected. Changes to this attribute are synchronized to HA mates and replication sites via config-sync. The default value is `true`.
      */
     serviceSmfPlainTextEnabled?: boolean;
     /**
-     * Enable or disable the use of encryption (TLS) for the SMF service in the Message VPN. Disabling causes clients currently connected over TLS to be disconnected. The default value is `true`.
+     * Enable or disable the use of encryption (TLS) for the SMF service in the Message VPN. Disabling causes clients currently connected over TLS to be disconnected. Changes to this attribute are synchronized to HA mates and replication sites via config-sync. The default value is `true`.
      */
     serviceSmfTlsEnabled?: boolean;
     /**
-     * The maximum number of Web Transport client connections that can be simultaneously connected to the Message VPN. This value may be higher than supported by the platform. The default is the maximum value supported by the platform.
+     * Determines when to request a client certificate from a Web Transport client connecting via a TLS port. Changes to this attribute are synchronized to HA mates and replication sites via config-sync. The default value is `"when-enabled-in-message-vpn"`. The allowed values and their meaning are:
+     *
+     * <pre>
+     * "always" - Always ask for a client certificate regardless of the "message-vpn > authentication > client-certificate > shutdown" configuration.
+     * "never" - Never ask for a client certificate regardless of the "message-vpn > authentication > client-certificate > shutdown" configuration.
+     * "when-enabled-in-message-vpn" - Only ask for a client-certificate if client certificate authentication is enabled under "message-vpn >  authentication > client-certificate > shutdown".
+     * </pre>
+     * Available since 2.21.
+     */
+    serviceWebAuthenticationClientCertRequest?: MsgVpn.serviceWebAuthenticationClientCertRequest;
+    /**
+     * The maximum number of Web Transport client connections that can be simultaneously connected to the Message VPN. This value may be higher than supported by the platform. Changes to this attribute are synchronized to HA mates and replication sites via config-sync. The default is the maximum value supported by the platform.
      */
     serviceWebMaxConnectionCount?: number;
     /**
-     * Enable or disable the plain-text Web Transport service in the Message VPN. Disabling causes clients currently connected to be disconnected. The default value is `true`.
+     * Enable or disable the plain-text Web Transport service in the Message VPN. Disabling causes clients currently connected to be disconnected. Changes to this attribute are synchronized to HA mates and replication sites via config-sync. The default value is `true`.
      */
     serviceWebPlainTextEnabled?: boolean;
     /**
-     * Enable or disable the use of TLS for the Web Transport service in the Message VPN. Disabling causes clients currently connected over TLS to be disconnected. The default value is `true`.
+     * Enable or disable the use of TLS for the Web Transport service in the Message VPN. Disabling causes clients currently connected over TLS to be disconnected. Changes to this attribute are synchronized to HA mates and replication sites via config-sync. The default value is `true`.
      */
     serviceWebTlsEnabled?: boolean;
     /**
-     * Enable or disable the allowing of TLS SMF clients to downgrade their connections to plain-text connections. Changing this will not affect existing connections. The default value is `false`.
+     * Enable or disable the allowing of TLS SMF clients to downgrade their connections to plain-text connections. Changing this will not affect existing connections. Changes to this attribute are synchronized to HA mates and replication sites via config-sync. The default value is `false`.
      */
     tlsAllowDowngradeToPlainTextEnabled?: boolean;
 }
@@ -510,7 +555,7 @@ export namespace MsgVpn {
     export const discriminator = 'MsgVpn';
 
     /**
-     * The type of basic authentication to use for clients connecting to the Message VPN. The default value is `"radius"`. The allowed values and their meaning are:
+     * The type of basic authentication to use for clients connecting to the Message VPN. Changes to this attribute are synchronized to HA mates and replication sites via config-sync. The default value is `"radius"`. The allowed values and their meaning are:
      *
      * <pre>
      * "internal" - Internal database. Authentication is against Client Usernames.
@@ -528,7 +573,7 @@ export namespace MsgVpn {
     }
 
     /**
-     * The desired behavior for client certificate revocation checking. The default value is `"allow-valid"`. The allowed values and their meaning are:
+     * The desired behavior for client certificate revocation checking. Changes to this attribute are synchronized to HA mates and replication sites via config-sync. The default value is `"allow-valid"`. The allowed values and their meaning are:
      *
      * <pre>
      * "allow-all" - Allow the client to authenticate, the result of client certificate revocation check is ignored.
@@ -544,21 +589,29 @@ export namespace MsgVpn {
     }
 
     /**
-     * The field from the client certificate to use as the client username. The default value is `"common-name"`. The allowed values and their meaning are:
+     * The field from the client certificate to use as the client username. Changes to this attribute are synchronized to HA mates and replication sites via config-sync. The default value is `"common-name"`. The allowed values and their meaning are:
      *
      * <pre>
-     * "common-name" - The username is extracted from the certificate's Common Name.
+     * "certificate-thumbprint" - The username is computed as the SHA-1 hash over the entire DER-encoded contents of the client certificate.
+     * "common-name" - The username is extracted from the certificate's first instance of the Common Name attribute in the Subject DN.
+     * "common-name-last" - The username is extracted from the certificate's last instance of the Common Name attribute in the Subject DN.
      * "subject-alternate-name-msupn" - The username is extracted from the certificate's Other Name type of the Subject Alternative Name and must have the msUPN signature.
+     * "uid" - The username is extracted from the certificate's first instance of the User Identifier attribute in the Subject DN.
+     * "uid-last" - The username is extracted from the certificate's last instance of the User Identifier attribute in the Subject DN.
      * </pre>
      * Available since 2.6.
      */
     export enum authenticationClientCertUsernameSource {
+        CERTIFICATE_THUMBPRINT = 'certificate-thumbprint',
         COMMON_NAME = 'common-name',
+        COMMON_NAME_LAST = 'common-name-last',
         SUBJECT_ALTERNATE_NAME_MSUPN = 'subject-alternate-name-msupn',
+        UID = 'uid',
+        UID_LAST = 'uid-last',
     }
 
     /**
-     * The type of authorization to use for clients connecting to the Message VPN. The default value is `"internal"`. The allowed values and their meaning are:
+     * The type of authorization to use for clients connecting to the Message VPN. Changes to this attribute are synchronized to HA mates and replication sites via config-sync. The default value is `"internal"`. The allowed values and their meaning are:
      *
      * <pre>
      * "ldap" - LDAP authorization.
@@ -572,7 +625,7 @@ export namespace MsgVpn {
     }
 
     /**
-     * Subscription level Event message publishing mode. The default value is `"off"`. The allowed values and their meaning are:
+     * Subscription level Event message publishing mode. Changes to this attribute are synchronized to HA mates and replication sites via config-sync. The default value is `"off"`. The allowed values and their meaning are:
      *
      * <pre>
      * "off" - Disable client level event message publishing.
@@ -592,7 +645,7 @@ export namespace MsgVpn {
     }
 
     /**
-     * The authentication scheme for the replication Bridge in the Message VPN. The default value is `"basic"`. The allowed values and their meaning are:
+     * The authentication scheme for the replication Bridge in the Message VPN. Changes to this attribute are synchronized to HA mates via config-sync. The default value is `"basic"`. The allowed values and their meaning are:
      *
      * <pre>
      * "basic" - Basic Authentication Scheme (via username and password).
@@ -606,7 +659,7 @@ export namespace MsgVpn {
     }
 
     /**
-     * The behavior to take when enabling replication for the Message VPN, depending on the existence of the replication Queue. This attribute is absent from a GET and not updated when absent in a PUT, subject to the exceptions in note 4. The default value is `"fail-on-existing-queue"`. The allowed values and their meaning are:
+     * The behavior to take when enabling replication for the Message VPN, depending on the existence of the replication Queue. This attribute is absent from a GET and not updated when absent in a PUT, subject to the exceptions in note 4. Changes to this attribute are synchronized to HA mates via config-sync. The default value is `"fail-on-existing-queue"`. The allowed values and their meaning are:
      *
      * <pre>
      * "fail-on-existing-queue" - The data replication queue must not already exist.
@@ -622,7 +675,7 @@ export namespace MsgVpn {
     }
 
     /**
-     * The replication role for the Message VPN. The default value is `"standby"`. The allowed values and their meaning are:
+     * The replication role for the Message VPN. Changes to this attribute are synchronized to HA mates via config-sync. The default value is `"standby"`. The allowed values and their meaning are:
      *
      * <pre>
      * "active" - Assume the Active role in replication for the Message VPN.
@@ -636,7 +689,7 @@ export namespace MsgVpn {
     }
 
     /**
-     * The transaction replication mode for all transactions within the Message VPN. Changing this value during operation will not affect existing transactions; it is only used upon starting a transaction. The default value is `"async"`. The allowed values and their meaning are:
+     * The transaction replication mode for all transactions within the Message VPN. Changing this value during operation will not affect existing transactions; it is only used upon starting a transaction. Changes to this attribute are synchronized to HA mates and replication sites via config-sync. The default value is `"async"`. The allowed values and their meaning are:
      *
      * <pre>
      * "sync" - Messages are acknowledged when replicated (spooled remotely).
@@ -650,7 +703,39 @@ export namespace MsgVpn {
     }
 
     /**
-     * The handling of Authorization headers for incoming REST connections. The default value is `"drop"`. The allowed values and their meaning are:
+     * Determines when to request a client certificate from an incoming MQTT client connecting via a TLS port. Changes to this attribute are synchronized to HA mates and replication sites via config-sync. The default value is `"when-enabled-in-message-vpn"`. The allowed values and their meaning are:
+     *
+     * <pre>
+     * "always" - Always ask for a client certificate regardless of the "message-vpn > authentication > client-certificate > shutdown" configuration.
+     * "never" - Never ask for a client certificate regardless of the "message-vpn > authentication > client-certificate > shutdown" configuration.
+     * "when-enabled-in-message-vpn" - Only ask for a client-certificate if client certificate authentication is enabled under "message-vpn >  authentication > client-certificate > shutdown".
+     * </pre>
+     * Available since 2.21.
+     */
+    export enum serviceMqttAuthenticationClientCertRequest {
+        ALWAYS = 'always',
+        NEVER = 'never',
+        WHEN_ENABLED_IN_MESSAGE_VPN = 'when-enabled-in-message-vpn',
+    }
+
+    /**
+     * Determines when to request a client certificate from an incoming REST Producer connecting via a TLS port. Changes to this attribute are synchronized to HA mates and replication sites via config-sync. The default value is `"when-enabled-in-message-vpn"`. The allowed values and their meaning are:
+     *
+     * <pre>
+     * "always" - Always ask for a client certificate regardless of the "message-vpn > authentication > client-certificate > shutdown" configuration.
+     * "never" - Never ask for a client certificate regardless of the "message-vpn > authentication > client-certificate > shutdown" configuration.
+     * "when-enabled-in-message-vpn" - Only ask for a client-certificate if client certificate authentication is enabled under "message-vpn >  authentication > client-certificate > shutdown".
+     * </pre>
+     * Available since 2.21.
+     */
+    export enum serviceRestIncomingAuthenticationClientCertRequest {
+        ALWAYS = 'always',
+        NEVER = 'never',
+        WHEN_ENABLED_IN_MESSAGE_VPN = 'when-enabled-in-message-vpn',
+    }
+
+    /**
+     * The handling of Authorization headers for incoming REST connections. Changes to this attribute are synchronized to HA mates and replication sites via config-sync. The default value is `"drop"`. The allowed values and their meaning are:
      *
      * <pre>
      * "drop" - Do not attach the Authorization header to the message as a user property. This configuration is most secure.
@@ -666,7 +751,7 @@ export namespace MsgVpn {
     }
 
     /**
-     * The REST service mode for incoming REST clients that connect to the Message VPN. The default value is `"messaging"`. The allowed values and their meaning are:
+     * The REST service mode for incoming REST clients that connect to the Message VPN. Changes to this attribute are synchronized to HA mates and replication sites via config-sync. The default value is `"messaging"`. The allowed values and their meaning are:
      *
      * <pre>
      * "gateway" - Act as a message gateway through which REST messages are propagated.
@@ -677,6 +762,22 @@ export namespace MsgVpn {
     export enum serviceRestMode {
         GATEWAY = 'gateway',
         MESSAGING = 'messaging',
+    }
+
+    /**
+     * Determines when to request a client certificate from a Web Transport client connecting via a TLS port. Changes to this attribute are synchronized to HA mates and replication sites via config-sync. The default value is `"when-enabled-in-message-vpn"`. The allowed values and their meaning are:
+     *
+     * <pre>
+     * "always" - Always ask for a client certificate regardless of the "message-vpn > authentication > client-certificate > shutdown" configuration.
+     * "never" - Never ask for a client certificate regardless of the "message-vpn > authentication > client-certificate > shutdown" configuration.
+     * "when-enabled-in-message-vpn" - Only ask for a client-certificate if client certificate authentication is enabled under "message-vpn >  authentication > client-certificate > shutdown".
+     * </pre>
+     * Available since 2.21.
+     */
+    export enum serviceWebAuthenticationClientCertRequest {
+        ALWAYS = 'always',
+        NEVER = 'never',
+        WHEN_ENABLED_IN_MESSAGE_VPN = 'when-enabled-in-message-vpn',
     }
 
 

@@ -3,6 +3,10 @@
 
 export type MsgVpnRestDeliveryPointQueueBindingLinks = {
     /**
+     * The URI of this Queue Binding's collection of Request Header objects. Available since 2.23.
+     */
+    requestHeadersUri?: string;
+    /**
      * The URI of this Queue Binding object.
      */
     uri?: string;

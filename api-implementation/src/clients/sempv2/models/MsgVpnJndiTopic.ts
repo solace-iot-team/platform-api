@@ -7,7 +7,7 @@ export type MsgVpnJndiTopic = {
      */
     msgVpnName?: string;
     /**
-     * The physical name of the JMS Topic. The default value is `""`.
+     * The physical name of the JMS Topic. Changes to this attribute are synchronized to HA mates and replication sites via config-sync. The default value is `""`.
      */
     physicalName?: string;
     /**

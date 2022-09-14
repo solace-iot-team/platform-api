@@ -3,15 +3,15 @@
 
 export type DmrCluster = {
     /**
-     * Enable or disable basic authentication for Cluster Links. The default value is `true`.
+     * Enable or disable basic authentication for Cluster Links. Changes to this attribute are synchronized to HA mates via config-sync. The default value is `true`.
      */
     authenticationBasicEnabled?: boolean;
     /**
-     * The password used to authenticate incoming Cluster Links when using basic internal authentication. The same password is also used by outgoing Cluster Links if a per-Link password is not configured. This attribute is absent from a GET and not updated when absent in a PUT, subject to the exceptions in note 4. The default value is `""`.
+     * The password used to authenticate incoming Cluster Links when using basic internal authentication. The same password is also used by outgoing Cluster Links if a per-Link password is not configured. This attribute is absent from a GET and not updated when absent in a PUT, subject to the exceptions in note 4. Changes to this attribute are synchronized to HA mates via config-sync. The default value is `""`.
      */
     authenticationBasicPassword?: string;
     /**
-     * The type of basic authentication to use for Cluster Links. The default value is `"internal"`. The allowed values and their meaning are:
+     * The type of basic authentication to use for Cluster Links. Changes to this attribute are synchronized to HA mates via config-sync. The default value is `"internal"`. The allowed values and their meaning are:
      *
      * <pre>
      * "internal" - Use locally configured password.
@@ -25,7 +25,7 @@ export type DmrCluster = {
      */
     authenticationClientCertContent?: string;
     /**
-     * Enable or disable client certificate authentication for Cluster Links. The default value is `true`.
+     * Enable or disable client certificate authentication for Cluster Links. Changes to this attribute are synchronized to HA mates via config-sync. The default value is `true`.
      */
     authenticationClientCertEnabled?: boolean;
     /**
@@ -41,7 +41,7 @@ export type DmrCluster = {
      */
     dmrClusterName?: string;
     /**
-     * Enable or disable the Cluster. The default value is `false`.
+     * Enable or disable the Cluster. Changes to this attribute are synchronized to HA mates via config-sync. The default value is `false`.
      */
     enabled?: boolean;
     /**
@@ -49,19 +49,19 @@ export type DmrCluster = {
      */
     nodeName?: string;
     /**
-     * Enable or disable the enforcing of the common name provided by the remote broker against the list of trusted common names configured for the Link. If enabled, the certificate's common name must match one of the trusted common names for the Link to be accepted. Common Name validation is not performed if Server Certificate Name Validation is enabled, even if Common Name validation is enabled. The default value is `true`. Deprecated since 2.18. Common Name validation has been replaced by Server Certificate Name validation.
+     * Enable or disable the enforcing of the common name provided by the remote broker against the list of trusted common names configured for the Link. If enabled, the certificate's common name must match one of the trusted common names for the Link to be accepted. Common Name validation is not performed if Server Certificate Name Validation is enabled, even if Common Name validation is enabled. Changes to this attribute are synchronized to HA mates via config-sync. The default value is `false`. Deprecated since 2.18. Common Name validation has been replaced by Server Certificate Name validation.
      */
     tlsServerCertEnforceTrustedCommonNameEnabled?: boolean;
     /**
-     * The maximum allowed depth of a certificate chain. The depth of a chain is defined as the number of signing CA certificates that are present in the chain back to a trusted self-signed root CA certificate. The default value is `3`.
+     * The maximum allowed depth of a certificate chain. The depth of a chain is defined as the number of signing CA certificates that are present in the chain back to a trusted self-signed root CA certificate. Changes to this attribute are synchronized to HA mates via config-sync. The default value is `3`.
      */
     tlsServerCertMaxChainDepth?: number;
     /**
-     * Enable or disable the validation of the "Not Before" and "Not After" validity dates in the certificate. When disabled, the certificate is accepted even if the certificate is not valid based on these dates. The default value is `true`.
+     * Enable or disable the validation of the "Not Before" and "Not After" validity dates in the certificate. When disabled, the certificate is accepted even if the certificate is not valid based on these dates. Changes to this attribute are synchronized to HA mates via config-sync. The default value is `true`.
      */
     tlsServerCertValidateDateEnabled?: boolean;
     /**
-     * Enable or disable the standard TLS authentication mechanism of verifying the name used to connect to the bridge. If enabled, the name used to connect to the bridge is checked against the names specified in the certificate returned by the remote router. Legacy Common Name validation is not performed if Server Certificate Name Validation is enabled, even if Common Name validation is also enabled. The default value is `true`. Available since 2.18.
+     * Enable or disable the standard TLS authentication mechanism of verifying the name used to connect to the bridge. If enabled, the name used to connect to the bridge is checked against the names specified in the certificate returned by the remote router. Legacy Common Name validation is not performed if Server Certificate Name Validation is enabled, even if Common Name validation is also enabled. Changes to this attribute are synchronized to HA mates via config-sync. The default value is `true`. Available since 2.18.
      */
     tlsServerCertValidateNameEnabled?: boolean;
 }
@@ -74,7 +74,7 @@ export namespace DmrCluster {
     export const discriminator = 'DmrCluster';
 
     /**
-     * The type of basic authentication to use for Cluster Links. The default value is `"internal"`. The allowed values and their meaning are:
+     * The type of basic authentication to use for Cluster Links. Changes to this attribute are synchronized to HA mates via config-sync. The default value is `"internal"`. The allowed values and their meaning are:
      *
      * <pre>
      * "internal" - Use locally configured password.

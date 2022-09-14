@@ -18,23 +18,23 @@ export type MsgVpnBridgeRemoteMsgVpn = {
      */
     bridgeVirtualRouter?: MsgVpnBridgeRemoteMsgVpn.bridgeVirtualRouter;
     /**
-     * The Client Username the Bridge uses to login to the remote Message VPN. This per remote Message VPN value overrides the value provided for the Bridge overall. The default value is `""`.
+     * The Client Username the Bridge uses to login to the remote Message VPN. This per remote Message VPN value overrides the value provided for the Bridge overall. Changes to this attribute are synchronized to HA mates and replication sites via config-sync. The default value is `""`.
      */
     clientUsername?: string;
     /**
-     * Enable or disable data compression for the remote Message VPN connection. The default value is `false`.
+     * Enable or disable data compression for the remote Message VPN connection. Changes to this attribute are synchronized to HA mates and replication sites via config-sync. The default value is `false`.
      */
     compressedDataEnabled?: boolean;
     /**
-     * The preference given to incoming connections from remote Message VPN hosts, from 1 (highest priority) to 4 (lowest priority). The default value is `4`.
+     * The preference given to incoming connections from remote Message VPN hosts, from 1 (highest priority) to 4 (lowest priority). Changes to this attribute are synchronized to HA mates and replication sites via config-sync. The default value is `4`.
      */
     connectOrder?: number;
     /**
-     * The number of outstanding guaranteed messages that can be transmitted over the remote Message VPN connection before an acknowledgement is received. The default value is `255`.
+     * The number of outstanding guaranteed messages that can be transmitted over the remote Message VPN connection before an acknowledgement is received. Changes to this attribute are synchronized to HA mates and replication sites via config-sync. The default value is `255`.
      */
     egressFlowWindowSize?: number;
     /**
-     * Enable or disable the remote Message VPN. The default value is `false`.
+     * Enable or disable the remote Message VPN. Changes to this attribute are synchronized to HA mates and replication sites via config-sync. The default value is `false`.
      */
     enabled?: boolean;
     /**
@@ -42,11 +42,11 @@ export type MsgVpnBridgeRemoteMsgVpn = {
      */
     msgVpnName?: string;
     /**
-     * The password for the Client Username. This attribute is absent from a GET and not updated when absent in a PUT, subject to the exceptions in note 4. The default value is `""`.
+     * The password for the Client Username. This attribute is absent from a GET and not updated when absent in a PUT, subject to the exceptions in note 4. Changes to this attribute are synchronized to HA mates and replication sites via config-sync. The default value is `""`.
      */
     password?: string;
     /**
-     * The queue binding of the Bridge in the remote Message VPN. The default value is `""`.
+     * The queue binding of the Bridge in the remote Message VPN. Changes to this attribute are synchronized to HA mates and replication sites via config-sync. The default value is `""`.
      */
     queueBinding?: string;
     /**
@@ -62,11 +62,11 @@ export type MsgVpnBridgeRemoteMsgVpn = {
      */
     remoteMsgVpnName?: string;
     /**
-     * Enable or disable encryption (TLS) for the remote Message VPN connection. The default value is `false`.
+     * Enable or disable encryption (TLS) for the remote Message VPN connection. Changes to this attribute are synchronized to HA mates and replication sites via config-sync. The default value is `false`.
      */
     tlsEnabled?: boolean;
     /**
-     * The Client Profile for the unidirectional Bridge of the remote Message VPN. The Client Profile must exist in the local Message VPN, and it is used only for the TCP parameters. Note that the default client profile has a TCP maximum window size of 2MB. The default value is `"#client-profile"`.
+     * The Client Profile for the unidirectional Bridge of the remote Message VPN. The Client Profile must exist in the local Message VPN, and it is used only for the TCP parameters. Note that the default client profile has a TCP maximum window size of 2MB. Changes to this attribute are synchronized to HA mates and replication sites via config-sync. The default value is `"#client-profile"`.
      */
     unidirectionalClientProfile?: string;
 }

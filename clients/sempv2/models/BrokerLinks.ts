@@ -27,6 +27,14 @@ export type BrokerLinks = {
      */
     msgVpnsUri?: string;
     /**
+     * The URI of this Broker's collection of OAuth Profile objects. Available since 2.24.
+     */
+    oauthProfilesUri?: string;
+    /**
+     * The URI of this Broker's System Information object. Deprecated since 2.2. /systemInformation was replaced by /about/api.
+     */
+    systemInformationUri?: string;
+    /**
      * The URI of this Broker object.
      */
     uri?: string;

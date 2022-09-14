@@ -2134,6 +2134,25 @@ components:
           maxItems: 255
           description: "The Trusted Common Names for the REST Consumer are used by encrypted transports to verify the name in the certificate presented by the remote REST consumer. They must include the common name of the remote REST consumer's server certificate."
 
+    WebHookHeader:
+      type: object
+      description: An arbitrary HTTP header applied to the WebHook
+      additionalProperties: false
+      properties:
+        headerName:
+          type: string
+          minLength: 1
+          maxLength: 50
+          pattern: "^[\\s\\S]*$"
+        headerValue:
+          type: string
+          minLength: 1
+          maxLength: 1024
+          pattern: "^[\\s\\S]*$"
+      required:
+      - headerName
+      - headerValue
+
     WebHook:
       type: object
       required:
@@ -2173,6 +2192,12 @@ components:
           "$ref": "#/components/schemas/WebHookAuth"
         tlsOptions:
           "$ref": "#/components/schemas/WebHookTLSOptions"
+        requestHeaders:
+          type: array
+          items: 
+            $ref: "#/components/schemas/WebHookHeader"
+          minItems: 0
+          maxItems: 50
 
     Endpoint:
       type: object
@@ -2955,11 +2980,37 @@ components:
           maxLength: 2048
         queueBindingName:
           $ref: '#/components/schemas/CommonName'
+        requestHeaders:
+          type: array
+          minLength: 1
+          maxLength: 50
+          items: 
+            $ref: '#/components/schemas/MsgVpnRestDeliveryPointQueueBindingHeader'
         attributes:
           $ref: '#/components/schemas/attributes'
         tags:
           $ref: '#/components/schemas/Tags'
-    
+
+    MsgVpnRestDeliveryPointQueueBindingHeader:
+      type: object
+      required:
+      - headerName
+      - headerValue
+      additionalProperties: false
+      properties:
+        headerName:
+          type: string
+          minLength: 1
+          maxLength: 50
+        headerValue:
+          type: string
+          minLength: 1
+          maxLength: 1024
+        attributes:
+          $ref: '#/components/schemas/attributes'
+        tags:
+          $ref: '#/components/schemas/Tags'
+                
     MsgVpnRestDeliveryPointRestConsumerTlsTrustedCommonName:
       type: object
       required:

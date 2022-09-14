@@ -1147,6 +1147,13 @@ declare namespace Components {
         export interface MsgVpnRestDeliveryPointQueueBinding {
             postRequestTarget: string;
             queueBindingName: CommonName; // ^[a-zA-Z0-9_\-]*(@[ |\S]*)?$
+            requestHeaders?: MsgVpnRestDeliveryPointQueueBindingHeader[];
+            attributes?: Attributes;
+            tags?: Tags;
+        }
+        export interface MsgVpnRestDeliveryPointQueueBindingHeader {
+            headerName: string;
+            headerValue: string;
             attributes?: Attributes;
             tags?: Tags;
         }
@@ -1432,12 +1439,20 @@ declare namespace Components {
             mode?: "parallel" | "serial";
             authentication?: WebHookAuth;
             tlsOptions?: WebHookTLSOptions;
+            requestHeaders?: WebHookHeader[];
         }
         export type WebHookAuth = WebHookBasicAuth | WebHookHeaderAuth;
         export interface WebHookBasicAuth {
             authMethod?: "Basic";
             username: CommonUserName; // ^[.a-zA-Z0-9@_-]*$
             password: string; // ^[\S]*$
+        }
+        /**
+         * An arbitrary HTTP header applied to the WebHook
+         */
+        export interface WebHookHeader {
+            headerName: string; // ^[\s\S]*$
+            headerValue: string; // ^[\s\S]*$
         }
         /**
          * A HTTP header used for authentication

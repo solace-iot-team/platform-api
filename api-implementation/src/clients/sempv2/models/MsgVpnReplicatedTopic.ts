@@ -11,7 +11,7 @@ export type MsgVpnReplicatedTopic = {
      */
     replicatedTopic?: string;
     /**
-     * The replication mode for the Replicated Topic. The default value is `"async"`. The allowed values and their meaning are:
+     * The replication mode for the Replicated Topic. Changes to this attribute are synchronized to HA mates and replication sites via config-sync. The default value is `"async"`. The allowed values and their meaning are:
      *
      * <pre>
      * "sync" - Messages are acknowledged when replicated (spooled remotely).
@@ -30,7 +30,7 @@ export namespace MsgVpnReplicatedTopic {
     export const discriminator = 'MsgVpnReplicatedTopic';
 
     /**
-     * The replication mode for the Replicated Topic. The default value is `"async"`. The allowed values and their meaning are:
+     * The replication mode for the Replicated Topic. Changes to this attribute are synchronized to HA mates and replication sites via config-sync. The default value is `"async"`. The allowed values and their meaning are:
      *
      * <pre>
      * "sync" - Messages are acknowledged when replicated (spooled remotely).

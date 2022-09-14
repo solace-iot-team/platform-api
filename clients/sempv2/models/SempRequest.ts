@@ -9,7 +9,7 @@ export type SempRequest = {
     /**
      * The URI of the request which resulted in this response.
      */
-    uri: string;
+    uri?: string;
 }
 
 export namespace SempRequest {

@@ -3,7 +3,7 @@
 
 export type MsgVpnAuthorizationGroupLinks = {
     /**
-     * The URI of this LDAP Authorization Group object.
+     * The URI of this Authorization Group object.
      */
     uri?: string;
 }

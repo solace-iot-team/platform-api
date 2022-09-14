@@ -5,7 +5,7 @@ import type { EventThreshold } from './EventThreshold';
 
 export type MsgVpnTopicEndpoint = {
     /**
-     * The access type for delivering messages to consumer flows bound to the Topic Endpoint. The default value is `"exclusive"`. The allowed values and their meaning are:
+     * The access type for delivering messages to consumer flows bound to the Topic Endpoint. Changes to this attribute are synchronized to HA mates and replication sites via config-sync. The default value is `"exclusive"`. The allowed values and their meaning are:
      *
      * <pre>
      * "exclusive" - Exclusive delivery of messages to the first bound consumer flow.
@@ -15,50 +15,54 @@ export type MsgVpnTopicEndpoint = {
      */
     accessType?: MsgVpnTopicEndpoint.accessType;
     /**
-     * Enable or disable the propagation of consumer acknowledgements (ACKs) received on the active replication Message VPN to the standby replication Message VPN. The default value is `true`.
+     * Enable or disable the propagation of consumer acknowledgements (ACKs) received on the active replication Message VPN to the standby replication Message VPN. Changes to this attribute are synchronized to HA mates and replication sites via config-sync. The default value is `true`.
      */
     consumerAckPropagationEnabled?: boolean;
     /**
-     * The name of the Dead Message Queue (DMQ) used by the Topic Endpoint. The default value is `"#DEAD_MSG_QUEUE"`. Available since 2.2.
+     * The name of the Dead Message Queue (DMQ) used by the Topic Endpoint. Changes to this attribute are synchronized to HA mates and replication sites via config-sync. The default value is `"#DEAD_MSG_QUEUE"`. Available since 2.2.
      */
     deadMsgQueue?: string;
     /**
-     * Enable or disable the ability for client applications to query the message delivery count of messages received from the Topic Endpoint. This is a controlled availability feature. Please contact Solace to find out if this feature is supported for your use case. The default value is `false`. Available since 2.19.
+     * Enable or disable the ability for client applications to query the message delivery count of messages received from the Topic Endpoint. This is a controlled availability feature. Please contact support to find out if this feature is supported for your use case. Changes to this attribute are synchronized to HA mates and replication sites via config-sync. The default value is `false`. Available since 2.19.
      */
     deliveryCountEnabled?: boolean;
     /**
-     * Enable or disable the transmission of messages from the Topic Endpoint. The default value is `false`.
+     * The delay, in seconds, to apply to messages arriving on the Topic Endpoint before the messages are eligible for delivery. Changes to this attribute are synchronized to HA mates and replication sites via config-sync. The default value is `0`. Available since 2.22.
+     */
+    deliveryDelay?: number;
+    /**
+     * Enable or disable the transmission of messages from the Topic Endpoint. Changes to this attribute are synchronized to HA mates and replication sites via config-sync. The default value is `false`.
      */
     egressEnabled?: boolean;
     eventBindCountThreshold?: EventThreshold;
     eventRejectLowPriorityMsgLimitThreshold?: EventThreshold;
     eventSpoolUsageThreshold?: EventThreshold;
     /**
-     * Enable or disable the reception of messages to the Topic Endpoint. The default value is `false`.
+     * Enable or disable the reception of messages to the Topic Endpoint. Changes to this attribute are synchronized to HA mates and replication sites via config-sync. The default value is `false`.
      */
     ingressEnabled?: boolean;
     /**
-     * The maximum number of consumer flows that can bind to the Topic Endpoint. The default value is `1`. Available since 2.4.
+     * The maximum number of consumer flows that can bind to the Topic Endpoint. Changes to this attribute are synchronized to HA mates and replication sites via config-sync. The default value is `1`. Available since 2.4.
      */
     maxBindCount?: number;
     /**
-     * The maximum number of messages delivered but not acknowledged per flow for the Topic Endpoint. The default value is `10000`.
+     * The maximum number of messages delivered but not acknowledged per flow for the Topic Endpoint. Changes to this attribute are synchronized to HA mates and replication sites via config-sync. The default value is `10000`.
      */
     maxDeliveredUnackedMsgsPerFlow?: number;
     /**
-     * The maximum message size allowed in the Topic Endpoint, in bytes (B). The default value is `10000000`.
+     * The maximum message size allowed in the Topic Endpoint, in bytes (B). Changes to this attribute are synchronized to HA mates and replication sites via config-sync. The default value is `10000000`.
      */
     maxMsgSize?: number;
     /**
-     * The maximum number of times the Topic Endpoint will attempt redelivery of a message prior to it being discarded or moved to the DMQ. A value of 0 means to retry forever. The default value is `0`.
+     * The maximum number of times the Topic Endpoint will attempt redelivery of a message prior to it being discarded or moved to the DMQ. A value of 0 means to retry forever. Changes to this attribute are synchronized to HA mates and replication sites via config-sync. The default value is `0`.
      */
     maxRedeliveryCount?: number;
     /**
-     * The maximum message spool usage allowed by the Topic Endpoint, in megabytes (MB). A value of 0 only allows spooling of the last message received and disables quota checking. The default value is `1500`.
+     * The maximum message spool usage allowed by the Topic Endpoint, in megabytes (MB). A value of 0 only allows spooling of the last message received and disables quota checking. Changes to this attribute are synchronized to HA mates and replication sites via config-sync. The default value is `5000`.
      */
     maxSpoolUsage?: number;
     /**
-     * The maximum time in seconds a message can stay in the Topic Endpoint when `respectTtlEnabled` is `"true"`. A message expires when the lesser of the sender assigned time-to-live (TTL) in the message and the `maxTtl` configured for the Topic Endpoint, is exceeded. A value of 0 disables expiry. The default value is `0`.
+     * The maximum time in seconds a message can stay in the Topic Endpoint when `respectTtlEnabled` is `"true"`. A message expires when the lesser of the sender assigned time-to-live (TTL) in the message and the `maxTtl` configured for the Topic Endpoint, is exceeded. A value of 0 disables expiry. Changes to this attribute are synchronized to HA mates and replication sites via config-sync. The default value is `0`.
      */
     maxTtl?: number;
     /**
@@ -66,11 +70,11 @@ export type MsgVpnTopicEndpoint = {
      */
     msgVpnName?: string;
     /**
-     * The Client Username that owns the Topic Endpoint and has permission equivalent to `"delete"`. The default value is `""`.
+     * The Client Username that owns the Topic Endpoint and has permission equivalent to `"delete"`. Changes to this attribute are synchronized to HA mates and replication sites via config-sync. The default value is `""`.
      */
     owner?: string;
     /**
-     * The permission level for all consumers of the Topic Endpoint, excluding the owner. The default value is `"no-access"`. The allowed values and their meaning are:
+     * The permission level for all consumers of the Topic Endpoint, excluding the owner. Changes to this attribute are synchronized to HA mates and replication sites via config-sync. The default value is `"no-access"`. The allowed values and their meaning are:
      *
      * <pre>
      * "no-access" - Disallows all access.
@@ -83,19 +87,19 @@ export type MsgVpnTopicEndpoint = {
      */
     permission?: MsgVpnTopicEndpoint.permission;
     /**
-     * Enable or disable message redelivery. When enabled, the number of redelivery attempts is controlled by maxRedeliveryCount. When disabled, the message will never be delivered from the topic-endpoint more than once. The default value is `true`. Available since 2.18.
+     * Enable or disable message redelivery. When enabled, the number of redelivery attempts is controlled by maxRedeliveryCount. When disabled, the message will never be delivered from the topic-endpoint more than once. Changes to this attribute are synchronized to HA mates and replication sites via config-sync. The default value is `true`. Available since 2.18.
      */
     redeliveryEnabled?: boolean;
     /**
-     * Enable or disable the checking of low priority messages against the `rejectLowPriorityMsgLimit`. This may only be enabled if `rejectMsgToSenderOnDiscardBehavior` does not have a value of `"never"`. The default value is `false`.
+     * Enable or disable the checking of low priority messages against the `rejectLowPriorityMsgLimit`. This may only be enabled if `rejectMsgToSenderOnDiscardBehavior` does not have a value of `"never"`. Changes to this attribute are synchronized to HA mates and replication sites via config-sync. The default value is `false`.
      */
     rejectLowPriorityMsgEnabled?: boolean;
     /**
-     * The number of messages of any priority in the Topic Endpoint above which low priority messages are not admitted but higher priority messages are allowed. The default value is `0`.
+     * The number of messages of any priority in the Topic Endpoint above which low priority messages are not admitted but higher priority messages are allowed. Changes to this attribute are synchronized to HA mates and replication sites via config-sync. The default value is `0`.
      */
     rejectLowPriorityMsgLimit?: number;
     /**
-     * Determines when to return negative acknowledgements (NACKs) to sending clients on message discards. Note that NACKs cause the message to not be delivered to any destination and Transacted Session commits to fail. The default value is `"never"`. The allowed values and their meaning are:
+     * Determines when to return negative acknowledgements (NACKs) to sending clients on message discards. Note that NACKs cause the message to not be delivered to any destination and Transacted Session commits to fail. Changes to this attribute are synchronized to HA mates and replication sites via config-sync. The default value is `"never"`. The allowed values and their meaning are:
      *
      * <pre>
      * "always" - Always return a negative acknowledgment (NACK) to the sending client on message discard.
@@ -106,11 +110,11 @@ export type MsgVpnTopicEndpoint = {
      */
     rejectMsgToSenderOnDiscardBehavior?: MsgVpnTopicEndpoint.rejectMsgToSenderOnDiscardBehavior;
     /**
-     * Enable or disable the respecting of message priority. When enabled, messages contained in the Topic Endpoint are delivered in priority order, from 9 (highest) to 0 (lowest). The default value is `false`. Available since 2.8.
+     * Enable or disable the respecting of message priority. When enabled, messages contained in the Topic Endpoint are delivered in priority order, from 9 (highest) to 0 (lowest). Changes to this attribute are synchronized to HA mates and replication sites via config-sync. The default value is `false`. Available since 2.8.
      */
     respectMsgPriorityEnabled?: boolean;
     /**
-     * Enable or disable the respecting of the time-to-live (TTL) for messages in the Topic Endpoint. When enabled, expired messages are discarded or moved to the DMQ. The default value is `false`.
+     * Enable or disable the respecting of the time-to-live (TTL) for messages in the Topic Endpoint. When enabled, expired messages are discarded or moved to the DMQ. Changes to this attribute are synchronized to HA mates and replication sites via config-sync. The default value is `false`.
      */
     respectTtlEnabled?: boolean;
     /**
@@ -127,7 +131,7 @@ export namespace MsgVpnTopicEndpoint {
     export const discriminator = 'MsgVpnTopicEndpoint';
 
     /**
-     * The access type for delivering messages to consumer flows bound to the Topic Endpoint. The default value is `"exclusive"`. The allowed values and their meaning are:
+     * The access type for delivering messages to consumer flows bound to the Topic Endpoint. Changes to this attribute are synchronized to HA mates and replication sites via config-sync. The default value is `"exclusive"`. The allowed values and their meaning are:
      *
      * <pre>
      * "exclusive" - Exclusive delivery of messages to the first bound consumer flow.
@@ -141,7 +145,7 @@ export namespace MsgVpnTopicEndpoint {
     }
 
     /**
-     * The permission level for all consumers of the Topic Endpoint, excluding the owner. The default value is `"no-access"`. The allowed values and their meaning are:
+     * The permission level for all consumers of the Topic Endpoint, excluding the owner. Changes to this attribute are synchronized to HA mates and replication sites via config-sync. The default value is `"no-access"`. The allowed values and their meaning are:
      *
      * <pre>
      * "no-access" - Disallows all access.
@@ -161,7 +165,7 @@ export namespace MsgVpnTopicEndpoint {
     }
 
     /**
-     * Determines when to return negative acknowledgements (NACKs) to sending clients on message discards. Note that NACKs cause the message to not be delivered to any destination and Transacted Session commits to fail. The default value is `"never"`. The allowed values and their meaning are:
+     * Determines when to return negative acknowledgements (NACKs) to sending clients on message discards. Note that NACKs cause the message to not be delivered to any destination and Transacted Session commits to fail. Changes to this attribute are synchronized to HA mates and replication sites via config-sync. The default value is `"never"`. The allowed values and their meaning are:
      *
      * <pre>
      * "always" - Always return a negative acknowledgment (NACK) to the sending client on message discard.

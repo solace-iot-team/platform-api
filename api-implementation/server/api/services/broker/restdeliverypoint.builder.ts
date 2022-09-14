@@ -10,6 +10,7 @@ import { Service } from '../../../../src/clients/solacecloud/models/Service';
 import MsgVpnRestDeliveryPoint = Components.Schemas.MsgVpnRestDeliveryPoint;
 import MsgVpnRestDeliveryPointRestConsumer = Components.Schemas.MsgVpnRestDeliveryPointRestConsumer;
 import MsgVpnRestDeliveryPointQueueBinding = Components.Schemas.MsgVpnRestDeliveryPointQueueBinding;
+import MsgVpnRestDeliveryPointQueueBindingHeader = Components.Schemas.MsgVpnRestDeliveryPointQueueBindingHeader;
 import MsgVpnRestDeliveryPointRestConsumerTlsTrustedCommonName = Components.Schemas.MsgVpnRestDeliveryPointRestConsumerTlsTrustedCommonName;
 import MsgVpnRestDeliveryPointRestConsumerAuthenticationSchema = Components.Schemas.MsgVpnRestDeliveryPointRestConsumerAuthenticationScheme;
 import MsgVpnRestDeliveryPointRestConsumerHttpMethod = Components.Schemas.MsgVpnRestDeliveryPointRestConsumerHttpMethod;
@@ -100,10 +101,21 @@ export class RestdDeliveryPointBuilder {
               newRDPConsumer.authenticationHttpHeaderName = webHook.authentication['headerName'];
               newRDPConsumer.authenticationHttpHeaderValue = webHook.authentication['headerValue'];
             }
-    
+            const headers: MsgVpnRestDeliveryPointQueueBindingHeader[] = [];
+            if (webHook.requestHeaders){
+              for (const header of webHook.requestHeaders){
+                const newQueueBindingHeader: MsgVpnRestDeliveryPointQueueBindingHeader  = {
+                  headerName: header.headerName,
+                  headerValue: header.headerValue
+                };
+                headers.push(newQueueBindingHeader);
+              }
+            }
             const newRDPQueueBinding: MsgVpnRestDeliveryPointQueueBinding = {
               postRequestTarget: `${rdpUrl.pathname}${rdpUrl.search}`,
-              queueBindingName: objectName
+              queueBindingName: objectName,
+              requestHeaders: headers
+              
             };
     
             // add the trusted common names

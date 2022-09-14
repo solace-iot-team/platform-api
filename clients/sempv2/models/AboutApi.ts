@@ -5,11 +5,11 @@ export type AboutApi = {
     /**
      * The platform running the SEMP API.
      */
-    platform: string;
+    platform?: string;
     /**
      * The version of the SEMP API.
      */
-    sempVersion: string;
+    sempVersion?: string;
 }
 
 export namespace AboutApi {

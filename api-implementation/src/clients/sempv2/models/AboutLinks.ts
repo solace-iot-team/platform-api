@@ -3,6 +3,10 @@
 
 export type AboutLinks = {
     /**
+     * The URI of this About's API Description object. Available since 2.2.
+     */
+    apiUri?: string;
+    /**
      * The URI of this About object.
      */
     uri?: string;

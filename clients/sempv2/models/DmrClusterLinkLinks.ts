@@ -3,6 +3,10 @@
 
 export type DmrClusterLinkLinks = {
     /**
+     * The URI of this Link's collection of Link Attribute objects. Available since 2.28.
+     */
+    attributesUri?: string;
+    /**
      * The URI of this Link's collection of Remote Address objects.
      */
     remoteAddressesUri?: string;

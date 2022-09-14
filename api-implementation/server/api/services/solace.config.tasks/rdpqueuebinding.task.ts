@@ -14,7 +14,7 @@ export interface RdpQueueBindingTaskConfig extends SEMPv2TaskConfig {
 type TaskConfigAlias = RdpQueueBindingTaskConfig;
 
 export default class RdpQueueBindingTask extends SEMPv2Task {
-    
+    protected paths: string[] = ['attributes', 'tags','environments', 'requestHeaders'];
     private operationName: string = 'MsgVpnRestDeliveryPointQueueBinding';
     constructor(taskConfig: RdpQueueBindingTaskConfig) {
         super(taskConfig);
