@@ -4,10 +4,11 @@ import MsgVpnRestDeliveryPoint = Components.Schemas.MsgVpnRestDeliveryPoint;
 import MsgVpnRestDeliveryPointQueueBinding = Components.Schemas.MsgVpnRestDeliveryPointQueueBinding;
 import { TaskResult } from "../../../../src/tasks/task.interface";
 import { SEMPv2Task, SEMPv2TaskConfig } from "./solace.task";
-import { MsgVpnRestDeliveryPointQueueBindingRequestHeader as TaskServiceRequest} from "../../../../src/clients/sempv2/models/MsgVpnRestDeliveryPointQueueBindingRequestHeader";
-import { MsgVpnRestDeliveryPointQueueBindingRequestHeaderResponse as TaskServiceResponse} from "../../../../src/clients/sempv2/models/MsgVpnRestDeliveryPointQueueBindingRequestHeaderResponse";
+import { MsgVpnRestDeliveryPointQueueBindingRequestHeader as TaskServiceRequest } from "../../../../src/clients/sempv2/models/MsgVpnRestDeliveryPointQueueBindingRequestHeader";
+import { MsgVpnRestDeliveryPointQueueBindingRequestHeaderResponse as TaskServiceResponse } from "../../../../src/clients/sempv2/models/MsgVpnRestDeliveryPointQueueBindingRequestHeaderResponse";
 import _ from "lodash";
-
+import { AboutApiResponse } from '../../../../src/clients/sempv2';
+import semVerCompare from 'semver-compare';
 export interface RdpQueueBindingHeaderTaskConfig extends SEMPv2TaskConfig {
     configObject: BrokerObjectConfig,
     queueBinding: MsgVpnRestDeliveryPointQueueBinding,
@@ -17,14 +18,20 @@ export interface RdpQueueBindingHeaderTaskConfig extends SEMPv2TaskConfig {
 type TaskConfigAlias = RdpQueueBindingHeaderTaskConfig;
 
 export default class RdpQueueBindingRequestHeaderTask extends SEMPv2Task {
-    
+
     private operationName: string = 'MsgVpnRestDeliveryPointQueueBindingHeader';
     constructor(taskConfig: RdpQueueBindingHeaderTaskConfig) {
         super(taskConfig);
     }
-    public isApplicable(): boolean {
+    public async isApplicable(): Promise<boolean> {
         const config: TaskConfigAlias = this.config() as TaskConfigAlias;
-        return this.isApplicableEnvironment(config.configObject)
+        const r = await this.apiClient.getAboutApi() as AboutApiResponse;
+        const unsupportedVersion =  semVerCompare(r.data.sempVersion, '2.22') == -1;
+        if (unsupportedVersion){
+            return false;
+        } else {
+            return this.isApplicableEnvironment(config.configObject);
+        }
     }
 
     protected async isPresent(): Promise<boolean> {
@@ -45,7 +52,7 @@ export default class RdpQueueBindingRequestHeaderTask extends SEMPv2Task {
             return super.createSuccessfulTaskResult(`create${this.operationName}`, config.configObject.headerName, config.state, response.data);
         } catch (e) {
             L.error(e);
-            return super.createFailureTaskResult(`create${this.operationName}`,  config.configObject.headerName, config.state, e);
+            return super.createFailureTaskResult(`create${this.operationName}`, config.configObject.headerName, config.state, e);
         }
 
     }
