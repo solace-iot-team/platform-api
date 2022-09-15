@@ -1,5 +1,56 @@
 # Release Notes
 
+## Version 0.8.0
+* OpenAPI: 0.13.1
+* API Management Connector Server: 0.8.0
+
+### Features
+
+* **feat-apps-webhook-request-headers**
+  - Added `httpRequests` attribute to webhooks configuration
+  - These headers will be sent with every request to the webhook (On the broker headers are attached to the RDP queue binding)
+* **feat-about-resource-add-event-portal-version-info**
+  - The `about` resource now includes the version of Solace Event Portal the server is configured to connect to
+* **feat-jobs-resource-include-job-instance-name**
+  - The list of jobs that were run in the background (`/{organization_name}/jobs`) now inlcudes a job instance in addition to the job type name.
+* **feat-ep-2.0-client-update**
+  - Updated Event Portal 2.0 API Client to `2.3.0-beta`
+
+* **feat-eventportal-2.0-applicationdomains**
+  - Esxposed resources to retrieve application domains form the EP 2.0 account associated with an organization
+  - Provides list (`/{organization_name}/applicationDomains`) and single item (`/{organization_name}/applicationDomains/{application_domain_id}`)
+
+### Fixes
+* **fix-ep20-integration-auto-env-creation**
+  - fixed issue in the auto creation of environments based on Event APi Products imported from EP 2.0. The list of exposed protocols of the environment was incomplete. The protocols are now retrieved form the Solace Cloud service information.
+* **fix-ep-2.0-importer-attributemapping**
+  - Fixed multiple issues how attributes configured in the EP Importer definition are applied to the API Product.
+  - Updating an imported EAP no longers results in duplicate attributes
+  - Attributes are noe applied consistently
+  - Added attributes to the imported API Product (`EAP_NAME`, `APP_DOMAIN`) and also added more detail into the `APIInfo` of imported APIs.
+  - Added source attribute to imported APi Product, also set source in the `APIInfo` of imported APIs.
+* **fix-importer-run-return-id**
+  - Fixed the manual importer run resource `/{organization_name}/importers/{importer_job_name}/run` to include a job id for the background job that was submitted
+* **fix-importer-resource-list**
+  - Fixed importer job definition list to filter ad-hoc importer runs 
+* **fix-ep-2.0-importer-create-valid-internal-names**
+  - When importing Event APIs form EP 2.0 the names (ids) used for APIs did not comply with the schema defined in the connector
+* **fix-ep-2.0-importer-results**
+  - Improved the logging of results of an importer run
+* **fix-ep-2.0-importer-store-protocols-on-env-change**
+  - When environments associated with an imported Event API Product changed the protocols of the API Product were discarded. These are now preserved
+* **fix-apps-webhooks-resources-multiple-per-env**
+  - It was possible to associate more than one web hook with the same environment via the apps' `webHooks` resource. Validation has been added to disable this behaviour
+* **fix-app-provisioning-return-error-detail-on-failure**
+  - REST APIs are now returning more error detail in case provisioning an app failed.
+* **fix-app-provisioning-rdp-errors**
+  - Fixed an error with webHook provisioning that led to the RDP's queue binding on the broker to be inoperational
+  - Also associated more restrictive Client Profile with the RDP on the broker
+* **fix-ep-2.0-importer-exclude-incomplete-eaps**
+  - Excluding EAPs that have no associated APIs or environments
+
+# Release Notes
+
 ## Version 0.7.2
 * OpenAPI: 0.11.1
 * API Management Connector Server: 0.7.2
