@@ -23,6 +23,7 @@ export class EPSystemAttributes {
   public static IMP_SOURCE_ATTRIBUTE: string = '_AC_IMP_SOURCE_';
   public static EP_SOURCE_INDICATOR: string = 'Solace Event Portal (2)';
   public static EP_EAP_OBJECT: string = '_EP_EAP_OBJECT_';
+  public static EP_EAP_ID: string = '_EP_EAP_ID_';
 }
 
 export class APIProductAttributes {
@@ -41,7 +42,7 @@ export interface APIProductUpsertResult {
   detail?: any;
 }
 
-export interface APIProductEnvironmentUpsertResult{
+export interface APIProductEnvironmentUpsertResult {
   environmentName: string,
   results: APIProductUpsertResult[],
 }
@@ -79,8 +80,8 @@ export class ConnectorFacade {
         // api exists so we update
         await apisService.update(apiName, spec);
         await apisService.updateInfo(apiName, {
-            attributes: attributes
-          });
+          attributes: attributes
+        });
         return [{
           resource: 'API',
           action: 'updated',
@@ -134,7 +135,7 @@ export class ConnectorFacade {
         message: `No solaceMessagingServiceId available`,
         success: true,
       });
-      return  {
+      return {
         environmentName: null,
         results: results,
       };
@@ -144,7 +145,7 @@ export class ConnectorFacade {
     if (!envs.find(e => e.serviceId == solaceMessagingServiceId)) {
       const cloudService = await solacecloudfacade.getServiceById(solaceMessagingServiceId);
       const endpoints: Endpoint[] = await ProtocolMapper.mapSolaceMessagingProtocolsToAsyncAPI(cloudService, cloudService.messagingProtocols);
-      const protocols = endpoints.map(e=> e.protocol);
+      const protocols = endpoints.map(e => e.protocol);
       const connectorEnv: Environment = {
         name: cleanSolaceMessagingServiceEnvironmentName,
         displayName: solaceMessagingServiceEnvironmentName,
@@ -161,17 +162,17 @@ export class ConnectorFacade {
           message: `Environment created ${solaceMessagingServiceEnvironmentName}`,
           success: true,
         });
-        } catch (e){
-          results.push({
-            resource: 'Environment',
-            action: 'created',
-            message: `Environment creation failed: ${solaceMessagingServiceEnvironmentName} - ${solaceMessagingServiceId} = ${e.message}`,
-            success: false,
-            detail: e
-          });
-          }
+      } catch (e) {
+        results.push({
+          resource: 'Environment',
+          action: 'created',
+          message: `Environment creation failed: ${solaceMessagingServiceEnvironmentName} - ${solaceMessagingServiceId} = ${e.message}`,
+          success: false,
+          detail: e
+        });
+      }
     } else {
-      envName =  envs.find(e => e.serviceId == solaceMessagingServiceId).name;
+      envName = envs.find(e => e.serviceId == solaceMessagingServiceId).name;
       results.push({
         resource: 'Environment',
         action: 'skipped',
@@ -245,6 +246,40 @@ export class ConnectorFacade {
     }
 
   }
+
+  public async processDeletedEAProducts(importableEAPIds: string[]): Promise<APIProductUpsertResult[]> {
+    const results: APIProductUpsertResult[] = [];
+
+    const apiProductsImportedForDeletedEAP = await apiProductsService.all({ attributes: { $elemMatch: { name: '_EP_EAP_ID_', value: { $nin: importableEAPIds } } } });
+    if (apiProductsImportedForDeletedEAP.length > 0) {
+      for (const apiProduct of apiProductsImportedForDeletedEAP) {
+        if (apiProduct.meta?.stage) {
+          apiProduct.meta.stage = 'deprecated';
+          apiProduct.meta.version = semver.inc(apiProduct.meta.version, 'patch');
+          const firstUpdate = await apiProductsService.update(apiProduct.name, apiProduct);
+          firstUpdate.meta.stage = 'retired';
+          firstUpdate.meta.version = semver.inc(apiProduct.meta.version, 'patch');
+          const r = await apiProductsService.update(firstUpdate.name, firstUpdate);
+          results.push({
+            action: 'updated',
+            message: `Retired API Product ${r.name} based on previously imported EAP ${r.attributes.find(a=>a.name==APIProductAttributes.EAP_NAME)} (${r.attributes.find(a=>a.name==EPSystemAttributes.EP_EAP_ID)}) `,
+            resource: 'APIProduct',
+            success: true,
+
+          });
+        }
+      }
+    } else {
+      results.push({
+        action: 'skipped',
+        message: 'No previously imported but now missing EAPs found',
+        resource: 'APIProduct',
+        success: true,
+      })
+    }
+    return results;
+  }
+
   public async updateAPIProduct(apiProductId: string, apiProduct: APIProduct,
     apiProductVersion: string, apiProductChangedBy: string, apiProductCreatedBy: string, stage: MetaEntityStage): Promise<APIProductUpsertResult[]> {
     const results: APIProductUpsertResult[] = [];
@@ -341,6 +376,7 @@ export class ConnectorFacade {
       };
       apiProduct.meta = meta;
       this.patchAttribute(EPSystemAttributes.EP_EAP_OBJECT, oldApiProduct, apiProduct);
+      this.patchAttribute(EPSystemAttributes.EP_EAP_ID, oldApiProduct, apiProduct);
       this.patchAttribute(APIProductAttributes.APP_DOMAIN, oldApiProduct, apiProduct);
       this.patchAttribute(APIProductAttributes.EAP_NAME, oldApiProduct, apiProduct);
       apiProduct.attributes = oldApiProduct.attributes;

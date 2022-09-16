@@ -11,7 +11,6 @@ import ImporterConfiguration = Components.Schemas.ImporterConfiguration;
 import { EventAPIAsyncAPIInfo } from '../../../../src/model/eventapiasyncapiinfo';
 import { ProtocolMapper } from '../../../../src/protocolmapper';
 
-
 export interface APIProductVersionImportResult {
   results: APIProductUpsertResult[]
   eventAPIProductVersion: ExportableEventApiProductVersion,
@@ -24,7 +23,7 @@ export default class EventPortalImporterTaskImpl {
       const prodVersions = await EventPortalFacade.listExportableAPIProductVersions(configuration.filter);
 
       for (const prodVersion of prodVersions) {
-        if (!EventPortalImporterTaskImpl.hasAPIs(prodVersion) || !EventPortalImporterTaskImpl.hasMessageServicesAndProtocols(prodVersion)  ) {
+        if (!EventPortalImporterTaskImpl.hasAPIs(prodVersion) || !EventPortalImporterTaskImpl.hasMessageServicesAndProtocols(prodVersion)) {
           results.push(
             {
               eventAPIProductVersion: prodVersion,
@@ -47,6 +46,17 @@ export default class EventPortalImporterTaskImpl {
           }
         }
       }
+
+      // mark all EAPs missing form the import list but imported previsouly as retired
+      const importableEAPIds: string[] = [];
+      prodVersions.forEach(p => importableEAPIds.push(p.product.id));
+      if (importableEAPIds.length > 0) {
+        const cleanUpResults = await connectorFacade.processDeletedEAProducts(importableEAPIds);
+        results.push({
+          eventAPIProductVersion: null,
+          results: cleanUpResults
+        });
+      }
       L.info(`Job ${configuration.name} of ${configuration.importerType} executed`);
       return results;
     } catch (e) {
@@ -61,9 +71,9 @@ export default class EventPortalImporterTaskImpl {
   private static hasMessageServicesAndProtocols(prodVersion: ExportableEventApiProductVersion): boolean {
     const hasMessageServices: boolean = prodVersion.version.solaceMessagingServices?.length > 0;
     let hasProtocols: boolean = true;
-    for (const msgService of prodVersion.version.solaceMessagingServices){
-      const hasMsgSvcProtocols = msgService.supportedProtocols?.length>0;
-      if (!hasMsgSvcProtocols){
+    for (const msgService of prodVersion.version.solaceMessagingServices) {
+      const hasMsgSvcProtocols = msgService.supportedProtocols?.length > 0;
+      if (!hasMsgSvcProtocols) {
         hasProtocols = false;
       }
     }
@@ -71,7 +81,7 @@ export default class EventPortalImporterTaskImpl {
   }
 
   private static hasAPIs(prodVersion: ExportableEventApiProductVersion) {
-    return prodVersion.version.eventApiVersionIds?.length >0;
+    return prodVersion.version.eventApiVersionIds?.length > 0;
   }
 
   private static async importEAPVersion(configuration: ImporterConfiguration, prodVersion: ExportableEventApiProductVersion): Promise<APIProductVersionImportResult[]> {
@@ -90,6 +100,7 @@ export default class EventPortalImporterTaskImpl {
       }
     }
     mappedAttributes.push({ name: EPSystemAttributes.EP_EAP_OBJECT, value: JSON.stringify(prodVersion) });
+    mappedAttributes.push({ name: EPSystemAttributes.EP_EAP_ID, value: prodVersion.product.id });
     mappedAttributes.push({ name: APIProductAttributes.EAP_NAME, value: prodVersion.product.name });
     mappedAttributes.push({ name: APIProductAttributes.APP_DOMAIN, value: (await EventPortalFacade.getApplicationDomain(prodVersion.product.applicationDomainId)).name });
 
