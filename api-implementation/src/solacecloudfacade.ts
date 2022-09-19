@@ -11,15 +11,16 @@ import { ClientProfileRequest } from './clients/solacecloud/models/ClientProfile
 import { MsgVpnClientProfile } from './clients/solacecloud/models/MsgVpnClientProfile';
 import { CloudRequestType } from './clients/solacecloud/models/CloudRequestType';
 import { ApiOptions } from './clients/solacecloud/core/ApiOptions';
-import { getCloudBaseUrl, getCloudToken, validateToken, resolve } from './cloudtokenhelper';
+import { getCloudBaseUrl, getCloudToken, validateToken, resolve, getOrg } from './cloudtokenhelper';
 
 import { Cache, CacheContainer } from 'node-ts-cache'
 import { MemoryStorage } from 'node-ts-cache-storage-memory'
+import {ServiceRegistry} from './serviceregistry';
 
 const serviceCache = new CacheContainer(new MemoryStorage());
 const servicesCache = new CacheContainer(new MemoryStorage());
 
-class SolaceCloudFacade {
+class SolaceCloudFacade implements ServiceRegistry{
   private cloudService: ServicesService;
   private apiOptions: ApiOptions;
   constructor() {
@@ -53,7 +54,7 @@ class SolaceCloudFacade {
             }
           }
         }
-        await serviceCache.setItem(cacheKey, result.data, { ttl: 3600 });
+        await serviceCache.setItem(cacheKey, result.data, { ttl: 360 });
         return result.data;
       }
     }
@@ -78,7 +79,7 @@ class SolaceCloudFacade {
         for (const s of result.data) {
           services.push(await this.getServiceById(s.serviceId))
         }
-        await servicesCache.setItem(cacheKey, services, { ttl: 3600 });
+        await servicesCache.setItem(cacheKey, services, { ttl: 360 });
         return services;
       }
     }
@@ -119,7 +120,7 @@ class SolaceCloudFacade {
   }
 
   private async calculateCacheKey(id?: string): Promise<string> {
-    let cacheKey: string = await getCloudToken();
+    let cacheKey: string = await getOrg();
     if (id) {
       cacheKey = `${cacheKey}:${id}`;
     }
