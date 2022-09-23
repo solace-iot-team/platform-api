@@ -1,5 +1,5 @@
 import L from '../../common/logger';
-import SolaceCloudFacade from '../../../src/solacecloudfacade';
+import ServiceRegistryFactory from '../../../src/serviceregistryfactory';
 import { Service } from '../../../src/clients/solacecloud/models/Service';
 import { ProtocolMapper } from '../../../src/protocolmapper';
 import AccountingLimit = Components.Schemas.AccountingLimit;
@@ -13,13 +13,13 @@ export class SolaceCloudService {
 
   async all(): Promise<Components.Schemas.Service[]> {
     const response: Components.Schemas.Service[] = [];
-    const cloudServices: Service[] = await SolaceCloudFacade.getServices();
+    const cloudServices: Service[] = await ServiceRegistryFactory.getRegistry().getServices();
     for (const cloudService of cloudServices) {
       // only add active, working services
       if (cloudService.creationState == 'completed') {
         const newMsgVpnAttributes = {
-          authenticationClientCertEnabled: cloudService.msgVpnAttributes.authenticationClientCertEnabled,
-          authenticationBasicEnabled: cloudService.msgVpnAttributes.authenticationBasicEnabled,
+          authenticationClientCertEnabled: cloudService.msgVpnAttributes?.authenticationClientCertEnabled?cloudService.msgVpnAttributes.authenticationClientCertEnabled:'no',
+          authenticationBasicEnabled: cloudService.msgVpnAttributes?.authenticationBasicEnabled?cloudService.msgVpnAttributes.authenticationBasicEnabled:'no',
         };
         const accountingLimits: AccountingLimit[] = [];
         if (cloudService.accountingLimits) {

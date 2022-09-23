@@ -13,8 +13,8 @@ import { CloudRequestType } from './clients/solacecloud/models/CloudRequestType'
 import { ApiOptions } from './clients/solacecloud/core/ApiOptions';
 import { getCloudBaseUrl, getCloudToken, validateToken, resolve, getOrg } from './cloudtokenhelper';
 
-import { Cache, CacheContainer } from 'node-ts-cache'
-import { MemoryStorage } from 'node-ts-cache-storage-memory'
+import { Cache, CacheContainer } from 'node-ts-cache';
+import { MemoryStorage } from 'node-ts-cache-storage-memory';
 import {ServiceRegistry} from './serviceregistry';
 
 const serviceCache = new CacheContainer(new MemoryStorage());

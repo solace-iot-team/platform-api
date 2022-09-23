@@ -6,7 +6,7 @@ import EnvironmentResponse = Components.Schemas.EnvironmentResponse;
 import ServiceClassDisplayedAttributes = Components.Schemas.ServiceClassDisplayedAttributes;
 import { PersistenceService } from './persistence.service';
 import { ProtocolMapper } from '../../../src/protocolmapper';
-import SolaceCloudFacade from '../../../src/solacecloudfacade';
+import ServiceRegistryFactory from '../../../src/serviceregistryfactory';
 import { ErrorResponseInternal } from '../middlewares/error.handler';
 import APIProductsService from './apiProducts.service';
 import CommonEntityNameList = Components.Schemas.CommonEntityNameList;
@@ -26,7 +26,7 @@ export class EnvironmentsService {
     if (format == 'full') {
       const envs: EnvironmentListItem[] = await this.persistenceService.all(query);
       for (const env of envs) {
-        const service = await SolaceCloudFacade.getServiceByEnvironment(env);
+        const service = await ServiceRegistryFactory.getRegistry().getServiceByEnvironment(env);
         let messagingProtocols: Components.Schemas.Endpoint[] = [];
         if (service.creationState == 'completed') {
           messagingProtocols = await ProtocolMapper.mapSolaceMessagingProtocolsToAsyncAPI(
@@ -46,7 +46,7 @@ export class EnvironmentsService {
 
   async byName(name: string): Promise<EnvironmentResponse> {
     const env = await this.persistenceService.byName(name);
-    const service = await SolaceCloudFacade.getServiceByEnvironment(env);
+    const service = await ServiceRegistryFactory.getRegistry().getServiceByEnvironment(env);
     let messagingProtocols: Components.Schemas.Endpoint[] = [];
     if (service.creationState == 'completed') {
       messagingProtocols = await ProtocolMapper.mapSolaceMessagingProtocolsToAsyncAPI(
@@ -148,7 +148,7 @@ export class EnvironmentsService {
           `an environment referencing service ${env.serviceId} already exists`
         );
       }
-      const svc = await SolaceCloudFacade.getServiceByEnvironment(env);
+      const svc = await ServiceRegistryFactory.getRegistry().getServiceByEnvironment(env);
       if (svc == null) {
         return new ErrorResponseInternal(
           422,

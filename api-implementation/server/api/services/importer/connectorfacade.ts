@@ -11,7 +11,7 @@ import APIInfo = Components.Schemas.APIInfo;
 import Endpoint = Components.Schemas.Endpoint;
 import { ErrorResponseInternal } from '../../middlewares/error.handler';
 import { EventAPIAsyncAPIInfo } from '../../../../src/model/eventapiasyncapiinfo';
-import solacecloudfacade from '../../../../src/solacecloudfacade';
+import ServiceRegistryFactory from '../../../../src/serviceregistryfactory';
 
 import cmp from 'semver-compare';
 import semver from 'semver';
@@ -143,7 +143,7 @@ export class ConnectorFacade {
     const envs = await environmentsService.all();
     //make all protocols of the cloud service available
     if (!envs.find(e => e.serviceId == solaceMessagingServiceId)) {
-      const cloudService = await solacecloudfacade.getServiceById(solaceMessagingServiceId);
+      const cloudService = await ServiceRegistryFactory.getRegistry().getServiceById(solaceMessagingServiceId);
       const endpoints: Endpoint[] = await ProtocolMapper.mapSolaceMessagingProtocolsToAsyncAPI(cloudService, cloudService.messagingProtocols);
       const protocols = endpoints.map(e => e.protocol);
       const connectorEnv: Environment = {

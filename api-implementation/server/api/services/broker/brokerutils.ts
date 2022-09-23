@@ -10,7 +10,7 @@ import { Service } from '../../../../src/clients/solacecloud/models/Service';
 import EnvironmentsService from '../environments.service';
 import ApiProductsService from '../apiProducts.service';
 
-import SolaceCloudFacade from '../../../../src/solacecloudfacade';
+import ServiceRegistryFactory from '../../../../src/serviceregistryfactory';
 
 import APIProductsTypeHelper from '../../../../src/apiproductstypehelper';
 
@@ -60,7 +60,7 @@ class BrokerUtils {
         if (envName) {
           const env: Environment = (await EnvironmentsService.byName(envName) as any) as Environment;
           L.info(env.serviceId);
-          const service: Service = await SolaceCloudFacade.getServiceByEnvironment(
+          const service: Service = await ServiceRegistryFactory.getRegistry().getServiceByEnvironment(
             env
           );
           service['environment'] = env.name;
