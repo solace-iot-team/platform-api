@@ -253,7 +253,7 @@ export class ConnectorFacade {
     const apiProductsImportedForDeletedEAP = await apiProductsService.all({ attributes: { $elemMatch: { name: '_EP_EAP_ID_', value: { $nin: importableEAPIds } } } });
     if (apiProductsImportedForDeletedEAP.length > 0) {
       for (const apiProduct of apiProductsImportedForDeletedEAP) {
-        if (apiProduct.meta?.stage) {
+        if (apiProduct.meta?.stage && apiProduct.meta?.stage != 'retired') {
           apiProduct.meta.stage = 'deprecated';
           apiProduct.meta.version = semver.inc(apiProduct.meta.version, 'patch');
           const firstUpdate = await apiProductsService.update(apiProduct.name, apiProduct);
