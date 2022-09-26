@@ -1190,6 +1190,7 @@ declare namespace Components {
             sempV2Authentication?: SempV2Authentication;
             "cloud-token"?: string /* ^[A-Za-z0-9-_=]+\.[A-Za-z0-9-_=]+\.?[A-Za-z0-9-_.+/=]*$ */  | CloudToken;
             integrations?: OrganizationIntegrations;
+            serviceRegistry?: ServiceRegistryType;
         }
         export interface OrganizationImporter {
         }
@@ -1208,6 +1209,7 @@ declare namespace Components {
             sempV2Authentication?: SempV2Authentication;
             "cloud-token"?: string /* ^[A-Za-z0-9-_=]+\.[A-Za-z0-9-_=]+\.?[A-Za-z0-9-_.+/=]*$ */  | CloudToken;
             integrations?: OrganizationIntegrations;
+            serviceRegistry?: ServiceRegistryType;
         }
         export interface OrganizationStatus {
             cloudConnectivity?: boolean;
@@ -1369,6 +1371,10 @@ declare namespace Components {
             Clients: string; // ^[\s\S]*$
             "Network Usage": string; // ^[\s\S]*$
         }
+        /**
+         * The type of sePS+ service registry that is used to look up broker configuration endpoints and capabilities. Defaults to "platform" if omitted which means PS+ services are looked up directly via the Solace Cloud Platform API. "eventportal" uses the messaging services configured in Event Portal 2.0 which allows addition of self-managed brokers.
+         */
+        export type ServiceRegistryType = "platform" | "eventportal";
         /**
          * example:
          * asyncapi: 2.0.0
