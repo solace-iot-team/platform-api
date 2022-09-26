@@ -5,9 +5,10 @@ import solacecloudfacade from "./solacecloudfacade";
 
 class ServiceRegistryFactory{
     public getRegistry(): ServiceRegistry {
+        const epVersion = process.env.EP_VERSION || '1';
         const org = getOrgObject();
         const registryType = org.serviceRegistry?org.serviceRegistry:'platform';
-        if (registryType == 'eventportal'){
+        if (registryType == 'eventportal' && epVersion == '2'){
             return EPServiceRegistry2;
         } else {
             return solacecloudfacade;
