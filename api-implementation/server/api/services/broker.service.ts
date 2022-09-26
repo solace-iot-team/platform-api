@@ -25,7 +25,7 @@ import { ProtocolMapper } from '../../../src/protocolmapper';
 
 import EnvironmentsService from './environments.service';
 import { Service } from '../../../src/clients/solacecloud/models/Service';
-import SolaceCloudFacade from '../../../src/solacecloudfacade';
+import ServiceRegistryFactory from '../../../src/serviceregistryfactory';
 
 import APIProductsTypeHelper from '../../../src/apiproductstypehelper';
 import { ErrorResponseInternal } from '../middlewares/error.handler';
@@ -156,7 +156,7 @@ export class SolaceBrokerService implements Broker {
       L.info(envName);
       const env = await EnvironmentsService.byName(envName) as any as Environment;
       L.info(env.serviceId);
-      const service = await SolaceCloudFacade.getServiceByEnvironment(env);
+      const service = await ServiceRegistryFactory.getRegistry().getServiceByEnvironment(env);
       return service;
     } catch (err) {
       L.error(`getServiceByEnv - ${JSON.stringify(err)}`);

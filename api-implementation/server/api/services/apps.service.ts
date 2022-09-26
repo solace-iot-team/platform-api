@@ -28,7 +28,7 @@ import APIProductsTypeHelper from '../../../src/apiproductstypehelper';
 import AppHelper from '../../../src/apphelper';
 
 import { scheduler } from '../../index';
-import solacecloudfacade from '../../../src/solacecloudfacade';
+import ServiceRegistryFactory from '../../../src/serviceregistryfactory';
 import EnvironmentsService from './environments.service';
 import Environment = Components.Schemas.Environment;
 import sempv2clientfactory from './broker/sempv2clientfactory';
@@ -414,7 +414,7 @@ export class AppsService {
           }
           if (webHook.requestHeaders) {
             // need to check if this env supports headers
-            const svc = await solacecloudfacade.getServiceByEnvironment(await EnvironmentsService.byName(envName) as Environment);
+            const svc = await ServiceRegistryFactory.getRegistry().getServiceByEnvironment(await EnvironmentsService.byName(envName) as Environment);
             const sempVersion = await sempv2clientfactory.getSEMPv2ClientVersion(svc);
             const unsupportedVersion = semVerCompare(sempVersion, '2.23') == -1;
             if (unsupportedVersion) {

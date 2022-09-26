@@ -58,4 +58,40 @@ export interface EnvironmentsService {
         id: string,
     ): ApiRequestOptions;
 
+    /**
+     * Retrieves messaging service objects
+     * Use this API to retrieve all messaging services.
+     * @returns any The messaging service object.
+     */
+    getMessagingServices(): Promise<any>;
+
+    /**
+     * **used to get the request options without making a http request**
+     * Retrieves messaging service objects
+     * Use this API to retrieve all messaging services.
+     * @returns ApiRequestOptions the request options to fulfill a http request
+     */
+    getMessagingServicesApiRequestOptions(): ApiRequestOptions;
+
+    /**
+     * Retrieves a messaging service object
+     * Use this API to retrieve a single messaging service by its ID.
+     * @param id The ID of the messaging service object.
+     * @returns any The messaging service object.
+     */
+    getMessagingService(
+        id: string,
+    ): Promise<any>;
+
+    /**
+     * **used to get the request options without making a http request**
+     * Retrieves a messaging service object
+     * Use this API to retrieve a single messaging service by its ID.
+     * @param id The ID of the messaging service object.
+     * @returns ApiRequestOptions the request options to fulfill a http request
+     */
+    getMessagingServiceApiRequestOptions(
+        id: string,
+    ): ApiRequestOptions;
+
 }

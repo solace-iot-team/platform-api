@@ -140,7 +140,6 @@ export class OrganizationsService {
       if (isString(token)) {
         const isServiceToken: boolean = await SolaceCloudFacade.validate(token);
         const useProxyModeStr = process.env.APIS_PROXY_MODE || 'false';
-        const epVersion = process.env.EP_VERSION || '1';
         const useProxyMode = (useProxyModeStr.toLowerCase() == 'true') || (useProxyModeStr.toLowerCase() == '1');
         if (!useProxyMode) {
           return isServiceToken;

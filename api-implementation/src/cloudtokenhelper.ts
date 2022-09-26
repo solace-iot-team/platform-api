@@ -36,13 +36,13 @@ export async function validateToken(token: string, url: string): Promise<boolean
   L.info(`url: ${url}, token: [${token}]`);
 
   const options = {
-  method: 'GET',
-  headers: {
-    'Accept': 'application/json',
-    'Content-Type': 'application/json;charset=UTF-8',
-    'Authorization': `Bearer ${token}`
-  }
-};
+    method: 'GET',
+    headers: {
+      'Accept': 'application/json',
+      'Content-Type': 'application/json;charset=UTF-8',
+      'Authorization': `Bearer ${token}`
+    }
+  };
   try {
     const response: Response = (await fetch(url, options)) as Response;
     if (response.status > 299) {
@@ -90,4 +90,13 @@ export async function resolve(resolver: any) {
   } else {
     return resolver;
   }
+}
+
+export async function getOrg(): Promise<string> {
+  let orgName: any = null;
+  orgName = ns.getStore().get(ContextConstants.ORG_NAME);
+  if (orgName == null) {
+    throw new ErrorResponseInternal(500, `Org is missing from context!`);
+  }
+  return orgName;
 }
