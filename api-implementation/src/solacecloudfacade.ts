@@ -36,7 +36,7 @@ class SolaceCloudFacade implements ServiceRegistry{
   }
 
   public async getServiceById(id: string): Promise<Service> {
-    const cacheKey: string = await this.calculateCacheKey(id);
+    const cacheKey: string = this.calculateCacheKey(id);
     const cachedService: Service = await serviceCache.getItem<Service>(cacheKey);
     if (cachedService) {
       return cachedService;
@@ -65,7 +65,7 @@ class SolaceCloudFacade implements ServiceRegistry{
   }
 
   public async getServices(): Promise<Service[]> {
-    const cacheKey = await this.calculateCacheKey();
+    const cacheKey = this.calculateCacheKey();
     const cachedServices = await servicesCache.getItem<Service[]>(cacheKey);
     if (cachedServices) {
       return cachedServices;
@@ -119,8 +119,8 @@ class SolaceCloudFacade implements ServiceRegistry{
     return validateToken(token, url);
   }
 
-  private async calculateCacheKey(id?: string): Promise<string> {
-    let cacheKey: string = await getOrg();
+  private calculateCacheKey(id?: string): string {
+    let cacheKey: string = getOrg();
     if (id) {
       cacheKey = `${cacheKey}:${id}`;
     }

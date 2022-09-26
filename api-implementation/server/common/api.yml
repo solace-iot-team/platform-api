@@ -2,7 +2,7 @@ openapi: 3.0.0
 info:
   title: Solace API Management Connector
   description: 'Solace API Management Connector API. Note: basic authentication security mechanism is deprecated.'
-  version: 0.13.1
+  version: 0.14.0
   license: 
     name: MIT
     url: https://github.com/solace-iot-team/platform-api/blob/main/LICENSE
@@ -1795,6 +1795,8 @@ components:
           - "$ref": "#/components/schemas/CloudToken"
         integrations:
           "$ref": "#/components/schemas/OrganizationIntegrations"
+        serviceRegistry:
+          "$ref": "#/components/schemas/ServiceRegistryType"
 
     OrganizationResponse:
       allOf:
@@ -1812,7 +1814,13 @@ components:
           type: boolean
         eventPortalConnectivity: 
           type: boolean
-      
+    ServiceRegistryType:
+      description: The type of PS+ service registry that is used to look up broker configuration endpoints and capabilities. Defaults to "platform" if omitted which means PS+ services are looked up directly via the Solace Cloud Platform API. "eventportal" uses the messaging services configured in Event Portal 2.0 which allows addition of self-managed brokers.  
+      type: string
+      enum: 
+        - platform
+        - eventportal
+
     SempV2Authentication:
       description: Specifies how requests to the SEMPv2 Management API are authenticated, defaults to BasicAuth. If APIKey is specified the username returned in the Services/Environments response is used as API Key.
       type: object

@@ -4,6 +4,7 @@ import { ns } from '../server/api/middlewares/context.handler';
 import fetch from 'fetch-with-proxy';
 import { ContextConstants } from '../server/common/constants';
 import { isString } from './typehelpers';
+import Organization = Components.Schemas.Organization;
 
 export async function getCloudToken(): Promise<string> {
   let token: any = null;
@@ -92,9 +93,18 @@ export async function resolve(resolver: any) {
   }
 }
 
-export async function getOrg(): Promise<string> {
+export function getOrg(): string {
   let orgName: any = null;
   orgName = ns.getStore().get(ContextConstants.ORG_NAME);
+  if (orgName == null) {
+    throw new ErrorResponseInternal(500, `Org is missing from context!`);
+  }
+  return orgName;
+}
+
+export function getOrgObject(): Organization {
+  let orgName: any = null;
+  orgName = ns.getStore().get(ContextConstants.ORG_OBJECT);
   if (orgName == null) {
     throw new ErrorResponseInternal(500, `Org is missing from context!`);
   }
