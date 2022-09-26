@@ -1815,7 +1815,7 @@ components:
         eventPortalConnectivity: 
           type: boolean
     ServiceRegistryType:
-      description: The type of sePS+ service registry that is used to look up broker configuration endpoints and capabilities. Defaults to "platform" if omitted which means PS+ services are looked up directly via the Solace Cloud Platform API. "eventportal" uses the messaging services configured in Event Portal 2.0 which allows addition of self-managed brokers.  
+      description: The type of PS+ service registry that is used to look up broker configuration endpoints and capabilities. Defaults to "platform" if omitted which means PS+ services are looked up directly via the Solace Cloud Platform API. "eventportal" uses the messaging services configured in Event Portal 2.0 which allows addition of self-managed brokers.  
       type: string
       enum: 
         - platform
