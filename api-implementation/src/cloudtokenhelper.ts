@@ -92,7 +92,7 @@ export async function resolve(resolver: any) {
   }
 }
 
-export async function getOrg(): Promise<string> {
+export function getOrg(): string {
   let orgName: any = null;
   orgName = ns.getStore().get(ContextConstants.ORG_NAME);
   if (orgName == null) {

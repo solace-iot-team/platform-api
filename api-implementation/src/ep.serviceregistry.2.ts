@@ -41,13 +41,13 @@ export class EPServiceRegistry2 implements ServiceRegistry {
     }
 
     public async getServiceById(id: string): Promise<Service> {
-        const cacheKey = await this.calculateCacheKey(id);
+        const cacheKey = this.calculateCacheKey(id);
         let msgSvcResponse = await serviceCache.getItem<SolaceMessagingServiceResponse>(cacheKey);
 
         let svc: Service = null;
         if (!msgSvcResponse) {
             msgSvcResponse = await this.ep2EnvService.getMessagingService(id);
-            serviceCache.setItem(await this.calculateCacheKey(id), msgSvcResponse, { ttl: 360 });
+            serviceCache.setItem(this.calculateCacheKey(id), msgSvcResponse, { ttl: 360 });
         }
         if (msgSvcResponse.data) {
             const msgSvc = msgSvcResponse.data;
@@ -308,7 +308,7 @@ export class EPServiceRegistry2 implements ServiceRegistry {
         ];
     }
     public async getServices(): Promise<Service[]> {
-        const cacheKey = await this.calculateCacheKey();
+        const cacheKey = this.calculateCacheKey();
         const cachedServices = await servicesCache.getItem<SolaceMessagingServicesResponse>(cacheKey);
         let msgSvcs: SolaceMessagingServicesResponse = cachedServices;
         if (!msgSvcs) {
@@ -331,8 +331,8 @@ export class EPServiceRegistry2 implements ServiceRegistry {
         }
         return svcs;
     }
-    private async calculateCacheKey(id?: string): Promise<string> {
-        let cacheKey: string = await getOrg();
+    private calculateCacheKey(id?: string): string {
+        let cacheKey: string = getOrg();
         if (id) {
             cacheKey = `${cacheKey}:${id}`;
         }
