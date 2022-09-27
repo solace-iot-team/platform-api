@@ -336,7 +336,7 @@ export class AppsService {
     }
   }
 
-  async validate(app: any, isUpdate: boolean = false, appNotModified?: App): Promise<boolean> {
+  async validate(app: App | AppPatch, isUpdate: boolean = false, appNotModified?: App): Promise<boolean> {
     let isApproved = true;
     const environments: Set<string> = new Set();
     if ((!app.apiProducts || app.apiProducts.length == 0) && !isUpdate) {
@@ -345,6 +345,14 @@ export class AppsService {
       return true;
     }
 
+    // no more than 5 credentials are supported at any time
+    if (Array.isArray(app.credentials) && app.credentials.length>5){
+      throw new ErrorResponseInternal(
+        400,
+        `Exceedes maximum number of credentials per app (max 5).`
+      );
+}
+
     // validate api products exist and find out if any  require approval
     for (const product of app.apiProducts) {
       let productName: string = null;
@@ -352,7 +360,7 @@ export class AppsService {
         productName = product as string;
       } else {
         productName = (product as AppApiProductsComplex).apiproduct;
-        if (product.status && !isUpdate) {
+        if ( (product as AppApiProductsComplex).status && !isUpdate) {
           throw new ErrorResponseInternal(
             400,
             `Providing a status for associated API Products is not allowed. (API Product ${productName})`
@@ -419,7 +427,7 @@ export class AppsService {
             );
           }
           let webHooksPerDev: WebHook[] = [];
-          webHooksPerDev = app.webHooks.filter((w: { environments: any[]; }) => w.environments == null || w.environments.find(e => e == envName));
+          webHooksPerDev = app.webHooks.filter((w) => w.environments == null || w.environments.find(e => e == envName));
           if (webHooksPerDev.length > 1) {
             throw new ErrorResponseInternal(
               400,
