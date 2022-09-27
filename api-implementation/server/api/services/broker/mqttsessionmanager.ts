@@ -20,11 +20,12 @@ class MQTTSessionManager {
     }
     const clientOptions = BrokerUtils.getAppAggregatedClientOptions(apiProducts);
 
+    const credentials = app.credentials as Components.Schemas.Credentials;
     const newSession: MsgVpnMqttSession = {
       mqttSessionClientId: objectName,
       enabled: true,
       mqttSessionVirtualRouter: 'primary',
-      owner: app.credentials.secret.consumerKey,
+      owner: (Array.isArray(app.credentials)&&app.credentials.length>0)?app.credentials[0].secret.consumerKey:credentials.secret.consumerKey,
       environments: environmentNames
     };
     if (clientOptions && clientOptions.guaranteedMessaging) {

@@ -114,7 +114,7 @@ export class SolaceBrokerService implements Broker {
       authorizationGroup: authzGroup,
       clientProfile: clientProfile,
       displayName: app.displayName,
-      clientUsername: await clientusernameBuilder.build(app, clientProfile.clientProfileName, environmentNames),
+      clientUsernames: await clientusernameBuilder.build(app, clientProfile.clientProfileName, environmentNames),
       name: app.name,
       services: [],
       tags: ['app', app.name, app.internalName],

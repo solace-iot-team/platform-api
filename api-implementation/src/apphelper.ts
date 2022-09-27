@@ -19,13 +19,14 @@ class AppHelper {
     })
   }
 
-  public resetCredentialsDates(app: App) {
+  public resetCredentialsDates(credentials: Components.Schemas.Credentials, expiresIn: number) {
     const now: number = Date.now();
-    app.credentials.issuedAt = now;
-    if (app.expiresIn && app.expiresIn > 0) {
-      app.credentials.expiresAt = now + (app.expiresIn*1000);
+    credentials.issuedAt = now;
+    if (expiresIn && expiresIn > 0) {
+     credentials.expiresAt = now + (expiresIn*1000);
     }
   }
+  
 }
 
 export default new AppHelper();

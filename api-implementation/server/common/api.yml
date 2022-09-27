@@ -2,7 +2,7 @@ openapi: 3.0.0
 info:
   title: Solace API Management Connector
   description: 'Solace API Management Connector API. Note: basic authentication security mechanism is deprecated.'
-  version: 0.14.0
+  version: 0.15.0
   license: 
     name: MIT
     url: https://github.com/solace-iot-team/platform-api/blob/main/LICENSE
@@ -970,7 +970,9 @@ components:
           items:
             $ref: '#/components/schemas/WebHook'
         credentials:
-          $ref: '#/components/schemas/Credentials'
+          oneOf:
+          - $ref: '#/components/schemas/Credentials'
+          - $ref: '#/components/schemas/CredentialsArray'
       required:
       - name
       - apiProducts
@@ -1002,7 +1004,9 @@ components:
           items:
             $ref: '#/components/schemas/WebHook'
         credentials:
-          $ref: '#/components/schemas/Credentials'
+          oneOf:
+          - $ref: '#/components/schemas/Credentials'
+          - $ref: '#/components/schemas/CredentialsArray'
         status:
           $ref: '#/components/schemas/AppStatus'
 
@@ -1052,7 +1056,9 @@ components:
           items:
             $ref: '#/components/schemas/WebHook'
         credentials:
-          $ref: '#/components/schemas/Credentials'
+          oneOf:
+          - $ref: '#/components/schemas/Credentials'
+          - $ref: '#/components/schemas/CredentialsArray'
         environments:
           type: array
           minItems: 0
@@ -1106,7 +1112,9 @@ components:
           items:
             $ref: '#/components/schemas/WebHook'
         credentials:
-          $ref: '#/components/schemas/Credentials'
+          oneOf:
+          - $ref: '#/components/schemas/Credentials'
+          - $ref: '#/components/schemas/CredentialsArray'
         environments:
           type: array
           minItems: 0
@@ -1269,6 +1277,15 @@ components:
         isChannel:
           type: boolean
           default: true
+
+    CredentialsArray:
+      description: Credentials object array associated with an app
+      type: array
+      items: 
+        $ref: '#/components/schemas/Credentials'
+      additionalProperties: false
+      minItems: 0
+      maxItems: 5
 
     Credentials:
       description: Credentials object associated with an app
@@ -2607,6 +2624,12 @@ components:
           maxLength: 32
           items:
             $ref: "#/components/schemas/CommonName"
+    MsgVpnClientUsernameArray:
+      type: array
+      items: 
+        $ref: "#/components/schemas/MsgVpnClientUsername"
+      minItems: 1
+      maxItems: 50
     MsgVpnClientUsername:
       type: object
       additionalProperties: false
@@ -3046,7 +3069,7 @@ components:
       - displayName
       - aclProfile
       - clientProfile
-      - clientUsername
+      - clientUsernames
       - authorizationGroup
       - services
       properties:
@@ -3060,8 +3083,8 @@ components:
           $ref: '#/components/schemas/MsgVpnAclProfile'
         clientProfile:
           $ref: '#/components/schemas/MsgVpnClientProfile'
-        clientUsername:
-          $ref: '#/components/schemas/MsgVpnClientUsername'
+        clientUsernames:
+          $ref: '#/components/schemas/MsgVpnClientUsernameArray'
         authorizationGroup:
           $ref: '#/components/schemas/MsgVpnAuthorizationGroup'
         mqttSession:

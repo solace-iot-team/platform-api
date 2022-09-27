@@ -188,7 +188,8 @@ export class SolaceConfigService {
                 tasks.appendTaskSet(mqttAbsent);
                 tasks.appendTaskSet(queueBuilder.build(removedConfigSet, service, TaskState.ABSENT));
                 tasks.appendTaskSet(restdeliverypointBuilder.build(removedConfigSet, service, TaskState.ABSENT));
-                tasks.appendTaskSet(aclprofileExceptionsBuilder.build(removedConfigSet, service, TaskState.ABSENT))
+                tasks.appendTaskSet(aclprofileExceptionsBuilder.build(removedConfigSet, service, TaskState.ABSENT));
+                tasks.appendTaskSet(clientusernameBuilder.build(removedConfigSet, service, TaskState.ABSENT));
             }
 
 
@@ -201,10 +202,6 @@ export class SolaceConfigService {
                 if (r.path.includes('mqttSession/mqttSessionClientId')) {
                     const mqttAbsent = mqttsessionBuilder.build(previousConfigSet, service, TaskState.ABSENT);
                     tasks.appendTaskSet(mqttAbsent);
-                }
-                if (r.path.includes('clientUsername/clientUsername')) {
-                    const userNameAbsent = clientusernameBuilder.build(previousConfigSet, service, TaskState.ABSENT);
-                    tasks.appendTaskSet(userNameAbsent);
                 }
                 if (r.path.includes('aclProfile/aclProfileName')) {
                     const aclAbsent = aclprofileBuilder.build(previousConfigSet, service, TaskState.ABSENT);
@@ -252,6 +249,7 @@ export class SolaceConfigService {
         removedConfigSet.aclProfile.subscribeExceptions = [];
         removedConfigSet.aclProfile.publishExceptions = [];
         removedConfigSet.aclProfile.clientConnectExceptions = [];
+        removedConfigSet.clientUsernames = [];
         let removed: boolean = false;
         if (previousConfigSet.mqttSession && !_.isEqualWith(previousConfigSet.mqttSession.mqttSessionClientId, configSet.mqttSession?.mqttSessionClientId)) {
             removedConfigSet.mqttSession = previousConfigSet.mqttSession;
@@ -316,6 +314,13 @@ export class SolaceConfigService {
         if (removedSubscribeTopicExceptions) {
             removedConfigSet.aclProfile.subscribeExceptions = removedSubscribeTopicExceptions;
         }
+
+        const removedClientUsernames = _.differenceWith(previousConfigSet.clientUsernames, configSet.clientUsernames, _.isEqual);
+        if (removedClientUsernames) {
+            removedConfigSet.clientUsernames = removedClientUsernames;
+            removed = true;
+        }
+
         if (removed){
             return removedConfigSet;
         } else {

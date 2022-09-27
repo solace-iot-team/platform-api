@@ -335,7 +335,7 @@ declare namespace Components {
             attributes?: Attributes;
             callbackUrl?: CommonURL; // ^https?:\/\/[A-Za-z\.:0-9\-]*.*$
             webHooks?: WebHook[];
-            credentials: Credentials;
+            credentials: Credentials | CredentialsArray;
         }
         export type AppApiProducts = (AppApiProductsComplex | CommonName /* ^[a-zA-Z0-9_\-]*(@[ |\S]*)?$ */ )[];
         export interface AppApiProductsComplex {
@@ -348,7 +348,7 @@ declare namespace Components {
             state?: ConfigState;
             aclProfile: MsgVpnAclProfile;
             clientProfile: MsgVpnClientProfile;
-            clientUsername: MsgVpnClientUsername;
+            clientUsernames: MsgVpnClientUsernameArray;
             authorizationGroup: MsgVpnAuthorizationGroup;
             mqttSession?: MsgVpnMqttSession;
             queues?: MsgVpnQueue[];
@@ -431,7 +431,7 @@ declare namespace Components {
             attributes?: Attributes;
             callbackUrl?: CommonURL; // ^https?:\/\/[A-Za-z\.:0-9\-]*.*$
             webHooks?: WebHook[];
-            credentials?: Credentials;
+            credentials?: Credentials | CredentialsArray;
             status?: AppStatus;
         }
         /**
@@ -453,7 +453,7 @@ declare namespace Components {
             clientInformation?: ClientInformation[];
             callbackUrl?: CommonURL; // ^https?:\/\/[A-Za-z\.:0-9\-]*.*$
             webHooks?: WebHook[];
-            credentials: Credentials;
+            credentials: Credentials | CredentialsArray;
             environments?: AppEnvironment[];
             status?: AppStatus;
         }
@@ -476,7 +476,7 @@ declare namespace Components {
             clientInformation?: ClientInformation[];
             callbackUrl?: CommonURL; // ^https?:\/\/[A-Za-z\.:0-9\-]*.*$
             webHooks?: WebHook[];
-            credentials: Credentials;
+            credentials: Credentials | CredentialsArray;
             environments?: AppEnvironment[];
             status?: AppStatus;
             appType?: "developer" | "team";
@@ -749,6 +749,10 @@ declare namespace Components {
             issuedAt?: CommonTimestampInteger; // int64
             secret?: Secret;
         }
+        /**
+         * Credentials object array associated with an app
+         */
+        export type CredentialsArray = Credentials[];
         export interface CustomCloudEndpoint {
             /**
              * example:
@@ -1096,6 +1100,7 @@ declare namespace Components {
             enabled: boolean;
             environments: CommonName /* ^[a-zA-Z0-9_\-]*(@[ |\S]*)?$ */ [];
         }
+        export type MsgVpnClientUsernameArray = MsgVpnClientUsername[];
         export interface MsgVpnMqttSession {
             mqttSessionClientId: CommonName; // ^[a-zA-Z0-9_\-]*(@[ |\S]*)?$
             enabled: boolean;
@@ -1372,7 +1377,7 @@ declare namespace Components {
             "Network Usage": string; // ^[\s\S]*$
         }
         /**
-         * The type of sePS+ service registry that is used to look up broker configuration endpoints and capabilities. Defaults to "platform" if omitted which means PS+ services are looked up directly via the Solace Cloud Platform API. "eventportal" uses the messaging services configured in Event Portal 2.0 which allows addition of self-managed brokers.
+         * The type of PS+ service registry that is used to look up broker configuration endpoints and capabilities. Defaults to "platform" if omitted which means PS+ services are looked up directly via the Solace Cloud Platform API. "eventportal" uses the messaging services configured in Event Portal 2.0 which allows addition of self-managed brokers.
          */
         export type ServiceRegistryType = "platform" | "eventportal";
         /**

@@ -5,17 +5,19 @@ import { TaskSetBuilder } from "./config.taskset";
 
 class ClientUsernameBuilder implements TaskSetBuilder {
     build(configSet: Components.Schemas.AppConfigSet, envService: Components.Schemas.EnvironmentService, state: TaskState): TaskSet {
-        const usernameConfig: ClientUsernameTaskConfig = {
-            configObject: configSet.clientUsername,
-            environment: envService,
-            state: state
-        };
-        const clientUserName = taskFactory(ClientUsernameTask, usernameConfig);
         const tasks = new TaskSet();
-        tasks.add(clientUserName);
+        for (const clientUsername of configSet.clientUsernames) {
+            const usernameConfig: ClientUsernameTaskConfig = {
+                configObject: clientUsername,
+                environment: envService,
+                state: state
+            };
+            const clientUserName = taskFactory(ClientUsernameTask, usernameConfig);
+            tasks.add(clientUserName);
+        }
         return tasks;
     }
-    
+
 }
 
 export default new ClientUsernameBuilder();

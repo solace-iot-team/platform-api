@@ -7,7 +7,7 @@ import App = Components.Schemas.App;
 import APIProduct = Components.Schemas.APIProduct;
 import Attributes = Components.Schemas.Attributes;
 import ClientOptions = Components.Schemas.ClientOptions;
-
+import Credentials = Components.Schemas.Credentials;
 import MsgVpnQueue = Components.Schemas.MsgVpnQueue;
 import MsgVpnQueueSubscription = Components.Schemas.MsgVpnQueueSubscription;
 
@@ -82,12 +82,14 @@ export class QueueManager {
     if (clientOptions?.guaranteedMessaging?.accessType) {
       accessType = clientOptions?.guaranteedMessaging?.accessType?.toLowerCase();
     }
+    const credentials = app.credentials as Credentials;
+    // if there are multiple credentials it means the queue can not have an owner and the permission must be for non owners to consume messages
     const newQ: MsgVpnQueue = {
       queueName: objectName,
       ingressEnabled: true,
       egressEnabled: true,
-      owner: app.credentials.secret.consumerKey,
-      permission: 'no-access',
+      owner: (Array.isArray(app.credentials)&&app.credentials.length>0)?app.credentials[0].secret.consumerKey:credentials.secret.consumerKey,
+      permission: Array.isArray(app.credentials)?'consume':'no-access',
       accessType: (accessType.toLowerCase() == 'exclusive') ?
         'exclusive' : 'non-exclusive',
       queueSubscriptions: subscriptions,

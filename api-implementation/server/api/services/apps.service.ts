@@ -10,7 +10,7 @@ import AppListItem = Components.Schemas.AppListItem;
 import AppResponse = Components.Schemas.AppResponse;
 import AppPatch = Components.Schemas.AppPatch;
 import AppConnectionStatus = Components.Schemas.AppConnectionStatus;
-
+import Credentials = Components.Schemas.Credentials;
 import ApiProduct = Components.Schemas.APIProduct;
 import AppApiProductsComplex = Components.Schemas.AppApiProductsComplex;
 import AppStatus = Components.Schemas.AppStatus;
@@ -196,19 +196,7 @@ export class AppsService {
       }
       await this.initializeStatus(app);
 
-      if (!app.credentials.secret) {
-        const consumerCredentials = {
-          consumerKey: AppHelper.generateConsumerKey(),
-          consumerSecret: AppHelper.generateConsumerSecret(),
-        };
-        app.credentials.secret = consumerCredentials;
-      } else if (!app.credentials.secret.consumerSecret) {
-        // this provides the capability to provide a specific key (e.g. matching an OAuth claim or TLS cert CN)
-        // while ensuring a strong secret is set on the app and therefore in the SOlace client username.
-        app.credentials.secret.consumerSecret = AppHelper.generateConsumerSecret();
-      }
-      // set the issuedAt and calculate expiresAt timestamp
-      AppHelper.resetCredentialsDates(app);
+      this.processAppCreateCredentials(app);
 
       if (app.status == 'approved') {
         L.info(`provisioning app ${app.name}`);
@@ -230,6 +218,25 @@ export class AppsService {
     }
   }
 
+
+  private processAppCreateCredentials(app: OwnedApp) {
+    let credentialsArray: Components.Schemas.CredentialsArray = Array.isArray(app.credentials) ? app.credentials : [app.credentials];
+    for (const credentials of credentialsArray) {
+      if (!credentials.secret) {
+        const consumerCredentials = {
+          consumerKey: AppHelper.generateConsumerKey(),
+          consumerSecret: AppHelper.generateConsumerSecret(),
+        };
+        credentials.secret = consumerCredentials;
+      } else if (!credentials.secret.consumerSecret) {
+        // this provides the capability to provide a specific key (e.g. matching an OAuth claim or TLS cert CN)
+        // while ensuring a strong secret is set on the app and therefore in the SOlace client username.
+        credentials.secret.consumerSecret = AppHelper.generateConsumerSecret();
+      }
+      // set the issuedAt and calculate expiresAt timestamp
+      AppHelper.resetCredentialsDates(credentials, app.expiresIn);
+    }
+  }
 
   async apiByName(appName: string, name: string): Promise<string> {
     const list = await this.apiList(appName);
@@ -260,30 +267,7 @@ export class AppsService {
     );
 
     const validated = await this.validate(app, true, appNotModified as App);
-    if (app.credentials && app.credentials.secret) {
-      // regenerate a consumerSecret if omitted / partial secret is sent
-      if (!app.credentials.secret.consumerSecret) {
-        app.credentials.secret.consumerSecret = AppHelper.generateConsumerSecret();
-      }
-      // set the issuedAt and calculate expiresAt timestamp
-      const now: number = Date.now();
-      app.credentials.issuedAt = now;
-      if (app.expiresIn && app.expiresIn > 0) {
-        app.credentials.expiresAt = now + app.expiresIn;
-      } else if (appNotModified.expiresIn && appNotModified.expiresIn > 0) {
-        app.credentials.expiresAt = now + (appNotModified.expiresIn * 1000);
-      } else {
-        app.credentials.expiresAt = -1;
-      }
-    } else if (app.expiresIn) {
-      // if expiresIn provided apply it to the previous expiration date.
-      app.credentials = appNotModified.credentials;
-      if (app.expiresIn > 0) {
-        app.credentials.expiresAt = app.credentials.issuedAt + (app.expiresIn * 1000);
-      } else {
-        app.credentials.expiresAt = -1;
-      }
-    }
+    this.processAppUpdateCredentials(app, appNotModified);
 
     await this.updateStatus(app as App, appNotModified as App);
     // persist the updated app, need to do this to get the full app object, the patch rerquest contains only the updated properties
@@ -306,6 +290,36 @@ export class AppsService {
       }
     }
     return appPatch;
+  }
+
+  private processAppUpdateCredentials(app: AppPatch, appNotModified: AppPatch) {
+    const credentialsArray: Components.Schemas.CredentialsArray = Array.isArray(app.credentials) ? app.credentials : [app.credentials];
+    for (const credentials of credentialsArray) {
+      if (credentials && credentials.secret) {
+        // regenerate a consumerSecret if omitted / partial secret is sent
+        if (!credentials.secret.consumerSecret) {
+          credentials.secret.consumerSecret = AppHelper.generateConsumerSecret();
+        }
+        // set the issuedAt and calculate expiresAt timestamp
+        const now: number = Date.now();
+        credentials.issuedAt = now;
+        if (app.expiresIn && app.expiresIn > 0) {
+          credentials.expiresAt = now + app.expiresIn;
+        } else if (appNotModified.expiresIn && appNotModified.expiresIn > 0) {
+          credentials.expiresAt = now + (appNotModified.expiresIn * 1000);
+        } else {
+          credentials.expiresAt = -1;
+        }
+      } else if (app.expiresIn) {
+        // if expiresIn provided apply it to the previous expiration date.
+        app.credentials = appNotModified.credentials;
+        if (app.expiresIn > 0) {
+          credentials.expiresAt = credentials.issuedAt + (app.expiresIn * 1000);
+        } else {
+          credentials.expiresAt = -1;
+        }
+      }
+    }
   }
 
   async delete(name: string, owner: string): Promise<number> {
@@ -394,7 +408,7 @@ export class AppsService {
       const webHooks: WebHook[] = app.webHooks as WebHook[];
 
       for (const webHook of webHooks) {
-        const webHookEnvs = webHook.environments?webHook.environments:environments;
+        const webHookEnvs = webHook.environments ? webHook.environments : environments;
         L.info(webHookEnvs);
         for (const envName of webHookEnvs) {
           const hasEnv = environments.has(envName);

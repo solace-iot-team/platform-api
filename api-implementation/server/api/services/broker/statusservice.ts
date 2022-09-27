@@ -80,7 +80,7 @@ class StatusService {
     try {
       const connections: AppConnection[] = [];
       const apiClient: AllService = SempV2MonitorFactory.getSEMPv2Client(service);
-      const response: MsgVpnClientsResponse = await apiClient.getMsgVpnClients(service.msgVpnName, 100, null, [`clientUsername==${app.credentials.secret.consumerKey}`]);
+      const response: MsgVpnClientsResponse = await apiClient.getMsgVpnClients(service.msgVpnName, 100, null, [`aclProfileName==${app.internalName}`]);
       for (const c of response.data) {
         const conn: AppConnection = {
           clientAddress: c.clientAddress,
