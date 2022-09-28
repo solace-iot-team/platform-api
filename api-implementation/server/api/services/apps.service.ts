@@ -33,6 +33,8 @@ import EnvironmentsService from './environments.service';
 import Environment = Components.Schemas.Environment;
 import sempv2clientfactory from './broker/sempv2clientfactory';
 import semVerCompare from 'semver-compare';
+import credentialshelpers from './apps/credentialshelpers';
+import _ = require('lodash');
 
 export interface APISpecification {
   name: string;
@@ -294,29 +296,28 @@ export class AppsService {
 
   private processAppUpdateCredentials(app: AppPatch, appNotModified: AppPatch) {
     const credentialsArray: Components.Schemas.CredentialsArray = Array.isArray(app.credentials) ? app.credentials : [app.credentials];
+    const expiresIn = app.expiresIn ? app.expiresIn : (appNotModified.expiresIn ? appNotModified.expiresIn : -1);
     for (const credentials of credentialsArray) {
-      if (credentials && credentials.secret) {
-        // regenerate a consumerSecret if omitted / partial secret is sent
-        if (!credentials.secret.consumerSecret) {
-          credentials.secret.consumerSecret = AppHelper.generateConsumerSecret();
-        }
-        // set the issuedAt and calculate expiresAt timestamp
-        const now: number = Date.now();
-        credentials.issuedAt = now;
-        if (app.expiresIn && app.expiresIn > 0) {
-          credentials.expiresAt = now + app.expiresIn;
-        } else if (appNotModified.expiresIn && appNotModified.expiresIn > 0) {
-          credentials.expiresAt = now + (appNotModified.expiresIn * 1000);
-        } else {
-          credentials.expiresAt = -1;
-        }
-      } else if (app.expiresIn) {
-        // if expiresIn provided apply it to the previous expiration date.
-        app.credentials = appNotModified.credentials;
-        if (app.expiresIn > 0) {
-          credentials.expiresAt = credentials.issuedAt + (app.expiresIn * 1000);
-        } else {
-          credentials.expiresAt = -1;
+      if (credentials) {
+        try {
+          const previousCredentials = credentialshelpers.findByConsumerKey(credentials, appNotModified.credentials);
+          if (!_.isEqual(credentials, previousCredentials)) {
+            if (!credentials.secret?.consumerSecret) {
+              credentials.secret.consumerSecret = AppHelper.generateConsumerSecret();
+            }
+            AppHelper.resetCredentialsDates(credentials, expiresIn);
+          }
+        } catch (e) {
+          // this is a new set of credentials
+          if (!credentials.secret) {
+            credentials.secret = {
+              consumerKey: AppHelper.generateConsumerKey(),
+              consumerSecret: AppHelper.generateConsumerSecret(),
+            }
+          } else if (!credentials.secret?.consumerSecret) {
+            credentials.secret.consumerSecret = AppHelper.generateConsumerSecret();
+          }
+          AppHelper.resetCredentialsDates(credentials, expiresIn);
         }
       }
     }
@@ -346,12 +347,12 @@ export class AppsService {
     }
 
     // no more than 5 credentials are supported at any time
-    if (Array.isArray(app.credentials) && app.credentials.length>5){
+    if (Array.isArray(app.credentials) && app.credentials.length > 5) {
       throw new ErrorResponseInternal(
         400,
         `Exceedes maximum number of credentials per app (max 5).`
       );
-}
+    }
 
     // validate api products exist and find out if any  require approval
     for (const product of app.apiProducts) {
@@ -360,7 +361,7 @@ export class AppsService {
         productName = product as string;
       } else {
         productName = (product as AppApiProductsComplex).apiproduct;
-        if ( (product as AppApiProductsComplex).status && !isUpdate) {
+        if ((product as AppApiProductsComplex).status && !isUpdate) {
           throw new ErrorResponseInternal(
             400,
             `Providing a status for associated API Products is not allowed. (API Product ${productName})`

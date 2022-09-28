@@ -15,6 +15,10 @@ import { ErrorResponseInternal } from '../middlewares/error.handler';
 import preconditionCheck from './persistence/preconditionhelper';
 import { updateProtectionByObject } from './persistence/preconditionhelper';
 
+import credentialshelpers from './apps/credentialshelpers';
+import Credentials = Components.Schemas.Credentials;
+import CredentialsArray = Components.Schemas.CredentialsArray;
+
 export interface TeamApp extends App {
   appType?: string;
   ownerId?: string;
@@ -295,6 +299,96 @@ export class TeamsService {
     if (app) {
       WebHookHelpers.deleteAppWebHook(name, app);
       await this.updateAppInternal(team, appName, app);
+    }
+    return 204;
+  }
+
+  /**
+   * Credentials management, support requesting additional credentials and deletion by consumer key
+   */
+   async allAppCredentials(
+    teamName: string,
+    name: string
+  ): Promise<CredentialsArray> {
+    try {
+      const team: Team = await this.persistenceService.byName(teamName);
+      const app: AppResponse = await AppsService.byNameAndOwnerId(
+        name,
+        teamName,
+        'smf',
+        team.attributes,
+      );
+      if (app) {
+        return Array.isArray(app.credentials)?app.credentials:[app.credentials];
+      } else {
+        throw new ErrorResponseInternal(404, 'No app found');
+      }
+    } catch (e) {
+      throw e;
+    }
+  }  
+  public async requestCredentials(
+    teamName: string,
+    appName: string,
+    body: Credentials): Promise<Credentials> {
+    const app: AppResponse = await this.appByName(teamName, appName, 'smf');
+    if (app) {
+      try {
+        const credentials = credentialshelpers.findByConsumerKey(body, app.credentials);
+        throw new ErrorResponseInternal(422, `Credentials ${body.secret?.consumerKey} already exists`);
+      } catch (e) {
+        L.debug(`Credentials ${body.secret?.consumerKey} does not exist, adding it`);
+        if (app.credentials && Array.isArray(app.credentials)) {
+          app.credentials.push(body);
+        } else {
+          app.credentials = [app.credentials as Credentials, body];
+        }
+        const updatedApp = await this.updateAppInternal(teamName, appName, app);
+        const credentials = credentialshelpers.findByConsumerKey(body, updatedApp.credentials);
+        return credentials;
+      }
+    } else {
+      throw new ErrorResponseInternal(404, `Could not find ${appName} for  ${teamName}`);
+    }
+  }
+
+  async updateCredentials(
+    teamName: string,
+    appName: string,
+    name: string,
+    body: Credentials
+  ): Promise<Credentials> {
+
+    const app: AppResponse = await this.appByName(teamName, appName, 'smf');
+    if (app) {
+      if (!body.secret?.consumerKey) {
+        body.secret.consumerKey = name;
+      }
+      app.credentials = credentialshelpers.upsertByConsumerKey(body, app.credentials);
+      const updatedApp = await this.updateAppInternal(teamName, appName, app);
+      return credentialshelpers.findByConsumerKey(body, updatedApp.credentials);
+    } else {
+      throw new ErrorResponseInternal(404, `Could not find ${appName} for  ${teamName}`);
+    }
+  }
+
+  async deleteCredentials(
+    teamName: string,
+    appName: string,
+    name: string,
+  ): Promise<number> {
+
+    const app: AppResponse = await this.appByName(teamName, appName, 'smf');
+    if (app) {
+      const credentials: Credentials = {
+        secret: {
+          consumerKey: name
+        }
+      };
+      app.credentials = credentialshelpers.deleteByConsumerKey(credentials, app.credentials);
+      await this.updateAppInternal(teamName, appName, app);
+    } else {
+      throw new ErrorResponseInternal(404, `Could not find ${appName} for  ${teamName}`);
     }
     return 204;
   }

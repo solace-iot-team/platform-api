@@ -24,6 +24,8 @@ class AppHelper {
     credentials.issuedAt = now;
     if (expiresIn && expiresIn > 0) {
      credentials.expiresAt = now + (expiresIn*1000);
+    } else {
+      credentials.expiresAt = -1;
     }
   }
   
