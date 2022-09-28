@@ -32,13 +32,19 @@ export class OrganizationAppsRotateCredentials {
     L.info(`results ${apps.length}`);
     try {
       for (const app of apps) {
-        if (app.credentials && app.credentials.secret) {
-          L.debug(`now: ${now} expiresAt: ${app.credentials.expiresAt}`);
-          app.credentials.secret.consumerSecret = AppHelper.generateConsumerSecret();
-          AppHelper.resetCredentialsDates(app);
-          const appUpdate: AppPatch = {
-            credentials: app.credentials,
-          };
+        const credentialsArray: Components.Schemas.CredentialsArray = Array.isArray(app.credentials) ? app.credentials : [app.credentials];
+        const appUpdate: AppPatch = {
+          credentials: null,
+        };
+        for (const credentials of credentialsArray) {
+          if (credentials && credentials.secret) {
+            L.debug(`now: ${now} expiresAt: ${credentials.expiresAt}`);
+            credentials.secret.consumerSecret = AppHelper.generateConsumerSecret();
+            AppHelper.resetCredentialsDates(credentials, app.expiresIn);
+          }
+        }
+        appUpdate.credentials = credentialsArray.length>1?credentialsArray:credentialsArray[0];
+        if (appUpdate.credentials) {
           switch (app['appType']) {
             case 'team': {
               await TeamsService.updateApp(app['ownerId'], app.name, appUpdate);
@@ -53,7 +59,6 @@ export class OrganizationAppsRotateCredentials {
             }
           }
         }
-
       }
       return true;
     } catch (e) {

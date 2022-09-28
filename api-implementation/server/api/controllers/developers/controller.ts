@@ -160,6 +160,45 @@ export class Controller {
       .catch((e) => next(e));
   }
 
+  /** credentials */
+
+  allAppCredentials(req: Request, res: Response, next: NextFunction): void {
+    DevelopersService.allAppCredentials(req.params['developer'], req.params['name'])
+      .then((r) => {
+        res.json(r);
+      })
+      .catch((e) => next(e));
+    ;
+  }
+  createCredentials(req: Request, res: Response, next: NextFunction): void {
+    DevelopersService.requestCredentials(req.params['developer'], req.params['name'], req.body)
+      .then((r) => {
+        if (r) {
+          res.status(201).json(r);
+        }
+        else
+          next(new ErrorResponseInternal(500, `No response`));
+      })
+      .catch((e) => next(e));
+  }
+
+  updateCredentials(req: Request, res: Response, next: NextFunction): void {
+    DevelopersService.updateCredentials(req.params['developer'], req.params['app'], req.params['name'], req.body)
+      .then((r) => {
+        if (r) res.json(r);
+        else next(new ErrorResponseInternal(404, `Not found`));
+      })
+      .catch((e) => next(e));
+  }
+
+  deleteCredentials(req: Request, res: Response, next: NextFunction): void {
+    DevelopersService.deleteCredentials(req.params['developer'], req.params['app'], req.params['name'])
+      .then((r) => {
+        res.status(r).send();
+      })
+      .catch((e) => next(e));
+  }
+
   /**
    * Attributes resource
    */
