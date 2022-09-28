@@ -1,5 +1,28 @@
 # Release Notes
 
+## Version 0.9.0
+* OpenAPI: 0.15.0
+* API Management Connector Server: 0.9.0
+
+### Features
+
+* **feat-ep-2.0-importer-retire-deleted-EAPs**
+  - importer now retires the corresponding API Product in the APIM Connector if an EAP was deleted in EP 2.0
+* **feat-app-provisioning-ep-2.0-service-registry**
+  - Connector now supports PS+ service discovery from the messagig services defined in EP 2.0 Runtime Manager
+  - Can be activated per tenant using a switch on the `organization` configuration (`serviceRegistry`)
+  - *Beta feature - Runtime Manager does not supply messaging protocol and port information, using default PS+ software broker ports*
+* **feat-app-multiple-credentials-add-support**
+  - app now accepts either one credentials object or an array. if multiple credentials objects are present a client username is created for each.
+  - A maximum of 5 credentials are allowed
+  - Added a dedicated credentials sub resource to team and developer apps for management of credentials
+
+### Fixes
+
+* **fix-app-provisioing-async-call-configset-revision**
+  - fixed issue that led to app config set revisions not being persisted when an app is updated
+
+
 ## Version 0.8.0
 * OpenAPI: 0.13.1
 * API Management Connector Server: 0.8.0
