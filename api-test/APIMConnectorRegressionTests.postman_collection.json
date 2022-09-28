@@ -24810,12 +24810,12 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "http://localhost:9191/SEMP/v2/config/msgVpns/default/aclProfiles/{{APP_NAME_INTERNAL}}",
+							"raw": "http://localhost:9090/SEMP/v2/config/msgVpns/default/aclProfiles/{{APP_NAME_INTERNAL}}",
 							"protocol": "http",
 							"host": [
 								"localhost"
 							],
-							"port": "9191",
+							"port": "9090",
 							"path": [
 								"SEMP",
 								"v2",
