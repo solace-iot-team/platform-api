@@ -99,7 +99,7 @@ export class SolaceConfigService {
         }
         if (configSet.state.applied) {
             if (isModification) {
-                this.saveRevision(previousConfigSet);
+                await this.saveRevision(previousConfigSet);
                 await this.persistenceService.update(configSet.name, configSet);
             } else {
                 await this.persistenceService.create(configSet.name, configSet);
