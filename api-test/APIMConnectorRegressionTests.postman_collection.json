@@ -1678,7 +1678,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n  \"name\": \"{{TENANT}}\",\n  \"cloud-token\": {\n\t\t\"eventPortal\": {\n\t\t\t\"baseUrl\": \"https://api.solace.cloud/api/v0/eventPortal\",\n            \"token\": \"{{EP_TOKEN}}\"\n\n\t\t},\n\t\t\"cloud\":{\n\t\t\t\"baseUrl\": \"{{CLOUD_BASE_URL}}\",\n            \"token\":\"{{CLOUD_TOKEN}}\"\n\t\t}\n  },\n  \"integrations\": {\n    \"notifications\": {\n      \"baseUrl\": \"https://mr1i5g7tif6z9h.messaging.solace.cloud:9443/apim\",\n      \"authentication\": {\n        \"userName\": \"solace-cloud-client\",\n        \"password\": \"enfe56t36gbp4evn4hner9grmh\"\n      }\n    }\n  }\n}",
+							"raw": "{\n  \"name\": \"{{TENANT}}\",\n  \"cloud-token\": {\n\t\t\"eventPortal\": {\n\t\t\t\"baseUrl\": \"{{EP_BASE_URL}}\",\n            \"token\": \"{{EP_TOKEN}}\"\n\n\t\t},\n\t\t\"cloud\":{\n\t\t\t\"baseUrl\": \"{{CLOUD_BASE_URL}}\",\n            \"token\":\"{{CLOUD_TOKEN}}\"\n\t\t}\n  },\n  \"integrations\": {\n    \"notifications\": {\n      \"baseUrl\": \"https://mr1i5g7tif6z9h.messaging.solace.cloud:9443/apim\",\n      \"authentication\": {\n        \"userName\": \"solace-cloud-client\",\n        \"password\": \"enfe56t36gbp4evn4hner9grmh\"\n      }\n    }\n  }\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -1692,61 +1692,6 @@
 							],
 							"path": [
 								"organizations"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Add Dev Env",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"exec": [
-									"pm.test(\"Status OK\", function () {",
-									"    pm.response.to.have.status(201);",
-									"});"
-								],
-								"type": "text/javascript"
-							}
-						}
-					],
-					"request": {
-						"auth": {
-							"type": "basic",
-							"basic": [
-								{
-									"key": "password",
-									"value": "{{CONNECTOR_PASSWORD}}",
-									"type": "string"
-								},
-								{
-									"key": "username",
-									"value": "{{CONNECTOR_USERNAME}}",
-									"type": "string"
-								}
-							]
-						},
-						"method": "POST",
-						"header": [],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n  \"name\": \"{{CONNECTOR_ENV}}\",\n  \"displayName\": \"{{CONNECTOR_ENV}} display\",\n  \"description\": \"{{CONNECTOR_ENV}} environment\",\n  \"serviceId\": \"{{BROKER_ID}}\",\n  \"exposedProtocols\": [\n    {\n      \"name\": \"secure-mqtt\",\n      \"version\": \"3.1.1\"\n    },\n    {\n      \"name\": \"mqtt\",\n      \"version\": \"3.1.1\"\n    },\n    {\n      \"name\": \"http\",\n      \"version\": \"1.1\"\n    },\n    {\n      \"name\": \"https\",\n      \"version\": \"1.1\"\n    },\n    {\n      \"name\": \"jms\",\n      \"version\": \"1.1\"\n   },\n    {\n      \"name\": \"smf\",\n      \"version\": \"smf\"\n   },\n    {\n      \"name\": \"smfs\",\n      \"version\": \"smfs\"\n    }\n  ]\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "{{CONNECTOR_BASEURL}}/{{TENANT}}/environments",
-							"host": [
-								"{{CONNECTOR_BASEURL}}"
-							],
-							"path": [
-								"{{TENANT}}",
-								"environments"
 							]
 						}
 					},
@@ -1788,6 +1733,61 @@
 						"body": {
 							"mode": "raw",
 							"raw": "{\n  \"name\": \"{{PROD_CONNECTOR_ENV}}\",\n  \"description\": \"{{PROD_CONNECTOR_ENV}} environment\",\n  \"serviceId\": \"{{PROD_BROKER_ID}}\",\n  \"exposedProtocols\": [\n    {\n      \"name\": \"secure-mqtt\",\n      \"version\": \"3.1.1\"\n    },\n    {\n      \"name\": \"mqtt\",\n      \"version\": \"3.1.1\"\n    },\n    {\n      \"name\": \"http\",\n      \"version\": \"1.1\"\n    },\n    {\n      \"name\": \"https\",\n      \"version\": \"1.1\"\n    },\n    {\n      \"name\": \"jms\",\n      \"version\": \"1.1\"\n   },\n    {\n      \"name\": \"smf\",\n      \"version\": \"smf\"\n    },\n    {\n      \"name\": \"secure-jms\",\n      \"version\": \"1.1\"\n   },\n    {\n      \"name\": \"smfs\",\n      \"version\": \"smfs\"\n    }\n  ]\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{CONNECTOR_BASEURL}}/{{TENANT}}/environments",
+							"host": [
+								"{{CONNECTOR_BASEURL}}"
+							],
+							"path": [
+								"{{TENANT}}",
+								"environments"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Add Dev Env",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status OK\", function () {",
+									"    pm.response.to.have.status(201);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "{{CONNECTOR_PASSWORD}}",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "{{CONNECTOR_USERNAME}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"name\": \"{{CONNECTOR_ENV}}\",\n  \"displayName\": \"{{CONNECTOR_ENV}} display\",  \n  \"description\": \"{{CONNECTOR_ENV}} environment\",\n  \"serviceId\": \"{{BROKER_ID}}\",\n  \"exposedProtocols\": [\n    {\n      \"name\": \"secure-mqtt\",\n      \"version\": \"3.1.1\"\n    },\n    {\n      \"name\": \"mqtt\",\n      \"version\": \"3.1.1\"\n    },\n    {\n      \"name\": \"http\",\n      \"version\": \"1.1\"\n    },\n    {\n      \"name\": \"https\",\n      \"version\": \"1.1\"\n    },\n    {\n      \"name\": \"jms\",\n      \"version\": \"1.1\"\n   },\n    {\n      \"name\": \"smf\",\n      \"version\": \"smf\"\n    },\n    {\n      \"name\": \"secure-jms\",\n      \"version\": \"1.1\"\n   },\n    {\n      \"name\": \"smfs\",\n      \"version\": \"smfs\"\n    }\n  ]\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -2107,57 +2107,6 @@
 								"teams",
 								"{{TEAM_NAME}}",
 								"apps"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Check Broker ACL Present",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"exec": [
-									"pm.test(\"ACL is present\", function () {",
-									"    pm.expect(pm.response.text()).to.include(pm.environment.get(\"APP_NAME_INTERNAL\"));",
-									"});",
-									"pm.test(\"Status code is OK\", function () {",
-									"    pm.response.to.have.status(200);",
-									"});"
-								],
-								"type": "text/javascript"
-							}
-						}
-					],
-					"request": {
-						"auth": {
-							"type": "basic",
-							"basic": [
-								{
-									"key": "password",
-									"value": "{{BROKER_PASSWORD}}",
-									"type": "string"
-								},
-								{
-									"key": "username",
-									"value": "{{BROKER_USER}}",
-									"type": "string"
-								}
-							]
-						},
-						"method": "GET",
-						"header": [],
-						"url": {
-							"raw": "{{BROKER_BASEURL}}/msgVpns/{{CLOUD_VPN}}/aclProfiles/{{APP_NAME_INTERNAL}}",
-							"host": [
-								"{{BROKER_BASEURL}}"
-							],
-							"path": [
-								"msgVpns",
-								"{{CLOUD_VPN}}",
-								"aclProfiles",
-								"{{APP_NAME_INTERNAL}}"
 							]
 						}
 					},
@@ -4960,7 +4909,7 @@
 					"response": []
 				},
 				{
-					"name": "Create App (with product)",
+					"name": "Create App - WebHook Request Headers success",
 					"event": [
 						{
 							"listen": "test",
@@ -4968,6 +4917,48 @@
 								"exec": [
 									"pm.test(\"Status OK\", function () {",
 									"    pm.response.to.have.status(201);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"name\": \"{{APP_NAME}}\",\n  \"internalName\": \"{{APP_NAME_INTERNAL}}\",    \n  \"displayName\": \"{{APP_NAME}}\",\n  \"expiresIn\": 0,\n  \"apiProducts\": [\n    \"{{API_NAME}}_PRODUCT\"\n  ],\n  \"attributes\": [\n    {\n      \"name\": \"equipmentId\",\n      \"value\": \"E1,E2\"\n    }\n  ],\n  \"credentials\": {\n    \"expiresAt\": -1,\n    \"issuedAt\": 0,\n    \"secret\": {\n      \"consumerKey\": \"{{CONSUMER_KEY}}\",\n      \"consumerSecret\": \"{{CONSUMER_SECRET}}\"\n    }\n  },\n  \"webHooks\":\n    [{\"uri\": \"http://www.solace.com:80\", \"method\":\"POST\", \"requestHeaders\":[{\n        \"headerName\": \"x-header\",\n        \"headerValue\": \"HelloWorld\"\n    }]}]\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{CONNECTOR_BASEURL}}/{{TENANT}}/teams/{{TEAM_NAME}}/apps",
+							"host": [
+								"{{CONNECTOR_BASEURL}}"
+							],
+							"path": [
+								"{{TENANT}}",
+								"teams",
+								"{{TEAM_NAME}}",
+								"apps"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create App (with product) duplicate",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status OK\", function () {",
+									"    pm.response.to.have.status(422);",
 									"});"
 								],
 								"type": "text/javascript"
@@ -14822,6 +14813,51 @@
 					"response": []
 				},
 				{
+					"name": "Attemtp to add duplicate Copy",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 422\", function () {",
+									"    pm.response.to.have.status(422);",
+									"});",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n   \"name\":\"anotherWebHook\",\n  \"uri\": \"http://webhook.site/86865d51-3e31-4f5c-af79-7a0295b234e1\",\n  \"method\": \"POST\",\n  \"mode\": \"serial\",\n  \"environments\": [\n    \"dev\"\n  ]\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{CONNECTOR_BASEURL}}/{{TENANT}}/teams/{{TEAM_NAME}}/apps/{{APP_NAME}}/webHooks",
+							"host": [
+								"{{CONNECTOR_BASEURL}}"
+							],
+							"path": [
+								"{{TENANT}}",
+								"teams",
+								"{{TEAM_NAME}}",
+								"apps",
+								"{{APP_NAME}}",
+								"webHooks"
+							]
+						}
+					},
+					"response": []
+				},
+				{
 					"name": "Get Webhooks dev added",
 					"event": [
 						{
@@ -15413,25 +15449,26 @@
 								}
 							]
 						},
-						"method": "POST",
+						"method": "PUT",
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n  \"source\": \"EventAPIProduct\",\n  \"id\": \"t83018e8c1g\",\n  \"overwrite\": true\n}",
+							"raw": "{\n  \"components\": {\n    \"schemas\": {\n      \"AcmeApiError-1\": {\n        \"description\": \"\",\n        \"additionalProperties\": false,\n        \"type\": \"object\",\n        \"title\": \"Acme Api Error\",\n        \"required\": [\n          \"header\",\n          \"body\"\n        ],\n        \"properties\": {\n          \"header\": {\n            \"additionalProperties\": false,\n            \"type\": \"object\",\n            \"required\": [\n              \"timestamp\"\n            ],\n            \"properties\": {\n              \"timestamp\": {\n                \"type\": \"string\"\n              }\n            }\n          },\n          \"body\": {\n            \"additionalProperties\": false,\n            \"type\": \"object\",\n            \"required\": [\n              \"errorId\",\n              \"errorDetails\"\n            ],\n            \"properties\": {\n              \"errorId\": {\n                \"title\": \"errorId\",\n                \"type\": \"string\"\n              },\n              \"errorDetails\": {\n                \"title\": \"errorDetails\",\n                \"type\": \"object\"\n              }\n            }\n          }\n        }\n      },\n      \"AcmeOrder\": {\n        \"$schema\": \"http://json-schema.org/draft-07/schema#\",\n        \"description\": \"\",\n        \"additionalProperties\": false,\n        \"type\": \"object\",\n        \"title\": \"Acme New Order event\",\n        \"required\": [\n          \"header\",\n          \"body\"\n        ],\n        \"properties\": {\n          \"header\": {\n            \"additionalProperties\": false,\n            \"type\": \"object\",\n            \"required\": [\n              \"timestamp\"\n            ],\n            \"properties\": {\n              \"timestamp\": {\n                \"type\": \"string\"\n              }\n            }\n          },\n          \"body\": {\n            \"additionalProperties\": false,\n            \"type\": \"object\",\n            \"required\": [\n              \"bu_id\",\n              \"order_id\",\n              \"details\"\n            ],\n            \"properties\": {\n              \"details\": {\n                \"title\": \"order details\",\n                \"type\": \"object\"\n              },\n              \"bu_id\": {\n                \"title\": \"business unit\",\n                \"type\": \"string\"\n              },\n              \"order_id\": {\n                \"title\": \"order_id\",\n                \"type\": \"string\"\n              }\n            }\n          }\n        },\n        \"$id\": \"http://localhost:8811/acme/new-order.schema.json\"\n      }\n    },\n    \"messages\": {\n      \"AcmeNewOrder\": {\n        \"payload\": {\n          \"$ref\": \"#/components/schemas/AcmeOrder\"\n        },\n        \"description\": \"\",\n        \"schemaFormat\": \"application/vnd.aai.asyncapi+json;version=2.0.0\",\n        \"contentType\": \"application/json\"\n      },\n      \"AcmeApiError\": {\n        \"payload\": {\n          \"$ref\": \"#/components/schemas/AcmeApiError-1\"\n        },\n        \"description\": \"\",\n        \"schemaFormat\": \"application/vnd.aai.asyncapi+json;version=2.0.0\",\n        \"contentType\": \"application/json\"\n      },\n      \"AcmeUpdateOrder\": {\n        \"payload\": {\n          \"$ref\": \"#/components/schemas/AcmeOrder\"\n        },\n        \"description\": \"\",\n        \"schemaFormat\": \"application/vnd.aai.asyncapi+json;version=2.0.0\",\n        \"contentType\": \"application/json\"\n      }\n    }\n  },\n  \"servers\": {},\n  \"channels\": {\n    \"acme/apim/{bu_id}/{order_id}/update\": {\n      \"publish\": {\n        \"message\": {\n          \"$ref\": \"#/components/messages/AcmeUpdateOrder\"\n        }\n      },\n      \"parameters\": {\n        \"bu_id\": {\n          \"schema\": {\n            \"type\": \"string\",\n            \"enum\": [\n              \"auto\",\n              \"whitegoods\",\n              \"e_bike\"\n            ]\n          }\n        },\n        \"order_id\": {\n          \"schema\": {\n            \"type\": \"string\"\n          }\n        }\n      }\n    },\n    \"acme/apim/error\": {\n      \"publish\": {\n        \"message\": {\n          \"$ref\": \"#/components/messages/AcmeApiError\"\n        }\n      }\n    },\n    \"acme/apim/{bu_id}/create\": {\n      \"publish\": {\n        \"message\": {\n          \"$ref\": \"#/components/messages/AcmeNewOrder\"\n        }\n      },\n      \"parameters\": {\n        \"bu_id\": {\n          \"schema\": {\n            \"type\": \"string\",\n            \"enum\": [\n              \"auto\",\n              \"whitegoods\",\n              \"e_bike\"\n            ]\n          }\n        }\n      }\n    }\n  },\n  \"asyncapi\": \"2.0.0\",\n  \"info\": {\n    \"x-generated-time\": \"2021-09-12 10:03 UTC\",\n    \"description\": \"Consumer API for Order Notifications.\\n\\n---\\n\\n\",\n    \"title\": \"AcmeOrderNotifications-Consumer\",\n    \"x-view\": \"provider\",\n    \"version\": \"1\",\n    \"x-origin\": {\n      \"vendor\": \"solace\",\n      \"name\": \"apim-connector\"\n    }\n  }\n}",
 							"options": {
 								"raw": {
-									"language": "json"
+									"language": "text"
 								}
 							}
 						},
 						"url": {
-							"raw": "{{CONNECTOR_BASEURL}}/{{TENANT}}/apis",
+							"raw": "{{CONNECTOR_BASEURL}}/{{TENANT}}/apis/AcmeOrderNotifications-Consumer",
 							"host": [
 								"{{CONNECTOR_BASEURL}}"
 							],
 							"path": [
 								"{{TENANT}}",
-								"apis"
+								"apis",
+								"AcmeOrderNotifications-Consumer"
 							]
 						}
 					},
@@ -21718,6 +21755,710 @@
 			]
 		},
 		{
+			"name": "47 App Credentials - Multiple",
+			"item": [
+				{
+					"name": "Create API Product",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status OK\", function () {",
+									"    pm.response.to.have.status(201);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"apis\": [\n      \"{{API_NAME}}\"\n  ],\n  \"approvalType\": \"auto\",\n  \"attributes\": [\n  ],\n  \"description\": \"{{API_NAME}}_PRODUCT2\",\n  \"displayName\": \"{{API_NAME}}_PRODUCT2\",\n  \"environments\": [\n    \"dev\"\n  ],\n  \"name\": \"{{API_NAME}}_PRODUCT2\",\n  \"pubResources\": [\n  ],\n  \"subResources\": [\n  ],\n  \"protocols\": [\n    {\n      \"name\": \"mqtt\",\n      \"version\": \"3.1.1\"\n    }\n  ],\n  \"clientOptions\": {\n    \"guaranteedMessaging\": {\n      \"requireQueue\": true,\n      \"accessType\": \"exclusive\",\n      \"maxTtl\": 3600,\n      \"maxMsgSpoolUsage\": 50\n    }\n  }\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{CONNECTOR_BASEURL}}/{{TENANT}}/apiProducts",
+							"host": [
+								"{{CONNECTOR_BASEURL}}"
+							],
+							"path": [
+								"{{TENANT}}",
+								"apiProducts"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "POST APP",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"{{APP_NAME}}\",\n    \"displayName\": \"deleteApp\",\n    \"apiProducts\": [\n        \"{{API_NAME}}_PRODUCT2\"\n    ],\n    \"credentials\": {\n        \"secret\": {\n            \"consumerSecret\": \"deleteApp-application-secret\",\n            \"consumerKey\": \"deleteApp-application-key\"\n        }\n    },\n    \"internalName\": \"{{APP_NAME_INTERNAL}}\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{CONNECTOR_BASEURL}}/{{TENANT}}/teams/{{TEAM_NAME}}/apps",
+							"host": [
+								"{{CONNECTOR_BASEURL}}"
+							],
+							"path": [
+								"{{TENANT}}",
+								"teams",
+								"{{TEAM_NAME}}",
+								"apps"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Check Broker User Present",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"ACL is present\", function () {",
+									"    pm.expect(pm.response.text()).to.include(pm.environment.get(\"APP_NAME_INTERNAL\"));",
+									"});",
+									"pm.test(\"Status code is OK\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "{{BROKER_PASSWORD}}",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "{{BROKER_USER}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{BROKER_BASEURL}}/msgVpns/{{CLOUD_VPN}}/clientUsernames/deleteApp-application-key",
+							"host": [
+								"{{BROKER_BASEURL}}"
+							],
+							"path": [
+								"msgVpns",
+								"{{CLOUD_VPN}}",
+								"clientUsernames",
+								"deleteApp-application-key"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "POST Credentials",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Successful POST request\", function () {",
+									"    pm.expect(pm.response.code).to.be.oneOf([201, 202]);",
+									"});",
+									"",
+									"pm.test(\"Your test name\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.expiresAt).to.eql(-1);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{CONNECTOR_BASEURL}}/{{TENANT}}/teams/{{TEAM_NAME}}/apps/{{APP_NAME}}/credentials",
+							"host": [
+								"{{CONNECTOR_BASEURL}}"
+							],
+							"path": [
+								"{{TENANT}}",
+								"teams",
+								"{{TEAM_NAME}}",
+								"apps",
+								"{{APP_NAME}}",
+								"credentials"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "PATCH Credentials",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Successful PATCH request\", function () {",
+									"    pm.expect(pm.response.code).to.be.oneOf([200, 202]);",
+									"});",
+									"",
+									"pm.test(\"Expiry date is preserved\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.expiresAt).to.eql(-1);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PATCH",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"issuedAt\": 0,\n    \"secret\": {\n        \"consumerSecret\": \"deleteApp-application-new-secret\",\n        \"consumerKey\": \"deleteApp-application-key\"\n    },\n    \"expiresAt\": 5\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{CONNECTOR_BASEURL}}/{{TENANT}}/teams/{{TEAM_NAME}}/apps/{{APP_NAME}}/credentials/deleteApp-application-key",
+							"host": [
+								"{{CONNECTOR_BASEURL}}"
+							],
+							"path": [
+								"{{TENANT}}",
+								"teams",
+								"{{TEAM_NAME}}",
+								"apps",
+								"{{APP_NAME}}",
+								"credentials",
+								"deleteApp-application-key"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Check credentials",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Your test name\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.length).to.eql(2);",
+									"});",
+									"",
+									"pm.test(\"Body matches string\", function () {",
+									"    pm.expect(pm.response.text()).to.include(\"deleteApp-application-new-secret\");",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{CONNECTOR_BASEURL}}/{{TENANT}}/teams/{{TEAM_NAME}}/apps/{{APP_NAME}}/credentials",
+							"host": [
+								"{{CONNECTOR_BASEURL}}"
+							],
+							"path": [
+								"{{TENANT}}",
+								"teams",
+								"{{TEAM_NAME}}",
+								"apps",
+								"{{APP_NAME}}",
+								"credentials"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "POST Named Credentials(has consume key",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Successful POST request\", function () {",
+									"    pm.expect(pm.response.code).to.be.oneOf([201, 202]);",
+									"});",
+									"",
+									"pm.test(\"Expiry preserved\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.expiresAt).to.eql(-1);",
+									"});",
+									"",
+									"pm.test(\"consumer secret creatrd\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.secret.consumerSecret.length).to.eql(16);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"issuedAt\": 0,\n    \"secret\": {\n        \"consumerKey\": \"a-new-key\"\n    },\n    \"expiresAt\": 5\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{CONNECTOR_BASEURL}}/{{TENANT}}/teams/{{TEAM_NAME}}/apps/{{APP_NAME}}/credentials",
+							"host": [
+								"{{CONNECTOR_BASEURL}}"
+							],
+							"path": [
+								"{{TENANT}}",
+								"teams",
+								"{{TEAM_NAME}}",
+								"apps",
+								"{{APP_NAME}}",
+								"credentials"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Check credentials Copy",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Your test name\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.length).to.eql(3);",
+									"});",
+									"",
+									"pm.test(\"Body matches string\", function () {",
+									"    pm.expect(pm.response.text()).to.include(\"a-new-key\");",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{CONNECTOR_BASEURL}}/{{TENANT}}/teams/{{TEAM_NAME}}/apps/{{APP_NAME}}/credentials",
+							"host": [
+								"{{CONNECTOR_BASEURL}}"
+							],
+							"path": [
+								"{{TENANT}}",
+								"teams",
+								"{{TEAM_NAME}}",
+								"apps",
+								"{{APP_NAME}}",
+								"credentials"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "DELETE Credentials",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 204\", function () {",
+									"    pm.response.to.have.status(204);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{CONNECTOR_BASEURL}}/{{TENANT}}/teams/{{TEAM_NAME}}/apps/{{APP_NAME}}/credentials/a-new-key",
+							"host": [
+								"{{CONNECTOR_BASEURL}}"
+							],
+							"path": [
+								"{{TENANT}}",
+								"teams",
+								"{{TEAM_NAME}}",
+								"apps",
+								"{{APP_NAME}}",
+								"credentials",
+								"a-new-key"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Check credentials Copy",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Your test name\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.length).to.eql(2);",
+									"});",
+									"",
+									"pm.test(\"Body matches string\", function () {",
+									"    pm.expect(pm.response.text()).to.include(\"deleteApp-application-new-secret\");",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{CONNECTOR_BASEURL}}/{{TENANT}}/teams/{{TEAM_NAME}}/apps/{{APP_NAME}}/credentials",
+							"host": [
+								"{{CONNECTOR_BASEURL}}"
+							],
+							"path": [
+								"{{TENANT}}",
+								"teams",
+								"{{TEAM_NAME}}",
+								"apps",
+								"{{APP_NAME}}",
+								"credentials"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "PATCH APP",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Successful POST request\", function () {",
+									"    pm.expect(pm.response.code).to.be.oneOf([200, 201, 202]);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PATCH",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\"credentials\":{\"issuedAt\":0,\"secret\":{\"consumerSecret\":\"tr5yu2ZskGB3BcCfFMz3XPRzrRwa\",\"consumerKey\":\"8bWvl9dSniT5noxqlCoOR0s1EHca\"},\"expiresAt\":-1}}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{CONNECTOR_BASEURL}}/{{TENANT}}/teams/{{TEAM_NAME}}/apps/{{APP_NAME}}",
+							"host": [
+								"{{CONNECTOR_BASEURL}}"
+							],
+							"path": [
+								"{{TENANT}}",
+								"teams",
+								"{{TEAM_NAME}}",
+								"apps",
+								"{{APP_NAME}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Check Broker User Present Copy",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"User is present\", function () {",
+									"    pm.expect(pm.response.text()).to.include(pm.environment.get(\"APP_NAME_INTERNAL\"));",
+									"});",
+									"pm.test(\"Status code is OK\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "{{BROKER_PASSWORD}}",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "{{BROKER_USER}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{BROKER_BASEURL}}/msgVpns/{{CLOUD_VPN}}/clientUsernames/8bWvl9dSniT5noxqlCoOR0s1EHca",
+							"host": [
+								"{{BROKER_BASEURL}}"
+							],
+							"path": [
+								"msgVpns",
+								"{{CLOUD_VPN}}",
+								"clientUsernames",
+								"8bWvl9dSniT5noxqlCoOR0s1EHca"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Check Broker User Missing",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"ACL is present\", function () {",
+									"    pm.expect(pm.response.text()).to.include('NOT_FOUND');",
+									"});",
+									"pm.test(\"Status code is OK\", function () {",
+									"    pm.response.to.have.status(400);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "{{BROKER_PASSWORD}}",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "{{BROKER_USER}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{BROKER_BASEURL}}/msgVpns/{{CLOUD_VPN}}/clientUsernames/deleteApp-application-key",
+							"host": [
+								"{{BROKER_BASEURL}}"
+							],
+							"path": [
+								"msgVpns",
+								"{{CLOUD_VPN}}",
+								"clientUsernames",
+								"deleteApp-application-key"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "DELETE APP",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\"name\":\"cea30861-aca1-4f3a-a3b5-870d82324934\",\"displayName\":\"deleteApp\",\"apiProducts\":[\"devEnv-Demo2Api-demo2-2.0\"],\"credentials\":{\"issuedAt\":0,\"secret\":{\"consumerSecret\":\"deleteApp-application-secret\",\"consumerKey\":\"deleteApp-application-key\"},\"expiresAt\":-1}}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{CONNECTOR_BASEURL}}/{{TENANT}}/teams/{{TEAM_NAME}}/apps/{{APP_NAME}}",
+							"host": [
+								"{{CONNECTOR_BASEURL}}"
+							],
+							"path": [
+								"{{TENANT}}",
+								"teams",
+								"{{TEAM_NAME}}",
+								"apps",
+								"{{APP_NAME}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Check Broker User Missing Copy",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"ACL is present\", function () {",
+									"    pm.expect(pm.response.text()).to.include('NOT_FOUND');",
+									"});",
+									"pm.test(\"Status code is OK\", function () {",
+									"    pm.response.to.have.status(400);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "{{BROKER_PASSWORD}}",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "{{BROKER_USER}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{BROKER_BASEURL}}/msgVpns/{{CLOUD_VPN}}/clientUsernames/8bWvl9dSniT5noxqlCoOR0s1EHca",
+							"host": [
+								"{{BROKER_BASEURL}}"
+							],
+							"path": [
+								"msgVpns",
+								"{{CLOUD_VPN}}",
+								"clientUsernames",
+								"8bWvl9dSniT5noxqlCoOR0s1EHca"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete API Product Copy 2",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is OK\", function () {",
+									"    pm.response.to.have.status(204);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{CONNECTOR_BASEURL}}/{{TENANT}}/apiProducts/{{API_NAME}}_PRODUCT2",
+							"host": [
+								"{{CONNECTOR_BASEURL}}"
+							],
+							"path": [
+								"{{TENANT}}",
+								"apiProducts",
+								"{{API_NAME}}_PRODUCT2"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
 			"name": "General Tear Down",
 			"item": [
 				{
@@ -22082,7 +22823,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n  \"name\": \"{{TENANT}}\",\n  \"cloud-token\":{\n\t\t\"eventPortal\": {\n\t\t\t\"baseUrl\": \"https://api.solace.cloud/api/v0/eventPortal\",\n\t\t\t\"token\":\"{{EP_TOKEN}}\"\n\t\t},\n\t\t\"cloud\":{\n\t\t\t\"baseUrl\": \"{{CLOUD_BASE_URL}}\",\n\t\t\t\"token\": \"{{CLOUD_TOKEN}}\"\n\t\t}\n  }\n}",
+							"raw": "{\n  \"name\": \"{{TENANT}}\",\n  \"cloud-token\":{\n\t\t\"eventPortal\": {\n\t\t\t\"baseUrl\": \"{{EP_BASE_URL}}\",\n\t\t\t\"token\":\"{{EP_TOKEN}}\"\n\t\t},\n\t\t\"cloud\":{\n\t\t\t\"baseUrl\": \"{{CLOUD_BASE_URL}}\",\n\t\t\t\"token\": \"{{CLOUD_TOKEN}}\"\n\t\t}\n  }\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -22137,7 +22878,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n  \"name\": \"{{TENANT}}\",\n  \"cloud-token\":{\n\t\t\"eventPortal\": {\n\t\t\t\"baseUrl\": \"https://api.solace.cloud/api/v0/eventPortal\"\n\t\t},\n\t\t\"cloud\":{\n\t\t\t\"baseUrl\": \"{{CLOUD_BASE_URL}}\"\n\t\t}\n  }\n}",
+							"raw": "{\n  \"name\": \"{{TENANT}}\",\n  \"cloud-token\":{\n\t\t\"eventPortal\": {\n\t\t\t\"baseUrl\": \"{{EP_BASE_URL}}\"\n\t\t},\n\t\t\"cloud\":{\n\t\t\t\"baseUrl\": \"{{CLOUD_BASE_URL}}\"\n\t\t}\n  }\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -23765,6 +24506,380 @@
 							"path": [
 								"organizations",
 								"org-01"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "9999 EP 2.0 Service Registry",
+			"item": [
+				{
+					"name": "Create Org Copy",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"/*",
+									"pm.test(\"Status OK\", function () {",
+									"    pm.response.to.have.status(201);",
+									"});",
+									"*/"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "{{CONNECTOR_ADMIN_PWD}}",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "{{CONNECTOR_ADMIN}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"name\": \"{{TENANT}}\",\n  \"cloud-token\": {\n\t\t\"eventPortal\": {\n\t\t\t\"baseUrl\": \"{{EP_BASE_URL}}\",\n            \"token\": \"{{EP_TOKEN}}\"\n\n\t\t},\n\t\t\"cloud\":{\n\t\t\t\"baseUrl\": \"{{CLOUD_BASE_URL}}\",\n            \"token\":\"{{CLOUD_TOKEN}}\"\n\t\t}\n  },\n  \"integrations\": {\n    \"notifications\": {\n      \"baseUrl\": \"https://mr1i5g7tif6z9h.messaging.solace.cloud:9443/apim\",\n      \"authentication\": {\n        \"userName\": \"solace-cloud-client\",\n        \"password\": \"enfe56t36gbp4evn4hner9grmh\"\n      }\n    }\n  },\n  \"serviceRegistry\": \"eventportal\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{CONNECTOR_BASEURL}}/organizations",
+							"host": [
+								"{{CONNECTOR_BASEURL}}"
+							],
+							"path": [
+								"organizations"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Add Dev Env",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"/*",
+									"pm.test(\"Status OK\", function () {",
+									"    pm.response.to.have.status(201);",
+									"});",
+									"*/"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "{{CONNECTOR_PASSWORD}}",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "{{CONNECTOR_USERNAME}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"name\": \"{{CONNECTOR_ENV}}\",\n  \"displayName\": \"{{CONNECTOR_ENV}} display\",\n  \"description\": \"{{CONNECTOR_ENV}} environment\",\n  \"serviceId\": \"ch1n1i3a52o\",\n  \"exposedProtocols\": [\n    {\n      \"name\": \"secure-mqtt\",\n      \"version\": \"3.1.1\"\n    },\n    {\n      \"name\": \"mqtt\",\n      \"version\": \"3.1.1\"\n    },\n    {\n      \"name\": \"http\",\n      \"version\": \"1.1\"\n    },\n    {\n      \"name\": \"https\",\n      \"version\": \"1.1\"\n    },\n    {\n      \"name\": \"jms\",\n      \"version\": \"1.1\"\n   },\n    {\n      \"name\": \"smf\",\n      \"version\": \"smf\"\n   },\n    {\n      \"name\": \"smfs\",\n      \"version\": \"smfs\"\n    }\n  ]\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{CONNECTOR_BASEURL}}/{{TENANT}}/environments",
+							"host": [
+								"{{CONNECTOR_BASEURL}}"
+							],
+							"path": [
+								"{{TENANT}}",
+								"environments"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Add API Copy",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"/*",
+									"pm.test(\"Status OK\", function () {",
+									"    pm.response.to.have.status(201);",
+									"});",
+									"",
+									"pm.test(\"Async APi is stored unchanged\", function () {",
+									"",
+									"    const r = JSON.parse(request.data);",
+									"    console.log(r);",
+									"    const secondResponse = pm.response.json();",
+									"",
+									"    const isEqual = _.isEqual(r, secondResponse);",
+									"    pm.expect(isEqual).to.be.true;",
+									"//    pm.response.to.have.body(request.data);",
+									"});",
+									"",
+									"pm.test(\"No x-parser additions\", function () {",
+									"    pm.expect(pm.response.text()).to.not.include(\"x-parser-original-schema-format\");",
+									"});",
+									"*/"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"components\": {\n    \"schemas\": {\n      \"SensorEvent\": {\n        \"$schema\": \"http://json-schema.org/draft-04/schema#\",\n        \"description\": \"\",\n        \"type\": \"object\",\n        \"properties\": {\n          \"communicationDate\": {\n            \"type\": \"integer\"\n          },\n          \"signedCommunication\": {\n            \"type\": \"boolean\"\n          },\n          \"events\": {\n            \"type\": \"array\",\n            \"items\": [\n              {\n                \"type\": \"string\"\n              },\n              {\n                \"type\": \"array\",\n                \"items\": [\n                  {\n                    \"type\": \"object\",\n                    \"properties\": {\n                      \"tripPlanId\": {\n                        \"type\": \"integer\"\n                      },\n                      \"sensorName\": {\n                        \"type\": \"string\"\n                      },\n                      \"communicationType\": {\n                        \"type\": \"string\"\n                      },\n                      \"eventType\": {\n                        \"type\": \"string\"\n                      },\n                      \"gps\": {\n                        \"type\": \"string\"\n                      },\n                      \"sensorValues\": {\n                        \"type\": \"array\",\n                        \"items\": [\n                          {\n                            \"type\": \"string\"\n                          },\n                          {\n                            \"type\": \"object\",\n                            \"properties\": {\n                              \"Uncertainty\": {\n                                \"type\": \"string\"\n                              },\n                              \"Compass Direction\": {\n                                \"type\": \"string\"\n                              }\n                            },\n                            \"required\": [\n                              \"Uncertainty\",\n                              \"Compass Direction\"\n                            ]\n                          }\n                        ]\n                      },\n                      \"sensorValue\": {\n                        \"type\": \"string\"\n                      },\n                      \"deviceSerialNumber\": {\n                        \"type\": \"string\"\n                      },\n                      \"eventDate\": {\n                        \"type\": \"integer\"\n                      },\n                      \"sensorId\": {\n                        \"type\": \"integer\"\n                      }\n                    },\n                    \"required\": [\n                      \"deviceSerialNumber\",\n                      \"eventDate\",\n                      \"eventType\",\n                      \"communicationType\",\n                      \"gps\",\n                      \"sensorName\",\n                      \"sensorValue\",\n                      \"sensorValues\",\n                      \"tripPlanId\",\n                      \"sensorId\"\n                    ]\n                  }\n                ]\n              }\n            ]\n          },\n          \"deviceSerialNumber\": {\n            \"type\": \"string\"\n          },\n          \"validatedSignature\": {\n            \"type\": \"boolean\"\n          }\n        },\n        \"required\": [\n          \"events\",\n          \"deviceSerialNumber\",\n          \"communicationDate\",\n          \"signedCommunication\",\n          \"validatedSignature\"\n        ]\n      }\n    },\n    \"messages\": {\n      \"GeoSensorEvent\": {\n        \"payload\": {\n          \"$ref\": \"#/components/schemas/SensorEvent\"\n        },\n        \"description\": \"\",\n        \"schemaFormat\": \"application/vnd.aai.asyncapi+json;version=2.0.0\",\n        \"contentType\": \"application/json\"\n      },\n      \"SensorEvent\": {\n        \"payload\": {\n          \"$ref\": \"#/components/schemas/SensorEvent\"\n        },\n        \"description\": \"\",\n        \"schemaFormat\": \"application/vnd.aai.asyncapi+json;version=2.0.0\",\n        \"contentType\": \"application/json\"\n      }\n    }\n  },\n  \"servers\": {},\n  \"channels\": {\n    \"traxens/feed/{shippingline}/v1/{equipmentId}/{sensor}/{sensorvalue}\": {\n      \"publish\": {\n        \"message\": {\n          \"$ref\": \"#/components/messages/SensorEvent\"\n        }\n      },\n      \"parameters\": {\n        \"shippingline\": {\n          \"schema\": {\n            \"type\": \"string\"\n          }\n        },\n        \"sensor\": {\n          \"schema\": {\n            \"type\": \"string\",\n            \"enum\": [\n              \"HUMIDITY\",\n              \"LIGHT\",\n              \"DOOR\",\n              \"GEOFENCE\"\n            ]\n          }\n        },\n        \"sensorvalue\": {\n          \"schema\": {\n            \"type\": \"string\"\n          }\n        },\n        \"equipmentId\": {\n          \"schema\": {\n            \"type\": \"string\"\n          }\n        }\n      }\n    },\n    \"traxens/feed/{shippingline}/v1/{equipmentId}/{geosensor}/{longitude}\": {\n      \"publish\": {\n        \"message\": {\n          \"$ref\": \"#/components/messages/GeoSensorEvent\"\n        }\n      },\n      \"parameters\": {\n        \"geosensor\": {\n          \"schema\": {\n            \"type\": \"string\",\n            \"enum\": [\n              \"GEOPOSITIONING\"\n            ]\n          }\n        },\n        \"shippingline\": {\n          \"schema\": {\n            \"type\": \"string\"\n          }\n        },\n        \"equipmentId\": {\n          \"schema\": {\n            \"type\": \"string\"\n          }\n        },\n        \"longitude\": {\n          \"schema\": {\n            \"type\": \"string\"\n          }\n        }\n      }\n    }\n  },\n  \"asyncapi\": \"2.0.0\",\n  \"info\": {\n    \"x-generated-time\": \"2021-07-15 15:03 UTC\",\n    \"description\": \"\",\n    \"title\": \"WebSub API\",\n    \"x-view\": \"provider\",\n    \"version\": \"1.0.0\",\n    \"x-origin\": {\n      \"vendor\": \"solace\",\n      \"name\": \"event-portal\"\n    }\n  }\n}",
+							"options": {
+								"raw": {
+									"language": "text"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{CONNECTOR_BASEURL}}/{{TENANT}}/apis/{{API_NAME}}",
+							"host": [
+								"{{CONNECTOR_BASEURL}}"
+							],
+							"path": [
+								"{{TENANT}}",
+								"apis",
+								"{{API_NAME}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create API Product Copy",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"/*",
+									"pm.test(\"Status OK\", function () {",
+									"    pm.response.to.have.status(201);",
+									"});",
+									"*/"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"apis\": [\n      \"{{API_NAME}}\"\n  ],\n  \"approvalType\": \"auto\",\n  \"attributes\": [\n  ],\n  \"description\": \"{{API_NAME}}_PRODUCT\",\n  \"displayName\": \"{{API_NAME}}_PRODUCT\",\n  \"environments\": [\n    \"dev\"\n  ],\n  \"name\": \"{{API_NAME}}_PRODUCT\",\n  \"pubResources\": [\n  ],\n  \"subResources\": [\n  ],\n  \"protocols\": [\n    {\n      \"name\": \"jms\",\n      \"version\": \"1.1\"\n    }\n  ],\n  \"clientOptions\": {\n    \"guaranteedMessaging\": {\n      \"requireQueue\": true,\n      \"accessType\": \"exclusive\",\n      \"maxTtl\": 3600,\n      \"maxMsgSpoolUsage\": 50\n    }\n  }\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{CONNECTOR_BASEURL}}/{{TENANT}}/apiProducts",
+							"host": [
+								"{{CONNECTOR_BASEURL}}"
+							],
+							"path": [
+								"{{TENANT}}",
+								"apiProducts"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create App (with product) Copy",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"/*",
+									"pm.test(\"Status OK\", function () {",
+									"    pm.response.to.have.status(201);",
+									"});",
+									"*/"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"name\": \"{{APP_NAME}}\",\n  \"internalName\": \"{{APP_NAME_INTERNAL}}\",    \n  \"displayName\": \"{{APP_NAME}}\",\n  \"expiresIn\": 0,\n  \"apiProducts\": [\n    \"{{API_NAME}}_PRODUCT\"\n  ],\n  \"attributes\": [\n    {\n      \"name\": \"equipmentId\",\n      \"value\": \"E1,E2\"\n    }\n  ],\n  \"credentials\": {\n    \"expiresAt\": -1,\n    \"issuedAt\": 0,\n    \"secret\": {\n      \"consumerKey\": \"{{CONSUMER_KEY}}\",\n      \"consumerSecret\": \"{{CONSUMER_SECRET}}\"\n    }\n  }\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{CONNECTOR_BASEURL}}/{{TENANT}}/teams/{{TEAM_NAME}}/apps",
+							"host": [
+								"{{CONNECTOR_BASEURL}}"
+							],
+							"path": [
+								"{{TENANT}}",
+								"teams",
+								"{{TEAM_NAME}}",
+								"apps"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Check Broker ACL Present",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"/*pm.test(\"ACL is present\", function () {",
+									"    pm.expect(pm.response.text()).to.include(pm.environment.get(\"APP_NAME_INTERNAL\"));",
+									"});",
+									"pm.test(\"Status code is OK\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});*/"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "admin",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "admin",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:9191/SEMP/v2/config/msgVpns/default/aclProfiles/{{APP_NAME_INTERNAL}}",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "9191",
+							"path": [
+								"SEMP",
+								"v2",
+								"config",
+								"msgVpns",
+								"default",
+								"aclProfiles",
+								"{{APP_NAME_INTERNAL}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Org Copy",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"/*pm.test(\"Status code is OK\", function () {",
+									"    pm.response.to.have.status(204);",
+									"});",
+									"*/"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "{{CONNECTOR_ADMIN_PWD}}",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "{{CONNECTOR_ADMIN}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"name\": \"{{TENANT}}\",\n  \"cloud-token\": \"{{CLOUD_TOKEN}}\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{CONNECTOR_BASEURL}}/organizations/{{TENANT}}",
+							"host": [
+								"{{CONNECTOR_BASEURL}}"
+							],
+							"path": [
+								"organizations",
+								"{{TENANT}}"
 							]
 						}
 					},
