@@ -164,27 +164,29 @@ export class OrganizationsService {
     }
   }
 
-  private async validateEventPortalToken(token: string, baseUrl?: string): Promise<boolean>{
+  private async validateEventPortalToken(token: string, baseUrl?: string): Promise<boolean> {
     const epVersion = process.env.EP_VERSION || '1';
-    if (epVersion == '1'){
+    if (epVersion == '1') {
       return await EventPortalFacade.validate(token, baseUrl);
-    } else if (epVersion == '2'){
+    } else if (epVersion == '2') {
       return await EventPortal2Facade.validate(token, baseUrl);
     } else {
       return await EventPortalFacade.validate(token, baseUrl);
     }
   }
 
-  private async validateOrganization(newOrg: Organization){
+  private async validateOrganization(newOrg: Organization) {
     // validate that if supplied token is valid for event portal if organization's service registry is set to eventportal 
-    if (newOrg.serviceRegistry == 'eventportal'){
-      const epVersion = process.env.EP_VERSION || '1';
-      const orgStatus = await this.getOrganizationStatus(newOrg['cloud-token']);
-      if (!orgStatus.eventPortalConnectivity){
-        throw new ErrorResponseInternal(400, 'The supplied token is not valid for Event Portal');
-      }
-      if (epVersion != '2'){
-        throw new ErrorResponseInternal(400, 'Event portal 2.0 support is not enabled');
+    if (newOrg['cloud-token']) {
+      if (newOrg.serviceRegistry == 'eventportal') {
+        const epVersion = process.env.EP_VERSION || '1';
+        const orgStatus = await this.getOrganizationStatus(newOrg['cloud-token']);
+        if (!orgStatus.eventPortalConnectivity) {
+          throw new ErrorResponseInternal(400, 'The supplied token is not valid for Event Portal');
+        }
+        if (epVersion != '2') {
+          throw new ErrorResponseInternal(400, 'Event portal 2.0 support is not enabled');
+        }
       }
     }
   }
