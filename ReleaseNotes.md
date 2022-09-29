@@ -1,5 +1,15 @@
 # Release Notes
 
+## Version 0.9.1
+* OpenAPI: 0.15.0
+* API Management Connector Server: 0.9.1
+
+### Fixes
+
+* **fix-orgs-patch-token-validation**
+  - attempt was made to validate cloud/EP token even if not supplied.
+
+
 ## Version 0.9.0
 * OpenAPI: 0.15.0
 * API Management Connector Server: 0.9.0
