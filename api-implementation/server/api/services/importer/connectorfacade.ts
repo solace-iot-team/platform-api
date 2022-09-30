@@ -24,6 +24,7 @@ export class EPSystemAttributes {
   public static EP_SOURCE_INDICATOR: string = 'Solace Event Portal (2)';
   public static EP_EAP_OBJECT: string = '_EP_EAP_OBJECT_';
   public static EP_EAP_ID: string = '_EP_EAP_ID_';
+  public static EP_IMPORTER_NAME: string = '_EP_IMPORTER_NAME_';
 }
 
 export class APIProductAttributes {
@@ -247,10 +248,15 @@ export class ConnectorFacade {
 
   }
 
-  public async processDeletedEAProducts(importableEAPIds: string[]): Promise<APIProductUpsertResult[]> {
+  public async processDeletedEAProducts(importableEAPIds: string[], epImporterName: string ): Promise<APIProductUpsertResult[]> {
     const results: APIProductUpsertResult[] = [];
 
-    const apiProductsImportedForDeletedEAP = await apiProductsService.all({ attributes: { $elemMatch: { name: '_EP_EAP_ID_', value: { $nin: importableEAPIds } } } });
+    const apiProductsImportedForDeletedEAP = await apiProductsService.all(
+      {$and: 
+        [
+          { attributes: { $elemMatch: { name: EPSystemAttributes.EP_EAP_ID, value: { $nin: importableEAPIds } } } },
+          { attributes: { $elemMatch: { name: EPSystemAttributes.EP_IMPORTER_NAME, value: epImporterName } } }
+      ]});
     if (apiProductsImportedForDeletedEAP.length > 0) {
       for (const apiProduct of apiProductsImportedForDeletedEAP) {
         if (apiProduct.meta?.stage && apiProduct.meta?.stage != 'retired') {
@@ -377,6 +383,7 @@ export class ConnectorFacade {
       apiProduct.meta = meta;
       this.patchAttribute(EPSystemAttributes.EP_EAP_OBJECT, oldApiProduct, apiProduct);
       this.patchAttribute(EPSystemAttributes.EP_EAP_ID, oldApiProduct, apiProduct);
+      this.patchAttribute(EPSystemAttributes.EP_IMPORTER_NAME, oldApiProduct, apiProduct);
       this.patchAttribute(APIProductAttributes.APP_DOMAIN, oldApiProduct, apiProduct);
       this.patchAttribute(APIProductAttributes.EAP_NAME, oldApiProduct, apiProduct);
       apiProduct.attributes = oldApiProduct.attributes;

@@ -51,7 +51,7 @@ export default class EventPortalImporterTaskImpl {
       const importableEAPIds: string[] = [];
       prodVersions.forEach(p => importableEAPIds.push(p.product.id));
       if (importableEAPIds.length > 0) {
-        const cleanUpResults = await connectorFacade.processDeletedEAProducts(importableEAPIds);
+        const cleanUpResults = await connectorFacade.processDeletedEAProducts(importableEAPIds, configuration.name);
         results.push({
           eventAPIProductVersion: null,
           results: cleanUpResults
@@ -101,6 +101,7 @@ export default class EventPortalImporterTaskImpl {
     }
     mappedAttributes.push({ name: EPSystemAttributes.EP_EAP_OBJECT, value: JSON.stringify(prodVersion) });
     mappedAttributes.push({ name: EPSystemAttributes.EP_EAP_ID, value: prodVersion.product.id });
+    mappedAttributes.push({ name: EPSystemAttributes.EP_IMPORTER_NAME, value: configuration.name });    
     mappedAttributes.push({ name: APIProductAttributes.EAP_NAME, value: prodVersion.product.name });
     mappedAttributes.push({ name: APIProductAttributes.APP_DOMAIN, value: (await EventPortalFacade.getApplicationDomain(prodVersion.product.applicationDomainId)).name });
 
