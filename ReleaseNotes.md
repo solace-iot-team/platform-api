@@ -1,5 +1,17 @@
 # Release Notes
 
+## Version 0.9.2
+* OpenAPI: 0.15.0
+* API Management Connector Server: 0.9.2
+
+### Fixes
+
+* **fix-ep2-importer-multiple-instances**
+  - Fixed an issue that led to API products being incorrectly identified as deleted from EP 2.0 and marked as retired. This occurred when multiple EP 2.0 importers where configured in one organization
+* **fix-ep-20-importer-multiple-protocols**
+  - Fixed an issue that led to an environment upsert operation for each protocol exposed by an EAP
+
+
 ## Version 0.9.1
 * OpenAPI: 0.15.0
 * API Management Connector Server: 0.9.1
