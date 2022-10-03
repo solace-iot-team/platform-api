@@ -101,7 +101,7 @@ export default class EventPortalImporterTaskImpl {
     }
     mappedAttributes.push({ name: EPSystemAttributes.EP_EAP_OBJECT, value: JSON.stringify(prodVersion) });
     mappedAttributes.push({ name: EPSystemAttributes.EP_EAP_ID, value: prodVersion.product.id });
-    mappedAttributes.push({ name: EPSystemAttributes.EP_IMPORTER_NAME, value: configuration.name });    
+    mappedAttributes.push({ name: EPSystemAttributes.EP_IMPORTER_NAME, value: configuration.name });
     mappedAttributes.push({ name: APIProductAttributes.EAP_NAME, value: prodVersion.product.name });
     mappedAttributes.push({ name: APIProductAttributes.APP_DOMAIN, value: (await EventPortalFacade.getApplicationDomain(prodVersion.product.applicationDomainId)).name });
 
@@ -145,12 +145,12 @@ export default class EventPortalImporterTaskImpl {
               apiProductProtocols.push(protocol);
             }
           }
-          const envResult = await connectorFacade.upsertEnvironment(`${solaceMessagingService.environmentName}-${solaceMessagingService.eventMeshName}-${solaceMessagingService.id}`, solaceMessagingService.solaceCloudMessagingServiceId);
-          if (!envNames.find(s => s == envResult.environmentName)) {
-            envNames.push(envResult.environmentName);
-          }
-          versionResults.push(...envResult.results);
         }
+        const envResult = await connectorFacade.upsertEnvironment(`${solaceMessagingService.environmentName}-${solaceMessagingService.eventMeshName}-${solaceMessagingService.id}`, solaceMessagingService.solaceCloudMessagingServiceId);
+        if (!envNames.find(s => s == envResult.environmentName)) {
+          envNames.push(envResult.environmentName);
+        }
+        versionResults.push(...envResult.results);
       }
     }
 
