@@ -1,17 +1,31 @@
+import { database } from 'agenda/dist/agenda/database';
 import { MongoClient } from 'mongodb';
 import L from '../server/common/logger';
 
 export class databaseaccess {
-  private static async reconnect(url: string) {
+  private static delayInterval: number = 0;
+
+  public static async reconnect(url: string) {
     let isConnected: boolean = false;
+    L.info(`Attempting to reconnect to MongoDB`);
+    L.info(`delay ${databaseaccess.delayInterval}`);
+    if (databaseaccess.client) {
+      try {
+        await databaseaccess.client.close();
+      } catch (e) {
+        L.error(e);
+      }
+      databaseaccess.client = null;
+    }
     while (!isConnected) {
       try {
         await databaseaccess.connect(url);
         L.info(`Connected to Mongo!`);
         isConnected = true;
+        databaseaccess.delayInterval = 0;
       } catch (err) {
         L.error(err, `Unable to connect to Mongo, err=${JSON.stringify(err)}. Continue retrying`);
-
+        await databaseaccess.delay();
       }
     }
 
@@ -28,11 +42,18 @@ export class databaseaccess {
 
         databaseaccess.client = new MongoClient(url, {
           keepAlive: true,
+          keepAliveInitialDelay: 20000,
+          heartbeatFrequencyMS: 5000,
           serverSelectionTimeoutMS: 3000,
-          connectTimeoutMS: 1000,
-          socketTimeoutMS: 5000,
+          connectTimeoutMS: 2000,
+          socketTimeoutMS: 30000,
           minPoolSize: 5,
           maxPoolSize: 20,
+          maxIdleTimeMS: 60000,
+          maxStalenessSeconds: 20,
+          minHeartbeatFrequencyMS: 5000,
+          waitQueueTimeoutMS: 500,
+
         });
         await databaseaccess.client.connect();
         databaseaccess.client.removeAllListeners('timeout');
@@ -42,20 +63,28 @@ export class databaseaccess {
 
         });
         databaseaccess.client.removeAllListeners('error');
-        databaseaccess.client.on('error', (e) => {
+        databaseaccess.client.on('error', async (e) => {
           L.error("mongo error");
           L.error(e);
-          databaseaccess.reconnect(url);
+          await databaseaccess.reconnect(url);
         });
 
         databaseaccess.client.removeAllListeners('serverHeartbeatFailed');
-        databaseaccess.client.on('serverHeartbeatFailed', (e) => {
+        databaseaccess.client.on('serverHeartbeatFailed', async (e) => {
           L.error("mongo error");
           L.error(e);
-          databaseaccess.reconnect(url);
+          await databaseaccess.reconnect(url);
         });
         resolve("");
       } catch (e) {
+        if (databaseaccess.client) {
+          try {
+            await databaseaccess.client.close();
+          } catch (e) {
+            L.error(e);
+          }
+          databaseaccess.client = null;
+        }
         reject(e);
       }
     });
@@ -83,8 +112,18 @@ export class databaseaccess {
     const v = new URL(url);
     return url;
   }
+
+  static delay(): Promise<void> {
+    const increment = 2000;
+    if (databaseaccess.delayInterval > 60000) {
+      databaseaccess.delayInterval = 1000;
+    } else {
+      databaseaccess.delayInterval = databaseaccess.delayInterval + increment;
+    }
+    return new Promise((resolve) => {
+      L.info(`delay ${databaseaccess.delayInterval}`);
+      setTimeout(resolve, databaseaccess.delayInterval);
+    });
+  }
+
 }
-
-
-
-
