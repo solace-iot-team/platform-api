@@ -33,13 +33,13 @@ const callback: serverCallback = async () => {
   let isConnected = false;
   while (!isConnected) {
     try {
-      await databaseaccess.connect(dbURL);
+      await databaseaccess.reconnect(dbURL);
       L.info(`Connected to Mongo!`);
       scheduler.enable();
       isConnected = true;
     } catch (err) {
-      L.error(err, `Unable to connect to Mongo, err=${JSON.stringify(err)}. Continue retrying`);
-
+      L.fatal(err, `Unable to connect to Mongo, err=${JSON.stringify(err)}. Shutting down.`);
+      process.exit(1);
     }
   }
 };
