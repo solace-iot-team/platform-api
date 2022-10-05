@@ -52,7 +52,7 @@ export class databaseaccess {
           maxIdleTimeMS: 60000,
           maxStalenessSeconds: 20,
           minHeartbeatFrequencyMS: 5000,
-          waitQueueTimeoutMS: 500,
+          waitQueueTimeoutMS: 1000,
 
         });
         await databaseaccess.client.connect();
