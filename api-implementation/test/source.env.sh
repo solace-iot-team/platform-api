@@ -90,7 +90,7 @@ export PLATFORM_API_TEST_ENABLE_LOGGING="true"
 export PLATFORM_API_TEST_ORG_ADMIN_USER="org_admin_user"              # must match user with org-admin role in
 export PLATFORM_API_TEST_ORG_ADMIN_PASSWORD="org_admin_user_password" # PLATFORM_API_TEST_PLATFORM_FILE_USER_REGISTRY
 export PLATFORM_API_TEST_SOLACE_CLOUD_SERVICE_ID_DEV=1i5g7tif6z8n
-export PLATFORM_API_TEST_SOLACE_CLOUD_SERVICE_ID_PROD=1n34cqfgy8jp
+export PLATFORM_API_TEST_SOLACE_CLOUD_SERVICE_ID_PROD=2v9yumgern0
 
 # Set environment variables with sensitive information
 #
