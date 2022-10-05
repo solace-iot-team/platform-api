@@ -44,8 +44,8 @@ export async function mochaGlobalSetup() {
 
   const base: string = getBaseUrl(testEnv.protocol, testEnv.host, testEnv.port);
   PlatformAPIClient.initialize(base, testEnv.adminUser, testEnv.adminPassword, testEnv.apiUser, testEnv.apiPassword);
-
-  await request(server).get("/readiness").expect(function (res: any) {
+  delay(15000);
+  await request(server).get("/index.html").expect(function (res: any) {
     TestLogger.logMessage(scriptName, `res = ${JSON.stringify(res, null, 2)}`);
   }).expect(200);
 
@@ -61,4 +61,13 @@ export async function mochaGlobalTeardown() {
   }
 
   TestLogger.logMessage(scriptName, "teardown finished");
+}
+
+function delay(ms: number): Promise<void> {
+  const increment = 2000;
+ 
+  return new Promise((resolve) => {
+    
+    setTimeout(resolve, ms);
+  });
 }
