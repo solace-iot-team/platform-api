@@ -45,7 +45,7 @@ export async function mochaGlobalSetup() {
   const base: string = getBaseUrl(testEnv.protocol, testEnv.host, testEnv.port);
   PlatformAPIClient.initialize(base, testEnv.adminUser, testEnv.adminPassword, testEnv.apiUser, testEnv.apiPassword);
 
-  await request(server).get("/index.html").expect(function (res: any) {
+  await request(server).get("/readiness").expect(function (res: any) {
     TestLogger.logMessage(scriptName, `res = ${JSON.stringify(res, null, 2)}`);
   }).expect(200);
 
