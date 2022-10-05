@@ -1,6 +1,4 @@
 import L from '../../../common/logger';
-import parser, { AsyncAPIDocument } from '@asyncapi/parser';
-
 import { ErrorResponseInternal } from '../../middlewares/error.handler';
 
 import App = Components.Schemas.App;
@@ -12,22 +10,19 @@ import TopicSyntax = Components.Parameters.TopicSyntax.TopicSyntax;
 import { TopicWildcards } from '../../../common/constants';
 
 import { Service } from '../../../../src/clients/solacecloud/models/Service';
-import { AllService } from "../../../../src/clients/sempv2";
+
 
 import ApisService from '../apis.service';
 import ApiProductsService from '../apiProducts.service';
-import SempV2ClientFactory from './sempv2clientfactory';
 import brokerutils from './brokerutils';
 import APIProductsTypeHelper from '../../../../src/apiproductstypehelper';
 import MsgVpnAclProfile = Components.Schemas.MsgVpnAclProfile;
 import MsgVpnAuthorizationGroup = Components.Schemas.MsgVpnAuthorizationGroup;
 import MsgVpnQueueSubscription = Components.Schemas.MsgVpnQueueSubscription;
-import _ = require('lodash');
+import _ from 'lodash';
 
-export enum Direction {
-  Publish = 'Publish',
-  Subscribe = 'Subscribe',
-}
+import { Direction } from '../../../../src/asyncapihelper';
+import asyncAPIHelper from '../../../../src/asyncapihelper';
 
 interface EnvironmentPermissions {
   name: string,
@@ -71,12 +66,19 @@ class ACLManager {
   public async createClientACLExceptions(app: App, apiProducts: APIProduct[], ownerAttributes: Attributes, aclProfileConfig: MsgVpnAclProfile): Promise<void> {
 
     const envPermissions: EnvironmentPermissions[] = [];
+    const apiAttributes: Attributes = [];
     // compile list of event destinations sub / pub separately
     for (const product of apiProducts) {
       const publishExceptions = this.getResources(product.pubResources);
       const subscribeExceptions = this.getResources(product.subResources);
-      let strs: string[] = await this.getResourcesFromAsyncAPIs(product.apis, Direction.Subscribe);
 
+      
+      let strs: string[] = await this.getResourcesFromAsyncAPIs(product.apis, Direction.Subscribe);
+      (await this.getEnumsFromAsyncAPIs(product.apis)).forEach(a=>{
+        if (!apiAttributes.find(p=>a.name==p.name)){
+          apiAttributes.push(a);
+        }
+      });
       for (const s of strs) {
         subscribeExceptions.push(s);
       }
@@ -106,7 +108,8 @@ class ACLManager {
     L.info(envPermissions);
 
     // inject attribute values into parameters within subscriptions
-    const attributes: any[] = this.getAttributes(app, ownerAttributes, apiProducts);
+
+    const attributes: any[] = this.getAttributes(app, ownerAttributes, apiAttributes , apiProducts);
     aclProfileConfig.publishExceptions = [];
     aclProfileConfig.subscribeExceptions = [];
     try {
@@ -136,10 +139,10 @@ class ACLManager {
         }));
 
         // dedupe the exceptions
-        const sExceptions = _.uniqWith(aclProfileConfig.subscribeExceptions, (a,b)=>(
+        const sExceptions = _.uniqWith(aclProfileConfig.subscribeExceptions, (a, b) => (
           (_.intersection(a.environments, b.environments).length == a.environments.length && a.environments.length == b.environments.length) && a.subscribeTopicException == b.subscribeTopicException));
         aclProfileConfig.subscribeExceptions = sExceptions;
-        const pExceptions = _.uniqWith(aclProfileConfig.publishExceptions, (a,b)=>(
+        const pExceptions = _.uniqWith(aclProfileConfig.publishExceptions, (a, b) => (
           (_.intersection(a.environments, b.environments).length == a.environments.length && a.environments.length == b.environments.length) && a.publishTopicException == b.publishTopicException));
         aclProfileConfig.publishExceptions = pExceptions;
       }
@@ -151,7 +154,7 @@ class ACLManager {
 
 
 
-  private getAttributes(app: App, ownerAttributes: Attributes, products: APIProduct[]) {
+  private getAttributes(app: App, ownerAttributes: Attributes, apiAttributes: Attributes, products: APIProduct[]) {
     let attributes = [];
     if (app.attributes) {
       attributes = attributes.concat(app.attributes);
@@ -164,6 +167,7 @@ class ACLManager {
         attributes = attributes.concat(p.attributes);
       }
     });
+    attributes = attributes.concat(apiAttributes);
     return attributes;
 
   }
@@ -216,30 +220,32 @@ class ACLManager {
 
   private async getResourcesFromAsyncAPIs(apis: string[], direction: Direction): Promise<string[]> {
 
-    const resources: string[] = [];
+    let resources: string[] = [];
     const specs: string[] = [];
     for (const api of apis) {
       specs.push(await ApisService.byApiReference(api));
     }
     for (const specification of specs) {
-      try {
-        const parsedSpec: AsyncAPIDocument = await parser.parse(specification);
-        for (const s of parsedSpec.channelNames()) {
-          const channel = parsedSpec.channel(s);
-          if (direction == Direction.Subscribe && channel.hasSubscribe()) {
-            resources.push(s);
-          }
-          if (direction == Direction.Publish && channel.hasPublish()) {
-            resources.push(s);
-          }
-        }
-      } catch (e) {
-        L.warn(e);
-        throw new ErrorResponseInternal(500, `Unable to parse, ${e.title}, ${e.detail}`);
-      }
+      resources = resources.concat(await asyncAPIHelper.getChannelResources(specification, direction));
     }
     return resources;
   }
+
+
+  private async getEnumsFromAsyncAPIs(apis: string[]): Promise<Attributes> {
+
+    let attributes: Attributes = [];
+    const specs: string[] = [];
+    for (const api of apis) {
+      specs.push(await ApisService.byApiReference(api));
+    }
+    for (const specification of specs) {
+      attributes = attributes.concat(await asyncAPIHelper.getParameterEnums(specification));
+    }
+
+    return attributes;
+  }
+
 
   private scrubDestination(destination: string, syntax?: TopicSyntax) {
     L.debug(`scrub ${destination}`);
@@ -291,7 +297,13 @@ class ACLManager {
 
   public async getQueueSubscriptions(app: App, apiProducts: APIProduct[], ownerAttributes: Attributes): Promise<MsgVpnQueueSubscription[]> {
     let subscribeExceptions: MsgVpnQueueSubscription[] = [];
+    const apiAttributes: Attributes = [];
     for (const product of apiProducts) {
+      (await this.getEnumsFromAsyncAPIs(product.apis)).forEach(a=>{
+        if (!apiAttributes.find(p=>p.name==a.name)){
+          apiAttributes.push(a);
+        }
+      })
       const strs: string[] = await this.getSubscriptionsFromAsyncAPIs(product.apis);
       for (const s of strs) {
         subscribeExceptions.push({
@@ -311,7 +323,7 @@ class ACLManager {
       return subscribeExceptions;
     }
     // inject attribute values into parameters within subscriptions
-    const attributes: any[] = this.getAttributes(app, ownerAttributes, apiProducts);
+    const attributes: any[] = this.getAttributes(app, ownerAttributes, apiAttributes, apiProducts);
     const enrichedSubscriptions: MsgVpnQueueSubscription[] = [];
     for (const s of subscribeExceptions) {
       const enrichedTopics = this.enrichDestination(s.subscriptionTopic, attributes);
@@ -327,7 +339,6 @@ class ACLManager {
   }
 
   public async getClientACLExceptions(app: App, apiProducts: APIProduct[], ownerAttributes: Attributes, envName: string, syntax?: TopicSyntax): Promise<Permissions> {
-    try {
       let publishExceptions: {
         [name: string]: ChannelPermission;
       }[] = [];
@@ -335,6 +346,7 @@ class ACLManager {
         [name: string]: ChannelPermission;
       }[] = [];
       // compile list of event destinations sub / pub separately
+      const apiAttributes: Attributes = [];
       for (const product of apiProducts) {
         for (const env of product.environments) {
           if (env == envName || envName == undefined) {
@@ -346,10 +358,15 @@ class ACLManager {
             subscribeExceptions = subscribeExceptions.concat(strs);
             strs = await this.getChannelPermissionsFromAsyncAPIs(product.apis, Direction.Publish);
             publishExceptions = publishExceptions.concat(strs);
+            (await this.getEnumsFromAsyncAPIs(product.apis)).forEach(a=>{
+              if (!apiAttributes.find(p=>p.name==a.name)){
+                apiAttributes.push(a);
+              }
+            });
           }
         }
       }
-      let attributes: any[] = this.getAttributes(app, ownerAttributes, apiProducts);
+      let attributes: any[] = this.getAttributes(app, ownerAttributes, apiAttributes, apiProducts);
       publishExceptions.forEach((channel, index, arr) => {
         const s: string[] = [];
         L.info(channel);
@@ -376,10 +393,6 @@ class ACLManager {
         subscribe: subscribeExceptions
       }
       return permissions;
-    } catch (err) {
-      throw err;
-
-    }
   }
 
 

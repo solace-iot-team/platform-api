@@ -41,7 +41,9 @@ export default class ClientProfileTask extends SEMPv2Task {
         try {
             let response: TaskServiceResponse = null;
             try {
-                response = (await SolaceCloudFacade.createClientProfile(config.environment.service as Service, (_.omit(config.profile, this.paths) as any))) as TaskServiceResponse;
+                const svc = config.environment.service as Service;
+                svc.serviceId = svc['solaceCloudMessagingServiceId'];
+                response = (await SolaceCloudFacade.createClientProfile(svc, (_.omit(config.profile, this.paths) as any))) as TaskServiceResponse;
                 L.info(`ClientProfile ${config.profile.clientProfileName} created via Cloud API on service ${config.environment.service.serviceId}`);
               } catch (cloudError) {
                 try {

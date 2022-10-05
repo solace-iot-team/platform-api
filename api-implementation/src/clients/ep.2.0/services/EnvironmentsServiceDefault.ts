@@ -94,18 +94,26 @@ export class EnvironmentsServiceDefault implements EnvironmentsService {
         };
     }
 
-    public async getMessagingServices(): Promise<any> {
+    public async getMessagingServices(
+        eventMeshId?: string,
+    ): Promise<any> {
         const options = this.getMessagingServicesApiRequestOptions(
+            eventMeshId,
         );
         const result = await __request(options);
         return result.body;
     }
 
-    public getMessagingServicesApiRequestOptions(): ApiRequestOptions {
+    public getMessagingServicesApiRequestOptions(
+        eventMeshId?: string,
+    ): ApiRequestOptions {
         return {
             ...this.config,
             method: 'GET',
             path: `/api/v2/architecture/messagingServices`,
+            query: {
+                'eventMeshId': eventMeshId,
+            },
             errors: {
                 400: `Bad Request.`,
                 401: `Unauthorized.`,

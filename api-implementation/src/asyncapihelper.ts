@@ -3,11 +3,15 @@ import L from '../server/common/logger';
 import Format = Paths.GetApi.Parameters.Format;
 import APIParameter = Components.Schemas.APIParameter;
 import { isString } from './typehelpers';
-import parser, { AsyncAPIDocument } from '@asyncapi/parser';
+import parser, { AsyncAPIDocument, ChannelParameter } from '@asyncapi/parser';
 import { Archiver, create as createArchiver } from 'archiver';
-
+import Attributes = Components.Schemas.Attributes;
 import YAML from 'js-yaml';
 
+export enum Direction {
+  Publish = 'Publish',
+  Subscribe = 'Subscribe',
+}
 export class AsyncAPIHelper {
   getContentType(apiSpec: string): string {
     try {
@@ -117,6 +121,49 @@ export class AsyncAPIHelper {
     }
   }
 
+  public async getChannelResources(specification: string, direction: Direction): Promise<string[]>{
+    const resources: string[] =[];
+    try {
+      const parsedSpec: AsyncAPIDocument = await parser.parse(specification);
+      for (const s of parsedSpec.channelNames()) {
+        const channel = parsedSpec.channel(s);
+        if (direction == Direction.Subscribe && channel.hasSubscribe()) {
+          resources.push(s);
+        }
+        if (direction == Direction.Publish && channel.hasPublish()) {
+          resources.push(s);
+        }
+      }
+      return resources;
+    } catch (e) {
+      L.warn(e);
+      throw new ErrorResponseInternal(500, `Unable to parse, ${e.title}, ${e.detail}`);
+    }
+  }
+
+  public async getParameterEnums(specification: string): Promise<Attributes> {
+    const attributes: Attributes = []
+    try {
+      const parsedSpec: AsyncAPIDocument = await parser.parse(specification);
+      for (const s of parsedSpec.channelNames()) {
+        const channel = parsedSpec.channel(s);
+        if (channel.hasParameters()) {
+          for (const [key, parameter] of Object.entries<ChannelParameter>(channel.parameters())) {
+            if (!attributes.find(a => a.name == key) && parameter.schema().enum() && parameter.schema().enum().length > 0) {
+              attributes.push({
+                name: key,
+                value: parameter.schema().enum().join(','),
+              });
+            }
+          }
+        }
+      }
+      return attributes;
+    } catch (e) {
+      L.warn(e);
+      throw new ErrorResponseInternal(500, `Unable to parse, ${e.title}, ${e.detail}`);
+    }
+  }
 
   public async getAsyncAPIParameters(spec: string): Promise<APIParameter[]> {
     try {

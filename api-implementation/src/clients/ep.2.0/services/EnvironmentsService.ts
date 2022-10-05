@@ -61,17 +61,23 @@ export interface EnvironmentsService {
     /**
      * Retrieves messaging service objects
      * Use this API to retrieve all messaging services.
+     * @param id The ID of the event mesh to filter on.
      * @returns any The messaging service object.
      */
-    getMessagingServices(): Promise<any>;
+    getMessagingServices(
+        id?: string,
+    ): Promise<any>;
 
     /**
      * **used to get the request options without making a http request**
      * Retrieves messaging service objects
      * Use this API to retrieve all messaging services.
+     * @param id The ID of the event mesh to filter on.
      * @returns ApiRequestOptions the request options to fulfill a http request
      */
-    getMessagingServicesApiRequestOptions(): ApiRequestOptions;
+    getMessagingServicesApiRequestOptions(
+        id?: string,
+    ): ApiRequestOptions;
 
     /**
      * Retrieves a messaging service object

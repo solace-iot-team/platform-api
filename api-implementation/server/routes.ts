@@ -1,5 +1,6 @@
 import L from './common/logger';
 import { Application } from 'express';
+import applicationsRouter from './private/api/controllers/applications/router';
 import apisRouter from './api/controllers/apis/router';
 import appsRouter from './api/controllers/apps/router';
 import apiProductsRouter from './api/controllers/apiProducts/router';
@@ -54,7 +55,7 @@ export default function routes(app: Application): void {
 
 
   router.use('/*', auditHandler);
-  router.use('/about', authorizedRoles(['platform-admin','org-admin']), aboutRouter);
+  router.use('/about', authorizedRoles(['platform-admin', 'org-admin']), aboutRouter);
   router.use('/organizations', authorizedRoles(['platform-admin']), organizationsRouter);
   router.use('/:org/apis', authorizedRoles(['org-admin']), apisRouter);
   router.use('/:org/apiProducts', authorizedRoles(['org-admin']), apiProductsRouter);
@@ -72,4 +73,23 @@ export default function routes(app: Application): void {
   router.use('/:org/apps', authorizedRoles(['org-admin']), appsRouter);
   router.use('/healthcheck', healthCheckRouter);
   app.use('/v1', router);
+
+  const privateRouter = Router();
+  const privatePassport = PassportFactory.build();
+  privateRouter.use(privatePassport.initialize());
+  privateRouter.use(contextHandler);
+  privateRouter.use(pagingHandler);
+  privateRouter.use(searchHandler);
+  privateRouter.use(sortHandler);
+  privateRouter.use(writeModeHandler);
+  privateRouter.use(ifMatchHandler);
+  privateRouter.set('etag', etagHash);
+  privateRouter.use('/*', privatePassport.authenticate(['provider', 'basic'], PassportFactory.getAuthenticationOptions()));
+  privateRouter.get('/', (req: Request, res: Response) => {
+    L.info('Request to root emit 404');
+    res.status(404).end();
+  });
+  privateRouter.param(ContextConstants.ORG_NAME, authorizedOrgs);
+  privateRouter.use('/:org/applications', authorizedRoles(['org-admin']), applicationsRouter);
+  app.use('/private', privateRouter);
 }
