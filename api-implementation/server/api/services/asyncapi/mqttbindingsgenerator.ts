@@ -3,6 +3,7 @@ import { BindingsGenerator } from './bindingsgenerator';
 import ApiProductTypeOperations from '../../../../src/apiproductstypehelper';
 import APIProduct = Components.Schemas.APIProduct;
 import App = Components.Schemas.App;
+import OperationSchema = AsyncapiCom.Bindings.Mqtt.OperationJson;
 
 const QOS_0 = 0;
 const QOS_1 = 1;
@@ -34,7 +35,7 @@ export class MQTTBindingsGenerator implements BindingsGenerator {
         publisherBindings = {};
         channel.subscribe.bindings = publisherBindings;
       }
-      const mqttBinding: any = this.buildMQTTOperationBinding(apiProduct);
+      const mqttBinding: OperationSchema = this.buildMQTTOperationBinding(apiProduct);
       publisherBindings[this.PROTOCOL_BINDING] = mqttBinding;
     }
     if (channel.publish) {
@@ -43,14 +44,14 @@ export class MQTTBindingsGenerator implements BindingsGenerator {
         bindings = {};
         channel.publish.bindings = bindings;
       }
-      const mqttBinding: any = this.buildMQTTOperationBinding(apiProduct);
+      const mqttBinding: OperationSchema = this.buildMQTTOperationBinding(apiProduct);
       bindings[this.PROTOCOL_BINDING] = mqttBinding;
     }
 
   }
 
-  private buildMQTTOperationBinding(apiProduct: APIProduct): any {
-    const mqttBinding: any = {};
+  private buildMQTTOperationBinding(apiProduct: APIProduct): OperationSchema {
+    const mqttBinding: OperationSchema = {};
     if (ApiProductTypeOperations.isGuaranteedMessagingEnabled(apiProduct)) {
       mqttBinding.qos = QOS_1;
     } else {

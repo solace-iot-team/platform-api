@@ -151,9 +151,9 @@ class ACLManager {
 
 
 
-  private getAttributes(app: App, ownerAttributes: Attributes, products: APIProduct[]) {
+  public getAttributes(app: App, ownerAttributes: Attributes, products: APIProduct[]) {
     let attributes = [];
-    if (app.attributes) {
+    if (app?.attributes) {
       attributes = attributes.concat(app.attributes);
     }
     if (ownerAttributes) {
@@ -253,6 +253,14 @@ class ACLManager {
     }
     L.debug(`scrubbed ${scrubbed}`);
     return scrubbed;
+  }
+
+  public getTopicSubscriptionsForChannelName(channelName: string, app: App, apiProducts: APIProduct[], topicSyntax?: TopicSyntax): string[] {
+    const syntax: TopicSyntax = topicSyntax?topicSyntax:'smf';
+    const topicSubscriptions: string[] = [];
+    const subscriptions = this.enrichDestination(channelName, this.getAttributes(app, null, apiProducts));
+    subscriptions.forEach(s=>topicSubscriptions.push(this.scrubDestination(s)));
+    return topicSubscriptions;
   }
 
   private async getChannelPermissionsFromAsyncAPIs(apis: string[], direction: Direction): Promise<{

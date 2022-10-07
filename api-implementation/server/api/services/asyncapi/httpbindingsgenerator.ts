@@ -3,6 +3,10 @@ import { BindingsGenerator } from './bindingsgenerator';
 import QueueHelper from '../broker/queuehelper';
 import APIProduct = Components.Schemas.APIProduct;
 import App = Components.Schemas.App;
+import OperationSchema = AsyncapiCom.Bindings.Http.OperationJson;
+
+
+
 
 const BINDING_VERSION = '0.1.0';
 
@@ -48,9 +52,10 @@ export class HTTPBindingsGenerator implements BindingsGenerator {
   }
 
   private buildHTTPOperationBinding(app?: App): any {
-    const httpBinding: any = {};
-    httpBinding.type = 'request';
-    httpBinding.method = 'POST';
+    const httpBinding: OperationSchema = {
+      type: 'request',
+      method: 'POST',
+    };
     if (app && app.webHooks && app.webHooks.length>0) {
       // get the method from the webhooks that are configured
       for (const wh of app.webHooks){
