@@ -7563,7 +7563,7 @@ paths:
   /{organization_name}/teams/{team_name}/apps/{app_name}/credentials:
     parameters:
       - $ref: "#/components/parameters/organization"
-      - $ref: "#/components/parameters/developer_username"
+      - $ref: "#/components/parameters/team_name"
       - $ref: "#/components/parameters/app_name"
     get:
       operationId: listTeamAppCredentials
@@ -7653,7 +7653,7 @@ paths:
   /{organization_name}/teams/{team_name}/apps/{app_name}/credentials/{consumer_key}:
     parameters:
       - $ref: "#/components/parameters/organization"
-      - $ref: "#/components/parameters/developer_username"
+      - $ref: "#/components/parameters/team_name"
       - $ref: "#/components/parameters/app_name"
       - $ref: "#/components/parameters/consumer_key"
     patch:
