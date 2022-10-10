@@ -14,7 +14,7 @@ const DELIVERY_MODE_PERSISTENT = 'persistent';
 
 export class JMSBindingsGenerator implements BindingsGenerator {
   PROTOCOL_BINDING = 'jms';
-  APPLICABLE_PROTOCOLS = ['jms', 'secure-jms'];
+  APPLICABLE_PROTOCOLS = [];
   getBindingProtocol(): string {
     return this.PROTOCOL_BINDING;
   }

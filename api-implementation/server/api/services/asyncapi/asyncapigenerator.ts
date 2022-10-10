@@ -12,7 +12,8 @@ import App = Components.Schemas.App;
 import APIProduct = Components.Schemas.APIProduct;
 import AppEnvironment = Components.Schemas.AppEnvironment;
 import { ErrorResponseInternal } from '../../middlewares/error.handler';
-
+import SolaceServerSchema = AsyncapiCom.Bindings.Solace.ServerJson;
+import MqttServerSchema = AsyncapiCom.Bindings.Mqtt.ServerJson;
 class AsyncApiGenerator {
   public async getSpecificationByApp(apiName: string, app: App): Promise<string> {
     const spec: string = (await ApisService.byApiReference(apiName));
@@ -78,13 +79,15 @@ class AsyncApiGenerator {
           if (!server.bindings) {
             server.bindings = {};
           }
-          server.bindings['mqtt'] = { 'clientId': app.internalName, 'version': '0.1.0' };
+          const mqttServerBinding: MqttServerSchema = { clientId: app.internalName };
+          server.bindings['mqtt'] = mqttServerBinding;
         }
         if (protocol.protocol.name.toUpperCase().includes('JMS') || protocol.protocol.name.toUpperCase().includes('SMF')) {
           if (!server.bindings) {
             server.bindings = {};
           }
-          server.bindings['solace'] = { 'msgVpn': protocol.msgVpn, 'version': '0.2.0' };
+          const solaceServer: SolaceServerSchema = { msgVpn: protocol.msgVpn, bindingVersion: '0.2.0' };
+          server.bindings['solace'] = solaceServer;
         }
 
         servers[serverKey] = server;

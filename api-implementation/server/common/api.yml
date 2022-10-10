@@ -2,7 +2,7 @@ openapi: 3.0.0
 info:
   title: Solace API Management Connector
   description: "Solace API Management Connector API. Note: basic authentication security mechanism is deprecated."
-  version: 0.15.0
+  version: 0.15.1
   license:
     name: MIT
     url: https://github.com/solace-iot-team/platform-api/blob/main/LICENSE
@@ -6641,7 +6641,7 @@ paths:
               "$ref": "#/components/schemas/Credentials"
       responses:
         "201":
-          description: new webhook
+          description: new credentials
           content:
             application/json:
               schema:
@@ -7560,10 +7560,10 @@ paths:
           $ref: "#/components/responses/ServiceUnavailable"
         "504":
           $ref: "#/components/responses/GatewayTimeout"
-  /{organization_name}/teams/{developer_username}/apps/{app_name}/credentials:
+  /{organization_name}/teams/{team_name}/apps/{app_name}/credentials:
     parameters:
       - $ref: "#/components/parameters/organization"
-      - $ref: "#/components/parameters/developer_username"
+      - $ref: "#/components/parameters/team_name"
       - $ref: "#/components/parameters/app_name"
     get:
       operationId: listTeamAppCredentials
@@ -7608,7 +7608,7 @@ paths:
               "$ref": "#/components/schemas/Credentials"
       responses:
         "201":
-          description: new webhook
+          description: new credentials
           content:
             application/json:
               schema:
@@ -7650,10 +7650,10 @@ paths:
         "504":
           $ref: "#/components/responses/GatewayTimeout"
 
-  /{organization_name}/teams/{developer_username}/apps/{app_name}/credentials/{consumer_key}:
+  /{organization_name}/teams/{team_name}/apps/{app_name}/credentials/{consumer_key}:
     parameters:
       - $ref: "#/components/parameters/organization"
-      - $ref: "#/components/parameters/developer_username"
+      - $ref: "#/components/parameters/team_name"
       - $ref: "#/components/parameters/app_name"
       - $ref: "#/components/parameters/consumer_key"
     patch:
