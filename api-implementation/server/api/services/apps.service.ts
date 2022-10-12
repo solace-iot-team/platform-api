@@ -354,7 +354,7 @@ export class AppsService {
     }
 
     // don't alow duplicate names in the credentials array
-    if (Array.isArray(app.credentials) && app.credentials.length != _.uniqBy(app.credentials, 'name').length) {
+    if (Array.isArray(app.credentials) && app.credentials.filter(c=>c.name !=null).length != _.uniqBy(app.credentials.filter(c=>c.name !=null), 'name').length) {
       throw new ErrorResponseInternal(
         400,
         `Duplicate credentials names are not allowed.`

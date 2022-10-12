@@ -751,6 +751,7 @@ declare namespace Components {
             expiresAt?: number; // int64
             issuedAt?: CommonTimestampInteger; // int64
             secret?: Secret;
+            name?: CommonName; // ^[a-zA-Z0-9_\-]*(@[ |\S]*)?$
         }
         /**
          * Credentials object array associated with an app
