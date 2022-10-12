@@ -1307,7 +1307,8 @@ components:
           $ref: "#/components/schemas/CommonTimestampInteger"
         secret:
           $ref: "#/components/schemas/Secret"
-
+        name:
+          $ref: "#/components/schemas/CommonName"
     Secret:
       type: object
       required:

@@ -10,7 +10,6 @@ import AppListItem = Components.Schemas.AppListItem;
 import AppResponse = Components.Schemas.AppResponse;
 import AppPatch = Components.Schemas.AppPatch;
 import AppConnectionStatus = Components.Schemas.AppConnectionStatus;
-import Credentials = Components.Schemas.Credentials;
 import ApiProduct = Components.Schemas.APIProduct;
 import AppApiProductsComplex = Components.Schemas.AppApiProductsComplex;
 import AppStatus = Components.Schemas.AppStatus;
@@ -34,7 +33,7 @@ import Environment = Components.Schemas.Environment;
 import sempv2clientfactory from './broker/sempv2clientfactory';
 import semVerCompare from 'semver-compare';
 import credentialshelpers from './apps/credentialshelpers';
-import _ = require('lodash');
+import _ from 'lodash';
 
 export interface APISpecification {
   name: string;
@@ -353,6 +352,14 @@ export class AppsService {
         `Exceedes maximum number of credentials per app (max 5).`
       );
     }
+
+    // don't alow duplicate names in the credentials array
+    if (Array.isArray(app.credentials) && app.credentials.length != _.uniqBy(app.credentials, 'name').length) {
+      throw new ErrorResponseInternal(
+        400,
+        `Duplicate credentials names are not allowed.`
+      );
+    }    
 
     // validate api products exist and find out if any  require approval
     for (const product of app.apiProducts) {
