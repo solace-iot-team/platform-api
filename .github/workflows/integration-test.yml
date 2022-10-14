@@ -22,7 +22,7 @@ env:
   TEST_OUTPUT_NAME: "api-implementation-test-integration"
 jobs:
   integration_test:
-    runs-on: ubuntu-18.04
+    runs-on: ubuntu-22.04
     strategy:
       max-parallel: 1
       matrix:
