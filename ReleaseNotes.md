@@ -1,5 +1,19 @@
 # Release Notes
 
+## Version 0.9.4
+* OpenAPI: 0.15.2
+* API Management Connector Server: 0.9.4
+
+### Features
+
+* **feat-app-credentials-name**
+  - added a name attribute to the credentials object, useful to store an external reference (id, name) from the system that asked to generate credentials
+  
+### Fixes
+
+* **fix-ep-2.0-importer-map-description**
+  - description in the EP 2.0 EAP version was not imported into APi Products
+
 ## Version 0.9.3
 * OpenAPI: 0.15.0
 * API Management Connector Server: 0.9.3
