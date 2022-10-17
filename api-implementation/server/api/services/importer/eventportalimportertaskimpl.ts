@@ -165,8 +165,8 @@ export default class EventPortalImporterTaskImpl {
           accessType: policy.accessType,
           maxMsgSpoolUsage: policy.spoolSize?policy.spoolSize:policy['maxMsgSpoolUsage'],
           maxTtl: policy.maximumTimeToLive,
-          requireQueue: policy.queuePerEventApi ? true : false,
-          queueGranularity: policy.queuePerEventApi ? 'api' : 'apiProduct'
+          requireQueue: policy.queuePerEventApi||policy['queueType'] ? true : false,
+          queueGranularity: policy.queuePerEventApi||policy['queueType']=='single' ? 'api' : 'apiProduct'
         };
       }
 
