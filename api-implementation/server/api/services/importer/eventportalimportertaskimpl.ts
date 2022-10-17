@@ -158,12 +158,12 @@ export default class EventPortalImporterTaskImpl {
       const apiProductId = connectorFacade.createInternalName(`${prodVersion.version.eventApiProductId}-${plan.name}`);
       const policy = plan.solaceClassOfServicePolicy;
       const clientOptions: ClientOptions = {
-        guaranteedMessagingEnabled: policy.guaranteedMessaging,
+        guaranteedMessagingEnabled: policy.guaranteedMessaging || policy['messageDeliveryMode'] == 'guaranteed',
       };
-      if (policy.guaranteedMessaging) {
+      if (policy.guaranteedMessaging || policy.guaranteedMessaging || policy['messageDeliveryMode'] == 'guaranteed') {
         clientOptions.guaranteedMessaging = {
           accessType: policy.accessType,
-          maxMsgSpoolUsage: policy.spoolSize,
+          maxMsgSpoolUsage: policy.spoolSize?policy.spoolSize:policy['maxMsgSpoolUsage'],
           maxTtl: policy.maximumTimeToLive,
           requireQueue: policy.queuePerEventApi ? true : false,
           queueGranularity: policy.queuePerEventApi ? 'api' : 'apiProduct'
