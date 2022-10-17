@@ -77,8 +77,13 @@ export async function getEventPortalBaseUrl(): Promise<string> {
   let token: any = null;
   token = ns.getStore().get(ContextConstants.CLOUD_TOKEN);
   if (token == null || isString(token)) {
+    const epVersion = process.env.EP_VERSION || '1';
     L.trace('using default event portal base url');
-    return 'https://api.solace.cloud/api/v0/eventPortal';
+    if (epVersion == '2') {
+      return 'https://api.solace.cloud';
+    } else {
+      return 'https://api.solace.cloud/api/v0/eventPortal';
+    }
   } else {
     return token.eventPortal.baseUrl;
   }
