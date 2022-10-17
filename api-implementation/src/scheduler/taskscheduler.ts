@@ -286,7 +286,7 @@ export default class TaskScheduler {
       const importers = ImporterRegistry.all();
       importers.forEach((v, k) => {
         L.info(`define job for importer ${k} in org ${orgName}`);
-        agenda.define(k, { shouldSaveResult: true, }, v.import);
+        agenda.define(k, { shouldSaveResult: true, lockLifetime: 300*1000, lockLimit: 5 }, v.import);
       })
       await agenda.start();
       return agenda;
