@@ -1,5 +1,19 @@
 # Release Notes
 
+## Version 0.9.5
+* OpenAPI: 0.15.2
+* API Management Connector Server: 0.9.5
+
+### Fixes
+
+* **fix-ep2-integration-base-url-resolution**
+  - When a simple token (string) was used in the organisation the EP base URL did not resolve to EP 2.0 correctly
+* **fix-ep2-importer-job-scheduling-lock-time-limit**
+  - decrease the lock time limit so importer jobs don't get stuck. in case of errors
+* **hot-fix-ep20-rest-api-changes-eap-plan**
+  - Backwards compatible hot-fix - EAP Plan (solacepolicy) has changed and guaranteed messaging support is now indicated by a different property. Hot fixed the importer code as no updated OpenAPI spec is available yet
+  - Backwards compatible hot fix - policy queuePerEventAPI property was renamed to queueType
+
 ## Version 0.9.4
 * OpenAPI: 0.15.2
 * API Management Connector Server: 0.9.4
