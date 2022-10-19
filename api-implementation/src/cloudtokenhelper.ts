@@ -108,10 +108,10 @@ export function getOrg(): string {
 }
 
 export function getOrgObject(): Organization {
-  let orgName: any = null;
-  orgName = ns.getStore().get(ContextConstants.ORG_OBJECT);
-  if (orgName == null) {
+  let org: any = null;
+  org = ns.getStore().get(ContextConstants.ORG_OBJECT);
+  if (org == null) {
     throw new ErrorResponseInternal(500, `Org is missing from context!`);
   }
-  return orgName;
+  return org;
 }
