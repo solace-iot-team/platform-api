@@ -54,6 +54,7 @@ export class EPServiceRegistry2 implements ServiceRegistry {
             if (msgSvc.solaceCloudMessagingServiceId) {
                 svc = await solacecloudfacade.getServiceById(msgSvc.solaceCloudMessagingServiceId);
                 svc.serviceId = id;
+                svc['solaceCloudMessagingServiceId'] = msgSvc.solaceCloudMessagingServiceId;
             } else if (msgSvc.bindings?.management?.connections?.length > 0) {
                 const connection = msgSvc.bindings.management.connections[0];
                 svc = this.creaateNonCloudService(msgSvc, connection, id);

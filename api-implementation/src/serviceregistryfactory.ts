@@ -1,4 +1,4 @@
-import { getOrg, getOrgObject } from "./cloudtokenhelper";
+import { getOrgObject } from "./cloudtokenhelper";
 import EPServiceRegistry2 from "./ep.serviceregistry.2";
 import { ServiceRegistry } from "./serviceregistry";
 import solacecloudfacade from "./solacecloudfacade";
