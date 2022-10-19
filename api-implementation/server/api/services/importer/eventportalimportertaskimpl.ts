@@ -10,7 +10,7 @@ import { StatesMapper } from './statesmapper';
 import ImporterConfiguration = Components.Schemas.ImporterConfiguration;
 import { EventAPIAsyncAPIInfo } from '../../../../src/model/eventapiasyncapiinfo';
 import { ProtocolMapper } from '../../../../src/protocolmapper';
-
+import { getOrgObject } from '../../../../src/cloudtokenhelper';
 export interface APIProductVersionImportResult {
   results: APIProductUpsertResult[]
   eventAPIProductVersion: ExportableEventApiProductVersion,
@@ -146,7 +146,7 @@ export default class EventPortalImporterTaskImpl {
             }
           }
         }
-        const envResult = await connectorFacade.upsertEnvironment(`${solaceMessagingService.environmentName}-${solaceMessagingService.eventMeshName}-${solaceMessagingService.id}`, solaceMessagingService.solaceCloudMessagingServiceId);
+        const envResult = await connectorFacade.upsertEnvironment(`${solaceMessagingService.environmentName}-${solaceMessagingService.eventMeshName}-${solaceMessagingService.id}`, getOrgObject().serviceRegistry=='platform'?solaceMessagingService.solaceCloudMessagingServiceId:solaceMessagingService.messagingServiceId);
         if (!envNames.find(s => s == envResult.environmentName)) {
           envNames.push(envResult.environmentName);
         }
