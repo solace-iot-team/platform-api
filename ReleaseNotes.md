@@ -1,5 +1,17 @@
 # Release Notes
 
+## Version 0.9.6
+* OpenAPI: 0.15.2
+* API Management Connector Server: 0.9.6
+
+### Fixes
+
+* **fix-ep2-service-registry-preserve-solacecloud-service-id**
+  - Preserve the Solace Cloud service id when using EP2.0 as PS+ service registry.
+  - Fall back to using the cloud service id in case it's present in the service (to avoid using EP service id)
+* **fix-ep20-importer-use-appropriate-message-service-id**
+  - On import the right id from the messaging service element needs to be chosen depending on platform or eventportal registry in use
+  
 ## Version 0.9.5
 * OpenAPI: 0.15.2
 * API Management Connector Server: 0.9.5
