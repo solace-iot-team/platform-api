@@ -67,7 +67,7 @@ export class EPServiceRegistry2 implements ServiceRegistry {
     }
 
     private creaateNonCloudService(msgSvc: EnvironmentMessagingService, connection: { name?: string; authenticationType?: "basicAuthentication"; url?: string; msgVpn?: string; users?: { name?: string; username?: string; password?: string; }[]; }, id: string): Service {
-        this.generateMessageProtocolsStandardPorts(connection.url);
+        const sempUrl: string  = connection.url.includes('/SEMP/v2/config')?connection.url:`${connection.url}/SEMP/v2/config`;
         return {
             adminProgress: NOT_AVAILABLE,
             adminState: NOT_AVAILABLE,
@@ -100,7 +100,7 @@ export class EPServiceRegistry2 implements ServiceRegistry {
                     {
                         name: 'Secured SEMP Config',
                         secured: 'yes',
-                        uris: [connection.url]
+                        uris: [sempUrl]
                     }
                 ]
             }]
