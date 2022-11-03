@@ -146,7 +146,8 @@ export default class EventPortalImporterTaskImpl {
             }
           }
         }
-        const envResult = await connectorFacade.upsertEnvironment(`${solaceMessagingService.environmentName}-${solaceMessagingService.eventMeshName}-${solaceMessagingService.id}`, getOrgObject().serviceRegistry=='platform'?solaceMessagingService.solaceCloudMessagingServiceId:solaceMessagingService.messagingServiceId);
+        const useSolaceCloud = getOrgObject().serviceRegistry=='platform' || !getOrgObject().serviceRegistry;
+        const envResult = await connectorFacade.upsertEnvironment(`${solaceMessagingService.environmentName}-${solaceMessagingService.eventMeshName}-${solaceMessagingService.id}`, useSolaceCloud?solaceMessagingService.solaceCloudMessagingServiceId:solaceMessagingService.messagingServiceId);
         if (!envNames.find(s => s == envResult.environmentName)) {
           envNames.push(envResult.environmentName);
         }
