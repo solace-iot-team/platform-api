@@ -1,5 +1,14 @@
 # Release Notes
 
+## Version 0.9.7
+* OpenAPI: 0.15.2
+* API Management Connector Server: 0.9.7
+
+### Fixes
+
+* **fix-ep20-importer-serviceregistry**
+  - the importer did not choose the correct service registry in a case where the org configuration didn't set the registry type
+
 ## Version 0.9.6
 * OpenAPI: 0.15.2
 * API Management Connector Server: 0.9.6
