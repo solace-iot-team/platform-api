@@ -2,17 +2,18 @@ import L from '../server/common/logger';
 import { Service } from "./clients/solacecloud/models/Service";
 import { ServiceRegistry } from "./serviceregistry";
 import solacecloudfacade from "./solacecloudfacade";
-import { EnvironmentsService } from "./clients/ep.2.0/services/EnvironmentsService";
-import { EnvironmentsServiceDefault } from "./clients/ep.2.0/services/EnvironmentsServiceDefault";
+import { MessagingServicesService } from "./clients/ep.2.0/services/MessagingServicesService";
+import { MessagingServicesServiceDefault } from "./clients/ep.2.0/services/MessagingServicesServiceDefault";
 import { getEventPortalBaseUrl, getEventPortalToken, getOrg } from "./cloudtokenhelper";
 import { ApiOptions } from './clients/ep.2.0/core/ApiOptions';
-import { SolaceMessagingServiceResponse } from "./clients/ep.2.0/models/SolaceMessagingServiceResponse";
 import { ErrorResponseInternal } from "../server/api/middlewares/error.handler";
-import { SolaceMessagingServicesResponse } from "./clients/ep.2.0/models/SolaceMessagingServicesResponse";
-import { EnvironmentMessagingService } from './clients/ep.2.0/models/EnvironmentMessagingService';
 
-import { Cache, CacheContainer } from 'node-ts-cache';
+import { CacheContainer } from 'node-ts-cache';
 import { MemoryStorage } from 'node-ts-cache-storage-memory';
+import { MessagingServiceResponse } from './clients/ep.2.0/models/MessagingServiceResponse';
+import { MessagingServicesResponse } from './clients/ep.2.0/models/MessagingServicesResponse';
+import { MessagingService } from './clients/ep.2.0/models/MessagingService';
+import { MessagingServiceConnection } from './clients/ep.2.0/models/MessagingServiceConnection';
 
 const serviceCache = new CacheContainer(new MemoryStorage());
 const servicesCache = new CacheContainer(new MemoryStorage());
@@ -23,13 +24,27 @@ const opts: ApiOptions = {
 
 };
 
+interface MessagingProtocol {
+    name: string,
+    username: string,
+    password: string,
+    endPoints: Array<{
+        name: string,
+        transport: string,
+        uris: Array<string>,
+        secured: string,
+        compressed: string,
+    }>,
+    limits?: any,
+}
+
 const NOT_AVAILABLE: string = 'not available';
 
 export class EPServiceRegistry2 implements ServiceRegistry {
-    private ep2EnvService: EnvironmentsService;
+    private ep2EnvService: MessagingServicesService;
 
     constructor() {
-        this.ep2EnvService = new EnvironmentsServiceDefault(opts);
+        this.ep2EnvService = new MessagingServicesServiceDefault(opts);
     }
     public async getServiceByEnvironment(e: Components.Schemas.Environment): Promise<Service> {
         const svc = await this.getServiceById(e.serviceId);
@@ -42,7 +57,7 @@ export class EPServiceRegistry2 implements ServiceRegistry {
 
     public async getServiceById(id: string): Promise<Service> {
         const cacheKey = this.calculateCacheKey(id);
-        let msgSvcResponse = await serviceCache.getItem<SolaceMessagingServiceResponse>(cacheKey);
+        let msgSvcResponse = await serviceCache.getItem<MessagingServiceResponse>(cacheKey);
 
         let svc: Service = null;
         if (!msgSvcResponse) {
@@ -55,9 +70,9 @@ export class EPServiceRegistry2 implements ServiceRegistry {
                 svc = await solacecloudfacade.getServiceById(msgSvc.solaceCloudMessagingServiceId);
                 svc.serviceId = id;
                 svc['solaceCloudMessagingServiceId'] = msgSvc.solaceCloudMessagingServiceId;
-            } else if (msgSvc.bindings?.management?.connections?.length > 0) {
-                const connection = msgSvc.bindings.management.connections[0];
-                svc = this.creaateNonCloudService(msgSvc, connection, id);
+            } else if (msgSvc['bindings']?.management?.connections?.length > 0) {
+                const connection = msgSvc['bindings'].management.connections[0];
+                svc = this.createNonCloudService(msgSvc, id);
 
             }
         }
@@ -66,18 +81,41 @@ export class EPServiceRegistry2 implements ServiceRegistry {
         return svc;
     }
 
-    private creaateNonCloudService(msgSvc: EnvironmentMessagingService, connection: { name?: string; authenticationType?: "basicAuthentication"; url?: string; msgVpn?: string; users?: { name?: string; username?: string; password?: string; }[]; }, id: string): Service {
-        const sempUrl: string  = connection.url.includes('/SEMP/v2/config')?connection.url:`${connection.url}/SEMP/v2/config`;
+    private createNonCloudService(msgSvc: MessagingService, id: string): Service {
+        let sempConnection = this.findConnectionByProtocol(msgSvc.messagingServiceConnections, 'https', 'semp');
+        if (!sempConnection){
+            // fall back to plain HTTP SEMP connection
+            sempConnection = this.findConnectionByProtocol(msgSvc.messagingServiceConnections, 'http', 'semp'); 
+        }
+        const connection = msgSvc['bindings'].management.connections[0];
+        let sempUrl: string  = "";
+        let sempUser: string = "";
+        let sempPassword: string = "";
+        let sempMsgVpn: string = "";
+        //backwards compatibility - try to find undocumented bindings object
+        if (sempConnection){
+            sempUrl = sempConnection.url;
+            sempUser = sempConnection.messagingServiceAuthentications[0].messagingServiceCredentials[0].credentials['username'];
+            sempPassword = sempConnection.messagingServiceAuthentications[0].messagingServiceCredentials[0].credentials['password'];
+            sempMsgVpn = sempConnection.bindings['msgVpn'];
+        } else if (connection && connection.url  && connection.users && connection.users[0].username){
+            sempUrl = connection.url;
+            sempUser = connection.users[0].username;
+            sempPassword = connection.users[0].password;
+            sempMsgVpn = connection.msgVpn;
+        }
+        sempUrl =  sempUrl.includes('/SEMP/v2/config') ? sempUrl : `${sempUrl}/SEMP/v2/config`;
+        sempPassword = sempPassword.substring(2, sempPassword.length-1);
         return {
             adminProgress: NOT_AVAILABLE,
             adminState: NOT_AVAILABLE,
             creationState: 'completed',
             datacenterId: msgSvc.eventMeshId,
             datacenterProvider: 'custom',
-            messagingProtocols: this.generateMessageProtocolsStandardPorts(connection.url),
+            messagingProtocols: this.mapMessageProtocols(msgSvc.messagingServiceConnections),
             messagingStorage: 0,
             msgVpnAttributes: null,
-            msgVpnName: connection.msgVpn,
+            msgVpnName: sempMsgVpn,
             name: msgSvc.name,
             serviceClassDisplayedAttributes: {
                 "High Availability": NOT_AVAILABLE,
@@ -94,8 +132,8 @@ export class EPServiceRegistry2 implements ServiceRegistry {
             servicePackageId: NOT_AVAILABLE,
             managementProtocols: [{
                 name: 'SEMP',
-                username: connection.users[0].username,
-                password: connection.users[0].password.substring(2, connection.users[0].password.length-1),
+                username: sempUser,
+                password: sempPassword,
                 endPoints: [
                     {
                         name: 'Secured SEMP Config',
@@ -106,7 +144,7 @@ export class EPServiceRegistry2 implements ServiceRegistry {
             }]
         };
     }
-    private generateMessageProtocolsStandardPorts(sempUri: string): {
+    private mapMessageProtocols(connections: MessagingServiceConnection[]): {
         name: string,
         username: string,
         password: string,
@@ -118,202 +156,319 @@ export class EPServiceRegistry2 implements ServiceRegistry {
             compressed: string,
         }>,
         limits?: any,
-    }[]{
-        const sempParsedURL = new URL(sempUri);
-        const mqtt = `tcp://${sempParsedURL.hostname}:1883`;
-        L.info(mqtt);
-        return [
-            {
-                "name": "MQTT",
-                "username": "",
-                "password": "",
-                "endPoints": [
-                    {
-                        "name": "MQTT",
-                        "transport": "TCP",
-                        "uris": [
-                            `tcp://${sempParsedURL.hostname}:1883`
-                        ],
-                        "secured": "no",
-                        "compressed": "no"
-                    },
-                    {
-                        "name": "Secured MQTT",
-                        "transport": "SSL",
-                        "uris": [
-                            `ssl://${sempParsedURL.hostname}:8883`
-                        ],
-                        "secured": "yes",
-                        "compressed": "no"
-                    },
-                    {
-                        "name": "WebSocket MQTT",
-                        "transport": "WS",
-                        "uris": [
-                            `ws://${sempParsedURL.hostname}:8000`
-                        ],
-                        "secured": "no",
-                        "compressed": "no"
-                    },
-                    {
-                        "name": "WebSocket Secured MQTT",
-                        "transport": "WSS",
-                        "uris": [
-                            `wss://${sempParsedURL.hostname}:8443`
-                        ],
-                        "secured": "yes",
-                        "compressed": "no"
-                    }
-                ],
-                "limits": {}
-            },
-            {
-                "name": "JMS",
-                "username": "",
-                "password": "",
-                "endPoints": [
-                    {
-                        "name": "JMS",
-                        "transport": "TCP",
-                        "uris": [
-                            `smf://${sempParsedURL.hostname}:55555`
-                        ],
-                        "secured": "no",
-                        "compressed": "no"
-                    },
-                    {
-                        "name": "Secured JMS",
-                        "transport": "TLS",
-                        "uris": [
-                            `smfs://${sempParsedURL.hostname}:55443`
-                        ],
-                        "secured": "yes",
-                        "compressed": "no"
-                    }
-                ],
-                "limits": {}
-            },
-            {
-                "name": "REST",
-                "username": "",
-                "password": "",
-                "endPoints": [
-                    {
-                        "name": "REST",
-                        "transport": "HTTP",
-                        "uris": [
-                            `http://${sempParsedURL.hostname}:9000`
-                        ],
-                        "secured": "no",
-                        "compressed": "no"
-                    },
-                    {
-                        "name": "Secured REST",
-                        "transport": "HTTPS",
-                        "uris": [
-                            `https://${sempParsedURL.hostname}:9443`
-                        ],
-                        "secured": "yes",
-                        "compressed": "no"
-                    }
-                ],
-                "limits": {}
-            },
-            {
-                "name": "AMQP",
-                "username": "",
-                "password": "",
-                "endPoints": [
-                    {
-                        "name": "AMQP",
-                        "transport": "AMQP",
-                        "uris": [
-                            `amqp://${sempParsedURL.hostname}:5672`
-                        ],
-                        "secured": "no",
-                        "compressed": "no"
-                    },
+    }[] {
+        const messagingProtocols = [];
+        messagingProtocols.push(this.mapAMQP(connections));
+        messagingProtocols.push(this.mapMQTT(connections));
+        messagingProtocols.push(this.mapJMS(connections));
+        messagingProtocols.push(this.mapSMF(connections));
+        messagingProtocols.push(this.mapREST(connections));
+        messagingProtocols.push(this.mapWebMessaging(connections));
+        return messagingProtocols.filter(m => m != null);
+    }
+
+    private mapAMQP(connections: MessagingServiceConnection[]): MessagingProtocol {
+        const amqpConnection: MessagingServiceConnection = this.findConnectionByProtocol(connections, 'amqp', 'amqp');
+        const amqpsConnection: MessagingServiceConnection = this.findConnectionByProtocol(connections, 'amqps', 'amqp')
+        if (amqpConnection || amqpsConnection) {
+            const mp: MessagingProtocol = {
+                name: 'AMQP',
+                endPoints: [],
+                password: "",
+                username: "",
+                limits: {},
+            }
+            if (amqpConnection) {
+                mp.endPoints.push({
+                    "name": "AMQP",
+                    "transport": "AMQP",
+                    "uris": [
+                        amqpConnection.url
+                    ],
+                    "secured": "no",
+                    "compressed": "no"
+                });
+            }
+            if (amqpsConnection) {
+                mp.endPoints.push(
                     {
                         "name": "Secured AMQP",
                         "transport": "AMQPS",
                         "uris": [
-                            `amqps://${sempParsedURL.hostname}:5671`
+                            amqpsConnection.url
                         ],
                         "secured": "yes",
                         "compressed": "no"
                     }
-                ],
-                "limits": {}
-            },
-            {
-                "name": "SMF",
-                "username": "",
-                "password": "",
-                "endPoints": [
+                );
+            }
+            return mp;
+        } else {
+            return null;
+        }
+    }
+
+    private mapMQTT(connections: MessagingServiceConnection[]): MessagingProtocol {
+        const mqttConnection: MessagingServiceConnection = this.findConnectionByProtocol(connections, 'tcp', 'mqtt');
+        const secureMqttConnection: MessagingServiceConnection = this.findConnectionByProtocol(connections, 'ssl', 'mqtt');
+        const wsMqttConnection: MessagingServiceConnection = this.findConnectionByProtocol(connections, 'ws', 'mqtt');
+        const wssMqttConnection: MessagingServiceConnection = this.findConnectionByProtocol(connections, 'wss', 'mqtt');
+        if (mqttConnection || secureMqttConnection || wsMqttConnection || wssMqttConnection) {
+            const mp: MessagingProtocol = {
+                name: 'AMQP',
+                endPoints: [],
+                password: "",
+                username: "",
+                limits: {},
+            }
+            if (mqttConnection) {
+                mp.endPoints.push({
+                    "name": "MQTT",
+                    "transport": "TCP",
+                    "uris": [
+                        mqttConnection.url
+                    ],
+                    "secured": "no",
+                    "compressed": "no"
+                });
+            }
+            if (secureMqttConnection) {
+                mp.endPoints.push({
+                    "name": "Secured MQTT",
+                    "transport": "SSL",
+                    "uris": [
+                        secureMqttConnection.url
+                    ],
+                    "secured": "yes",
+                    "compressed": "no"
+                });
+            }
+            if (wsMqttConnection) {
+                mp.endPoints.push(
                     {
-                        "name": "SMF",
-                        "transport": "TCP",
+                        "name": "WebSocket MQTT",
+                        "transport": "WS",
                         "uris": [
-                            `tcp://${sempParsedURL.hostname}:55555`
+                            wsMqttConnection.url
                         ],
                         "secured": "no",
                         "compressed": "no"
-                    },
+                    }
+                );
+            }
+            if (wssMqttConnection) {
+                mp.endPoints.push(
+                    {
+                        "name": "WebSocket Secured MQTT",
+                        "transport": "WSS",
+                        "uris": [
+                            wssMqttConnection.url
+                        ],
+                        "secured": "yes",
+                        "compressed": "no"
+                    }
+                );
+            }
+
+            return mp;
+        } else {
+            return null;
+        }
+    }
+
+    private mapJMS(connections: MessagingServiceConnection[]): MessagingProtocol {
+        const jmsConnection: MessagingServiceConnection = this.findConnectionByProtocol(connections, 'tcp', 'smf');
+        const secureJmsConnection: MessagingServiceConnection = this.findConnectionByProtocol(connections, 'tcps', 'smf')
+        if (jmsConnection || secureJmsConnection) {
+            const mp: MessagingProtocol = {
+                name: 'JMS',
+                endPoints: [],
+                password: "",
+                username: "",
+                limits: {},
+            }
+            if (jmsConnection) {
+                mp.endPoints.push({
+                    "name": "JMS",
+                    "transport": "TCP",
+                    "uris": [
+                        jmsConnection.url
+                    ],
+                    "secured": "no",
+                    "compressed": "no"
+                });
+            }
+            if (secureJmsConnection) {
+                mp.endPoints.push(
+                    {
+                        "name": "Secured JMS",
+                        "transport": "TLS",
+                        "uris": [
+                            secureJmsConnection.url
+                        ],
+                        "secured": "yes",
+                        "compressed": "no"
+                    }
+                );
+            }
+            return mp;
+        } else {
+            return null;
+        }
+    }
+
+    private mapSMF(connections: MessagingServiceConnection[]): MessagingProtocol {
+        const smfConnection: MessagingServiceConnection = this.findConnectionByProtocol(connections, 'tcp', 'smf');
+        const secureSmfConnection: MessagingServiceConnection = this.findConnectionByProtocol(connections, 'tcps', 'smf')
+        if (smfConnection || secureSmfConnection) {
+            const mp: MessagingProtocol = {
+                name: 'JMS',
+                endPoints: [],
+                password: "",
+                username: "",
+                limits: {},
+            }
+            if (smfConnection) {
+                mp.endPoints.push({
+                    "name": "SMF",
+                    "transport": "TCP",
+                    "uris": [
+                        smfConnection.url
+                    ],
+                    "secured": "no",
+                    "compressed": "no"
+                });
+                mp.endPoints.push(
                     {
                         "name": "Compressed SMF",
                         "transport": "TCP",
                         "uris": [
-                            `tcp://${sempParsedURL.hostname}:55003`
+                            smfConnection.url
                         ],
                         "secured": "no",
                         "compressed": "yes"
-                    },
+                    }
+                );
+            }
+            if (secureSmfConnection) {
+                mp.endPoints.push(
                     {
                         "name": "Secured SMF",
                         "transport": "TLS",
                         "uris": [
-                            `tcps://${sempParsedURL.hostname}:55443`
+                            secureSmfConnection.url
                         ],
                         "secured": "yes",
                         "compressed": "no"
                     }
-                ],
-                "limits": {}
-            },
-            {
-                "name": "Web Messaging",
-                "username": "",
-                "password": "",
-                "endPoints": [
+                );
+            }
+            return mp;
+        } else {
+            return null;
+        }
+    }
+
+    private mapREST(connections: MessagingServiceConnection[]): MessagingProtocol {
+        const restConnection: MessagingServiceConnection = this.findConnectionByProtocol(connections, 'http', 'rest');
+        const secureRestConnection: MessagingServiceConnection = this.findConnectionByProtocol(connections, 'https', 'rest')
+        if (restConnection || secureRestConnection) {
+            const mp: MessagingProtocol = {
+                name: 'JMS',
+                endPoints: [],
+                password: "",
+                username: "",
+                limits: {},
+            }
+            if (restConnection) {
+                mp.endPoints.push({
+                    "name": "REST",
+                    "transport": "HTTP",
+                    "uris": [
+                        restConnection.url
+                    ],
+                    "secured": "no",
+                    "compressed": "no"
+                });
+
+            }
+            if (secureRestConnection) {
+                mp.endPoints.push(
                     {
-                        "name": "Web Messaging",
-                        "transport": "WS or HTTP",
+                        "name": "Secured REST",
+                        "transport": "HTTPS",
                         "uris": [
-                            `ws://${sempParsedURL.hostname}:80`
+                            secureRestConnection.url
                         ],
-                        "secured": "no",
+                        "secured": "yes",
                         "compressed": "no"
-                    },
+                    }
+                );
+            }
+            return mp;
+        } else {
+            return null;
+        }
+    }
+
+    private mapWebMessaging(connections: MessagingServiceConnection[]): MessagingProtocol {
+        const smfConnection: MessagingServiceConnection = this.findConnectionByProtocol(connections, 'ws', 'smf');
+        const secureSmfConnection: MessagingServiceConnection = this.findConnectionByProtocol(connections, 'wss', 'smf')
+        if (smfConnection || secureSmfConnection) {
+            const mp: MessagingProtocol = {
+                name: 'JMS',
+                endPoints: [],
+                password: "",
+                username: "",
+                limits: {},
+            }
+            if (smfConnection) {
+                mp.endPoints.push({
+                    "name": "Web Messaging",
+                    "transport": "WS or HTTP",
+                    "uris": [
+                        smfConnection.url
+                    ],
+                    "secured": "no",
+                    "compressed": "no"
+                });
+            }
+            if (secureSmfConnection) {
+                mp.endPoints.push(
                     {
                         "name": "Secured Web Messaging",
                         "transport": "WSS or HTTPS",
                         "uris": [
-                            `wss://${sempParsedURL.hostname}:443`
+                            secureSmfConnection.url
                         ],
                         "secured": "yes",
                         "compressed": "no"
                     }
-                ],
-                "limits": {}
+                );
             }
-        ];
+            return mp;
+        } else {
+            return null;
+        }
     }
+
+    private findConnectionByProtocol(connections: MessagingServiceConnection[], transport: string, protocol: string): MessagingServiceConnection {
+        return connections.find(c => c.messagingServiceAuthentications?.length > 0
+            && c.messagingServiceAuthentications[0].authenticationDetails
+            && c.messagingServiceAuthentications[0].authenticationDetails['protocol']
+            && c.messagingServiceAuthentications[0].authenticationDetails['protocol'] == transport
+            && c.messagingServiceAuthentications[0].authenticationDetails['properties']
+            && c.messagingServiceAuthentications[0].authenticationDetails['properties'][0]
+            && c.messagingServiceAuthentications[0].authenticationDetails['properties'][0].value == protocol
+        );
+    }
+
     public async getServices(): Promise<Service[]> {
         const cacheKey = this.calculateCacheKey();
-        const cachedServices = await servicesCache.getItem<SolaceMessagingServicesResponse>(cacheKey);
-        let msgSvcs: SolaceMessagingServicesResponse = cachedServices;
+        const cachedServices = await servicesCache.getItem<MessagingServicesResponse>(cacheKey);
+        let msgSvcs: MessagingServicesResponse = cachedServices;
         if (!msgSvcs) {
-            msgSvcs = await this.ep2EnvService.getMessagingServices();
+            msgSvcs = await this.ep2EnvService.getMessagingServices(99, 1);
             servicesCache.setItem(cacheKey, msgSvcs, { ttl: 360 });
         }
 
