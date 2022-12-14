@@ -155,8 +155,8 @@ export class ConnectorFacade {
         exposedProtocols: protocols,
       }
       try {
-        await environmentsService.create(connectorEnv);
         envName = cleanSolaceMessagingServiceEnvironmentName;
+        await environmentsService.create(connectorEnv);
         results.push({
           resource: 'Environment',
           action: 'created',
