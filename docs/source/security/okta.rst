@@ -248,7 +248,7 @@ Copy the ``key`` element of the payload as below
    image
 
 To convert JWKS to PEM you can for example use this web site -
-https://8gwifi.org/jwkconvertfunctions.jsp. Paste the JWK key and hit
+8gwifidotorg/jwkconvertfunctions.jsp. Paste the JWK key and hit
 submit, then copy the resulting public key and save it to the local file
 system - in the example above it was saved to
 ``/home/admin/platform-api-tmp/wso2-key.pem``
