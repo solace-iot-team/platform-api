@@ -159,15 +159,16 @@ export default class EventPortalImporterTaskImpl {
       const apiProductId = connectorFacade.createInternalName(`${prodVersion.version.eventApiProductId}-${plan.name}`);
       const policy = plan.solaceClassOfServicePolicy;
       const clientOptions: ClientOptions = {
-        guaranteedMessagingEnabled: policy.guaranteedMessaging || policy['messageDeliveryMode'] == 'guaranteed',
+        guaranteedMessagingEnabled: policy.messageDeliveryMode && policy.messageDeliveryMode == 'guaranteed',
       };
-      if (policy.guaranteedMessaging || policy.guaranteedMessaging || policy['messageDeliveryMode'] == 'guaranteed') {
+      if (policy.messageDeliveryMode && policy.messageDeliveryMode == 'guaranteed') {
+        const requireQueue: boolean = (policy.messageDeliveryMode == 'guaranteed' && policy.queueType)?true:false;
         clientOptions.guaranteedMessaging = {
           accessType: policy.accessType,
-          maxMsgSpoolUsage: policy.spoolSize?policy.spoolSize:policy['maxMsgSpoolUsage'],
+          maxMsgSpoolUsage: policy.maxMsgSpoolUsage,
           maxTtl: policy.maximumTimeToLive,
-          requireQueue: policy.queuePerEventApi||policy['queueType'] ? true : false,
-          queueGranularity: policy.queuePerEventApi||policy['queueType']=='single' ? 'api' : 'apiProduct'
+          requireQueue: requireQueue,
+          queueGranularity: policy.queueType=='single' ? 'api' : 'apiProduct'
         };
       }
 

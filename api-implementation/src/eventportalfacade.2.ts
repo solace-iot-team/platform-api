@@ -118,7 +118,8 @@ export class EventPortalfacade {
   }
 
   public async getAsyncAPI(apiVersionId: string): Promise<EventAPIAsyncAPIInfo> {
-    const apiSpec = await this.eventApIsService.getAsyncApiForEventApiVersion(apiVersionId, 'json');
+    const apiSpec = await this.eventApIsService.getAsyncApiForEventApiVersion(
+      apiVersionId, false, 'json');
     const apiVersion = (await this.eventApIsService.getEventApiVersion(apiVersionId, 'parent'));
     const apiName = `${apiVersion.data['parent'].name}-${apiVersion.data['parent'].applicationDomainId}`;
     return {
