@@ -7,6 +7,8 @@ import type { EventApiProductVersion } from '../models/EventApiProductVersion';
 import type { EventApiProductVersionResponse } from '../models/EventApiProductVersionResponse';
 import type { EventApiProductVersionsResponse } from '../models/EventApiProductVersionsResponse';
 import type { GatewayMessagingService } from '../models/GatewayMessagingService';
+import type { GatewayMessagingServiceResponse } from '../models/GatewayMessagingServiceResponse';
+import type { StateChangeRequestResponse } from '../models/StateChangeRequestResponse';
 import type { VersionedObjectStateChangeRequest } from '../models/VersionedObjectStateChangeRequest';
 import type { EventApiProductsService } from './EventApiProductsService';
 import type { ApiRequestOptions } from '../core/ApiRequestOptions';
@@ -28,13 +30,14 @@ export class EventApiProductsServiceDefault implements EventApiProductsService {
     public async getEventApiProducts(
         pageSize: number = 20,
         pageNumber: number = 1,
-        brokerType?: 'solace' | 'kafka',
+        brokerType?: string,
         name?: string,
         ids?: Array<string>,
         applicationDomainId?: string,
         applicationDomainIds?: Array<string>,
         shared?: boolean,
         sort?: string,
+        customAttributes?: string,
     ): Promise<EventApiProductsResponse> {
         const options = this.getEventApiProductsApiRequestOptions(
             pageSize,
@@ -46,6 +49,7 @@ export class EventApiProductsServiceDefault implements EventApiProductsService {
             applicationDomainIds,
             shared,
             sort,
+            customAttributes,
         );
         const result = await __request(options);
         return result.body;
@@ -54,13 +58,14 @@ export class EventApiProductsServiceDefault implements EventApiProductsService {
     public getEventApiProductsApiRequestOptions(
         pageSize: number = 20,
         pageNumber: number = 1,
-        brokerType?: 'solace' | 'kafka',
+        brokerType?: string,
         name?: string,
         ids?: Array<string>,
         applicationDomainId?: string,
         applicationDomainIds?: Array<string>,
         shared?: boolean,
         sort?: string,
+        customAttributes?: string,
     ): ApiRequestOptions {
         return {
             ...this.config,
@@ -76,6 +81,7 @@ export class EventApiProductsServiceDefault implements EventApiProductsService {
                 'applicationDomainIds': applicationDomainIds,
                 'shared': shared,
                 'sort': sort,
+                'customAttributes': customAttributes,
             },
             errors: {
                 400: `Bad Request.`,
@@ -225,18 +231,28 @@ export class EventApiProductsServiceDefault implements EventApiProductsService {
     public async getEventApiProductVersions(
         pageSize: number = 20,
         pageNumber: number = 1,
+        eventApiProductIds?: Array<string>,
         ids?: Array<string>,
         include?: string,
         stateId?: string,
         messagingServiceId?: string,
+        clientAppId?: string,
+        shared?: boolean,
+        latest?: boolean,
+        customAttributes?: string,
     ): Promise<EventApiProductVersionsResponse> {
         const options = this.getEventApiProductVersionsApiRequestOptions(
             pageSize,
             pageNumber,
+            eventApiProductIds,
             ids,
             include,
             stateId,
             messagingServiceId,
+            clientAppId,
+            shared,
+            latest,
+            customAttributes,
         );
         const result = await __request(options);
         return result.body;
@@ -245,10 +261,15 @@ export class EventApiProductsServiceDefault implements EventApiProductsService {
     public getEventApiProductVersionsApiRequestOptions(
         pageSize: number = 20,
         pageNumber: number = 1,
+        eventApiProductIds?: Array<string>,
         ids?: Array<string>,
         include?: string,
         stateId?: string,
         messagingServiceId?: string,
+        clientAppId?: string,
+        shared?: boolean,
+        latest?: boolean,
+        customAttributes?: string,
     ): ApiRequestOptions {
         return {
             ...this.config,
@@ -257,11 +278,49 @@ export class EventApiProductsServiceDefault implements EventApiProductsService {
             query: {
                 'pageSize': pageSize,
                 'pageNumber': pageNumber,
+                'eventApiProductIds': eventApiProductIds,
                 'ids': ids,
                 'include': include,
                 'stateId': stateId,
                 'messagingServiceId': messagingServiceId,
+                'clientAppId': clientAppId,
+                'shared': shared,
+                'latest': latest,
+                'customAttributes': customAttributes,
             },
+            errors: {
+                400: `Bad Request.`,
+                401: `Unauthorized.`,
+                403: `Forbidden.`,
+                404: `Not Found.`,
+                405: `Method Not Allowed`,
+                500: `Internal Server Error.`,
+                501: `Not Implemented`,
+                503: `Service Unavailable.`,
+                504: `Gateway Timeout.`,
+            },
+        };
+    }
+
+    public async createEventApiProductVersion(
+        requestBody: EventApiProductVersion,
+    ): Promise<EventApiProductVersionResponse> {
+        const options = this.createEventApiProductVersionApiRequestOptions(
+            requestBody,
+        );
+        const result = await __request(options);
+        return result.body;
+    }
+
+    public createEventApiProductVersionApiRequestOptions(
+        requestBody: EventApiProductVersion,
+    ): ApiRequestOptions {
+        return {
+            ...this.config,
+            method: 'POST',
+            path: `/api/v2/architecture/eventApiProductVersions`,
+            body: requestBody,
+            mediaType: 'application/json',
             errors: {
                 400: `Bad Request.`,
                 401: `Unauthorized.`,
@@ -279,10 +338,12 @@ export class EventApiProductsServiceDefault implements EventApiProductsService {
     public async getEventApiProductVersion(
         versionId: string,
         include: string,
+        clientAppId?: string,
     ): Promise<EventApiProductVersionResponse> {
         const options = this.getEventApiProductVersionApiRequestOptions(
             versionId,
             include,
+            clientAppId,
         );
         const result = await __request(options);
         return result.body;
@@ -291,6 +352,7 @@ export class EventApiProductsServiceDefault implements EventApiProductsService {
     public getEventApiProductVersionApiRequestOptions(
         versionId: string,
         include: string,
+        clientAppId?: string,
     ): ApiRequestOptions {
         return {
             ...this.config,
@@ -298,6 +360,7 @@ export class EventApiProductsServiceDefault implements EventApiProductsService {
             path: `/api/v2/architecture/eventApiProductVersions/${versionId}`,
             query: {
                 'include': include,
+                'clientAppId': clientAppId,
             },
             errors: {
                 400: `Bad Request.`,
@@ -313,17 +376,17 @@ export class EventApiProductsServiceDefault implements EventApiProductsService {
         };
     }
 
-    public async deleteEventApiProductVersionByVersionId(
+    public async deleteEventApiProductVersion(
         versionId: string,
     ): Promise<void> {
-        const options = this.deleteEventApiProductVersionByVersionIdApiRequestOptions(
+        const options = this.deleteEventApiProductVersionApiRequestOptions(
             versionId,
         );
         const result = await __request(options);
         return result.body;
     }
 
-    public deleteEventApiProductVersionByVersionIdApiRequestOptions(
+    public deleteEventApiProductVersionApiRequestOptions(
         versionId: string,
     ): ApiRequestOptions {
         return {
@@ -344,11 +407,11 @@ export class EventApiProductsServiceDefault implements EventApiProductsService {
         };
     }
 
-    public async updateEventApiProductVersionByVersionId(
+    public async updateEventApiProductVersion(
         versionId: string,
         requestBody: EventApiProductVersion,
     ): Promise<EventApiProductVersionResponse> {
-        const options = this.updateEventApiProductVersionByVersionIdApiRequestOptions(
+        const options = this.updateEventApiProductVersionApiRequestOptions(
             versionId,
             requestBody,
         );
@@ -356,7 +419,7 @@ export class EventApiProductsServiceDefault implements EventApiProductsService {
         return result.body;
     }
 
-    public updateEventApiProductVersionByVersionIdApiRequestOptions(
+    public updateEventApiProductVersionApiRequestOptions(
         versionId: string,
         requestBody: EventApiProductVersion,
     ): ApiRequestOptions {
@@ -380,11 +443,11 @@ export class EventApiProductsServiceDefault implements EventApiProductsService {
         };
     }
 
-    public async updateEventApiProductVersionStateByEventApiProductVersionId(
+    public async updateEventApiProductVersionState(
         versionId: string,
         requestBody: EventApiProductVersion,
-    ): Promise<VersionedObjectStateChangeRequest> {
-        const options = this.updateEventApiProductVersionStateByEventApiProductVersionIdApiRequestOptions(
+    ): Promise<StateChangeRequestResponse> {
+        const options = this.updateEventApiProductVersionStateApiRequestOptions(
             versionId,
             requestBody,
         );
@@ -392,7 +455,7 @@ export class EventApiProductsServiceDefault implements EventApiProductsService {
         return result.body;
     }
 
-    public updateEventApiProductVersionStateByEventApiProductVersionIdApiRequestOptions(
+    public updateEventApiProductVersionStateApiRequestOptions(
         versionId: string,
         requestBody: EventApiProductVersion,
     ): ApiRequestOptions {
@@ -423,6 +486,7 @@ export class EventApiProductsServiceDefault implements EventApiProductsService {
         ids?: Array<string>,
         version?: string,
         stateId?: string,
+        customAttributes?: string,
     ): Promise<EventApiProductVersionsResponse> {
         const options = this.getEventApiProductVersionsForEventApiProductApiRequestOptions(
             eventApiProductId,
@@ -431,6 +495,7 @@ export class EventApiProductsServiceDefault implements EventApiProductsService {
             ids,
             version,
             stateId,
+            customAttributes,
         );
         const result = await __request(options);
         return result.body;
@@ -443,6 +508,7 @@ export class EventApiProductsServiceDefault implements EventApiProductsService {
         ids?: Array<string>,
         version?: string,
         stateId?: string,
+        customAttributes?: string,
     ): ApiRequestOptions {
         return {
             ...this.config,
@@ -454,6 +520,7 @@ export class EventApiProductsServiceDefault implements EventApiProductsService {
                 'ids': ids,
                 'version': version,
                 'stateId': stateId,
+                'customAttributes': customAttributes,
             },
             errors: {
                 400: `Bad Request.`,
@@ -685,7 +752,7 @@ export class EventApiProductsServiceDefault implements EventApiProductsService {
     public async associateGatewayMessagingServiceToEapVersion(
         eventApiProductVersionId: string,
         requestBody: GatewayMessagingService,
-    ): Promise<GatewayMessagingService> {
+    ): Promise<GatewayMessagingServiceResponse> {
         const options = this.associateGatewayMessagingServiceToEapVersionApiRequestOptions(
             eventApiProductVersionId,
             requestBody,

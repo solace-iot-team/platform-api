@@ -1,6 +1,8 @@
 /* eslint-disable */
 
 
+import type { CustomAttribute } from './CustomAttribute';
+
 export type EventApi = {
     readonly createdTime?: string;
     readonly updatedTime?: string;
@@ -21,6 +23,7 @@ export type EventApi = {
      * The type of the broker used for the event API
      */
     brokerType: EventApi.brokerType;
+    customAttributes?: Array<CustomAttribute>;
     /**
      * The type of this payload, eventApi.
      */

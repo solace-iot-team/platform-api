@@ -2,10 +2,11 @@
 
 
 import type { Consumer } from './Consumer';
+import type { meta } from './meta';
 
 export type ConsumersResponse = {
     data?: Array<Consumer>;
-    meta?: Record<string, any>;
+    meta?: meta;
 }
 
 export namespace ConsumersResponse {

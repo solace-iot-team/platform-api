@@ -1,5 +1,6 @@
 /* eslint-disable */
 
+import type { ApplicationDomainImportDTO } from '../models/ApplicationDomainImportDTO';
 import type { ApplicationDomainsService } from './ApplicationDomainsService';
 import type { ApiRequestOptions } from '../core/ApiRequestOptions';
 import { request as __request } from '../core/request';
@@ -188,6 +189,39 @@ export class ApplicationDomainsServiceDefault implements ApplicationDomainsServi
             method: 'PATCH',
             path: `/api/v2/architecture/applicationDomains/${id}`,
             body: requestBody,
+            errors: {
+                400: `Bad Request.`,
+                401: `Unauthorized.`,
+                403: `Forbidden.`,
+                404: `Not Found.`,
+                405: `Method Not Allowed`,
+                500: `Internal Server Error.`,
+                501: `Not Implemented`,
+                503: `Service Unavailable.`,
+                504: `Gateway Timeout.`,
+            },
+        };
+    }
+
+    public async importApplicationDomains(
+        requestBody: ApplicationDomainImportDTO,
+    ): Promise<any> {
+        const options = this.importApplicationDomainsApiRequestOptions(
+            requestBody,
+        );
+        const result = await __request(options);
+        return result.body;
+    }
+
+    public importApplicationDomainsApiRequestOptions(
+        requestBody: ApplicationDomainImportDTO,
+    ): ApiRequestOptions {
+        return {
+            ...this.config,
+            method: 'POST',
+            path: `/api/v2/architecture/applicationDomains/import`,
+            body: requestBody,
+            mediaType: 'application/json',
             errors: {
                 400: `Bad Request.`,
                 401: `Unauthorized.`,

@@ -8,8 +8,8 @@ export interface ConsumersService {
     /**
      * Gets the consumer objects
      * Use this API to retrieve a list of consumers that match the given parameters.
-     * @param pageSize The number of consumers to get per page. Min: 1 Max: 100
-     * @param pageNumber The page number to get. Min: 1
+     * @param pageSize The number of consumers to get per page.
+     * @param pageNumber The page number to get.
      * @param applicationVersionIds Match only consumers with the given application version IDs, separated by commas.
      * @param ids Match only consumers with the given IDs separated by commas.
      * @returns any Retrieve a list of consumers and the accompanying metadata.
@@ -25,8 +25,8 @@ export interface ConsumersService {
      * **used to get the request options without making a http request**
      * Gets the consumer objects
      * Use this API to retrieve a list of consumers that match the given parameters.
-     * @param pageSize The number of consumers to get per page. Min: 1 Max: 100
-     * @param pageNumber The page number to get. Min: 1
+     * @param pageSize The number of consumers to get per page.
+     * @param pageNumber The page number to get.
      * @param applicationVersionIds Match only consumers with the given application version IDs, separated by commas.
      * @param ids Match only consumers with the given IDs separated by commas.
      * @returns ApiRequestOptions the request options to fulfill a http request

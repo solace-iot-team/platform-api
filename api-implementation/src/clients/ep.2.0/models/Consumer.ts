@@ -1,6 +1,8 @@
 /* eslint-disable */
 
 
+import type { Subscription } from './Subscription';
+
 export type Consumer = {
     readonly createdTime?: string;
     readonly updatedTime?: string;
@@ -11,6 +13,7 @@ export type Consumer = {
     applicationVersionId: string;
     brokerType?: string;
     consumerType?: string;
+    subscriptions?: Array<Subscription>;
     type?: string;
 }
 

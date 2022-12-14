@@ -1,11 +1,12 @@
 /* eslint-disable */
 
 
+import type { meta } from './meta';
 import type { SchemaVersion } from './SchemaVersion';
 
 export type SchemaVersionsResponse = {
     data?: Array<SchemaVersion>;
-    meta?: Record<string, any>;
+    meta?: meta;
 }
 
 export namespace SchemaVersionsResponse {

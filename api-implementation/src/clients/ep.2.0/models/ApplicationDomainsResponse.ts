@@ -2,10 +2,11 @@
 
 
 import type { ApplicationDomain } from './ApplicationDomain';
+import type { meta } from './meta';
 
 export type ApplicationDomainsResponse = {
     data?: Array<ApplicationDomain>;
-    meta?: Record<string, any>;
+    meta?: meta;
 }
 
 export namespace ApplicationDomainsResponse {

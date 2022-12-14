@@ -1,6 +1,8 @@
 /* eslint-disable */
 
 
+import type { CustomAttribute } from './CustomAttribute';
+
 export type EventApiProduct = {
     readonly createdTime?: string;
     readonly updatedTime?: string;
@@ -18,9 +20,10 @@ export type EventApiProduct = {
     shared?: boolean;
     readonly numberOfVersions?: number;
     /**
-     * Broker type of the event API product
+     * The type of the broker used for the event API product
      */
     brokerType: EventApiProduct.brokerType;
+    customAttributes?: Array<CustomAttribute>;
     /**
      * The type of payload
      */
@@ -35,11 +38,11 @@ export namespace EventApiProduct {
     export const discriminator = 'EventApiProduct';
 
     /**
-     * Broker type of the event API product
+     * The type of the broker used for the event API product
      */
     export enum brokerType {
-        solace = 'solace',
         kafka = 'kafka',
+        solace = 'solace',
     }
 
 

@@ -1,19 +1,22 @@
 /* eslint-disable */
 
 
+import type { CustomAttribute } from './CustomAttribute';
+
 export type EventApiVersion = {
     readonly createdTime?: string;
     readonly updatedTime?: string;
     readonly createdBy?: string;
     readonly changedBy?: string;
     readonly id?: string;
-    eventApiId?: string;
+    eventApiId: string;
     description?: string;
     version?: string;
     displayName?: string;
     producedEventVersionIds?: Array<string>;
     consumedEventVersionIds?: Array<string>;
     declaredEventApiProductVersionIds?: Array<string>;
+    customAttributes?: Array<CustomAttribute>;
     stateId?: string;
     type?: string;
 }

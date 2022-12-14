@@ -11,6 +11,10 @@ export type BaseMessagingServiceDTO = {
      */
     readonly messagingServiceId?: string;
     /**
+     * Name of the Event Portal messaging service
+     */
+    readonly messagingServiceName?: string;
+    /**
      * Values for allowed supported protocols
      */
     supportedProtocols?: Array<string>;

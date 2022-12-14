@@ -2,10 +2,11 @@
 
 
 import type { Environment } from './Environment';
+import type { meta } from './meta';
 
 export type EnvironmentsResponse = {
     data?: Array<Environment>;
-    meta?: Record<string, any>;
+    meta?: meta;
 }
 
 export namespace EnvironmentsResponse {

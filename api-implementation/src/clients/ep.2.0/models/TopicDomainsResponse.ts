@@ -1,11 +1,12 @@
 /* eslint-disable */
 
 
+import type { meta } from './meta';
 import type { TopicDomain } from './TopicDomain';
 
 export type TopicDomainsResponse = {
     data?: Array<TopicDomain>;
-    meta?: Record<string, any>;
+    meta?: meta;
 }
 
 export namespace TopicDomainsResponse {

@@ -2,10 +2,11 @@
 
 
 import type { EventMesh } from './EventMesh';
+import type { meta } from './meta';
 
 export type EventMeshesResponse = {
     data?: Array<EventMesh>;
-    meta?: Record<string, any>;
+    meta?: meta;
 }
 
 export namespace EventMeshesResponse {

@@ -2,10 +2,11 @@
 
 
 import type { ApplicationVersion } from './ApplicationVersion';
+import type { meta } from './meta';
 
 export type ApplicationVersionsResponse = {
     data?: Array<ApplicationVersion>;
-    meta?: Record<string, any>;
+    meta?: meta;
 }
 
 export namespace ApplicationVersionsResponse {
