@@ -1,6 +1,8 @@
 /* eslint-disable */
 
 
+import type { CustomAttribute } from './CustomAttribute';
+
 export type Application = {
     readonly createdTime?: string;
     readonly updatedTime?: string;
@@ -12,6 +14,7 @@ export type Application = {
     brokerType: Application.brokerType;
     applicationDomainId: string;
     readonly numberOfVersions?: number;
+    customAttributes?: Array<CustomAttribute>;
     type?: string;
 }
 

@@ -2,6 +2,7 @@
 
 
 import type { ApplicationDomainStats } from './ApplicationDomainStats';
+import type { CustomAttribute } from './CustomAttribute';
 
 export type ApplicationDomain = {
     readonly createdTime?: string;
@@ -20,6 +21,7 @@ export type ApplicationDomain = {
      */
     topicDomainEnforcementEnabled?: boolean;
     stats?: ApplicationDomainStats;
+    customAttributes?: Array<CustomAttribute>;
     type?: string;
 }
 

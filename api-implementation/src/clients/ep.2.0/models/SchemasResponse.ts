@@ -1,11 +1,12 @@
 /* eslint-disable */
 
 
+import type { meta } from './meta';
 import type { SchemaObject } from './SchemaObject';
 
 export type SchemasResponse = {
     data?: Array<SchemaObject>;
-    meta?: Record<string, any>;
+    meta?: meta;
 }
 
 export namespace SchemasResponse {

@@ -8,22 +8,22 @@ import type { BasePolicyDTO } from './BasePolicyDTO';
  */
 export type SolaceClassOfServicePolicy = (BasePolicyDTO & {
     /**
-     * Toggles between the use of a queue and direct messaging.
+     * The type of message delivery mode in the current event API product version
      */
-    guaranteedMessaging?: boolean,
+    messageDeliveryMode: SolaceClassOfServicePolicy.messageDeliveryMode,
     accessType?: SolaceClassOfServicePolicy.accessType,
     /**
      * Duration in seconds of how long a message can live in a queue
      */
     maximumTimeToLive?: number,
     /**
-     * Toggles between one or more queues for each event API version in the current event API product version
+     * The type of queue to be used in the current event API product version
      */
-    queuePerEventApi?: boolean,
+    queueType: SolaceClassOfServicePolicy.queueType,
     /**
      * Total number of MBs available for the queue to use
      */
-    spoolSize?: number,
+    maxMsgSpoolUsage?: number,
 });
 
 export namespace SolaceClassOfServicePolicy {
@@ -33,9 +33,25 @@ export namespace SolaceClassOfServicePolicy {
      */
     export const discriminator = 'SolaceClassOfServicePolicy';
 
+    /**
+     * The type of message delivery mode in the current event API product version
+     */
+    export enum messageDeliveryMode {
+        direct = 'direct',
+        guaranteed = 'guaranteed',
+    }
+
     export enum accessType {
         exclusive = 'exclusive',
         nonexclusive = 'non-exclusive',
+    }
+
+    /**
+     * The type of queue to be used in the current event API product version
+     */
+    export enum queueType {
+        single = 'single',
+        combined = 'combined',
     }
 
 

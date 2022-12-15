@@ -2,6 +2,7 @@
 
 
 import type { AttractingApplicationVersionTuple } from './AttractingApplicationVersionTuple';
+import type { CustomAttribute } from './CustomAttribute';
 import type { DeliveryDescriptor } from './DeliveryDescriptor';
 
 export type EventVersion = {
@@ -23,6 +24,8 @@ export type EventVersion = {
     schemaPrimitiveType?: EventVersion.schemaPrimitiveType;
     deliveryDescriptor?: DeliveryDescriptor;
     readonly stateId?: string;
+    customAttributes?: Array<CustomAttribute>;
+    readonly messagingServiceIds?: Array<string>;
     type?: string;
 }
 

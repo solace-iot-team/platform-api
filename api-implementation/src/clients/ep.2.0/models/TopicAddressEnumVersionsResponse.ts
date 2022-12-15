@@ -1,11 +1,12 @@
 /* eslint-disable */
 
 
+import type { meta } from './meta';
 import type { TopicAddressEnumVersion } from './TopicAddressEnumVersion';
 
 export type TopicAddressEnumVersionsResponse = {
     data?: Array<TopicAddressEnumVersion>;
-    meta?: Record<string, any>;
+    meta?: meta;
 }
 
 export namespace TopicAddressEnumVersionsResponse {

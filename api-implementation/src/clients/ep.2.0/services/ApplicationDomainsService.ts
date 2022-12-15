@@ -1,5 +1,6 @@
 /* eslint-disable */
 
+import type { ApplicationDomainImportDTO } from '../models/ApplicationDomainImportDTO';
 import type { ApiRequestOptions } from '../core/ApiRequestOptions';
 
 export interface ApplicationDomainsService {
@@ -7,8 +8,8 @@ export interface ApplicationDomainsService {
     /**
      * Gets the application domain objects
      * Use this API to retrieve a list of application domains that match the given parameters.
-     * @param pageSize The number of application domains to get per page. Min: 1 Max: 100
-     * @param pageNumber The page number to get. Min: 1
+     * @param pageSize The number of application domains to get per page.
+     * @param pageNumber The page number to get.
      * @param name Name to be used to match the application domain.
      * @param ids Match only application domains with the given IDs separated by commas.
      * @param include Specify extra data to be included, options are: stats
@@ -26,8 +27,8 @@ export interface ApplicationDomainsService {
      * **used to get the request options without making a http request**
      * Gets the application domain objects
      * Use this API to retrieve a list of application domains that match the given parameters.
-     * @param pageSize The number of application domains to get per page. Min: 1 Max: 100
-     * @param pageNumber The page number to get. Min: 1
+     * @param pageSize The number of application domains to get per page.
+     * @param pageNumber The page number to get.
      * @param name Name to be used to match the application domain.
      * @param ids Match only application domains with the given IDs separated by commas.
      * @param include Specify extra data to be included, options are: stats
@@ -131,6 +132,27 @@ export interface ApplicationDomainsService {
     updateApplicationDomainApiRequestOptions(
         id: string,
         requestBody: any,
+    ): ApiRequestOptions;
+
+    /**
+     * (Beta) Import application domains and their entities
+     * Use this API to import application domains and their nested entities. Please note that this endpoint is in beta and could be subject to change in the future
+     * @param requestBody Application domain import file
+     * @returns any Successfully registered import job with location identified in the response header
+     */
+    importApplicationDomains(
+        requestBody: ApplicationDomainImportDTO,
+    ): Promise<any>;
+
+    /**
+     * **used to get the request options without making a http request**
+     * (Beta) Import application domains and their entities
+     * Use this API to import application domains and their nested entities. Please note that this endpoint is in beta and could be subject to change in the future
+     * @param requestBody Application domain import file
+     * @returns ApiRequestOptions the request options to fulfill a http request
+     */
+    importApplicationDomainsApiRequestOptions(
+        requestBody: ApplicationDomainImportDTO,
     ): ApiRequestOptions;
 
 }

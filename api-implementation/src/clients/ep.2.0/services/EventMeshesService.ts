@@ -7,8 +7,8 @@ export interface EventMeshesService {
     /**
      * Gets the event mesh objects
      * Use this API to retrieve a list of event meshes that match the given parameters.
-     * @param pageSize The number of event meshes to get per page. Min: 1 Max: 100
-     * @param pageNumber The page number to get. Min: 1
+     * @param pageSize The number of event meshes to get per page.
+     * @param pageNumber The page number to get.
      * @param name Name of the event mesh to match on.
      * @param environmentId Match only event meshes in the given environment
      * @returns any The list of event meshes and the accompanying metadata.
@@ -24,8 +24,8 @@ export interface EventMeshesService {
      * **used to get the request options without making a http request**
      * Gets the event mesh objects
      * Use this API to retrieve a list of event meshes that match the given parameters.
-     * @param pageSize The number of event meshes to get per page. Min: 1 Max: 100
-     * @param pageNumber The page number to get. Min: 1
+     * @param pageSize The number of event meshes to get per page.
+     * @param pageNumber The page number to get.
      * @param name Name of the event mesh to match on.
      * @param environmentId Match only event meshes in the given environment
      * @returns ApiRequestOptions the request options to fulfill a http request
@@ -105,7 +105,7 @@ export interface EventMeshesService {
      * Use this API to update an event mesh. You only need to specify the fields that need to be updated.
      * @param id The ID of the event mesh object to update.
      * @param requestBody The event mesh object.
-     * @returns any The updated event object.
+     * @returns any The updated event mesh object.
      */
     updateEventMesh(
         id: string,

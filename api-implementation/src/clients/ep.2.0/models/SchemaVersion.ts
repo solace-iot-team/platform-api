@@ -1,6 +1,8 @@
 /* eslint-disable */
 
 
+import type { CustomAttribute } from './CustomAttribute';
+
 export type SchemaVersion = {
     readonly createdTime?: string;
     readonly updatedTime?: string;
@@ -13,6 +15,7 @@ export type SchemaVersion = {
     displayName?: string;
     content?: string;
     readonly referencedByEventVersionIds?: Array<string>;
+    customAttributes?: Array<CustomAttribute>;
     readonly stateId?: string;
     readonly type?: string;
 }

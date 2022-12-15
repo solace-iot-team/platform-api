@@ -4,7 +4,7 @@
 import type { BaseMessagingServiceDTO } from './BaseMessagingServiceDTO';
 
 /**
- * Solace Messaging Service
+ * Solace Messaging Services
  */
 export type SolaceMessagingService = (BaseMessagingServiceDTO & {
     solaceCloudMessagingServiceId?: string,

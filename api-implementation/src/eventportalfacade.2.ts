@@ -24,8 +24,12 @@ import { ErrorResponseInternal } from '../server/api/middlewares/error.handler';
 
 import { Cache, CacheContainer } from 'node-ts-cache'
 import { MemoryStorage } from 'node-ts-cache-storage-memory'
+import { EventApiVersionsResponse } from './clients/ep.2.0/models/EventApiVersionsResponse';
+import { EventApiVersion } from './clients/ep.2.0/models/EventApiVersion';
 
 const appDomainCache = new CacheContainer(new MemoryStorage())
+const stateCache = new CacheContainer(new MemoryStorage())
+const eventApiVersionCache = new CacheContainer(new MemoryStorage())
 
 const opts: ApiOptions = {
   baseUrl: getEventPortalBaseUrl,
@@ -68,70 +72,68 @@ export class EventPortalfacade {
     return DRAFT;
   }
 
-  public async getInsertableStates(): Promise<string[]> {
-    const states: StatesResponse = await this.statesService.getStates();
-    const released = states.data.find(s => s.name.toUpperCase() == 'RELEASED').id;
-    return [released];
-  }
-
+  @Cache(stateCache, { ttl: 120 })
   public async getState(stateId: string): Promise<StateDTO> {
     const states: StatesResponse = await this.statesService.getStates();
     return states.data.find(s => s.id == stateId);
   }
 
-  public async listSharedEventAPIProducts(applicationDomainIds: string[]): Promise<EventApiProductsResponse> {
-    const filter = (applicationDomainIds && applicationDomainIds.length > 0) ? applicationDomainIds : null;
-    const prods = await this.eventApiProductsService.getEventApiProducts(100, 1, null, null, null, null, filter, true);
-    return prods;
+  private async primeEventApiVersionsCache(apiIds: string[]){
+    const eventApiVersions: EventApiVersionsResponse = await this.eventApIsService.getEventApiVersions(99, 1, null, apiIds, 'parent');
+    for (const v of eventApiVersions.data){
+      await eventApiVersionCache.setItem(v.id, v, {ttl: 30});
+    }
   }
 
-  public async getLatestExportableAPIProductVersions(productId: string): Promise<EventApiProductVersionsResponse> {
-    const draft = await this.getDraftStateId();
-    const prodVersion = await this.eventApiProductsService.getEventApiProductVersionsForEventApiProduct(productId);
-    prodVersion.data = prodVersion.data.filter(v => v.stateId != draft);
-    prodVersion.data.sort((a, b) => cmp(a.version, b.version));
-    if (prodVersion.data.length > 0) {
-      prodVersion.data = [prodVersion.data[prodVersion.data.length - 1]];
+  private async getEventApiVersion(id: string){
+    let eventApi: EventApiVersion = await eventApiVersionCache.getItem(id);
+    if (!eventApi){
+      const eventApiResponse = (await this.eventApIsService.getEventApiVersion(id, 'parent'));
+      if(eventApiResponse && eventApiResponse.data){
+        eventApi = eventApiResponse.data;
+       await eventApiVersionCache.setItem(eventApi.id, eventApi, {ttl: 30})
+      }
     }
-    return prodVersion;
+    return eventApi;
   }
 
   public async listExportableAPIProductVersions(applicationDomainIds: string[]): Promise<ExportableEventApiProductVersion[]> {
     const list: ExportableEventApiProductVersion[] = [];
-    const prods = await this.listSharedEventAPIProducts(applicationDomainIds);
-    for (const prod of prods.data) {
-      const versions = await this.getLatestExportableAPIProductVersions(prod.id);
-      for (const version of versions.data) {
+    let eventApiVersionIds: string[] = [];
+    const draftState = await this.getDraftStateId();
+    const versions: EventApiProductVersionsResponse = await this.eventApiProductsService.getEventApiProductVersions(99, 1, null, null, 'parent', null, null, null, true, true)
+    for (const version of versions.data) {
+      const include: boolean = (applicationDomainIds == null
+        || applicationDomainIds.length == 0
+        || applicationDomainIds.find(a => a == version['parent'].applicationDomainId) != undefined);
+      if (include && version.stateId != draftState) {
+        eventApiVersionIds = eventApiVersionIds.concat(version.eventApiVersionIds);
         list.push({
-          product: prod,
+          product: version['parent'],
           version: version,
         })
       }
     }
+    await this.primeEventApiVersionsCache(eventApiVersionIds);
     return list;
   }
 
-  public async getApplicationDomainIdByAPIProductVersion(apiProductVersion: EventApiProductVersion): Promise<string> {
-    const product = await this.eventApiProductsService.getEventApiProducts(100, 1, null, null, [apiProductVersion.eventApiProductId]);
-    return product.data.find(p => p.id == apiProductVersion.eventApiProductId).applicationDomainId;
-
-  }
-
   public async getAsyncAPI(apiVersionId: string): Promise<EventAPIAsyncAPIInfo> {
-    const apiSpec = await this.eventApIsService.getAsyncApiForEventApiVersion(apiVersionId, 'json');
-    const apiVersion = (await this.eventApIsService.getEventApiVersion(apiVersionId, 'parent'));
-    const apiName = `${apiVersion.data['parent'].name}-${apiVersion.data['parent'].applicationDomainId}`;
+    const apiSpec = await this.eventApIsService.getAsyncApiForEventApiVersion(
+      apiVersionId, false, 'json');
+    const apiVersion: EventApiVersion = (await this.getEventApiVersion(apiVersionId));
+    const apiName = `${apiVersion['parent'].name}-${apiVersion['parent'].applicationDomainId}`;
     return {
       apiPayload: apiSpec,
       name: apiName,
-      apiInfo: apiVersion.data['parent'],
+      apiInfo: apiVersion['parent'],
     };
   }
 
   public async getApplicationDomains(pageSize: number, pageNumber: number): Promise<ApplicationDomainList> {
     const domains: ApplicationDomainList = [];
     try {
-      const applicationDomains: ApplicationDomainsResponse = await this.applicationDomainsService.getApplicationDomains(isNaN(pageSize)?100:pageSize, isNaN(pageNumber)?1:pageNumber); if (applicationDomains.data && applicationDomains.data.length > 0) {
+      const applicationDomains: ApplicationDomainsResponse = await this.applicationDomainsService.getApplicationDomains(isNaN(pageSize) ? 100 : pageSize, isNaN(pageNumber) ? 1 : pageNumber); if (applicationDomains.data && applicationDomains.data.length > 0) {
         for (const appDomain of applicationDomains.data) {
           domains.push(appDomain);
         }

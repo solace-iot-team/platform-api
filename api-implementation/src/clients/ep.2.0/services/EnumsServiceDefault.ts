@@ -1,6 +1,7 @@
 /* eslint-disable */
 
 import type { TopicAddressEnumVersion } from '../models/TopicAddressEnumVersion';
+import type { VersionedObjectStateChangeRequest } from '../models/VersionedObjectStateChangeRequest';
 import type { EnumsService } from './EnumsService';
 import type { ApiRequestOptions } from '../core/ApiRequestOptions';
 import { request as __request } from '../core/request';
@@ -27,6 +28,7 @@ export class EnumsServiceDefault implements EnumsService {
         names?: Array<string>,
         shared?: boolean,
         sort?: string,
+        customAttributes?: string,
     ): Promise<any> {
         const options = this.getEnumsApiRequestOptions(
             pageSize,
@@ -37,6 +39,7 @@ export class EnumsServiceDefault implements EnumsService {
             names,
             shared,
             sort,
+            customAttributes,
         );
         const result = await __request(options);
         return result.body;
@@ -51,6 +54,7 @@ export class EnumsServiceDefault implements EnumsService {
         names?: Array<string>,
         shared?: boolean,
         sort?: string,
+        customAttributes?: string,
     ): ApiRequestOptions {
         return {
             ...this.config,
@@ -65,6 +69,7 @@ export class EnumsServiceDefault implements EnumsService {
                 'names': names,
                 'shared': shared,
                 'sort': sort,
+                'customAttributes': customAttributes,
             },
             errors: {
                 400: `Bad Request.`,
@@ -212,12 +217,16 @@ export class EnumsServiceDefault implements EnumsService {
     public async getEnumVersions(
         pageSize: number = 20,
         pageNumber: number = 1,
+        enumIds?: Array<string>,
         ids?: Array<string>,
+        customAttributes?: string,
     ): Promise<any> {
         const options = this.getEnumVersionsApiRequestOptions(
             pageSize,
             pageNumber,
+            enumIds,
             ids,
+            customAttributes,
         );
         const result = await __request(options);
         return result.body;
@@ -226,7 +235,9 @@ export class EnumsServiceDefault implements EnumsService {
     public getEnumVersionsApiRequestOptions(
         pageSize: number = 20,
         pageNumber: number = 1,
+        enumIds?: Array<string>,
         ids?: Array<string>,
+        customAttributes?: string,
     ): ApiRequestOptions {
         return {
             ...this.config,
@@ -235,8 +246,109 @@ export class EnumsServiceDefault implements EnumsService {
             query: {
                 'pageSize': pageSize,
                 'pageNumber': pageNumber,
+                'enumIds': enumIds,
                 'ids': ids,
+                'customAttributes': customAttributes,
             },
+            errors: {
+                400: `Bad Request.`,
+                401: `Unauthorized.`,
+                403: `Forbidden.`,
+                404: `Not Found.`,
+                405: `Method Not Allowed`,
+                500: `Internal Server Error.`,
+                501: `Not Implemented`,
+                503: `Service Unavailable.`,
+                504: `Gateway Timeout.`,
+            },
+        };
+    }
+
+    public async createEnumVersion(
+        requestBody: any,
+    ): Promise<any> {
+        const options = this.createEnumVersionApiRequestOptions(
+            requestBody,
+        );
+        const result = await __request(options);
+        return result.body;
+    }
+
+    public createEnumVersionApiRequestOptions(
+        requestBody: any,
+    ): ApiRequestOptions {
+        return {
+            ...this.config,
+            method: 'POST',
+            path: `/api/v2/architecture/enumVersions`,
+            body: requestBody,
+            errors: {
+                400: `Bad Request.`,
+                401: `Unauthorized.`,
+                403: `Forbidden.`,
+                404: `Not Found.`,
+                405: `Method Not Allowed`,
+                500: `Internal Server Error.`,
+                501: `Not Implemented`,
+                503: `Service Unavailable.`,
+                504: `Gateway Timeout.`,
+            },
+        };
+    }
+
+    public async deleteEnumVersion(
+        id: string,
+    ): Promise<void> {
+        const options = this.deleteEnumVersionApiRequestOptions(
+            id,
+        );
+        const result = await __request(options);
+        return result.body;
+    }
+
+    public deleteEnumVersionApiRequestOptions(
+        id: string,
+    ): ApiRequestOptions {
+        return {
+            ...this.config,
+            method: 'DELETE',
+            path: `/api/v2/architecture/enumVersions/${id}`,
+            errors: {
+                400: `Bad Request.`,
+                401: `Unauthorized.`,
+                403: `Forbidden.`,
+                404: `If the enum version did not exist.`,
+                405: `Method Not Allowed`,
+                500: `Internal Server Error.`,
+                501: `Not Implemented`,
+                503: `Service Unavailable.`,
+                504: `Gateway Timeout.`,
+            },
+        };
+    }
+
+    public async updateEnumVersion(
+        id: string,
+        requestBody: TopicAddressEnumVersion,
+    ): Promise<any> {
+        const options = this.updateEnumVersionApiRequestOptions(
+            id,
+            requestBody,
+        );
+        const result = await __request(options);
+        return result.body;
+    }
+
+    public updateEnumVersionApiRequestOptions(
+        id: string,
+        requestBody: TopicAddressEnumVersion,
+    ): ApiRequestOptions {
+        return {
+            ...this.config,
+            method: 'PATCH',
+            path: `/api/v2/architecture/enumVersions/${id}`,
+            body: requestBody,
+            mediaType: 'application/json',
             errors: {
                 400: `Bad Request.`,
                 401: `Unauthorized.`,
@@ -258,6 +370,7 @@ export class EnumsServiceDefault implements EnumsService {
         ids?: Array<string>,
         versions?: Array<string>,
         displayName?: string,
+        customAttributes?: string,
     ): Promise<any> {
         const options = this.getEnumVersionsForEnumApiRequestOptions(
             enumId,
@@ -266,6 +379,7 @@ export class EnumsServiceDefault implements EnumsService {
             ids,
             versions,
             displayName,
+            customAttributes,
         );
         const result = await __request(options);
         return result.body;
@@ -278,6 +392,7 @@ export class EnumsServiceDefault implements EnumsService {
         ids?: Array<string>,
         versions?: Array<string>,
         displayName?: string,
+        customAttributes?: string,
     ): ApiRequestOptions {
         return {
             ...this.config,
@@ -289,6 +404,7 @@ export class EnumsServiceDefault implements EnumsService {
                 'ids': ids,
                 'versions': versions,
                 'displayName': displayName,
+                'customAttributes': customAttributes,
             },
             errors: {
                 400: `Bad Request.`,
@@ -325,6 +441,42 @@ export class EnumsServiceDefault implements EnumsService {
             method: 'POST',
             path: `/api/v2/architecture/enums/${enumId}/versions`,
             body: requestBody,
+            errors: {
+                400: `Bad Request.`,
+                401: `Unauthorized.`,
+                403: `Forbidden.`,
+                404: `Not Found.`,
+                405: `Method Not Allowed`,
+                500: `Internal Server Error.`,
+                501: `Not Implemented`,
+                503: `Service Unavailable.`,
+                504: `Gateway Timeout.`,
+            },
+        };
+    }
+
+    public async updateEnumVersionState(
+        id: string,
+        requestBody: VersionedObjectStateChangeRequest,
+    ): Promise<any> {
+        const options = this.updateEnumVersionStateApiRequestOptions(
+            id,
+            requestBody,
+        );
+        const result = await __request(options);
+        return result.body;
+    }
+
+    public updateEnumVersionStateApiRequestOptions(
+        id: string,
+        requestBody: VersionedObjectStateChangeRequest,
+    ): ApiRequestOptions {
+        return {
+            ...this.config,
+            method: 'PATCH',
+            path: `/api/v2/architecture/enumVersions/${id}/state`,
+            body: requestBody,
+            mediaType: 'application/json',
             errors: {
                 400: `Bad Request.`,
                 401: `Unauthorized.`,

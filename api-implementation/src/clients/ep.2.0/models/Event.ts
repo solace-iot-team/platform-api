@@ -1,6 +1,8 @@
 /* eslint-disable */
 
 
+import type { CustomAttribute } from './CustomAttribute';
+
 export type Event = {
     readonly createdTime?: string;
     readonly updatedTime?: string;
@@ -11,6 +13,7 @@ export type Event = {
     shared?: boolean;
     applicationDomainId: string;
     readonly numberOfVersions?: number;
+    customAttributes?: Array<CustomAttribute>;
     readonly type?: string;
 }
 

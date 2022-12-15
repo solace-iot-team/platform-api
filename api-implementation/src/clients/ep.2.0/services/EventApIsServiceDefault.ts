@@ -6,6 +6,7 @@ import type { EventApisResponse } from '../models/EventApisResponse';
 import type { EventApiVersion } from '../models/EventApiVersion';
 import type { EventApiVersionResponse } from '../models/EventApiVersionResponse';
 import type { EventApiVersionsResponse } from '../models/EventApiVersionsResponse';
+import type { StateChangeRequestResponse } from '../models/StateChangeRequestResponse';
 import type { VersionedObjectStateChangeRequest } from '../models/VersionedObjectStateChangeRequest';
 import type { EventApIsService } from './EventApIsService';
 import type { ApiRequestOptions } from '../core/ApiRequestOptions';
@@ -31,9 +32,12 @@ export class EventApIsServiceDefault implements EventApIsService {
         ids?: Array<string>,
         applicationDomainId?: string,
         applicationDomainIds?: Array<string>,
-        shared?: boolean,
-        sort?: string,
         eventApiVersionIds?: Array<string>,
+        availableWithinApplicationDomainIds?: boolean,
+        shared?: boolean,
+        brokerType?: string,
+        sort?: string,
+        customAttributes?: string,
     ): Promise<EventApisResponse> {
         const options = this.getEventApisApiRequestOptions(
             pageSize,
@@ -42,9 +46,12 @@ export class EventApIsServiceDefault implements EventApIsService {
             ids,
             applicationDomainId,
             applicationDomainIds,
-            shared,
-            sort,
             eventApiVersionIds,
+            availableWithinApplicationDomainIds,
+            shared,
+            brokerType,
+            sort,
+            customAttributes,
         );
         const result = await __request(options);
         return result.body;
@@ -57,9 +64,12 @@ export class EventApIsServiceDefault implements EventApIsService {
         ids?: Array<string>,
         applicationDomainId?: string,
         applicationDomainIds?: Array<string>,
-        shared?: boolean,
-        sort?: string,
         eventApiVersionIds?: Array<string>,
+        availableWithinApplicationDomainIds?: boolean,
+        shared?: boolean,
+        brokerType?: string,
+        sort?: string,
+        customAttributes?: string,
     ): ApiRequestOptions {
         return {
             ...this.config,
@@ -72,9 +82,12 @@ export class EventApIsServiceDefault implements EventApIsService {
                 'ids': ids,
                 'applicationDomainId': applicationDomainId,
                 'applicationDomainIds': applicationDomainIds,
-                'shared': shared,
-                'sort': sort,
                 'eventApiVersionIds': eventApiVersionIds,
+                'availableWithinApplicationDomainIds': availableWithinApplicationDomainIds,
+                'shared': shared,
+                'brokerType': brokerType,
+                'sort': sort,
+                'customAttributes': customAttributes,
             },
             errors: {
                 400: `Bad Request.`,
@@ -224,16 +237,20 @@ export class EventApIsServiceDefault implements EventApIsService {
     public async getEventApiVersions(
         pageSize: number = 20,
         pageNumber: number = 1,
+        eventApiIds?: Array<string>,
         ids?: Array<string>,
         include?: string,
         stateId?: string,
+        customAttributes?: string,
     ): Promise<EventApiVersionsResponse> {
         const options = this.getEventApiVersionsApiRequestOptions(
             pageSize,
             pageNumber,
+            eventApiIds,
             ids,
             include,
             stateId,
+            customAttributes,
         );
         const result = await __request(options);
         return result.body;
@@ -242,9 +259,11 @@ export class EventApIsServiceDefault implements EventApIsService {
     public getEventApiVersionsApiRequestOptions(
         pageSize: number = 20,
         pageNumber: number = 1,
+        eventApiIds?: Array<string>,
         ids?: Array<string>,
         include?: string,
         stateId?: string,
+        customAttributes?: string,
     ): ApiRequestOptions {
         return {
             ...this.config,
@@ -253,10 +272,45 @@ export class EventApIsServiceDefault implements EventApIsService {
             query: {
                 'pageSize': pageSize,
                 'pageNumber': pageNumber,
+                'eventApiIds': eventApiIds,
                 'ids': ids,
                 'include': include,
                 'stateId': stateId,
+                'customAttributes': customAttributes,
             },
+            errors: {
+                400: `Bad Request.`,
+                401: `Unauthorized.`,
+                403: `Forbidden.`,
+                404: `Not Found.`,
+                405: `Method Not Allowed`,
+                500: `Internal Server Error.`,
+                501: `Not Implemented`,
+                503: `Service Unavailable.`,
+                504: `Gateway Timeout.`,
+            },
+        };
+    }
+
+    public async createEventApiVersion(
+        requestBody: EventApiVersion,
+    ): Promise<EventApiVersionResponse> {
+        const options = this.createEventApiVersionApiRequestOptions(
+            requestBody,
+        );
+        const result = await __request(options);
+        return result.body;
+    }
+
+    public createEventApiVersionApiRequestOptions(
+        requestBody: EventApiVersion,
+    ): ApiRequestOptions {
+        return {
+            ...this.config,
+            method: 'POST',
+            path: `/api/v2/architecture/eventApiVersions`,
+            body: requestBody,
+            mediaType: 'application/json',
             errors: {
                 400: `Bad Request.`,
                 401: `Unauthorized.`,
@@ -308,17 +362,17 @@ export class EventApIsServiceDefault implements EventApIsService {
         };
     }
 
-    public async deleteEventApiVersionByVersionId(
+    public async deleteEventApiVersion(
         versionId: string,
     ): Promise<void> {
-        const options = this.deleteEventApiVersionByVersionIdApiRequestOptions(
+        const options = this.deleteEventApiVersionApiRequestOptions(
             versionId,
         );
         const result = await __request(options);
         return result.body;
     }
 
-    public deleteEventApiVersionByVersionIdApiRequestOptions(
+    public deleteEventApiVersionApiRequestOptions(
         versionId: string,
     ): ApiRequestOptions {
         return {
@@ -339,11 +393,11 @@ export class EventApIsServiceDefault implements EventApIsService {
         };
     }
 
-    public async updateEventApiVersionByVersionId(
+    public async updateEventApiVersion(
         versionId: string,
         requestBody: EventApiVersion,
     ): Promise<EventApiVersionResponse> {
-        const options = this.updateEventApiVersionByVersionIdApiRequestOptions(
+        const options = this.updateEventApiVersionApiRequestOptions(
             versionId,
             requestBody,
         );
@@ -351,7 +405,7 @@ export class EventApIsServiceDefault implements EventApIsService {
         return result.body;
     }
 
-    public updateEventApiVersionByVersionIdApiRequestOptions(
+    public updateEventApiVersionApiRequestOptions(
         versionId: string,
         requestBody: EventApiVersion,
     ): ApiRequestOptions {
@@ -382,6 +436,7 @@ export class EventApIsServiceDefault implements EventApIsService {
         ids?: Array<string>,
         version?: string,
         stateId?: string,
+        customAttributes?: string,
     ): Promise<EventApiVersionsResponse> {
         const options = this.getEventApiVersionsForEventApiApiRequestOptions(
             eventApiId,
@@ -390,6 +445,7 @@ export class EventApIsServiceDefault implements EventApIsService {
             ids,
             version,
             stateId,
+            customAttributes,
         );
         const result = await __request(options);
         return result.body;
@@ -402,6 +458,7 @@ export class EventApIsServiceDefault implements EventApIsService {
         ids?: Array<string>,
         version?: string,
         stateId?: string,
+        customAttributes?: string,
     ): ApiRequestOptions {
         return {
             ...this.config,
@@ -413,6 +470,7 @@ export class EventApIsServiceDefault implements EventApIsService {
                 'ids': ids,
                 'version': version,
                 'stateId': stateId,
+                'customAttributes': customAttributes,
             },
             errors: {
                 400: `Bad Request.`,
@@ -464,11 +522,11 @@ export class EventApIsServiceDefault implements EventApIsService {
         };
     }
 
-    public async updateEventApiVersionStateByEventApiVersionId(
+    public async updateEventApiVersionState(
         versionId: string,
         requestBody: EventApiVersion,
-    ): Promise<VersionedObjectStateChangeRequest> {
-        const options = this.updateEventApiVersionStateByEventApiVersionIdApiRequestOptions(
+    ): Promise<StateChangeRequestResponse> {
+        const options = this.updateEventApiVersionStateApiRequestOptions(
             versionId,
             requestBody,
         );
@@ -476,7 +534,7 @@ export class EventApIsServiceDefault implements EventApIsService {
         return result.body;
     }
 
-    public updateEventApiVersionStateByEventApiVersionIdApiRequestOptions(
+    public updateEventApiVersionStateApiRequestOptions(
         versionId: string,
         requestBody: EventApiVersion,
     ): ApiRequestOptions {
@@ -649,14 +707,24 @@ export class EventApIsServiceDefault implements EventApIsService {
     public async getEventApiVersionAsyncApiForEventApi(
         eventApiId: string,
         id: string,
+        showVersioning: boolean = false,
+        includedExtensions: string = 'all',
         format: 'json' | 'yaml' = 'json',
-        version: '2.0.0' = '2.0.0',
-    ): Promise<any> {
+        version: string = '2.5.0',
+        eventApiProductVersionId?: string,
+        planId?: string,
+        gatewayMessagingServiceIds?: Array<string>,
+    ): Promise<string> {
         const options = this.getEventApiVersionAsyncApiForEventApiApiRequestOptions(
             eventApiId,
             id,
+            showVersioning,
+            includedExtensions,
             format,
             version,
+            eventApiProductVersionId,
+            planId,
+            gatewayMessagingServiceIds,
         );
         const result = await __request(options);
         return result.body;
@@ -665,16 +733,26 @@ export class EventApIsServiceDefault implements EventApIsService {
     public getEventApiVersionAsyncApiForEventApiApiRequestOptions(
         eventApiId: string,
         id: string,
+        showVersioning: boolean = false,
+        includedExtensions: string = 'all',
         format: 'json' | 'yaml' = 'json',
-        version: '2.0.0' = '2.0.0',
+        version: string = '2.5.0',
+        eventApiProductVersionId?: string,
+        planId?: string,
+        gatewayMessagingServiceIds?: Array<string>,
     ): ApiRequestOptions {
         return {
             ...this.config,
             method: 'GET',
             path: `/api/v2/architecture/eventApis/${eventApiId}/versions/${id}/asyncApi`,
             query: {
+                'showVersioning': showVersioning,
+                'includedExtensions': includedExtensions,
                 'format': format,
                 'version': version,
+                'eventApiProductVersionId': eventApiProductVersionId,
+                'planId': planId,
+                'gatewayMessagingServiceIds': gatewayMessagingServiceIds,
             },
             errors: {
                 400: `Bad Request.`,
@@ -692,15 +770,25 @@ export class EventApIsServiceDefault implements EventApIsService {
 
     public async getAsyncApiForEventApiVersion(
         eventApiVersionId: string,
+        showVersioning: boolean = false,
         format: 'json' | 'yaml' = 'json',
-        version: '2.0.0' = '2.0.0',
-        asyncApiVersion?: '2.0.0',
-    ): Promise<any> {
+        includedExtensions: string = 'all',
+        version: string = '2.5.0',
+        asyncApiVersion?: string,
+        eventApiProductVersionId?: string,
+        planId?: string,
+        gatewayMessagingServiceIds?: Array<string>,
+    ): Promise<string> {
         const options = this.getAsyncApiForEventApiVersionApiRequestOptions(
             eventApiVersionId,
+            showVersioning,
             format,
+            includedExtensions,
             version,
             asyncApiVersion,
+            eventApiProductVersionId,
+            planId,
+            gatewayMessagingServiceIds,
         );
         const result = await __request(options);
         return result.body;
@@ -708,18 +796,28 @@ export class EventApIsServiceDefault implements EventApIsService {
 
     public getAsyncApiForEventApiVersionApiRequestOptions(
         eventApiVersionId: string,
+        showVersioning: boolean = false,
         format: 'json' | 'yaml' = 'json',
-        version: '2.0.0' = '2.0.0',
-        asyncApiVersion?: '2.0.0',
+        includedExtensions: string = 'all',
+        version: string = '2.5.0',
+        asyncApiVersion?: string,
+        eventApiProductVersionId?: string,
+        planId?: string,
+        gatewayMessagingServiceIds?: Array<string>,
     ): ApiRequestOptions {
         return {
             ...this.config,
             method: 'GET',
             path: `/api/v2/architecture/eventApiVersions/${eventApiVersionId}/asyncApi`,
             query: {
+                'showVersioning': showVersioning,
                 'format': format,
+                'includedExtensions': includedExtensions,
                 'version': version,
                 'asyncApiVersion': asyncApiVersion,
+                'eventApiProductVersionId': eventApiProductVersionId,
+                'planId': planId,
+                'gatewayMessagingServiceIds': gatewayMessagingServiceIds,
             },
             errors: {
                 400: `Bad Request.`,

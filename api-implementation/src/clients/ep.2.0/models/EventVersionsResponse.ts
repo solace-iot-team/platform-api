@@ -2,10 +2,11 @@
 
 
 import type { EventVersion } from './EventVersion';
+import type { meta } from './meta';
 
 export type EventVersionsResponse = {
     data?: Array<EventVersion>;
-    meta?: Record<string, any>;
+    meta?: meta;
 }
 
 export namespace EventVersionsResponse {

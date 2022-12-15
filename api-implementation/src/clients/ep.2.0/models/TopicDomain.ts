@@ -8,6 +8,7 @@ export type TopicDomain = {
     readonly updatedTime?: string;
     readonly createdBy?: string;
     readonly changedBy?: string;
+    readonly id?: string;
     applicationDomainId: string;
     brokerType: string;
     addressLevels: Array<AddressLevel>;

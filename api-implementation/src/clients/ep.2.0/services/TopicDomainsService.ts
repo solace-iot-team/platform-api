@@ -7,8 +7,8 @@ export interface TopicDomainsService {
     /**
      * Gets the topic domain objects
      * Use this API to retrieve a list of topic domains that match the given parameters.
-     * @param pageSize The number of topic domains to get per page. Min: 1 Max: 100
-     * @param pageNumber The page number to get. Min: 1
+     * @param pageSize The number of topic domains to get per page.
+     * @param pageNumber The page number to get.
      * @param ids Match only topic domains with the given IDs separated by commas.
      * @param brokerType Match only topic domains with the given brokerType.
      * @param applicationDomainIds Match only topic domains with the given application domain ids separated by commas.
@@ -28,8 +28,8 @@ export interface TopicDomainsService {
      * **used to get the request options without making a http request**
      * Gets the topic domain objects
      * Use this API to retrieve a list of topic domains that match the given parameters.
-     * @param pageSize The number of topic domains to get per page. Min: 1 Max: 100
-     * @param pageNumber The page number to get. Min: 1
+     * @param pageSize The number of topic domains to get per page.
+     * @param pageNumber The page number to get.
      * @param ids Match only topic domains with the given IDs separated by commas.
      * @param brokerType Match only topic domains with the given brokerType.
      * @param applicationDomainIds Match only topic domains with the given application domain ids separated by commas.
@@ -69,7 +69,7 @@ export interface TopicDomainsService {
     /**
      * Retrieves a topic domain object
      * Use this API to retrieve a single topic domain by its ID.
-     * @param id The ID of the application object.
+     * @param id The ID of the topic domain object.
      * @returns any The topic domain object.
      */
     getTopicDomain(
@@ -80,7 +80,7 @@ export interface TopicDomainsService {
      * **used to get the request options without making a http request**
      * Retrieves a topic domain object
      * Use this API to retrieve a single topic domain by its ID.
-     * @param id The ID of the application object.
+     * @param id The ID of the topic domain object.
      * @returns ApiRequestOptions the request options to fulfill a http request
      */
     getTopicDomainApiRequestOptions(

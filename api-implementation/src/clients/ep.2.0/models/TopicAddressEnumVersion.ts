@@ -1,6 +1,7 @@
 /* eslint-disable */
 
 
+import type { CustomAttribute } from './CustomAttribute';
 import type { TopicAddressEnumValue } from './TopicAddressEnumValue';
 
 export type TopicAddressEnumVersion = {
@@ -17,6 +18,7 @@ export type TopicAddressEnumVersion = {
     readonly referencedByEventVersionIds?: Array<string>;
     readonly referencedByTopicDomainIds?: Array<string>;
     readonly stateId?: string;
+    customAttributes?: Array<CustomAttribute>;
     readonly type?: string;
 }
 

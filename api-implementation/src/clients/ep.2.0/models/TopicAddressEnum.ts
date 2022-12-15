@@ -1,6 +1,8 @@
 /* eslint-disable */
 
 
+import type { CustomAttribute } from './CustomAttribute';
+
 export type TopicAddressEnum = {
     readonly createdTime?: string;
     readonly updatedTime?: string;
@@ -12,6 +14,7 @@ export type TopicAddressEnum = {
     shared?: boolean;
     readonly numberOfVersions?: number;
     readonly eventVersionRefCount?: number;
+    customAttributes?: Array<CustomAttribute>;
     readonly type?: string;
 }
 

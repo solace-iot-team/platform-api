@@ -2,10 +2,11 @@
 
 
 import type { Event } from './Event';
+import type { meta } from './meta';
 
 export type EventsResponse = {
     data?: Array<Event>;
-    meta?: Record<string, any>;
+    meta?: meta;
 }
 
 export namespace EventsResponse {

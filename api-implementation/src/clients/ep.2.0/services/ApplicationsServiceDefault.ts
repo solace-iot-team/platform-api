@@ -23,8 +23,9 @@ export class ApplicationsServiceDefault implements ApplicationsService {
         name?: string,
         applicationDomainId?: string,
         ids?: Array<string>,
-        applicationType?: string,
         sort?: string,
+        customAttributes?: string,
+        applicationType?: string,
     ): Promise<any> {
         const options = this.getApplicationsApiRequestOptions(
             pageSize,
@@ -32,8 +33,9 @@ export class ApplicationsServiceDefault implements ApplicationsService {
             name,
             applicationDomainId,
             ids,
-            applicationType,
             sort,
+            customAttributes,
+            applicationType,
         );
         const result = await __request(options);
         return result.body;
@@ -45,8 +47,9 @@ export class ApplicationsServiceDefault implements ApplicationsService {
         name?: string,
         applicationDomainId?: string,
         ids?: Array<string>,
-        applicationType?: string,
         sort?: string,
+        customAttributes?: string,
+        applicationType?: string,
     ): ApiRequestOptions {
         return {
             ...this.config,
@@ -58,8 +61,9 @@ export class ApplicationsServiceDefault implements ApplicationsService {
                 'name': name,
                 'applicationDomainId': applicationDomainId,
                 'ids': ids,
-                'applicationType': applicationType,
                 'sort': sort,
+                'customAttributes': customAttributes,
+                'applicationType': applicationType,
             },
             errors: {
                 400: `Bad Request.`,
@@ -207,12 +211,18 @@ export class ApplicationsServiceDefault implements ApplicationsService {
     public async getApplicationVersions(
         pageSize: number = 20,
         pageNumber: number = 1,
+        applicationIds?: Array<string>,
         ids?: Array<string>,
+        messagingServiceIds?: Array<string>,
+        customAttributes?: string,
     ): Promise<any> {
         const options = this.getApplicationVersionsApiRequestOptions(
             pageSize,
             pageNumber,
+            applicationIds,
             ids,
+            messagingServiceIds,
+            customAttributes,
         );
         const result = await __request(options);
         return result.body;
@@ -221,7 +231,10 @@ export class ApplicationsServiceDefault implements ApplicationsService {
     public getApplicationVersionsApiRequestOptions(
         pageSize: number = 20,
         pageNumber: number = 1,
+        applicationIds?: Array<string>,
         ids?: Array<string>,
+        messagingServiceIds?: Array<string>,
+        customAttributes?: string,
     ): ApiRequestOptions {
         return {
             ...this.config,
@@ -230,8 +243,43 @@ export class ApplicationsServiceDefault implements ApplicationsService {
             query: {
                 'pageSize': pageSize,
                 'pageNumber': pageNumber,
+                'applicationIds': applicationIds,
                 'ids': ids,
+                'messagingServiceIds': messagingServiceIds,
+                'customAttributes': customAttributes,
             },
+            errors: {
+                400: `Bad Request.`,
+                401: `Unauthorized.`,
+                403: `Forbidden.`,
+                404: `Not Found.`,
+                405: `Method Not Allowed`,
+                500: `Internal Server Error.`,
+                501: `Not Implemented`,
+                503: `Service Unavailable.`,
+                504: `Gateway Timeout.`,
+            },
+        };
+    }
+
+    public async createApplicationVersion(
+        requestBody: any,
+    ): Promise<any> {
+        const options = this.createApplicationVersionApiRequestOptions(
+            requestBody,
+        );
+        const result = await __request(options);
+        return result.body;
+    }
+
+    public createApplicationVersionApiRequestOptions(
+        requestBody: any,
+    ): ApiRequestOptions {
+        return {
+            ...this.config,
+            method: 'POST',
+            path: `/api/v2/architecture/applicationVersions`,
+            body: requestBody,
             errors: {
                 400: `Bad Request.`,
                 401: `Unauthorized.`,
@@ -277,17 +325,95 @@ export class ApplicationsServiceDefault implements ApplicationsService {
         };
     }
 
+    public async deleteApplicationVersion(
+        versionId: string,
+    ): Promise<void> {
+        const options = this.deleteApplicationVersionApiRequestOptions(
+            versionId,
+        );
+        const result = await __request(options);
+        return result.body;
+    }
+
+    public deleteApplicationVersionApiRequestOptions(
+        versionId: string,
+    ): ApiRequestOptions {
+        return {
+            ...this.config,
+            method: 'DELETE',
+            path: `/api/v2/architecture/applicationVersions/${versionId}`,
+            errors: {
+                400: `Bad Request.`,
+                401: `Unauthorized.`,
+                403: `Forbidden.`,
+                404: `Not Found.`,
+                405: `Method Not Allowed`,
+                500: `Internal Server Error.`,
+                501: `Not Implemented`,
+                503: `Service Unavailable.`,
+                504: `Gateway Timeout.`,
+            },
+        };
+    }
+
+    public async updateApplicationVersion(
+        versionId: string,
+        requestBody: any,
+        include?: Array<string>,
+        relationsBrokerType?: string,
+    ): Promise<any> {
+        const options = this.updateApplicationVersionApiRequestOptions(
+            versionId,
+            requestBody,
+            include,
+            relationsBrokerType,
+        );
+        const result = await __request(options);
+        return result.body;
+    }
+
+    public updateApplicationVersionApiRequestOptions(
+        versionId: string,
+        requestBody: any,
+        include?: Array<string>,
+        relationsBrokerType?: string,
+    ): ApiRequestOptions {
+        return {
+            ...this.config,
+            method: 'PATCH',
+            path: `/api/v2/architecture/applicationVersions/${versionId}`,
+            query: {
+                'include': include,
+                'relationsBrokerType': relationsBrokerType,
+            },
+            body: requestBody,
+            errors: {
+                400: `Bad Request.`,
+                401: `Unauthorized.`,
+                403: `Forbidden.`,
+                404: `Not Found.`,
+                405: `Method Not Allowed`,
+                500: `Internal Server Error.`,
+                501: `Not Implemented`,
+                503: `Service Unavailable.`,
+                504: `Gateway Timeout.`,
+            },
+        };
+    }
+
     public async getApplicationVersionsForApplication(
         applicationId: string,
         displayName?: string,
         ids?: Array<string>,
         version?: string,
+        customAttributes?: string,
     ): Promise<any> {
         const options = this.getApplicationVersionsForApplicationApiRequestOptions(
             applicationId,
             displayName,
             ids,
             version,
+            customAttributes,
         );
         const result = await __request(options);
         return result.body;
@@ -298,6 +424,7 @@ export class ApplicationsServiceDefault implements ApplicationsService {
         displayName?: string,
         ids?: Array<string>,
         version?: string,
+        customAttributes?: string,
     ): ApiRequestOptions {
         return {
             ...this.config,
@@ -307,6 +434,7 @@ export class ApplicationsServiceDefault implements ApplicationsService {
                 'displayName': displayName,
                 'ids': ids,
                 'version': version,
+                'customAttributes': customAttributes,
             },
             errors: {
                 400: `Bad Request.`,
@@ -342,6 +470,41 @@ export class ApplicationsServiceDefault implements ApplicationsService {
             ...this.config,
             method: 'POST',
             path: `/api/v2/architecture/applications/${applicationId}/versions`,
+            body: requestBody,
+            errors: {
+                400: `Bad Request.`,
+                401: `Unauthorized.`,
+                403: `Forbidden.`,
+                404: `Not Found.`,
+                405: `Method Not Allowed`,
+                500: `Internal Server Error.`,
+                501: `Not Implemented`,
+                503: `Service Unavailable.`,
+                504: `Gateway Timeout.`,
+            },
+        };
+    }
+
+    public async updateApplicationVersionState(
+        versionId: string,
+        requestBody: any,
+    ): Promise<any> {
+        const options = this.updateApplicationVersionStateApiRequestOptions(
+            versionId,
+            requestBody,
+        );
+        const result = await __request(options);
+        return result.body;
+    }
+
+    public updateApplicationVersionStateApiRequestOptions(
+        versionId: string,
+        requestBody: any,
+    ): ApiRequestOptions {
+        return {
+            ...this.config,
+            method: 'PATCH',
+            path: `/api/v2/architecture/applicationVersions/${versionId}/state`,
             body: requestBody,
             errors: {
                 400: `Bad Request.`,
@@ -501,17 +664,58 @@ export class ApplicationsServiceDefault implements ApplicationsService {
         };
     }
 
+    public async updateMsgSvcAssociationForAppVersion(
+        versionId: string,
+        requestBody: any,
+    ): Promise<any> {
+        const options = this.updateMsgSvcAssociationForAppVersionApiRequestOptions(
+            versionId,
+            requestBody,
+        );
+        const result = await __request(options);
+        return result.body;
+    }
+
+    public updateMsgSvcAssociationForAppVersionApiRequestOptions(
+        versionId: string,
+        requestBody: any,
+    ): ApiRequestOptions {
+        return {
+            ...this.config,
+            method: 'PUT',
+            path: `/api/v2/architecture/applicationVersions/${versionId}/messagingServices`,
+            body: requestBody,
+            errors: {
+                400: `Bad Request.`,
+                401: `Unauthorized.`,
+                403: `Forbidden.`,
+                404: `Not Found.`,
+                405: `Method Not Allowed`,
+                500: `Internal Server Error.`,
+                501: `Not Implemented`,
+                503: `Service Unavailable.`,
+                504: `Gateway Timeout.`,
+            },
+        };
+    }
+
     public async getApplicationVersionAsyncApiForApplication(
         applicationId: string,
         id: string,
-        asyncApiVersion: '2.0.0' = '2.0.0',
+        showVersioning: boolean = false,
+        includedExtensions: string = 'all',
+        asyncApiVersion: string = '2.5.0',
         format: 'json' | 'yaml' = 'json',
-    ): Promise<any> {
+        messagingServiceId?: string,
+    ): Promise<string> {
         const options = this.getApplicationVersionAsyncApiForApplicationApiRequestOptions(
             applicationId,
             id,
+            showVersioning,
+            includedExtensions,
             asyncApiVersion,
             format,
+            messagingServiceId,
         );
         const result = await __request(options);
         return result.body;
@@ -520,16 +724,22 @@ export class ApplicationsServiceDefault implements ApplicationsService {
     public getApplicationVersionAsyncApiForApplicationApiRequestOptions(
         applicationId: string,
         id: string,
-        asyncApiVersion: '2.0.0' = '2.0.0',
+        showVersioning: boolean = false,
+        includedExtensions: string = 'all',
+        asyncApiVersion: string = '2.5.0',
         format: 'json' | 'yaml' = 'json',
+        messagingServiceId?: string,
     ): ApiRequestOptions {
         return {
             ...this.config,
             method: 'GET',
             path: `/api/v2/architecture/applications/${applicationId}/versions/${id}/asyncApi`,
             query: {
+                'showVersioning': showVersioning,
+                'includedExtensions': includedExtensions,
                 'asyncApiVersion': asyncApiVersion,
                 'format': format,
+                'messagingServiceId': messagingServiceId,
             },
             errors: {
                 400: `Bad Request.`,
@@ -548,12 +758,18 @@ export class ApplicationsServiceDefault implements ApplicationsService {
     public async getAsyncApiForApplicationVersion(
         applicationVersionId: string,
         format: 'json' | 'yaml' = 'json',
-        asyncApiVersion: '2.0.0' = '2.0.0',
-    ): Promise<any> {
+        showVersioning: boolean = false,
+        includedExtensions: string = 'all',
+        asyncApiVersion: string = '2.5.0',
+        messagingServiceId?: string,
+    ): Promise<string> {
         const options = this.getAsyncApiForApplicationVersionApiRequestOptions(
             applicationVersionId,
             format,
+            showVersioning,
+            includedExtensions,
             asyncApiVersion,
+            messagingServiceId,
         );
         const result = await __request(options);
         return result.body;
@@ -562,7 +778,10 @@ export class ApplicationsServiceDefault implements ApplicationsService {
     public getAsyncApiForApplicationVersionApiRequestOptions(
         applicationVersionId: string,
         format: 'json' | 'yaml' = 'json',
-        asyncApiVersion: '2.0.0' = '2.0.0',
+        showVersioning: boolean = false,
+        includedExtensions: string = 'all',
+        asyncApiVersion: string = '2.5.0',
+        messagingServiceId?: string,
     ): ApiRequestOptions {
         return {
             ...this.config,
@@ -570,7 +789,10 @@ export class ApplicationsServiceDefault implements ApplicationsService {
             path: `/api/v2/architecture/applicationVersions/${applicationVersionId}/asyncApi`,
             query: {
                 'format': format,
+                'showVersioning': showVersioning,
+                'includedExtensions': includedExtensions,
                 'asyncApiVersion': asyncApiVersion,
+                'messagingServiceId': messagingServiceId,
             },
             errors: {
                 400: `Bad Request.`,

@@ -2,10 +2,11 @@
 
 
 import type { Application } from './Application';
+import type { meta } from './meta';
 
 export type ApplicationsResponse = {
     data?: Array<Application>;
-    meta?: Record<string, any>;
+    meta?: meta;
 }
 
 export namespace ApplicationsResponse {
