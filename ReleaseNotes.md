@@ -1,5 +1,23 @@
 # Release Notes
 
+## Version 0.10.0
+* OpenAPI: 0.15.4
+* API Management Connector Server: 0.10.0
+
+### Features
+
+* **feat-app-provisioning-ep-2.0-service-registry**
+  - Connector now supports PS+ service discovery from the messagig services defined in EP 2.0 Runtime Manager
+  - All messaging protocols are now mapped fropm the EP runtime manager configuration.
+  - Can be activated per tenant using a switch on the `organization` configuration (`serviceRegistry`)
+  
+### Fixes
+
+* **fix-ep-2.0-importer-performance**
+  - switched to more efficient EP 2.0 calls that were made available in the updated API
+* **fix-openapi-schema-validation-error**
+  - there werew some minor, strutcural errors in the OpenAPI specification
+
 ## Version 0.9.7
 * OpenAPI: 0.15.2
 * API Management Connector Server: 0.9.7
