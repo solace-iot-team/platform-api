@@ -113,8 +113,10 @@ export default class EventPortalImporterTaskImpl {
       if (isString(api.apiPayload)) {
         const d: AsyncAPIDocument = await parser.parse(api.apiPayload);
         version = d.info().version();
+        api.apiPayload = (api.apiPayload as string).replace('\"asyncapi\":\"2.5.0\"', '\"asyncapi\":\"2.0.0\"')
       } else {
         version = api.apiPayload.info.version;
+        api.apiPayload.asyncapi = '2.0.0';
       }
       L.debug(version);
       if (version != null) {
