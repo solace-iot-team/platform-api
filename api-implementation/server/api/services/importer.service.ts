@@ -8,7 +8,11 @@ import { ErrorResponseInternal } from '../middlewares/error.handler';
 import { Importer } from './importer/importer';
 import Organization = Components.Schemas.Organization;
 import { scheduler } from '../../index';
-import { Job } from 'agenda';
+import EventportalFacade from '../../../src/eventportalfacade.2';
+import { Cache, CacheContainer } from 'node-ts-cache';
+import { MemoryStorage } from 'node-ts-cache-storage-memory'
+
+const appDomainListCache = new CacheContainer(new MemoryStorage())
 
 export class ImporterService {
 
@@ -24,15 +28,14 @@ export class ImporterService {
    * Get import jobs
    */
   public async all(): Promise<ImporterConfiguration[]> {
-    const results = [];
+    let results = [];
     for (const t of ImporterRegistry.getTypes()) {
       const jobs = await scheduler.allJobsWithName(t);
       for (const j of jobs) {
         if (j.attrs.repeatInterval)
-        results.push(j.attrs.data.configuration);
+        results.push((await this.removeInvalidAppDomains(j.attrs.data.configuration)));
       }
     }
-
     return results;
   }
 
@@ -40,7 +43,7 @@ export class ImporterService {
  * Get import job by name
  */
   public async byName(name: string): Promise<ImporterConfiguration> {
-    return (await scheduler.findJobInstanceWithName(name)).attrs.data.configuration;
+    return await this.removeInvalidAppDomains((await scheduler.findJobInstanceWithName(name)).attrs.data.configuration);
   }
 
   /**
@@ -55,7 +58,7 @@ export class ImporterService {
     const importer: Importer = ImporterRegistry.getByType('EventPortalImporter');
 
     await importer.create(configuration, org);
-    return configuration;
+    return await this.removeInvalidAppDomains(configuration);
   }
 
   /**
@@ -70,7 +73,7 @@ export class ImporterService {
     const importer: Importer = ImporterRegistry.getByType('EventPortalImporter');
 
     await importer.update(name, configuration, org);
-    return configuration;
+    return this.removeInvalidAppDomains(configuration);
   }
 
   /**
@@ -106,6 +109,32 @@ export class ImporterService {
     if (!ImporterRegistry.hasType(config.importerType)) {
       throw new ErrorResponseInternal(400, `Specified importer type ${config.importerType} is not available, supported types: [${JSON.stringify(ImporterRegistry.getTypes())}]`);
     }
+  }
+
+  private async removeInvalidAppDomains(config: ImporterConfiguration ){
+    const appDomains: string[] = await this.getApplicationDomains();
+    const newConfig: ImporterConfiguration = {
+      displayName: config.displayName,
+      name: config.name,
+      importerType: config.importerType,
+    }; 
+    if (config.attributeMap){
+      newConfig.attributeMap = config.attributeMap.filter(a=>appDomains.find(x => x == a.name));
+    }
+    if (config.filter){
+      newConfig.filter = config.filter.filter(a=>appDomains.find(x => x == a));
+    }
+    return newConfig;
+  }
+
+  private async getApplicationDomains(): Promise<string[]>{
+    const org = this.getOrg();
+    let appDomainIds: string [] = await appDomainListCache.getItem(org.name);
+    if (!appDomainIds || appDomainIds.length==0){
+      appDomainIds = (await EventportalFacade.getApplicationDomains(999, 1)).map(a=> {return a.id});
+      appDomainListCache.setItem(org.name, appDomainIds, {ttl: 120});
+    }
+    return appDomainIds;
   }
 }
 
