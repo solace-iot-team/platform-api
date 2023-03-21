@@ -18,8 +18,9 @@ export interface APIProductVersionImportResult {
 
 export default class EventPortalImporterTaskImpl {
   public static async doImport(configuration: ImporterConfiguration): Promise<APIProductVersionImportResult[]> {
+    const results: APIProductVersionImportResult[] = [];
     try {
-      const results: APIProductVersionImportResult[] = [];
+
       const prodVersions = await EventPortalFacade.listExportableAPIProductVersions(configuration.filter);
 
       for (const prodVersion of prodVersions) {
@@ -61,7 +62,19 @@ export default class EventPortalImporterTaskImpl {
       return results;
     } catch (e) {
       L.error(e);
-      return e;
+      results.push({
+        eventAPIProductVersion: null,
+        results: [
+          {
+            action: 'skipped',
+            message: e.message,
+            resource: 'APIProduct',
+            success: false,
+            detail: e.body,
+          }
+        ]
+      })
+      return results;
 
     }
 
@@ -148,9 +161,9 @@ export default class EventPortalImporterTaskImpl {
             }
           }
         }
-        const useSolaceCloud = getOrgObject().serviceRegistry=='platform' || !getOrgObject().serviceRegistry;
-        const envResult = await connectorFacade.upsertEnvironment(`${solaceMessagingService.environmentName}-${solaceMessagingService.eventMeshName}-${solaceMessagingService.id}`, 
-          useSolaceCloud?solaceMessagingService.solaceCloudMessagingServiceId:solaceMessagingService.messagingServiceId);
+        const useSolaceCloud = getOrgObject().serviceRegistry == 'platform' || !getOrgObject().serviceRegistry;
+        const envResult = await connectorFacade.upsertEnvironment(`${solaceMessagingService.environmentName}-${solaceMessagingService.eventMeshName}-${solaceMessagingService.id}`,
+          useSolaceCloud ? solaceMessagingService.solaceCloudMessagingServiceId : solaceMessagingService.messagingServiceId);
         if (!envNames.find(s => s == envResult.environmentName)) {
           envNames.push(envResult.environmentName);
         }
@@ -165,13 +178,13 @@ export default class EventPortalImporterTaskImpl {
         guaranteedMessagingEnabled: policy.messageDeliveryMode && policy.messageDeliveryMode == 'guaranteed',
       };
       if (policy.messageDeliveryMode && policy.messageDeliveryMode == 'guaranteed') {
-        const requireQueue: boolean = (policy.messageDeliveryMode == 'guaranteed' && policy.queueType)?true:false;
+        const requireQueue: boolean = (policy.messageDeliveryMode == 'guaranteed' && policy.queueType) ? true : false;
         clientOptions.guaranteedMessaging = {
           accessType: policy.accessType,
           maxMsgSpoolUsage: policy.maxMsgSpoolUsage,
           maxTtl: policy.maximumTimeToLive,
           requireQueue: requireQueue,
-          queueGranularity: policy.queueType=='single' ? 'api' : 'apiProduct'
+          queueGranularity: policy.queueType == 'single' ? 'api' : 'apiProduct'
         };
       }
 
