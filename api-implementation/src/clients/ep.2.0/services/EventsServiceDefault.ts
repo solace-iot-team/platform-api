@@ -212,234 +212,6 @@ export class EventsServiceDefault implements EventsService {
         };
     }
 
-    public async getEventVersions(
-        pageSize: number = 20,
-        pageNumber: number = 1,
-        eventIds?: Array<string>,
-        ids?: Array<string>,
-        messagingServiceIds?: Array<string>,
-        include?: string,
-        customAttributes?: string,
-    ): Promise<any> {
-        const options = this.getEventVersionsApiRequestOptions(
-            pageSize,
-            pageNumber,
-            eventIds,
-            ids,
-            messagingServiceIds,
-            include,
-            customAttributes,
-        );
-        const result = await __request(options);
-        return result.body;
-    }
-
-    public getEventVersionsApiRequestOptions(
-        pageSize: number = 20,
-        pageNumber: number = 1,
-        eventIds?: Array<string>,
-        ids?: Array<string>,
-        messagingServiceIds?: Array<string>,
-        include?: string,
-        customAttributes?: string,
-    ): ApiRequestOptions {
-        return {
-            ...this.config,
-            method: 'GET',
-            path: `/api/v2/architecture/eventVersions`,
-            query: {
-                'pageSize': pageSize,
-                'pageNumber': pageNumber,
-                'eventIds': eventIds,
-                'ids': ids,
-                'messagingServiceIds': messagingServiceIds,
-                'include': include,
-                'customAttributes': customAttributes,
-            },
-            errors: {
-                400: `Bad Request.`,
-                401: `Unauthorized.`,
-                403: `Forbidden.`,
-                404: `Not Found.`,
-                405: `Method Not Allowed`,
-                500: `Internal Server Error.`,
-                501: `Not Implemented`,
-                503: `Service Unavailable.`,
-                504: `Gateway Timeout.`,
-            },
-        };
-    }
-
-    public async createEventVersion(
-        requestBody: any,
-    ): Promise<any> {
-        const options = this.createEventVersionApiRequestOptions(
-            requestBody,
-        );
-        const result = await __request(options);
-        return result.body;
-    }
-
-    public createEventVersionApiRequestOptions(
-        requestBody: any,
-    ): ApiRequestOptions {
-        return {
-            ...this.config,
-            method: 'POST',
-            path: `/api/v2/architecture/eventVersions`,
-            body: requestBody,
-            errors: {
-                400: `Bad Request.`,
-                401: `Unauthorized.`,
-                403: `Forbidden.`,
-                404: `Not Found.`,
-                405: `Method Not Allowed`,
-                500: `Internal Server Error.`,
-                501: `Not Implemented`,
-                503: `Service Unavailable.`,
-                504: `Gateway Timeout.`,
-            },
-        };
-    }
-
-    public async getEventVersion(
-        id: string,
-        include?: string,
-    ): Promise<any> {
-        const options = this.getEventVersionApiRequestOptions(
-            id,
-            include,
-        );
-        const result = await __request(options);
-        return result.body;
-    }
-
-    public getEventVersionApiRequestOptions(
-        id: string,
-        include?: string,
-    ): ApiRequestOptions {
-        return {
-            ...this.config,
-            method: 'GET',
-            path: `/api/v2/architecture/eventVersions/${id}`,
-            query: {
-                'include': include,
-            },
-            errors: {
-                400: `Bad Request.`,
-                401: `Unauthorized.`,
-                403: `Forbidden.`,
-                404: `Not Found.`,
-                405: `Method Not Allowed`,
-                500: `Internal Server Error.`,
-                501: `Not Implemented`,
-                503: `Service Unavailable.`,
-                504: `Gateway Timeout.`,
-            },
-        };
-    }
-
-    public async deleteEventVersion(
-        id: string,
-    ): Promise<void> {
-        const options = this.deleteEventVersionApiRequestOptions(
-            id,
-        );
-        const result = await __request(options);
-        return result.body;
-    }
-
-    public deleteEventVersionApiRequestOptions(
-        id: string,
-    ): ApiRequestOptions {
-        return {
-            ...this.config,
-            method: 'DELETE',
-            path: `/api/v2/architecture/eventVersions/${id}`,
-            errors: {
-                400: `Bad Request.`,
-                401: `Unauthorized.`,
-                403: `Forbidden.`,
-                404: `Not Found.`,
-                405: `Method Not Allowed`,
-                500: `Internal Server Error.`,
-                501: `Not Implemented`,
-                503: `Service Unavailable.`,
-                504: `Gateway Timeout.`,
-            },
-        };
-    }
-
-    public async updateEventVersion(
-        id: string,
-        requestBody: any,
-    ): Promise<any> {
-        const options = this.updateEventVersionApiRequestOptions(
-            id,
-            requestBody,
-        );
-        const result = await __request(options);
-        return result.body;
-    }
-
-    public updateEventVersionApiRequestOptions(
-        id: string,
-        requestBody: any,
-    ): ApiRequestOptions {
-        return {
-            ...this.config,
-            method: 'PATCH',
-            path: `/api/v2/architecture/eventVersions/${id}`,
-            body: requestBody,
-            errors: {
-                400: `Bad Request.`,
-                401: `Unauthorized.`,
-                403: `Forbidden.`,
-                404: `Not Found.`,
-                405: `Method Not Allowed`,
-                500: `Internal Server Error.`,
-                501: `Not Implemented`,
-                503: `Service Unavailable.`,
-                504: `Gateway Timeout.`,
-            },
-        };
-    }
-
-    public async updateEventVersionState(
-        id: string,
-        requestBody: any,
-    ): Promise<any> {
-        const options = this.updateEventVersionStateApiRequestOptions(
-            id,
-            requestBody,
-        );
-        const result = await __request(options);
-        return result.body;
-    }
-
-    public updateEventVersionStateApiRequestOptions(
-        id: string,
-        requestBody: any,
-    ): ApiRequestOptions {
-        return {
-            ...this.config,
-            method: 'PATCH',
-            path: `/api/v2/architecture/eventVersions/${id}/state`,
-            body: requestBody,
-            errors: {
-                400: `Bad Request.`,
-                401: `Unauthorized.`,
-                403: `Forbidden.`,
-                404: `Not Found.`,
-                405: `Method Not Allowed`,
-                500: `Internal Server Error.`,
-                501: `Not Implemented`,
-                503: `Service Unavailable.`,
-                504: `Gateway Timeout.`,
-            },
-        };
-    }
-
     public async getEventVersionsForEvent(
         eventId: string,
         customAttributes?: string,
@@ -630,6 +402,227 @@ export class EventsServiceDefault implements EventsService {
         };
     }
 
+    public async updateEventVersionStateForEvent(
+        eventId: string,
+        id: string,
+        requestBody: any,
+    ): Promise<any> {
+        const options = this.updateEventVersionStateForEventApiRequestOptions(
+            eventId,
+            id,
+            requestBody,
+        );
+        const result = await __request(options);
+        return result.body;
+    }
+
+    public updateEventVersionStateForEventApiRequestOptions(
+        eventId: string,
+        id: string,
+        requestBody: any,
+    ): ApiRequestOptions {
+        return {
+            ...this.config,
+            method: 'PATCH',
+            path: `/api/v2/architecture/events/${eventId}/versions/${id}/state`,
+            body: requestBody,
+            errors: {
+                400: `Bad Request.`,
+                401: `Unauthorized.`,
+                403: `Forbidden.`,
+                404: `Not Found.`,
+                405: `Method Not Allowed`,
+                500: `Internal Server Error.`,
+                501: `Not Implemented`,
+                503: `Service Unavailable.`,
+                504: `Gateway Timeout.`,
+            },
+        };
+    }
+
+    public async getEventVersions(
+        pageSize: number = 20,
+        pageNumber: number = 1,
+        eventIds?: Array<string>,
+        ids?: Array<string>,
+        messagingServiceIds?: Array<string>,
+        customAttributes?: string,
+    ): Promise<any> {
+        const options = this.getEventVersionsApiRequestOptions(
+            pageSize,
+            pageNumber,
+            eventIds,
+            ids,
+            messagingServiceIds,
+            customAttributes,
+        );
+        const result = await __request(options);
+        return result.body;
+    }
+
+    public getEventVersionsApiRequestOptions(
+        pageSize: number = 20,
+        pageNumber: number = 1,
+        eventIds?: Array<string>,
+        ids?: Array<string>,
+        messagingServiceIds?: Array<string>,
+        customAttributes?: string,
+    ): ApiRequestOptions {
+        return {
+            ...this.config,
+            method: 'GET',
+            path: `/api/v2/architecture/eventVersions`,
+            query: {
+                'pageSize': pageSize,
+                'pageNumber': pageNumber,
+                'eventIds': eventIds,
+                'ids': ids,
+                'messagingServiceIds': messagingServiceIds,
+                'customAttributes': customAttributes,
+            },
+            errors: {
+                400: `Bad Request.`,
+                401: `Unauthorized.`,
+                403: `Forbidden.`,
+                404: `Not Found.`,
+                405: `Method Not Allowed`,
+                500: `Internal Server Error.`,
+                501: `Not Implemented`,
+                503: `Service Unavailable.`,
+                504: `Gateway Timeout.`,
+            },
+        };
+    }
+
+    public async createEventVersion(
+        requestBody: any,
+    ): Promise<any> {
+        const options = this.createEventVersionApiRequestOptions(
+            requestBody,
+        );
+        const result = await __request(options);
+        return result.body;
+    }
+
+    public createEventVersionApiRequestOptions(
+        requestBody: any,
+    ): ApiRequestOptions {
+        return {
+            ...this.config,
+            method: 'POST',
+            path: `/api/v2/architecture/eventVersions`,
+            body: requestBody,
+            errors: {
+                400: `Bad Request.`,
+                401: `Unauthorized.`,
+                403: `Forbidden.`,
+                404: `Not Found.`,
+                405: `Method Not Allowed`,
+                500: `Internal Server Error.`,
+                501: `Not Implemented`,
+                503: `Service Unavailable.`,
+                504: `Gateway Timeout.`,
+            },
+        };
+    }
+
+    public async getEventVersion(
+        id: string,
+    ): Promise<any> {
+        const options = this.getEventVersionApiRequestOptions(
+            id,
+        );
+        const result = await __request(options);
+        return result.body;
+    }
+
+    public getEventVersionApiRequestOptions(
+        id: string,
+    ): ApiRequestOptions {
+        return {
+            ...this.config,
+            method: 'GET',
+            path: `/api/v2/architecture/eventVersions/${id}`,
+            errors: {
+                400: `Bad Request.`,
+                401: `Unauthorized.`,
+                403: `Forbidden.`,
+                404: `Not Found.`,
+                405: `Method Not Allowed`,
+                500: `Internal Server Error.`,
+                501: `Not Implemented`,
+                503: `Service Unavailable.`,
+                504: `Gateway Timeout.`,
+            },
+        };
+    }
+
+    public async deleteEventVersion(
+        id: string,
+    ): Promise<void> {
+        const options = this.deleteEventVersionApiRequestOptions(
+            id,
+        );
+        const result = await __request(options);
+        return result.body;
+    }
+
+    public deleteEventVersionApiRequestOptions(
+        id: string,
+    ): ApiRequestOptions {
+        return {
+            ...this.config,
+            method: 'DELETE',
+            path: `/api/v2/architecture/eventVersions/${id}`,
+            errors: {
+                400: `Bad Request.`,
+                401: `Unauthorized.`,
+                403: `Forbidden.`,
+                404: `Not Found.`,
+                405: `Method Not Allowed`,
+                500: `Internal Server Error.`,
+                501: `Not Implemented`,
+                503: `Service Unavailable.`,
+                504: `Gateway Timeout.`,
+            },
+        };
+    }
+
+    public async updateEventVersion(
+        id: string,
+        requestBody: any,
+    ): Promise<any> {
+        const options = this.updateEventVersionApiRequestOptions(
+            id,
+            requestBody,
+        );
+        const result = await __request(options);
+        return result.body;
+    }
+
+    public updateEventVersionApiRequestOptions(
+        id: string,
+        requestBody: any,
+    ): ApiRequestOptions {
+        return {
+            ...this.config,
+            method: 'PATCH',
+            path: `/api/v2/architecture/eventVersions/${id}`,
+            body: requestBody,
+            errors: {
+                400: `Bad Request.`,
+                401: `Unauthorized.`,
+                403: `Forbidden.`,
+                404: `Not Found.`,
+                405: `Method Not Allowed`,
+                500: `Internal Server Error.`,
+                501: `Not Implemented`,
+                503: `Service Unavailable.`,
+                504: `Gateway Timeout.`,
+            },
+        };
+    }
+
     public async updateMsgSvcAssociationForEventVersion(
         id: string,
         requestBody: any,
@@ -665,13 +658,11 @@ export class EventsServiceDefault implements EventsService {
         };
     }
 
-    public async updateEventVersionStateForEvent(
-        eventId: string,
+    public async updateEventVersionState(
         id: string,
         requestBody: any,
     ): Promise<any> {
-        const options = this.updateEventVersionStateForEventApiRequestOptions(
-            eventId,
+        const options = this.updateEventVersionStateApiRequestOptions(
             id,
             requestBody,
         );
@@ -679,15 +670,14 @@ export class EventsServiceDefault implements EventsService {
         return result.body;
     }
 
-    public updateEventVersionStateForEventApiRequestOptions(
-        eventId: string,
+    public updateEventVersionStateApiRequestOptions(
         id: string,
         requestBody: any,
     ): ApiRequestOptions {
         return {
             ...this.config,
             method: 'PATCH',
-            path: `/api/v2/architecture/events/${eventId}/versions/${id}/state`,
+            path: `/api/v2/architecture/eventVersions/${id}/state`,
             body: requestBody,
             errors: {
                 400: `Bad Request.`,

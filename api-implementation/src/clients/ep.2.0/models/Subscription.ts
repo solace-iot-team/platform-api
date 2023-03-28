@@ -4,6 +4,7 @@
 import type { AttractedEventVersionTuple } from './AttractedEventVersionTuple';
 
 export type Subscription = {
+    readonly id?: string;
     subscriptionType?: string;
     value?: string;
     readonly attractedEventVersionIds?: Array<AttractedEventVersionTuple>;

@@ -6,14 +6,14 @@ import type { ApiRequestOptions } from '../core/ApiRequestOptions';
 export interface ApplicationDomainsService {
 
     /**
-     * Gets the application domain objects
-     * Use this API to retrieve a list of application domains that match the given parameters.
+     * Get a list of the application domains
+     * Use this API to get a list of application domains that match the given parameters.
      * @param pageSize The number of application domains to get per page.
      * @param pageNumber The page number to get.
      * @param name Name to be used to match the application domain.
      * @param ids Match only application domains with the given IDs separated by commas.
      * @param include Specify extra data to be included, options are: stats
-     * @returns any Retrieve a list of application domains and the accompanying metadata.
+     * @returns any Get a list of application domains and the accompanying metadata.
      */
     getApplicationDomains(
         pageSize: number,
@@ -25,8 +25,8 @@ export interface ApplicationDomainsService {
 
     /**
      * **used to get the request options without making a http request**
-     * Gets the application domain objects
-     * Use this API to retrieve a list of application domains that match the given parameters.
+     * Get a list of the application domains
+     * Use this API to get a list of application domains that match the given parameters.
      * @param pageSize The number of application domains to get per page.
      * @param pageNumber The page number to get.
      * @param name Name to be used to match the application domain.
@@ -43,10 +43,10 @@ export interface ApplicationDomainsService {
     ): ApiRequestOptions;
 
     /**
-     * Creates an application domain object
+     * Create an application domain
      * To help keep your event-driven architecture organized, use application domains to create namespaces for your applications, events and schemas.
      * @param requestBody Application domains have a name and topic domain.
-     * @returns any Created. The newly saved application domain object is returned in the response body.
+     * @returns any Created. The newly saved application domain is returned in the response body.
      */
     createApplicationDomain(
         requestBody: any,
@@ -54,7 +54,7 @@ export interface ApplicationDomainsService {
 
     /**
      * **used to get the request options without making a http request**
-     * Creates an application domain object
+     * Create an application domain
      * To help keep your event-driven architecture organized, use application domains to create namespaces for your applications, events and schemas.
      * @param requestBody Application domains have a name and topic domain.
      * @returns ApiRequestOptions the request options to fulfill a http request
@@ -64,11 +64,11 @@ export interface ApplicationDomainsService {
     ): ApiRequestOptions;
 
     /**
-     * Retrieves an application domain object
-     * Use this API to retrieve a single application domain by its ID.
-     * @param id The ID of the application domain object.
+     * Get an application domain
+     * Use this API to get a single application domain by its ID.
+     * @param id The ID of the application domain.
      * @param include Specify extra data to be included, options are: stats
-     * @returns any The application domain object.
+     * @returns any The application domain.
      */
     getApplicationDomain(
         id: string,
@@ -77,9 +77,9 @@ export interface ApplicationDomainsService {
 
     /**
      * **used to get the request options without making a http request**
-     * Retrieves an application domain object
-     * Use this API to retrieve a single application domain by its ID.
-     * @param id The ID of the application domain object.
+     * Get an application domain
+     * Use this API to get a single application domain by its ID.
+     * @param id The ID of the application domain.
      * @param include Specify extra data to be included, options are: stats
      * @returns ApiRequestOptions the request options to fulfill a http request
      */
@@ -89,9 +89,9 @@ export interface ApplicationDomainsService {
     ): ApiRequestOptions;
 
     /**
-     * Deletes an application domain object
+     * Delete an application domain
      * Use this API to delete an application domain. This action also deletes all applications, events, and schemas in the application domain. You cannot undo this operation.
-     * @param id The ID of the application domain object.
+     * @param id The ID of the application domain.
      * @returns void
      */
     deleteApplicationDomain(
@@ -100,9 +100,9 @@ export interface ApplicationDomainsService {
 
     /**
      * **used to get the request options without making a http request**
-     * Deletes an application domain object
+     * Delete an application domain
      * Use this API to delete an application domain. This action also deletes all applications, events, and schemas in the application domain. You cannot undo this operation.
-     * @param id The ID of the application domain object.
+     * @param id The ID of the application domain.
      * @returns ApiRequestOptions the request options to fulfill a http request
      */
     deleteApplicationDomainApiRequestOptions(
@@ -110,11 +110,11 @@ export interface ApplicationDomainsService {
     ): ApiRequestOptions;
 
     /**
-     * Updates an application domain object
+     * Update an application domain
      * Use this API to update an application domain. You only need to specify the fields that need to be updated.
-     * @param id The ID of the application domain object.
-     * @param requestBody The application domain object.
-     * @returns any The updated application domain object.
+     * @param id The ID of the application domain.
+     * @param requestBody The application domain.
+     * @returns any The updated application domain.
      */
     updateApplicationDomain(
         id: string,
@@ -123,10 +123,10 @@ export interface ApplicationDomainsService {
 
     /**
      * **used to get the request options without making a http request**
-     * Updates an application domain object
+     * Update an application domain
      * Use this API to update an application domain. You only need to specify the fields that need to be updated.
-     * @param id The ID of the application domain object.
-     * @param requestBody The application domain object.
+     * @param id The ID of the application domain.
+     * @param requestBody The application domain.
      * @returns ApiRequestOptions the request options to fulfill a http request
      */
     updateApplicationDomainApiRequestOptions(
@@ -135,7 +135,7 @@ export interface ApplicationDomainsService {
     ): ApiRequestOptions;
 
     /**
-     * (Beta) Import application domains and their entities
+     * (Beta) Create application domains and their entities from import
      * Use this API to import application domains and their nested entities. Please note that this endpoint is in beta and could be subject to change in the future
      * @param requestBody Application domain import file
      * @returns any Successfully registered import job with location identified in the response header
@@ -146,7 +146,7 @@ export interface ApplicationDomainsService {
 
     /**
      * **used to get the request options without making a http request**
-     * (Beta) Import application domains and their entities
+     * (Beta) Create application domains and their entities from import
      * Use this API to import application domains and their nested entities. Please note that this endpoint is in beta and could be subject to change in the future
      * @param requestBody Application domain import file
      * @returns ApiRequestOptions the request options to fulfill a http request

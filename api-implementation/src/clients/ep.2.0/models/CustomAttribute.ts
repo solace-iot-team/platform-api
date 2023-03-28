@@ -4,10 +4,7 @@
 export type CustomAttribute = {
     customAttributeDefinitionId?: string;
     customAttributeDefinitionName?: string;
-    /**
-     * Valid Objects are Strings with characters: [a-zA-Z0-9_\-\. ]
-     */
-    value?: any;
+    value?: string;
 }
 
 export namespace CustomAttribute {

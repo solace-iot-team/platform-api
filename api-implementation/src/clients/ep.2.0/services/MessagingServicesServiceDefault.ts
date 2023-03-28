@@ -216,42 +216,6 @@ export class MessagingServicesServiceDefault implements MessagingServicesService
         };
     }
 
-    public async removeAssociationMessagingService(
-        id: string,
-        requestBody: MessagingServiceRemoveAssociation,
-    ): Promise<MessagingServiceResponse> {
-        const options = this.removeAssociationMessagingServiceApiRequestOptions(
-            id,
-            requestBody,
-        );
-        const result = await __request(options);
-        return result.body;
-    }
-
-    public removeAssociationMessagingServiceApiRequestOptions(
-        id: string,
-        requestBody: MessagingServiceRemoveAssociation,
-    ): ApiRequestOptions {
-        return {
-            ...this.config,
-            method: 'PUT',
-            path: `/api/v2/architecture/messagingServices/${id}/removeAssociation`,
-            body: requestBody,
-            mediaType: 'application/json',
-            errors: {
-                400: `Bad Request.`,
-                401: `Unauthorized.`,
-                403: `Forbidden.`,
-                404: `Not Found.`,
-                405: `Method Not Allowed`,
-                500: `Internal Server Error.`,
-                501: `Not Implemented`,
-                503: `Service Unavailable.`,
-                504: `Gateway Timeout.`,
-            },
-        };
-    }
-
     public async scanStartMessagingService(
         messagingServiceId: string,
         requestBody: MessagingServiceOperation,
@@ -272,6 +236,42 @@ export class MessagingServicesServiceDefault implements MessagingServicesService
             ...this.config,
             method: 'PUT',
             path: `/api/v2/architecture/messagingServices/${messagingServiceId}/scanStart`,
+            body: requestBody,
+            mediaType: 'application/json',
+            errors: {
+                400: `Bad Request.`,
+                401: `Unauthorized.`,
+                403: `Forbidden.`,
+                404: `Not Found.`,
+                405: `Method Not Allowed`,
+                500: `Internal Server Error.`,
+                501: `Not Implemented`,
+                503: `Service Unavailable.`,
+                504: `Gateway Timeout.`,
+            },
+        };
+    }
+
+    public async removeAssociationMessagingService(
+        id: string,
+        requestBody: MessagingServiceRemoveAssociation,
+    ): Promise<MessagingServiceResponse> {
+        const options = this.removeAssociationMessagingServiceApiRequestOptions(
+            id,
+            requestBody,
+        );
+        const result = await __request(options);
+        return result.body;
+    }
+
+    public removeAssociationMessagingServiceApiRequestOptions(
+        id: string,
+        requestBody: MessagingServiceRemoveAssociation,
+    ): ApiRequestOptions {
+        return {
+            ...this.config,
+            method: 'PUT',
+            path: `/api/v2/architecture/messagingServices/${id}/removeAssociation`,
             body: requestBody,
             mediaType: 'application/json',
             errors: {

@@ -1,6 +1,8 @@
 /* eslint-disable */
 
 
+import type { Tag } from './Tag';
+
 export type AuditDetail = {
     readonly createdTime?: string;
     readonly updatedTime?: string;
@@ -15,6 +17,7 @@ export type AuditDetail = {
     readonly scanId?: string;
     readonly status?: string;
     readonly identifier?: string;
+    associatedTags?: Array<Tag>;
     type?: string;
 }
 

@@ -22,9 +22,6 @@ export type BaseMessagingServiceDTO = {
     readonly environmentName?: string;
     readonly eventMeshId?: string;
     readonly eventMeshName?: string;
-    /**
-     * The type of payload
-     */
     type?: string;
 }
 

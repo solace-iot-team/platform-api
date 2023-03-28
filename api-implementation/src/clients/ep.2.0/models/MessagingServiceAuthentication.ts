@@ -1,7 +1,7 @@
 /* eslint-disable */
 
 
-import type { MessagingServiceCredentialsn } from './MessagingServiceCredentialsn';
+import type { MessagingServiceCredentials } from './MessagingServiceCredentials';
 
 export type MessagingServiceAuthentication = {
     readonly createdTime?: string;
@@ -28,7 +28,7 @@ export type MessagingServiceAuthentication = {
      * A JSON map containing a map of extra details for the authentication.
      */
     authenticationDetails?: Record<string, any>;
-    messagingServiceCredentials?: Array<MessagingServiceCredentialsn>;
+    messagingServiceCredentials?: Array<MessagingServiceCredentials>;
     readonly type?: string;
 }
 

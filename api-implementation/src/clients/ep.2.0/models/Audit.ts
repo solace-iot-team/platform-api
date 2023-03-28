@@ -1,6 +1,10 @@
 /* eslint-disable */
 
 
+import type { DesignerMappingDTO } from './DesignerMappingDTO';
+import type { RuntimeMappingDTO } from './RuntimeMappingDTO';
+import type { Tag } from './Tag';
+
 export type Audit = {
     readonly createdTime?: string;
     readonly updatedTime?: string;
@@ -15,6 +19,9 @@ export type Audit = {
     readonly multipleParent?: boolean;
     readonly designerMappingId?: string;
     readonly runtimeMappingId?: string;
+    designerMapping?: DesignerMappingDTO;
+    runtimeMapping?: RuntimeMappingDTO;
+    associatedTags?: Array<Tag>;
     type?: string;
 }
 

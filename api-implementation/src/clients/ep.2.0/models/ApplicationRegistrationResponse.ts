@@ -1,10 +1,10 @@
 /* eslint-disable */
 
 
-import type { EventApiProductRegistration } from './EventApiProductRegistration';
+import type { ApplicationRegistration } from './ApplicationRegistration';
 
 export type ApplicationRegistrationResponse = {
-    data?: EventApiProductRegistration;
+    data?: ApplicationRegistration;
     meta?: Record<string, any>;
 }
 

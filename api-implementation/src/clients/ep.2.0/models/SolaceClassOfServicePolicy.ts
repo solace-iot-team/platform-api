@@ -8,7 +8,7 @@ import type { BasePolicyDTO } from './BasePolicyDTO';
  */
 export type SolaceClassOfServicePolicy = (BasePolicyDTO & {
     /**
-     * The type of message delivery mode in the current event API product version
+     * The mode that will be used for message delivery (ex: `guaranteed` uses a queue)
      */
     messageDeliveryMode: SolaceClassOfServicePolicy.messageDeliveryMode,
     accessType?: SolaceClassOfServicePolicy.accessType,
@@ -17,13 +17,17 @@ export type SolaceClassOfServicePolicy = (BasePolicyDTO & {
      */
     maximumTimeToLive?: number,
     /**
-     * The type of queue to be used in the current event API product version
+     * The arrangement of queues on a broker used for message delivery (ex: `single` uses one queue per event API version in this event API product)
      */
     queueType: SolaceClassOfServicePolicy.queueType,
     /**
      * Total number of MBs available for the queue to use
      */
     maxMsgSpoolUsage?: number,
+    /**
+     * The type of payload
+     */
+    readonly type: string,
 });
 
 export namespace SolaceClassOfServicePolicy {
@@ -34,7 +38,7 @@ export namespace SolaceClassOfServicePolicy {
     export const discriminator = 'SolaceClassOfServicePolicy';
 
     /**
-     * The type of message delivery mode in the current event API product version
+     * The mode that will be used for message delivery (ex: `guaranteed` uses a queue)
      */
     export enum messageDeliveryMode {
         direct = 'direct',
@@ -47,7 +51,7 @@ export namespace SolaceClassOfServicePolicy {
     }
 
     /**
-     * The type of queue to be used in the current event API product version
+     * The arrangement of queues on a broker used for message delivery (ex: `single` uses one queue per event API version in this event API product)
      */
     export enum queueType {
         single = 'single',

@@ -11,11 +11,11 @@ import type { ApiRequestOptions } from '../core/ApiRequestOptions';
 export interface MessagingServicesService {
 
     /**
-     * (Beta) Retrieves a list of messaging services
-     * Use this API to retrieve a list of messaging services that match the given parameters.
+     * (Beta) Get a list of messaging services
+     * Use this API to get a list of messaging services that match the given parameters.
      * @param pageSize The number of messaging services to get per page.
      * @param pageNumber The page number to get.
-     * @param sort Sort based on the provided parameters. <br> The value can either be a standalone field name (`?sort=<field>`) or a field and direction, which must be delimited by a colon (`?sort=<field>:<asc|desc>`). If the direction is not specified, the default is ascending.
+     * @param sort Sort based on the provided parameters. <br> The value can be either a standalone field name (`?sort=<field>`) or a field and direction, delimited by a colon (`?sort=<field>:<asc|desc>`). If the direction is not specified, the default is ascending.
      * @param ids The IDs of the messaging services.
      * @param messagingServiceType Match only messaging services of the given type
      * @param runtimeAgentId Match only messaging services in the given runtimeAgentId
@@ -36,11 +36,11 @@ export interface MessagingServicesService {
 
     /**
      * **used to get the request options without making a http request**
-     * (Beta) Retrieves a list of messaging services
-     * Use this API to retrieve a list of messaging services that match the given parameters.
+     * (Beta) Get a list of messaging services
+     * Use this API to get a list of messaging services that match the given parameters.
      * @param pageSize The number of messaging services to get per page.
      * @param pageNumber The page number to get.
-     * @param sort Sort based on the provided parameters. <br> The value can either be a standalone field name (`?sort=<field>`) or a field and direction, which must be delimited by a colon (`?sort=<field>:<asc|desc>`). If the direction is not specified, the default is ascending.
+     * @param sort Sort based on the provided parameters. <br> The value can be either a standalone field name (`?sort=<field>`) or a field and direction, delimited by a colon (`?sort=<field>:<asc|desc>`). If the direction is not specified, the default is ascending.
      * @param ids The IDs of the messaging services.
      * @param messagingServiceType Match only messaging services of the given type
      * @param runtimeAgentId Match only messaging services in the given runtimeAgentId
@@ -60,10 +60,10 @@ export interface MessagingServicesService {
     ): ApiRequestOptions;
 
     /**
-     * (Beta) Creates a messaging service object
-     * Use this API to create a messaging service object.
-     * @param requestBody The messaging service object.
-     * @returns MessagingServiceResponse Created a messaging service. The newly saved object is returned in the response body.
+     * (Beta) Create a messaging service
+     * Use this API to create a messaging service.
+     * @param requestBody The messaging service.
+     * @returns MessagingServiceResponse Created a messaging service. The newly saved messaging service is returned in the response body.
      */
     createMessagingService(
         requestBody: MessagingService,
@@ -71,9 +71,9 @@ export interface MessagingServicesService {
 
     /**
      * **used to get the request options without making a http request**
-     * (Beta) Creates a messaging service object
-     * Use this API to create a messaging service object.
-     * @param requestBody The messaging service object.
+     * (Beta) Create a messaging service
+     * Use this API to create a messaging service.
+     * @param requestBody The messaging service.
      * @returns ApiRequestOptions the request options to fulfill a http request
      */
     createMessagingServiceApiRequestOptions(
@@ -81,10 +81,10 @@ export interface MessagingServicesService {
     ): ApiRequestOptions;
 
     /**
-     * (Beta) Retrieves a messaging service object
-     * Use this API to retrieve a single messaging service by its ID.
-     * @param id The ID of the messaging service object.
-     * @returns MessagingServiceResponse The messaging service object.
+     * (Beta) Get a messaging service
+     * Use this API to get a single messaging service by its ID.
+     * @param id The ID of the messaging service.
+     * @returns MessagingServiceResponse The messaging service.
      */
     getMessagingService(
         id: string,
@@ -92,9 +92,9 @@ export interface MessagingServicesService {
 
     /**
      * **used to get the request options without making a http request**
-     * (Beta) Retrieves a messaging service object
-     * Use this API to retrieve a single messaging service by its ID.
-     * @param id The ID of the messaging service object.
+     * (Beta) Get a messaging service
+     * Use this API to get a single messaging service by its ID.
+     * @param id The ID of the messaging service.
      * @returns ApiRequestOptions the request options to fulfill a http request
      */
     getMessagingServiceApiRequestOptions(
@@ -102,9 +102,9 @@ export interface MessagingServicesService {
     ): ApiRequestOptions;
 
     /**
-     * (Beta) Deletes a messaging service object
+     * (Beta) Delete a messaging service
      * Use this API to delete a messaging service.
-     * @param id The ID of the messaging service object.
+     * @param id The ID of the messaging service.
      * @returns void
      */
     deleteMessagingService(
@@ -113,9 +113,9 @@ export interface MessagingServicesService {
 
     /**
      * **used to get the request options without making a http request**
-     * (Beta) Deletes a messaging service object
+     * (Beta) Delete a messaging service
      * Use this API to delete a messaging service.
-     * @param id The ID of the messaging service object.
+     * @param id The ID of the messaging service.
      * @returns ApiRequestOptions the request options to fulfill a http request
      */
     deleteMessagingServiceApiRequestOptions(
@@ -123,11 +123,11 @@ export interface MessagingServicesService {
     ): ApiRequestOptions;
 
     /**
-     * (Beta) Updates a messaging service object
+     * (Beta) Update a messaging service
      * Use this API to update a messaging service. You only need to specify the fields that need to be updated. However, if you want to update anything under subObjects (i.e. anything inside messagingServiceConnections object), you need to provide the original messagingServiceConnections with the updated fields instead of just providing the changed fields.
-     * @param id The ID of the messaging service object to update.
-     * @param requestBody The messaging service object.
-     * @returns MessagingServiceResponse The updated messaging service object.
+     * @param id The ID of the messaging service to update.
+     * @param requestBody The messaging service.
+     * @returns MessagingServiceResponse The updated messaging service.
      */
     updateMessagingService(
         id: string,
@@ -136,10 +136,10 @@ export interface MessagingServicesService {
 
     /**
      * **used to get the request options without making a http request**
-     * (Beta) Updates a messaging service object
+     * (Beta) Update a messaging service
      * Use this API to update a messaging service. You only need to specify the fields that need to be updated. However, if you want to update anything under subObjects (i.e. anything inside messagingServiceConnections object), you need to provide the original messagingServiceConnections with the updated fields instead of just providing the changed fields.
-     * @param id The ID of the messaging service object to update.
-     * @param requestBody The messaging service object.
+     * @param id The ID of the messaging service to update.
+     * @param requestBody The messaging service.
      * @returns ApiRequestOptions the request options to fulfill a http request
      */
     updateMessagingServiceApiRequestOptions(
@@ -148,35 +148,10 @@ export interface MessagingServicesService {
     ): ApiRequestOptions;
 
     /**
-     * (Beta) Removes a messaging service's association to the requested entity.
-     * Use this API to remove the association between a messaging service and either of EVENT_MESH or EVENT_MANAGEMENT_AGENT.
-     * @param id The ID of the messaging service object.
-     * @param requestBody The association object with the value matching either EVENT_MESH or EVENT_MANAGEMENT_AGENT.
-     * @returns MessagingServiceResponse The updated messaging service object, e.g. if the API request body had {"association": "EVENT_MESH"} then the resulting object would not have eventMeshId attribute.
-     */
-    removeAssociationMessagingService(
-        id: string,
-        requestBody: MessagingServiceRemoveAssociation,
-    ): Promise<MessagingServiceResponse>;
-
-    /**
-     * **used to get the request options without making a http request**
-     * (Beta) Removes a messaging service's association to the requested entity.
-     * Use this API to remove the association between a messaging service and either of EVENT_MESH or EVENT_MANAGEMENT_AGENT.
-     * @param id The ID of the messaging service object.
-     * @param requestBody The association object with the value matching either EVENT_MESH or EVENT_MANAGEMENT_AGENT.
-     * @returns ApiRequestOptions the request options to fulfill a http request
-     */
-    removeAssociationMessagingServiceApiRequestOptions(
-        id: string,
-        requestBody: MessagingServiceRemoveAssociation,
-    ): ApiRequestOptions;
-
-    /**
-     * (Beta) Requests a scan to run against a messaging service
-     * Use this API to make a scan request on a messaging service object.
-     * @param messagingServiceId The ID of the messaging service object.
-     * @param requestBody The messaging service object.
+     * (Beta) Initiate a scan request to run against a messaging service
+     * Use this API to make a scan request on a messaging service.
+     * @param messagingServiceId The ID of the messaging service.
+     * @param requestBody The messaging service.
      * @returns MessagingServiceOperationResponse Requested a scan on the messaging service. The operation object with ID set as ID of the created scan Object is returned in the response body.
      */
     scanStartMessagingService(
@@ -186,15 +161,40 @@ export interface MessagingServicesService {
 
     /**
      * **used to get the request options without making a http request**
-     * (Beta) Requests a scan to run against a messaging service
-     * Use this API to make a scan request on a messaging service object.
-     * @param messagingServiceId The ID of the messaging service object.
-     * @param requestBody The messaging service object.
+     * (Beta) Initiate a scan request to run against a messaging service
+     * Use this API to make a scan request on a messaging service.
+     * @param messagingServiceId The ID of the messaging service.
+     * @param requestBody The messaging service.
      * @returns ApiRequestOptions the request options to fulfill a http request
      */
     scanStartMessagingServiceApiRequestOptions(
         messagingServiceId: string,
         requestBody: MessagingServiceOperation,
+    ): ApiRequestOptions;
+
+    /**
+     * (Beta) Remove an association between an messaging service and the requested entity
+     * Use this API to remove the association between a messaging service and either of EVENT_MESH or EVENT_MANAGEMENT_AGENT.
+     * @param id The ID of the messaging service.
+     * @param requestBody The association object with the value matching either EVENT_MESH or EVENT_MANAGEMENT_AGENT.
+     * @returns MessagingServiceResponse The updated messaging service, e.g. if the API request body had {"association": "EVENT_MESH"} then the resulting object would not have eventMeshId attribute.
+     */
+    removeAssociationMessagingService(
+        id: string,
+        requestBody: MessagingServiceRemoveAssociation,
+    ): Promise<MessagingServiceResponse>;
+
+    /**
+     * **used to get the request options without making a http request**
+     * (Beta) Remove an association between an messaging service and the requested entity
+     * Use this API to remove the association between a messaging service and either of EVENT_MESH or EVENT_MANAGEMENT_AGENT.
+     * @param id The ID of the messaging service.
+     * @param requestBody The association object with the value matching either EVENT_MESH or EVENT_MANAGEMENT_AGENT.
+     * @returns ApiRequestOptions the request options to fulfill a http request
+     */
+    removeAssociationMessagingServiceApiRequestOptions(
+        id: string,
+        requestBody: MessagingServiceRemoveAssociation,
     ): ApiRequestOptions;
 
 }

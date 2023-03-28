@@ -6,13 +6,13 @@ import type { ApiRequestOptions } from '../core/ApiRequestOptions';
 export interface ConsumersService {
 
     /**
-     * Gets the consumer objects
-     * Use this API to retrieve a list of consumers that match the given parameters.
+     * Get a list of consumers
+     * Use this API to get a list of consumers that match the given parameters.
      * @param pageSize The number of consumers to get per page.
      * @param pageNumber The page number to get.
      * @param applicationVersionIds Match only consumers with the given application version IDs, separated by commas.
      * @param ids Match only consumers with the given IDs separated by commas.
-     * @returns any Retrieve a list of consumers and the accompanying metadata.
+     * @returns any Get a list of consumers and the accompanying metadata.
      */
     getConsumers(
         pageSize: number,
@@ -23,8 +23,8 @@ export interface ConsumersService {
 
     /**
      * **used to get the request options without making a http request**
-     * Gets the consumer objects
-     * Use this API to retrieve a list of consumers that match the given parameters.
+     * Get a list of consumers
+     * Use this API to get a list of consumers that match the given parameters.
      * @param pageSize The number of consumers to get per page.
      * @param pageNumber The page number to get.
      * @param applicationVersionIds Match only consumers with the given application version IDs, separated by commas.
@@ -39,10 +39,10 @@ export interface ConsumersService {
     ): ApiRequestOptions;
 
     /**
-     * Creates a consumer object
+     * Create a consumer
      * Use this API to create a consumer.
-     * @param requestBody The consumer object.
-     * @returns any Created a consumer. Returns the newly saved consumer object in the response body.
+     * @param requestBody The consumer.
+     * @returns any Created a consumer. Returns the newly saved consumer in the response body.
      */
     createConsumer(
         requestBody: Consumer,
@@ -50,9 +50,9 @@ export interface ConsumersService {
 
     /**
      * **used to get the request options without making a http request**
-     * Creates a consumer object
+     * Create a consumer
      * Use this API to create a consumer.
-     * @param requestBody The consumer object.
+     * @param requestBody The consumer.
      * @returns ApiRequestOptions the request options to fulfill a http request
      */
     createConsumerApiRequestOptions(
@@ -60,10 +60,10 @@ export interface ConsumersService {
     ): ApiRequestOptions;
 
     /**
-     * Retrieves a consumer object
-     * Use this API to retrieve a single consumer by its ID.
-     * @param id The ID of the consumer object.
-     * @returns any The consumer object.
+     * Get a consumer
+     * Use this API to get a single consumer by its ID.
+     * @param id The ID of the consumer.
+     * @returns any The consumer.
      */
     getConsumer(
         id: string,
@@ -71,9 +71,9 @@ export interface ConsumersService {
 
     /**
      * **used to get the request options without making a http request**
-     * Retrieves a consumer object
-     * Use this API to retrieve a single consumer by its ID.
-     * @param id The ID of the consumer object.
+     * Get a consumer
+     * Use this API to get a single consumer by its ID.
+     * @param id The ID of the consumer.
      * @returns ApiRequestOptions the request options to fulfill a http request
      */
     getConsumerApiRequestOptions(
@@ -81,7 +81,7 @@ export interface ConsumersService {
     ): ApiRequestOptions;
 
     /**
-     * Deletes a consumer object
+     * Delete a consumer
      * Use this API to delete a consumer.
      * @param id The ID of the consumer
      * @returns void
@@ -92,7 +92,7 @@ export interface ConsumersService {
 
     /**
      * **used to get the request options without making a http request**
-     * Deletes a consumer object
+     * Delete a consumer
      * Use this API to delete a consumer.
      * @param id The ID of the consumer
      * @returns ApiRequestOptions the request options to fulfill a http request
@@ -102,11 +102,11 @@ export interface ConsumersService {
     ): ApiRequestOptions;
 
     /**
-     * Update a consumer object
+     * Update a consumer
      * Use this API to update a consumer.
-     * @param id The ID of the consumer
-     * @param requestBody The consumer object.
-     * @returns any Updated a consumer. Returns the newly saved consumer object in the response body.
+     * @param id The ID of the consumer.
+     * @param requestBody The consumer.
+     * @returns any Updated a consumer. Returns the newly saved consumer in the response body.
      */
     updateConsumer(
         id: string,
@@ -115,10 +115,10 @@ export interface ConsumersService {
 
     /**
      * **used to get the request options without making a http request**
-     * Update a consumer object
+     * Update a consumer
      * Use this API to update a consumer.
-     * @param id The ID of the consumer
-     * @param requestBody The consumer object.
+     * @param id The ID of the consumer.
+     * @param requestBody The consumer.
      * @returns ApiRequestOptions the request options to fulfill a http request
      */
     updateConsumerApiRequestOptions(

@@ -18,7 +18,10 @@ export type TopicFilter = {
      */
     filterValue?: string;
     eventVersionIds: Array<string>;
-    type?: string;
+    /**
+     * The type of payload
+     */
+    readonly type: string;
 }
 
 export namespace TopicFilter {

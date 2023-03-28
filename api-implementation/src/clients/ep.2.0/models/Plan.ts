@@ -16,7 +16,7 @@ export type Plan = {
     /**
      * The type of this payload
      */
-    readonly type?: string;
+    readonly type: string;
 }
 
 export namespace Plan {

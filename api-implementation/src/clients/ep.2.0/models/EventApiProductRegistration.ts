@@ -13,7 +13,10 @@ export type EventApiProductRegistration = {
     eventApiProductVersionId: string;
     planId: string;
     state?: EventApiProductRegistration.state;
-    readonly type?: string;
+    /**
+     * The type of payload
+     */
+    readonly type: string;
     customAttributes?: Record<string, string>;
 }
 

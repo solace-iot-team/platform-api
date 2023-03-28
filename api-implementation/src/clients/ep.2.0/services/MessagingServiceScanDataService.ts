@@ -7,8 +7,8 @@ import type { ApiRequestOptions } from '../core/ApiRequestOptions';
 export interface MessagingServiceScanDataService {
 
     /**
-     * (Beta) Retrieves a list of messaging service scan data
-     * Use this API to retrieve a list of messaging service scan data that match the given parameters.
+     * (Beta) Get a list of messaging service scan data
+     * Use this API to get a list of messaging service scan data that match the given parameters.
      * @param scanId The ID of the messaging service scan we want data for.
      * @param pageSize The number of messaging service scan data to get per page.
      * @param pageNumber The page number to get.
@@ -28,8 +28,8 @@ export interface MessagingServiceScanDataService {
 
     /**
      * **used to get the request options without making a http request**
-     * (Beta) Retrieves a list of messaging service scan data
-     * Use this API to retrieve a list of messaging service scan data that match the given parameters.
+     * (Beta) Get a list of messaging service scan data
+     * Use this API to get a list of messaging service scan data that match the given parameters.
      * @param scanId The ID of the messaging service scan we want data for.
      * @param pageSize The number of messaging service scan data to get per page.
      * @param pageNumber The page number to get.
@@ -48,11 +48,11 @@ export interface MessagingServiceScanDataService {
     ): ApiRequestOptions;
 
     /**
-     * (Beta) Retrieves a messaging service scan data object
-     * Use this API to retrieve a single messaging service scan data by its ID.
-     * @param scanId The ID of the messaging service scan object.
-     * @param id The ID of the messaging service scan data object.
-     * @returns MessagingServiceScanDataResponse The messaging service scan data object.
+     * (Beta) Get a messaging service scan data
+     * Use this API to get a single messaging service scan data by its ID.
+     * @param scanId The ID of the messaging service scan.
+     * @param id The ID of the messaging service scan data.
+     * @returns MessagingServiceScanDataResponse The messaging service scan data.
      */
     getMessagingServiceScanData(
         scanId: string,
@@ -61,10 +61,10 @@ export interface MessagingServiceScanDataService {
 
     /**
      * **used to get the request options without making a http request**
-     * (Beta) Retrieves a messaging service scan data object
-     * Use this API to retrieve a single messaging service scan data by its ID.
-     * @param scanId The ID of the messaging service scan object.
-     * @param id The ID of the messaging service scan data object.
+     * (Beta) Get a messaging service scan data
+     * Use this API to get a single messaging service scan data by its ID.
+     * @param scanId The ID of the messaging service scan.
+     * @param id The ID of the messaging service scan data.
      * @returns ApiRequestOptions the request options to fulfill a http request
      */
     getMessagingServiceScanDataApiRequestOptions(

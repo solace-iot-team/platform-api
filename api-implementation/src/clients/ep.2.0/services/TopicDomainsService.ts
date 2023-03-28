@@ -5,15 +5,15 @@ import type { ApiRequestOptions } from '../core/ApiRequestOptions';
 export interface TopicDomainsService {
 
     /**
-     * Gets the topic domain objects
-     * Use this API to retrieve a list of topic domains that match the given parameters.
+     * Get a list of the topic domains
+     * Use this API to get a list of topic domains that match the given parameters.
      * @param pageSize The number of topic domains to get per page.
      * @param pageNumber The page number to get.
      * @param ids Match only topic domains with the given IDs separated by commas.
      * @param brokerType Match only topic domains with the given brokerType.
      * @param applicationDomainIds Match only topic domains with the given application domain ids separated by commas.
      * @param applicationDomainId
-     * @returns any Retrieve a list of topic domains and the accompanying metadata.
+     * @returns any Get a list of topic domains and the accompanying metadata.
      */
     getTopicDomains(
         pageSize: number,
@@ -26,8 +26,8 @@ export interface TopicDomainsService {
 
     /**
      * **used to get the request options without making a http request**
-     * Gets the topic domain objects
-     * Use this API to retrieve a list of topic domains that match the given parameters.
+     * Get a list of the topic domains
+     * Use this API to get a list of topic domains that match the given parameters.
      * @param pageSize The number of topic domains to get per page.
      * @param pageNumber The page number to get.
      * @param ids Match only topic domains with the given IDs separated by commas.
@@ -46,10 +46,10 @@ export interface TopicDomainsService {
     ): ApiRequestOptions;
 
     /**
-     * Creates a topic domain object
+     * Create a topic domain
      * Topic Domains govern the format of topic addresses within an application domain
      * @param requestBody
-     * @returns any Created a topic domain. Returns the newly saved topic domain object in the response body.
+     * @returns any Created a topic domain. Returns the newly saved topic domain in the response body.
      */
     createTopicDomain(
         requestBody: any,
@@ -57,7 +57,7 @@ export interface TopicDomainsService {
 
     /**
      * **used to get the request options without making a http request**
-     * Creates a topic domain object
+     * Create a topic domain
      * Topic Domains govern the format of topic addresses within an application domain
      * @param requestBody
      * @returns ApiRequestOptions the request options to fulfill a http request
@@ -67,10 +67,10 @@ export interface TopicDomainsService {
     ): ApiRequestOptions;
 
     /**
-     * Retrieves a topic domain object
-     * Use this API to retrieve a single topic domain by its ID.
-     * @param id The ID of the topic domain object.
-     * @returns any The topic domain object.
+     * Get a topic domain
+     * Use this API to get a single topic domain by its ID.
+     * @param id The ID of the topic domain.
+     * @returns any The topic domain.
      */
     getTopicDomain(
         id: string,
@@ -78,9 +78,9 @@ export interface TopicDomainsService {
 
     /**
      * **used to get the request options without making a http request**
-     * Retrieves a topic domain object
-     * Use this API to retrieve a single topic domain by its ID.
-     * @param id The ID of the topic domain object.
+     * Get a topic domain
+     * Use this API to get a single topic domain by its ID.
+     * @param id The ID of the topic domain.
      * @returns ApiRequestOptions the request options to fulfill a http request
      */
     getTopicDomainApiRequestOptions(
@@ -88,7 +88,7 @@ export interface TopicDomainsService {
     ): ApiRequestOptions;
 
     /**
-     * Deletes a topic domain object
+     * Delete a topic domain
      * Use this API to delete a topic domain.
      * @param id The ID of the topic domain
      * @returns void
@@ -99,7 +99,7 @@ export interface TopicDomainsService {
 
     /**
      * **used to get the request options without making a http request**
-     * Deletes a topic domain object
+     * Delete a topic domain
      * Use this API to delete a topic domain.
      * @param id The ID of the topic domain
      * @returns ApiRequestOptions the request options to fulfill a http request
