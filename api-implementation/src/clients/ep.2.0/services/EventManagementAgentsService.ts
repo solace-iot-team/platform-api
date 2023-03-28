@@ -8,11 +8,11 @@ import type { ApiRequestOptions } from '../core/ApiRequestOptions';
 export interface EventManagementAgentsService {
 
     /**
-     * (Beta) Retrieves a list of EMAs
-     * Use this API to retrieve a list of EMAs that match the given parameters.
+     * (Beta) Get a list of EMAs
+     * Use this API to get a list of EMAs that match the given parameters.
      * @param pageSize The number of EMAs to get per page.
      * @param pageNumber The page number to get.
-     * @param sort Sort based on the provided parameters. <br> The value can either be a standalone field name (`?sort=<field>`) or a field and direction, which must be delimited by a colon (`?sort=<field>:<asc|desc>`). If the direction is not specified, the default is ascending.
+     * @param sort Sort based on the provided parameters. <br> The value can be either a standalone field name (`?sort=<field>`) or a field and direction, delimited by a colon (`?sort=<field>:<asc|desc>`). If the direction is not specified, the default is ascending.
      * @param ids The IDs of the EMAs.
      * @param createdBy Match only EMAs created by this user
      * @param eventManagementAgentRegionId Match only EMAs in the given EMA-Region
@@ -31,11 +31,11 @@ export interface EventManagementAgentsService {
 
     /**
      * **used to get the request options without making a http request**
-     * (Beta) Retrieves a list of EMAs
-     * Use this API to retrieve a list of EMAs that match the given parameters.
+     * (Beta) Get a list of EMAs
+     * Use this API to get a list of EMAs that match the given parameters.
      * @param pageSize The number of EMAs to get per page.
      * @param pageNumber The page number to get.
-     * @param sort Sort based on the provided parameters. <br> The value can either be a standalone field name (`?sort=<field>`) or a field and direction, which must be delimited by a colon (`?sort=<field>:<asc|desc>`). If the direction is not specified, the default is ascending.
+     * @param sort Sort based on the provided parameters. <br> The value can be either a standalone field name (`?sort=<field>`) or a field and direction, delimited by a colon (`?sort=<field>:<asc|desc>`). If the direction is not specified, the default is ascending.
      * @param ids The IDs of the EMAs.
      * @param createdBy Match only EMAs created by this user
      * @param eventManagementAgentRegionId Match only EMAs in the given EMA-Region
@@ -53,10 +53,10 @@ export interface EventManagementAgentsService {
     ): ApiRequestOptions;
 
     /**
-     * (Beta) Creates an EMA object
+     * (Beta) Create an EMA object
      * Use this API to create an EMA object.
      * @param requestBody The EMA object.
-     * @returns EventManagementAgentResponse Created an EMA. The newly saved object is returned in the response body.
+     * @returns EventManagementAgentResponse Created an EMA. The newly saved EMA object is returned in the response body.
      */
     createEventManagementAgent(
         requestBody: EventManagementAgent,
@@ -64,7 +64,7 @@ export interface EventManagementAgentsService {
 
     /**
      * **used to get the request options without making a http request**
-     * (Beta) Creates an EMA object
+     * (Beta) Create an EMA object
      * Use this API to create an EMA object.
      * @param requestBody The EMA object.
      * @returns ApiRequestOptions the request options to fulfill a http request
@@ -74,8 +74,8 @@ export interface EventManagementAgentsService {
     ): ApiRequestOptions;
 
     /**
-     * (Beta) Retrieves an EMA object
-     * Use this API to retrieve a single EMA by its ID.
+     * (Beta) Get an EMA object
+     * Use this API to get a single EMA by its ID.
      * @param id The ID of the EMA object.
      * @param include Specify extra data to be included, options are: referencedByMessagingServiceIds
      * @returns EventManagementAgentResponse The EMA object.
@@ -87,8 +87,8 @@ export interface EventManagementAgentsService {
 
     /**
      * **used to get the request options without making a http request**
-     * (Beta) Retrieves an EMA object
-     * Use this API to retrieve a single EMA by its ID.
+     * (Beta) Get an EMA object
+     * Use this API to get a single EMA by its ID.
      * @param id The ID of the EMA object.
      * @param include Specify extra data to be included, options are: referencedByMessagingServiceIds
      * @returns ApiRequestOptions the request options to fulfill a http request
@@ -99,7 +99,7 @@ export interface EventManagementAgentsService {
     ): ApiRequestOptions;
 
     /**
-     * (Beta) Deletes an EMA object
+     * (Beta) Delete an EMA object
      * Use this API to delete an EMA.
      * @param id The ID of the EMA object.
      * @returns void
@@ -110,7 +110,7 @@ export interface EventManagementAgentsService {
 
     /**
      * **used to get the request options without making a http request**
-     * (Beta) Deletes an EMA object
+     * (Beta) Delete an EMA object
      * Use this API to delete an EMA.
      * @param id The ID of the EMA object.
      * @returns ApiRequestOptions the request options to fulfill a http request
@@ -120,7 +120,7 @@ export interface EventManagementAgentsService {
     ): ApiRequestOptions;
 
     /**
-     * (Beta) Updates an EMA object
+     * (Beta) Update an EMA object
      * Use this API to update an EMA. You only need to specify the fields that need to be updated.
      * @param id The ID of the EMA object to update.
      * @param requestBody The EMA object.
@@ -133,7 +133,7 @@ export interface EventManagementAgentsService {
 
     /**
      * **used to get the request options without making a http request**
-     * (Beta) Updates an EMA object
+     * (Beta) Update an EMA object
      * Use this API to update an EMA. You only need to specify the fields that need to be updated.
      * @param id The ID of the EMA object to update.
      * @param requestBody The EMA object.
@@ -145,8 +145,8 @@ export interface EventManagementAgentsService {
     ): ApiRequestOptions;
 
     /**
-     * (Beta) Retrieves the raw configs in string format for an EMA object
-     * Use this API to retrieve the raw configs for a single EMA by its ID.
+     * (Beta) Get the raw configs in string format for an EMA object
+     * Use this API to get the raw configs for a single EMA by its ID.
      * @param id The ID of the EMA object.
      * @returns string The EMA config in yaml structure.
      */
@@ -156,8 +156,8 @@ export interface EventManagementAgentsService {
 
     /**
      * **used to get the request options without making a http request**
-     * (Beta) Retrieves the raw configs in string format for an EMA object
-     * Use this API to retrieve the raw configs for a single EMA by its ID.
+     * (Beta) Get the raw configs in string format for an EMA object
+     * Use this API to get the raw configs for a single EMA by its ID.
      * @param id The ID of the EMA object.
      * @returns ApiRequestOptions the request options to fulfill a http request
      */
@@ -166,8 +166,8 @@ export interface EventManagementAgentsService {
     ): ApiRequestOptions;
 
     /**
-     * (Beta) Retrieves the raw configs in file format for an EMA object
-     * Use this API to retrieve the raw configs for a single EMA by its ID.
+     * (Beta) Get the raw configs in file format for an EMA object
+     * Use this API to get the raw configs for a single EMA by its ID.
      * @param id The ID of the EMA object.
      * @returns any The EMA config in a yaml file named application.yml.
      */
@@ -177,8 +177,8 @@ export interface EventManagementAgentsService {
 
     /**
      * **used to get the request options without making a http request**
-     * (Beta) Retrieves the raw configs in file format for an EMA object
-     * Use this API to retrieve the raw configs for a single EMA by its ID.
+     * (Beta) Get the raw configs in file format for an EMA object
+     * Use this API to get the raw configs for a single EMA by its ID.
      * @param id The ID of the EMA object.
      * @returns ApiRequestOptions the request options to fulfill a http request
      */

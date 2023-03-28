@@ -5,13 +5,13 @@ import type { ApiRequestOptions } from '../core/ApiRequestOptions';
 export interface EnvironmentsService {
 
     /**
-     * Gets the environment objects
-     * Use this API to list all environments.
-     * @param pageSize The number of events to get per page.
+     * Get a list of environments
+     * Use this API to get a list of all environments.
+     * @param pageSize The number of environments to get per page.
      * @param pageNumber The page number to get.
      * @param sort
      * @param like
-     * @returns any Retrieve a list of environments and the accompanying metadata.
+     * @returns any Get a list of environments and the accompanying metadata.
      */
     getEnvironments(
         pageSize: number,
@@ -22,9 +22,9 @@ export interface EnvironmentsService {
 
     /**
      * **used to get the request options without making a http request**
-     * Gets the environment objects
-     * Use this API to list all environments.
-     * @param pageSize The number of events to get per page.
+     * Get a list of environments
+     * Use this API to get a list of all environments.
+     * @param pageSize The number of environments to get per page.
      * @param pageNumber The page number to get.
      * @param sort
      * @param like
@@ -38,10 +38,10 @@ export interface EnvironmentsService {
     ): ApiRequestOptions;
 
     /**
-     * Retrieves an environment object
-     * Use this API to retrieve a single environment by its ID.
-     * @param id The ID of the environment object.
-     * @returns any The environment object.
+     * Get an environment
+     * Use this API to get a single environment by its ID.
+     * @param id The ID of the environment.
+     * @returns any The environment.
      */
     getEnvironment(
         id: string,
@@ -49,9 +49,9 @@ export interface EnvironmentsService {
 
     /**
      * **used to get the request options without making a http request**
-     * Retrieves an environment object
-     * Use this API to retrieve a single environment by its ID.
-     * @param id The ID of the environment object.
+     * Get an environment
+     * Use this API to get a single environment by its ID.
+     * @param id The ID of the environment.
      * @returns ApiRequestOptions the request options to fulfill a http request
      */
     getEnvironmentApiRequestOptions(

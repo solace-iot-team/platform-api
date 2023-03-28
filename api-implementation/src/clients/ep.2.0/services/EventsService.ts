@@ -5,18 +5,18 @@ import type { ApiRequestOptions } from '../core/ApiRequestOptions';
 export interface EventsService {
 
     /**
-     * Gets the event objects
-     * Use this API to retrieve a list of events that match the given parameters.
+     * Get a list of events
+     * Use this API to get a list of events that match the given parameters.
      * @param pageSize The number of events to get per page.
      * @param pageNumber The page number to get.
      * @param name Name of the event to match on.
      * @param shared Match only with shared or unshared events.
      * @param applicationDomainId Match only events in the given application domain.
      * @param applicationDomainIds Match only events in the given application domain ids.
-     * @param sort Sort based on the provided parameters. <br> The value can either be a standalone field name (`?sort=<field>`) or a field and direction, which must be delimited by a colon (`?sort=<field>:<asc|desc>`). If the direction is not specified, the default is ascending.
-     * @param customAttributes Returns the entities that match the custom attribute filter.<br>To filter by custom attribute name and value, use the format: `customAttributes=<custom-attribute-name>==<custom-attribute-value>`. <br>To filter by custom attribute name, use the format: `customAttributes=<custom-attribute-name>`. <br>The filter supports the `AND` operator for multiple custom attribute definitions (not multiple values for a given definition). Use `;` (`semicolon`) to separate multiple queries with `AND` operation. <br>Note: the filter only supports custom attribute values containing characters in `[a-zA-Z0-9_\-\. ]`.
+     * @param sort Sort based on the provided parameters. <br> The value can be either a standalone field name (`?sort=<field>`) or a field and direction, delimited by a colon (`?sort=<field>:<asc|desc>`). If the direction is not specified, the default is ascending.
+     * @param customAttributes Returns the entities that match the custom attribute filter.<br>To filter by custom attribute name and value, use the format: `customAttributes=<custom-attribute-name>==<custom-attribute-value>`. <br>To filter by custom attribute name, use the format: `customAttributes=<custom-attribute-name>`. <br>The filter supports the `AND` operator for multiple custom attribute definitions (not multiple values for a given definition). Use `;` (`semicolon`) to separate multiple queries with `AND` operation. <br>Note: the filter supports custom attribute values containing only the characters `[a-zA-Z0-9_\-\. ]`.
      * @param ids Match only events with the given IDs separated by commas.
-     * @returns any Retrieve a list of applications and the accompanying metadata.
+     * @returns any Get a list of events and the accompanying metadata.
      */
     getEvents(
         pageSize: number,
@@ -32,16 +32,16 @@ export interface EventsService {
 
     /**
      * **used to get the request options without making a http request**
-     * Gets the event objects
-     * Use this API to retrieve a list of events that match the given parameters.
+     * Get a list of events
+     * Use this API to get a list of events that match the given parameters.
      * @param pageSize The number of events to get per page.
      * @param pageNumber The page number to get.
      * @param name Name of the event to match on.
      * @param shared Match only with shared or unshared events.
      * @param applicationDomainId Match only events in the given application domain.
      * @param applicationDomainIds Match only events in the given application domain ids.
-     * @param sort Sort based on the provided parameters. <br> The value can either be a standalone field name (`?sort=<field>`) or a field and direction, which must be delimited by a colon (`?sort=<field>:<asc|desc>`). If the direction is not specified, the default is ascending.
-     * @param customAttributes Returns the entities that match the custom attribute filter.<br>To filter by custom attribute name and value, use the format: `customAttributes=<custom-attribute-name>==<custom-attribute-value>`. <br>To filter by custom attribute name, use the format: `customAttributes=<custom-attribute-name>`. <br>The filter supports the `AND` operator for multiple custom attribute definitions (not multiple values for a given definition). Use `;` (`semicolon`) to separate multiple queries with `AND` operation. <br>Note: the filter only supports custom attribute values containing characters in `[a-zA-Z0-9_\-\. ]`.
+     * @param sort Sort based on the provided parameters. <br> The value can be either a standalone field name (`?sort=<field>`) or a field and direction, delimited by a colon (`?sort=<field>:<asc|desc>`). If the direction is not specified, the default is ascending.
+     * @param customAttributes Returns the entities that match the custom attribute filter.<br>To filter by custom attribute name and value, use the format: `customAttributes=<custom-attribute-name>==<custom-attribute-value>`. <br>To filter by custom attribute name, use the format: `customAttributes=<custom-attribute-name>`. <br>The filter supports the `AND` operator for multiple custom attribute definitions (not multiple values for a given definition). Use `;` (`semicolon`) to separate multiple queries with `AND` operation. <br>Note: the filter supports custom attribute values containing only the characters `[a-zA-Z0-9_\-\. ]`.
      * @param ids Match only events with the given IDs separated by commas.
      * @returns ApiRequestOptions the request options to fulfill a http request
      */
@@ -58,10 +58,10 @@ export interface EventsService {
     ): ApiRequestOptions;
 
     /**
-     * Creates an event object
+     * Create an event
      * Events are the primary building block of an event-driven architecture. Applications publish and subscribe to events and events reference schemas.  In the Event Portal, an event is a type of event as opposed to a specific event instance.
      * @param requestBody The event requires a name and an application domain ID.
-     * @returns any Created an event. The newly saved event object is returned in the response body.
+     * @returns any Created an event. The newly saved event is returned in the response body.
      */
     createEvent(
         requestBody: any,
@@ -69,7 +69,7 @@ export interface EventsService {
 
     /**
      * **used to get the request options without making a http request**
-     * Creates an event object
+     * Create an event
      * Events are the primary building block of an event-driven architecture. Applications publish and subscribe to events and events reference schemas.  In the Event Portal, an event is a type of event as opposed to a specific event instance.
      * @param requestBody The event requires a name and an application domain ID.
      * @returns ApiRequestOptions the request options to fulfill a http request
@@ -79,10 +79,10 @@ export interface EventsService {
     ): ApiRequestOptions;
 
     /**
-     * Retrieves an event object
-     * Use this API to retrieve a single event by its ID.
-     * @param id The ID of the event object.
-     * @returns any The event object.
+     * Get an event
+     * Use this API to get a single event by its ID.
+     * @param id The ID of the event.
+     * @returns any The event.
      */
     getEvent(
         id: string,
@@ -90,9 +90,9 @@ export interface EventsService {
 
     /**
      * **used to get the request options without making a http request**
-     * Retrieves an event object
-     * Use this API to retrieve a single event by its ID.
-     * @param id The ID of the event object.
+     * Get an event
+     * Use this API to get a single event by its ID.
+     * @param id The ID of the event.
      * @returns ApiRequestOptions the request options to fulfill a http request
      */
     getEventApiRequestOptions(
@@ -100,9 +100,9 @@ export interface EventsService {
     ): ApiRequestOptions;
 
     /**
-     * Deletes an event object
+     * Delete an event
      * Use this API to delete an event.
-     * @param id The ID of the event object.
+     * @param id The ID of the event.
      * @returns void
      */
     deleteEvent(
@@ -111,9 +111,9 @@ export interface EventsService {
 
     /**
      * **used to get the request options without making a http request**
-     * Deletes an event object
+     * Delete an event
      * Use this API to delete an event.
-     * @param id The ID of the event object.
+     * @param id The ID of the event.
      * @returns ApiRequestOptions the request options to fulfill a http request
      */
     deleteEventApiRequestOptions(
@@ -121,11 +121,11 @@ export interface EventsService {
     ): ApiRequestOptions;
 
     /**
-     * Updates an event object
+     * Update an event
      * Use this API to update an event. You only need to specify the fields that need to be updated.
-     * @param id The ID of the event object to update.
-     * @param requestBody The event object.
-     * @returns any The updated event object.
+     * @param id The ID of the event to update.
+     * @param requestBody The event.
+     * @returns any The updated event.
      */
     updateEvent(
         id: string,
@@ -134,10 +134,10 @@ export interface EventsService {
 
     /**
      * **used to get the request options without making a http request**
-     * Updates an event object
+     * Update an event
      * Use this API to update an event. You only need to specify the fields that need to be updated.
-     * @param id The ID of the event object to update.
-     * @param requestBody The event object.
+     * @param id The ID of the event to update.
+     * @param requestBody The event.
      * @returns ApiRequestOptions the request options to fulfill a http request
      */
     updateEventApiRequestOptions(
@@ -146,177 +146,15 @@ export interface EventsService {
     ): ApiRequestOptions;
 
     /**
-     * Gets event version objects
-     * Use this API to retrieve a list of event versions that match the given parameters.
-     * @param pageSize The number of event to get per page.
-     * @param pageNumber The page number to get.
-     * @param eventIds Match only event versions of these event IDs, separated by commas.
-     * @param ids Match only event versions with the given IDs, separated by commas.
-     * @param messagingServiceIds Match only event versions with the given IDs, separated by commas.
-     * @param include
-     * @param customAttributes Returns the entities that match the custom attribute filter.<br>To filter by custom attribute name and value, use the format: `customAttributes=<custom-attribute-name>==<custom-attribute-value>`. <br>To filter by custom attribute name, use the format: `customAttributes=<custom-attribute-name>`. <br>The filter supports the `AND` operator for multiple custom attribute definitions (not multiple values for a given definition). Use `;` (`semicolon`) to separate multiple queries with `AND` operation. <br>Note: the filter only supports custom attribute values containing characters in `[a-zA-Z0-9_\-\. ]`.
-     * @returns any Retrieve a list of event versions and the accompanying metadata.
-     */
-    getEventVersions(
-        pageSize: number,
-        pageNumber: number,
-        eventIds?: Array<string>,
-        ids?: Array<string>,
-        messagingServiceIds?: Array<string>,
-        include?: string,
-        customAttributes?: string,
-    ): Promise<any>;
-
-    /**
-     * **used to get the request options without making a http request**
-     * Gets event version objects
-     * Use this API to retrieve a list of event versions that match the given parameters.
-     * @param pageSize The number of event to get per page.
-     * @param pageNumber The page number to get.
-     * @param eventIds Match only event versions of these event IDs, separated by commas.
-     * @param ids Match only event versions with the given IDs, separated by commas.
-     * @param messagingServiceIds Match only event versions with the given IDs, separated by commas.
-     * @param include
-     * @param customAttributes Returns the entities that match the custom attribute filter.<br>To filter by custom attribute name and value, use the format: `customAttributes=<custom-attribute-name>==<custom-attribute-value>`. <br>To filter by custom attribute name, use the format: `customAttributes=<custom-attribute-name>`. <br>The filter supports the `AND` operator for multiple custom attribute definitions (not multiple values for a given definition). Use `;` (`semicolon`) to separate multiple queries with `AND` operation. <br>Note: the filter only supports custom attribute values containing characters in `[a-zA-Z0-9_\-\. ]`.
-     * @returns ApiRequestOptions the request options to fulfill a http request
-     */
-    getEventVersionsApiRequestOptions(
-        pageSize: number,
-        pageNumber: number,
-        eventIds?: Array<string>,
-        ids?: Array<string>,
-        messagingServiceIds?: Array<string>,
-        include?: string,
-        customAttributes?: string,
-    ): ApiRequestOptions;
-
-    /**
-     * Creates an event version object
-     * Creates an event version object
-     * @param requestBody App version request body description
-     * @returns any Created an event version. Returns the newly saved event version object in the response body.
-     */
-    createEventVersion(
-        requestBody: any,
-    ): Promise<any>;
-
-    /**
-     * **used to get the request options without making a http request**
-     * Creates an event version object
-     * Creates an event version object
-     * @param requestBody App version request body description
-     * @returns ApiRequestOptions the request options to fulfill a http request
-     */
-    createEventVersionApiRequestOptions(
-        requestBody: any,
-    ): ApiRequestOptions;
-
-    /**
-     * Retrieves an event version object
-     * Use this API to retrieve a single event version by its ID.
-     * @param id The ID of the event version object.
-     * @param include
-     * @returns any The event version object.
-     */
-    getEventVersion(
-        id: string,
-        include?: string,
-    ): Promise<any>;
-
-    /**
-     * **used to get the request options without making a http request**
-     * Retrieves an event version object
-     * Use this API to retrieve a single event version by its ID.
-     * @param id The ID of the event version object.
-     * @param include
-     * @returns ApiRequestOptions the request options to fulfill a http request
-     */
-    getEventVersionApiRequestOptions(
-        id: string,
-        include?: string,
-    ): ApiRequestOptions;
-
-    /**
-     * Deletes an event version object
-     * Use this API to delete an event version.
-     * @param id The ID of the event version
-     * @returns void
-     */
-    deleteEventVersion(
-        id: string,
-    ): Promise<void>;
-
-    /**
-     * **used to get the request options without making a http request**
-     * Deletes an event version object
-     * Use this API to delete an event version.
-     * @param id The ID of the event version
-     * @returns ApiRequestOptions the request options to fulfill a http request
-     */
-    deleteEventVersionApiRequestOptions(
-        id: string,
-    ): ApiRequestOptions;
-
-    /**
-     * Updates an event version object
-     * Use this API to update an event version. You only need to specify the fields that need to be updated.
-     * @param id The ID of the event version object to update.
-     * @param requestBody The event version object.
-     * @returns any The updated event version object.
-     */
-    updateEventVersion(
-        id: string,
-        requestBody: any,
-    ): Promise<any>;
-
-    /**
-     * **used to get the request options without making a http request**
-     * Updates an event version object
-     * Use this API to update an event version. You only need to specify the fields that need to be updated.
-     * @param id The ID of the event version object to update.
-     * @param requestBody The event version object.
-     * @returns ApiRequestOptions the request options to fulfill a http request
-     */
-    updateEventVersionApiRequestOptions(
-        id: string,
-        requestBody: any,
-    ): ApiRequestOptions;
-
-    /**
-     * Updates the state of an event version object
-     * Use this API to update the state of event version. You only need to specify the target stateId field
-     * @param id The ID of the event version object to update.
-     * @param requestBody The state object.
-     * @returns any The updated state of the event version object.
-     */
-    updateEventVersionState(
-        id: string,
-        requestBody: any,
-    ): Promise<any>;
-
-    /**
-     * **used to get the request options without making a http request**
-     * Updates the state of an event version object
-     * Use this API to update the state of event version. You only need to specify the target stateId field
-     * @param id The ID of the event version object to update.
-     * @param requestBody The state object.
-     * @returns ApiRequestOptions the request options to fulfill a http request
-     */
-    updateEventVersionStateApiRequestOptions(
-        id: string,
-        requestBody: any,
-    ): ApiRequestOptions;
-
-    /**
      * @deprecated
-     * Gets the event version objects for an event
-     * Use this API to retrieve a list of event versions that match the given parameters.
+     * Get a list of event versions for an event
+     * *Deprecation Date: 2022-11-01<br>Removal Date: 2023-12-01<br>Reason: Replaced by <a href="/cloud/reference/geteventversions">another endpoint.</a><br><br>*Use this API to get a list of event versions that match the given parameters.
      * @param eventId The ID of the parent event.
-     * @param customAttributes Returns the entities that match the custom attribute filter.<br>To filter by custom attribute name and value, use the format: `customAttributes=<custom-attribute-name>==<custom-attribute-value>`. <br>To filter by custom attribute name, use the format: `customAttributes=<custom-attribute-name>`. <br>The filter supports the `AND` operator for multiple custom attribute definitions (not multiple values for a given definition). Use `;` (`semicolon`) to separate multiple queries with `AND` operation. <br>Note: the filter only supports custom attribute values containing characters in `[a-zA-Z0-9_\-\. ]`.
+     * @param customAttributes Returns the entities that match the custom attribute filter.<br>To filter by custom attribute name and value, use the format: `customAttributes=<custom-attribute-name>==<custom-attribute-value>`. <br>To filter by custom attribute name, use the format: `customAttributes=<custom-attribute-name>`. <br>The filter supports the `AND` operator for multiple custom attribute definitions (not multiple values for a given definition). Use `;` (`semicolon`) to separate multiple queries with `AND` operation. <br>Note: the filter supports custom attribute values containing only the characters `[a-zA-Z0-9_\-\. ]`.
      * @param displayName Match event versions with the given display name.
      * @param ids Match event versions with the given IDs separated by commas.
-     * @param version Match event version objects with the given version.
-     * @returns any Retrieve a list of event versions.
+     * @param version Match event versions with the given version.
+     * @returns any Get a list of event versions.
      */
     getEventVersionsForEvent(
         eventId: string,
@@ -329,13 +167,13 @@ export interface EventsService {
     /**
      * @deprecated
      * **used to get the request options without making a http request**
-     * Gets the event version objects for an event
-     * Use this API to retrieve a list of event versions that match the given parameters.
+     * Get a list of event versions for an event
+     * *Deprecation Date: 2022-11-01<br>Removal Date: 2023-12-01<br>Reason: Replaced by <a href="/cloud/reference/geteventversions">another endpoint.</a><br><br>*Use this API to get a list of event versions that match the given parameters.
      * @param eventId The ID of the parent event.
-     * @param customAttributes Returns the entities that match the custom attribute filter.<br>To filter by custom attribute name and value, use the format: `customAttributes=<custom-attribute-name>==<custom-attribute-value>`. <br>To filter by custom attribute name, use the format: `customAttributes=<custom-attribute-name>`. <br>The filter supports the `AND` operator for multiple custom attribute definitions (not multiple values for a given definition). Use `;` (`semicolon`) to separate multiple queries with `AND` operation. <br>Note: the filter only supports custom attribute values containing characters in `[a-zA-Z0-9_\-\. ]`.
+     * @param customAttributes Returns the entities that match the custom attribute filter.<br>To filter by custom attribute name and value, use the format: `customAttributes=<custom-attribute-name>==<custom-attribute-value>`. <br>To filter by custom attribute name, use the format: `customAttributes=<custom-attribute-name>`. <br>The filter supports the `AND` operator for multiple custom attribute definitions (not multiple values for a given definition). Use `;` (`semicolon`) to separate multiple queries with `AND` operation. <br>Note: the filter supports custom attribute values containing only the characters `[a-zA-Z0-9_\-\. ]`.
      * @param displayName Match event versions with the given display name.
      * @param ids Match event versions with the given IDs separated by commas.
-     * @param version Match event version objects with the given version.
+     * @param version Match event versions with the given version.
      * @returns ApiRequestOptions the request options to fulfill a http request
      */
     getEventVersionsForEventApiRequestOptions(
@@ -348,11 +186,11 @@ export interface EventsService {
 
     /**
      * @deprecated
-     * Creates an event version object
-     * Creates an event version object
+     * Create an event version
+     * *Deprecation Date: 2022-11-01<br>Removal Date: 2023-12-01<br>Reason: Replaced by <a href="/cloud/reference/createeventversion">another endpoint.</a><br><br>*Create an event version
      * @param eventId The ID of the parent event
      * @param requestBody App version request body description
-     * @returns any Created an event version. Returns the newly saved event version object in the response body.
+     * @returns any Created an event version. Returns the newly saved event version in the response body.
      */
     createEventVersionForEvent(
         eventId: string,
@@ -362,8 +200,8 @@ export interface EventsService {
     /**
      * @deprecated
      * **used to get the request options without making a http request**
-     * Creates an event version object
-     * Creates an event version object
+     * Create an event version
+     * *Deprecation Date: 2022-11-01<br>Removal Date: 2023-12-01<br>Reason: Replaced by <a href="/cloud/reference/createeventversion">another endpoint.</a><br><br>*Create an event version
      * @param eventId The ID of the parent event
      * @param requestBody App version request body description
      * @returns ApiRequestOptions the request options to fulfill a http request
@@ -375,11 +213,11 @@ export interface EventsService {
 
     /**
      * @deprecated
-     * Retrieves an event version object
-     * Use this API to retrieve a single event version by its ID.
+     * Get an event version
+     * *Deprecation Date: 2022-11-01<br>Removal Date: 2023-12-01<br>Reason: Replaced by <a href="/cloud/reference/geteventversion">another endpoint.</a><br><br>*Use this API to get a single event version by its ID.
      * @param eventId The ID of the parent event.
      * @param id The ID of the event version.
-     * @returns any The event version object.
+     * @returns any The event version.
      */
     getEventVersionForEvent(
         eventId: string,
@@ -389,8 +227,8 @@ export interface EventsService {
     /**
      * @deprecated
      * **used to get the request options without making a http request**
-     * Retrieves an event version object
-     * Use this API to retrieve a single event version by its ID.
+     * Get an event version
+     * *Deprecation Date: 2022-11-01<br>Removal Date: 2023-12-01<br>Reason: Replaced by <a href="/cloud/reference/geteventversion">another endpoint.</a><br><br>*Use this API to get a single event version by its ID.
      * @param eventId The ID of the parent event.
      * @param id The ID of the event version.
      * @returns ApiRequestOptions the request options to fulfill a http request
@@ -402,8 +240,8 @@ export interface EventsService {
 
     /**
      * @deprecated
-     * Deletes an event version object
-     * Use this API to delete an event version.
+     * Delete an event version
+     * *Deprecation Date: 2022-11-01<br>Removal Date: 2023-12-01<br>Reason: Replaced by <a href="/cloud/reference/deleteeventversion">another endpoint.</a><br><br>*Use this API to delete an event version.
      * @param eventId The ID of the parent event
      * @param id The ID of the event version
      * @returns void
@@ -416,8 +254,8 @@ export interface EventsService {
     /**
      * @deprecated
      * **used to get the request options without making a http request**
-     * Deletes an event version object
-     * Use this API to delete an event version.
+     * Delete an event version
+     * *Deprecation Date: 2022-11-01<br>Removal Date: 2023-12-01<br>Reason: Replaced by <a href="/cloud/reference/deleteeventversion">another endpoint.</a><br><br>*Use this API to delete an event version.
      * @param eventId The ID of the parent event
      * @param id The ID of the event version
      * @returns ApiRequestOptions the request options to fulfill a http request
@@ -429,12 +267,12 @@ export interface EventsService {
 
     /**
      * @deprecated
-     * Updates an event version object
-     * Use this API to update an event version. You only need to specify the fields that need to be updated.
-     * @param eventId The ID of the parent event object.
-     * @param id The ID of the event version object to update.
-     * @param requestBody The event version object.
-     * @returns any The updated event version object.
+     * Update an event version
+     * *Deprecation Date: 2022-11-01<br>Removal Date: 2023-12-01<br>Reason: Replaced by <a href="/cloud/reference/updateeventversion">another endpoint.</a><br><br>*Use this API to update an event version. You only need to specify the fields that need to be updated.
+     * @param eventId The ID of the parent event.
+     * @param id The ID of the event version to update.
+     * @param requestBody The event version.
+     * @returns any The updated event version.
      */
     updateEventVersionForEvent(
         eventId: string,
@@ -445,11 +283,11 @@ export interface EventsService {
     /**
      * @deprecated
      * **used to get the request options without making a http request**
-     * Updates an event version object
-     * Use this API to update an event version. You only need to specify the fields that need to be updated.
-     * @param eventId The ID of the parent event object.
-     * @param id The ID of the event version object to update.
-     * @param requestBody The event version object.
+     * Update an event version
+     * *Deprecation Date: 2022-11-01<br>Removal Date: 2023-12-01<br>Reason: Replaced by <a href="/cloud/reference/updateeventversion">another endpoint.</a><br><br>*Use this API to update an event version. You only need to specify the fields that need to be updated.
+     * @param eventId The ID of the parent event.
+     * @param id The ID of the event version to update.
+     * @param requestBody The event version.
      * @returns ApiRequestOptions the request options to fulfill a http request
      */
     updateEventVersionForEventApiRequestOptions(
@@ -459,8 +297,168 @@ export interface EventsService {
     ): ApiRequestOptions;
 
     /**
-     * Update messaging service association for an event version object
-     * Use this API to update the messaging service association for an event version.
+     * @deprecated
+     * Update the state of an event version
+     * *Deprecation Date: 2022-11-01<br>Removal Date: 2023-12-01<br>Reason: Replaced by <a href="/cloud/reference/updateeventversionstate">another endpoint.</a><br><br>*Use this API to update the state of event version. You only need to specify the target stateId field
+     * @param eventId The ID of the parent event.
+     * @param id The ID of the event version to update.
+     * @param requestBody The event version.
+     * @returns any The updated state of the event version.
+     */
+    updateEventVersionStateForEvent(
+        eventId: string,
+        id: string,
+        requestBody: any,
+    ): Promise<any>;
+
+    /**
+     * @deprecated
+     * **used to get the request options without making a http request**
+     * Update the state of an event version
+     * *Deprecation Date: 2022-11-01<br>Removal Date: 2023-12-01<br>Reason: Replaced by <a href="/cloud/reference/updateeventversionstate">another endpoint.</a><br><br>*Use this API to update the state of event version. You only need to specify the target stateId field
+     * @param eventId The ID of the parent event.
+     * @param id The ID of the event version to update.
+     * @param requestBody The event version.
+     * @returns ApiRequestOptions the request options to fulfill a http request
+     */
+    updateEventVersionStateForEventApiRequestOptions(
+        eventId: string,
+        id: string,
+        requestBody: any,
+    ): ApiRequestOptions;
+
+    /**
+     * Get a list of event versions
+     * Use this API to get a list of event versions that match the given parameters.
+     * @param pageSize The number of event versions to get per page.
+     * @param pageNumber The page number to get.
+     * @param eventIds Match only event versions of these event IDs, separated by commas.
+     * @param ids Match only event versions with the given IDs, separated by commas.
+     * @param messagingServiceIds Match only event versions with the given messaging service IDs, separated by commas.
+     * @param customAttributes Returns the entities that match the custom attribute filter.<br>To filter by custom attribute name and value, use the format: `customAttributes=<custom-attribute-name>==<custom-attribute-value>`. <br>To filter by custom attribute name, use the format: `customAttributes=<custom-attribute-name>`. <br>The filter supports the `AND` operator for multiple custom attribute definitions (not multiple values for a given definition). Use `;` (`semicolon`) to separate multiple queries with `AND` operation. <br>Note: the filter supports custom attribute values containing only the characters `[a-zA-Z0-9_\-\. ]`.
+     * @returns any Get a list of event versions and the accompanying metadata.
+     */
+    getEventVersions(
+        pageSize: number,
+        pageNumber: number,
+        eventIds?: Array<string>,
+        ids?: Array<string>,
+        messagingServiceIds?: Array<string>,
+        customAttributes?: string,
+    ): Promise<any>;
+
+    /**
+     * **used to get the request options without making a http request**
+     * Get a list of event versions
+     * Use this API to get a list of event versions that match the given parameters.
+     * @param pageSize The number of event versions to get per page.
+     * @param pageNumber The page number to get.
+     * @param eventIds Match only event versions of these event IDs, separated by commas.
+     * @param ids Match only event versions with the given IDs, separated by commas.
+     * @param messagingServiceIds Match only event versions with the given messaging service IDs, separated by commas.
+     * @param customAttributes Returns the entities that match the custom attribute filter.<br>To filter by custom attribute name and value, use the format: `customAttributes=<custom-attribute-name>==<custom-attribute-value>`. <br>To filter by custom attribute name, use the format: `customAttributes=<custom-attribute-name>`. <br>The filter supports the `AND` operator for multiple custom attribute definitions (not multiple values for a given definition). Use `;` (`semicolon`) to separate multiple queries with `AND` operation. <br>Note: the filter supports custom attribute values containing only the characters `[a-zA-Z0-9_\-\. ]`.
+     * @returns ApiRequestOptions the request options to fulfill a http request
+     */
+    getEventVersionsApiRequestOptions(
+        pageSize: number,
+        pageNumber: number,
+        eventIds?: Array<string>,
+        ids?: Array<string>,
+        messagingServiceIds?: Array<string>,
+        customAttributes?: string,
+    ): ApiRequestOptions;
+
+    /**
+     * Create an event version
+     * Create an event version
+     * @param requestBody App version request body description
+     * @returns any Created an event version. Returns the newly saved event version in the response body.
+     */
+    createEventVersion(
+        requestBody: any,
+    ): Promise<any>;
+
+    /**
+     * **used to get the request options without making a http request**
+     * Create an event version
+     * Create an event version
+     * @param requestBody App version request body description
+     * @returns ApiRequestOptions the request options to fulfill a http request
+     */
+    createEventVersionApiRequestOptions(
+        requestBody: any,
+    ): ApiRequestOptions;
+
+    /**
+     * Get an event version
+     * Use this API to get a single event version by its ID.
+     * @param id The ID of the event version.
+     * @returns any The event version.
+     */
+    getEventVersion(
+        id: string,
+    ): Promise<any>;
+
+    /**
+     * **used to get the request options without making a http request**
+     * Get an event version
+     * Use this API to get a single event version by its ID.
+     * @param id The ID of the event version.
+     * @returns ApiRequestOptions the request options to fulfill a http request
+     */
+    getEventVersionApiRequestOptions(
+        id: string,
+    ): ApiRequestOptions;
+
+    /**
+     * Delete an event version
+     * Use this API to delete an event version.
+     * @param id The ID of the event version
+     * @returns void
+     */
+    deleteEventVersion(
+        id: string,
+    ): Promise<void>;
+
+    /**
+     * **used to get the request options without making a http request**
+     * Delete an event version
+     * Use this API to delete an event version.
+     * @param id The ID of the event version
+     * @returns ApiRequestOptions the request options to fulfill a http request
+     */
+    deleteEventVersionApiRequestOptions(
+        id: string,
+    ): ApiRequestOptions;
+
+    /**
+     * Update an event version
+     * Use this API to update an event version. You only need to specify the fields that need to be updated.
+     * @param id The ID of the event version to update.
+     * @param requestBody The event version.
+     * @returns any The updated event version.
+     */
+    updateEventVersion(
+        id: string,
+        requestBody: any,
+    ): Promise<any>;
+
+    /**
+     * **used to get the request options without making a http request**
+     * Update an event version
+     * Use this API to update an event version. You only need to specify the fields that need to be updated.
+     * @param id The ID of the event version to update.
+     * @param requestBody The event version.
+     * @returns ApiRequestOptions the request options to fulfill a http request
+     */
+    updateEventVersionApiRequestOptions(
+        id: string,
+        requestBody: any,
+    ): ApiRequestOptions;
+
+    /**
+     * Replace messaging service association for an event version
+     * Use this API to replace the messaging service association for an event version.
      * @param id The ID of the event version
      * @param requestBody The messaging service association object
      * @returns any The updated messaging service associations.
@@ -472,8 +470,8 @@ export interface EventsService {
 
     /**
      * **used to get the request options without making a http request**
-     * Update messaging service association for an event version object
-     * Use this API to update the messaging service association for an event version.
+     * Replace messaging service association for an event version
+     * Use this API to replace the messaging service association for an event version.
      * @param id The ID of the event version
      * @param requestBody The messaging service association object
      * @returns ApiRequestOptions the request options to fulfill a http request
@@ -484,32 +482,26 @@ export interface EventsService {
     ): ApiRequestOptions;
 
     /**
-     * @deprecated
-     * Updates the state of an event version object
+     * Update the state of an event version
      * Use this API to update the state of event version. You only need to specify the target stateId field
-     * @param eventId The ID of the parent event object.
-     * @param id The ID of the event version object to update.
-     * @param requestBody The event version object.
-     * @returns any The updated state of the event version object.
+     * @param id The ID of the event version to update.
+     * @param requestBody The state object.
+     * @returns any The updated state of the event version.
      */
-    updateEventVersionStateForEvent(
-        eventId: string,
+    updateEventVersionState(
         id: string,
         requestBody: any,
     ): Promise<any>;
 
     /**
-     * @deprecated
      * **used to get the request options without making a http request**
-     * Updates the state of an event version object
+     * Update the state of an event version
      * Use this API to update the state of event version. You only need to specify the target stateId field
-     * @param eventId The ID of the parent event object.
-     * @param id The ID of the event version object to update.
-     * @param requestBody The event version object.
+     * @param id The ID of the event version to update.
+     * @param requestBody The state object.
      * @returns ApiRequestOptions the request options to fulfill a http request
      */
-    updateEventVersionStateForEventApiRequestOptions(
-        eventId: string,
+    updateEventVersionStateApiRequestOptions(
         id: string,
         requestBody: any,
     ): ApiRequestOptions;

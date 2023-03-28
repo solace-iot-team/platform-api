@@ -212,228 +212,10 @@ export class SchemasServiceDefault implements SchemasService {
         };
     }
 
-    public async getSchemaVersions(
-        pageSize: number = 20,
-        pageNumber: number = 1,
-        schemaIds?: Array<string>,
-        ids?: Array<string>,
-        customAttributes?: string,
-        include?: string,
-    ): Promise<any> {
-        const options = this.getSchemaVersionsApiRequestOptions(
-            pageSize,
-            pageNumber,
-            schemaIds,
-            ids,
-            customAttributes,
-            include,
-        );
-        const result = await __request(options);
-        return result.body;
-    }
-
-    public getSchemaVersionsApiRequestOptions(
-        pageSize: number = 20,
-        pageNumber: number = 1,
-        schemaIds?: Array<string>,
-        ids?: Array<string>,
-        customAttributes?: string,
-        include?: string,
-    ): ApiRequestOptions {
-        return {
-            ...this.config,
-            method: 'GET',
-            path: `/api/v2/architecture/schemaVersions`,
-            query: {
-                'pageSize': pageSize,
-                'pageNumber': pageNumber,
-                'schemaIds': schemaIds,
-                'ids': ids,
-                'customAttributes': customAttributes,
-                'include': include,
-            },
-            errors: {
-                400: `Bad Request.`,
-                401: `Unauthorized.`,
-                403: `Forbidden.`,
-                404: `Not Found.`,
-                405: `Method Not Allowed`,
-                500: `Internal Server Error.`,
-                501: `Not Implemented`,
-                503: `Service Unavailable.`,
-                504: `Gateway Timeout.`,
-            },
-        };
-    }
-
-    public async createSchemaVersion(
-        requestBody: any,
-    ): Promise<any> {
-        const options = this.createSchemaVersionApiRequestOptions(
-            requestBody,
-        );
-        const result = await __request(options);
-        return result.body;
-    }
-
-    public createSchemaVersionApiRequestOptions(
-        requestBody: any,
-    ): ApiRequestOptions {
-        return {
-            ...this.config,
-            method: 'POST',
-            path: `/api/v2/architecture/schemaVersions`,
-            body: requestBody,
-            errors: {
-                400: `Bad Request.`,
-                401: `Unauthorized.`,
-                403: `Forbidden.`,
-                404: `Not Found.`,
-                405: `Method Not Allowed`,
-                500: `Internal Server Error.`,
-                501: `Not Implemented`,
-                503: `Service Unavailable.`,
-                504: `Gateway Timeout.`,
-            },
-        };
-    }
-
-    public async deleteSchemaVersion(
-        id: string,
-    ): Promise<void> {
-        const options = this.deleteSchemaVersionApiRequestOptions(
-            id,
-        );
-        const result = await __request(options);
-        return result.body;
-    }
-
-    public deleteSchemaVersionApiRequestOptions(
-        id: string,
-    ): ApiRequestOptions {
-        return {
-            ...this.config,
-            method: 'DELETE',
-            path: `/api/v2/architecture/schemaVersions/${id}`,
-            errors: {
-                400: `Bad Request.`,
-                401: `Unauthorized.`,
-                403: `Forbidden.`,
-                404: `Not Found.`,
-                405: `Method Not Allowed`,
-                500: `Internal Server Error.`,
-                501: `Not Implemented`,
-                503: `Service Unavailable.`,
-                504: `Gateway Timeout.`,
-            },
-        };
-    }
-
-    public async updateSchemaVersion(
-        id: string,
-        requestBody: any,
-    ): Promise<any> {
-        const options = this.updateSchemaVersionApiRequestOptions(
-            id,
-            requestBody,
-        );
-        const result = await __request(options);
-        return result.body;
-    }
-
-    public updateSchemaVersionApiRequestOptions(
-        id: string,
-        requestBody: any,
-    ): ApiRequestOptions {
-        return {
-            ...this.config,
-            method: 'PATCH',
-            path: `/api/v2/architecture/schemaVersions/${id}`,
-            body: requestBody,
-            errors: {
-                400: `Bad Request.`,
-                401: `Unauthorized.`,
-                403: `Forbidden.`,
-                404: `Not Found.`,
-                405: `Method Not Allowed`,
-                500: `Internal Server Error.`,
-                501: `Not Implemented`,
-                503: `Service Unavailable.`,
-                504: `Gateway Timeout.`,
-            },
-        };
-    }
-
-    public async updateSchemaVersionState(
-        id: string,
-        requestBody: any,
-    ): Promise<any> {
-        const options = this.updateSchemaVersionStateApiRequestOptions(
-            id,
-            requestBody,
-        );
-        const result = await __request(options);
-        return result.body;
-    }
-
-    public updateSchemaVersionStateApiRequestOptions(
-        id: string,
-        requestBody: any,
-    ): ApiRequestOptions {
-        return {
-            ...this.config,
-            method: 'PATCH',
-            path: `/api/v2/architecture/schemaVersions/${id}/state`,
-            body: requestBody,
-            errors: {
-                400: `Bad Request.`,
-                401: `Unauthorized.`,
-                403: `Forbidden.`,
-                404: `Not Found.`,
-                405: `Method Not Allowed`,
-                500: `Internal Server Error.`,
-                501: `Not Implemented`,
-                503: `Service Unavailable.`,
-                504: `Gateway Timeout.`,
-            },
-        };
-    }
-
-    public async getSchemaVersion(
-        versionId: string,
-    ): Promise<any> {
-        const options = this.getSchemaVersionApiRequestOptions(
-            versionId,
-        );
-        const result = await __request(options);
-        return result.body;
-    }
-
-    public getSchemaVersionApiRequestOptions(
-        versionId: string,
-    ): ApiRequestOptions {
-        return {
-            ...this.config,
-            method: 'GET',
-            path: `/api/v2/architecture/schemaVersions/${versionId}`,
-            errors: {
-                400: `Bad Request.`,
-                401: `Unauthorized.`,
-                403: `Forbidden.`,
-                404: `Not Found.`,
-                405: `Method Not Allowed`,
-                500: `Internal Server Error.`,
-                501: `Not Implemented`,
-                503: `Service Unavailable.`,
-                504: `Gateway Timeout.`,
-            },
-        };
-    }
-
     public async getSchemaVersionsForSchema(
         schemaId: string,
         pageNumber: number = 1,
-        pageSize?: number,
+        pageSize: number = 20,
         versions?: Array<string>,
         displayName?: string,
         ids?: Array<string>,
@@ -455,7 +237,7 @@ export class SchemasServiceDefault implements SchemasService {
     public getSchemaVersionsForSchemaApiRequestOptions(
         schemaId: string,
         pageNumber: number = 1,
-        pageSize?: number,
+        pageSize: number = 20,
         versions?: Array<string>,
         displayName?: string,
         ids?: Array<string>,
@@ -651,6 +433,220 @@ export class SchemasServiceDefault implements SchemasService {
             ...this.config,
             method: 'PATCH',
             path: `/api/v2/architecture/schemas/${schemaId}/versions/${id}/state`,
+            body: requestBody,
+            errors: {
+                400: `Bad Request.`,
+                401: `Unauthorized.`,
+                403: `Forbidden.`,
+                404: `Not Found.`,
+                405: `Method Not Allowed`,
+                500: `Internal Server Error.`,
+                501: `Not Implemented`,
+                503: `Service Unavailable.`,
+                504: `Gateway Timeout.`,
+            },
+        };
+    }
+
+    public async getSchemaVersions(
+        pageSize: number = 20,
+        pageNumber: number = 1,
+        schemaIds?: Array<string>,
+        ids?: Array<string>,
+        customAttributes?: string,
+    ): Promise<any> {
+        const options = this.getSchemaVersionsApiRequestOptions(
+            pageSize,
+            pageNumber,
+            schemaIds,
+            ids,
+            customAttributes,
+        );
+        const result = await __request(options);
+        return result.body;
+    }
+
+    public getSchemaVersionsApiRequestOptions(
+        pageSize: number = 20,
+        pageNumber: number = 1,
+        schemaIds?: Array<string>,
+        ids?: Array<string>,
+        customAttributes?: string,
+    ): ApiRequestOptions {
+        return {
+            ...this.config,
+            method: 'GET',
+            path: `/api/v2/architecture/schemaVersions`,
+            query: {
+                'pageSize': pageSize,
+                'pageNumber': pageNumber,
+                'schemaIds': schemaIds,
+                'ids': ids,
+                'customAttributes': customAttributes,
+            },
+            errors: {
+                400: `Bad Request.`,
+                401: `Unauthorized.`,
+                403: `Forbidden.`,
+                404: `Not Found.`,
+                405: `Method Not Allowed`,
+                500: `Internal Server Error.`,
+                501: `Not Implemented`,
+                503: `Service Unavailable.`,
+                504: `Gateway Timeout.`,
+            },
+        };
+    }
+
+    public async createSchemaVersion(
+        requestBody: any,
+    ): Promise<any> {
+        const options = this.createSchemaVersionApiRequestOptions(
+            requestBody,
+        );
+        const result = await __request(options);
+        return result.body;
+    }
+
+    public createSchemaVersionApiRequestOptions(
+        requestBody: any,
+    ): ApiRequestOptions {
+        return {
+            ...this.config,
+            method: 'POST',
+            path: `/api/v2/architecture/schemaVersions`,
+            body: requestBody,
+            errors: {
+                400: `Bad Request.`,
+                401: `Unauthorized.`,
+                403: `Forbidden.`,
+                404: `Not Found.`,
+                405: `Method Not Allowed`,
+                500: `Internal Server Error.`,
+                501: `Not Implemented`,
+                503: `Service Unavailable.`,
+                504: `Gateway Timeout.`,
+            },
+        };
+    }
+
+    public async deleteSchemaVersion(
+        id: string,
+    ): Promise<void> {
+        const options = this.deleteSchemaVersionApiRequestOptions(
+            id,
+        );
+        const result = await __request(options);
+        return result.body;
+    }
+
+    public deleteSchemaVersionApiRequestOptions(
+        id: string,
+    ): ApiRequestOptions {
+        return {
+            ...this.config,
+            method: 'DELETE',
+            path: `/api/v2/architecture/schemaVersions/${id}`,
+            errors: {
+                400: `Bad Request.`,
+                401: `Unauthorized.`,
+                403: `Forbidden.`,
+                404: `Not Found.`,
+                405: `Method Not Allowed`,
+                500: `Internal Server Error.`,
+                501: `Not Implemented`,
+                503: `Service Unavailable.`,
+                504: `Gateway Timeout.`,
+            },
+        };
+    }
+
+    public async updateSchemaVersion(
+        id: string,
+        requestBody: any,
+    ): Promise<any> {
+        const options = this.updateSchemaVersionApiRequestOptions(
+            id,
+            requestBody,
+        );
+        const result = await __request(options);
+        return result.body;
+    }
+
+    public updateSchemaVersionApiRequestOptions(
+        id: string,
+        requestBody: any,
+    ): ApiRequestOptions {
+        return {
+            ...this.config,
+            method: 'PATCH',
+            path: `/api/v2/architecture/schemaVersions/${id}`,
+            body: requestBody,
+            errors: {
+                400: `Bad Request.`,
+                401: `Unauthorized.`,
+                403: `Forbidden.`,
+                404: `Not Found.`,
+                405: `Method Not Allowed`,
+                500: `Internal Server Error.`,
+                501: `Not Implemented`,
+                503: `Service Unavailable.`,
+                504: `Gateway Timeout.`,
+            },
+        };
+    }
+
+    public async getSchemaVersion(
+        versionId: string,
+    ): Promise<any> {
+        const options = this.getSchemaVersionApiRequestOptions(
+            versionId,
+        );
+        const result = await __request(options);
+        return result.body;
+    }
+
+    public getSchemaVersionApiRequestOptions(
+        versionId: string,
+    ): ApiRequestOptions {
+        return {
+            ...this.config,
+            method: 'GET',
+            path: `/api/v2/architecture/schemaVersions/${versionId}`,
+            errors: {
+                400: `Bad Request.`,
+                401: `Unauthorized.`,
+                403: `Forbidden.`,
+                404: `Not Found.`,
+                405: `Method Not Allowed`,
+                500: `Internal Server Error.`,
+                501: `Not Implemented`,
+                503: `Service Unavailable.`,
+                504: `Gateway Timeout.`,
+            },
+        };
+    }
+
+    public async updateSchemaVersionState(
+        id: string,
+        requestBody: any,
+    ): Promise<any> {
+        const options = this.updateSchemaVersionStateApiRequestOptions(
+            id,
+            requestBody,
+        );
+        const result = await __request(options);
+        return result.body;
+    }
+
+    public updateSchemaVersionStateApiRequestOptions(
+        id: string,
+        requestBody: any,
+    ): ApiRequestOptions {
+        return {
+            ...this.config,
+            method: 'PATCH',
+            path: `/api/v2/architecture/schemaVersions/${id}/state`,
             body: requestBody,
             errors: {
                 400: `Bad Request.`,

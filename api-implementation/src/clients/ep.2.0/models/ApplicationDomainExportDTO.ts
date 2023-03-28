@@ -5,6 +5,7 @@ import type { AddressSpace } from './AddressSpace';
 import type { Application } from './Application';
 import type { ApplicationDomain } from './ApplicationDomain';
 import type { ApplicationVersion } from './ApplicationVersion';
+import type { CustomAttributeDefinition } from './CustomAttributeDefinition';
 import type { Event } from './Event';
 import type { EventApi } from './EventApi';
 import type { EventApiProduct } from './EventApiProduct';
@@ -34,6 +35,7 @@ export type ApplicationDomainExportDTO = {
     eventApiProducts?: Array<EventApiProduct>;
     eventApiProductVersions?: Array<EventApiProductVersion>;
     addressSpaces?: Array<AddressSpace>;
+    customAttributeDefinitions?: Array<CustomAttributeDefinition>;
 }
 
 export namespace ApplicationDomainExportDTO {

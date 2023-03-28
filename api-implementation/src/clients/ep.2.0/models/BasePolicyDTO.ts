@@ -6,9 +6,6 @@ export type BasePolicyDTO = {
      * ID value of the object
      */
     readonly id?: string;
-    /**
-     * The type of this payload
-     */
     type?: string;
 }
 

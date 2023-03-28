@@ -9,7 +9,7 @@ export type GatewayMessagingService = {
     id?: string;
     messagingServiceId?: string;
     eventApiProductVersionId?: string;
-    supportedProtocols?: Array<'smfc' | 'smf' | 'smfs' | 'amqp' | 'amqps' | 'mqtt' | 'mqtts' | 'mqttws' | 'mqttwss' | 'rest' | 'rests'>;
+    supportedProtocols?: Array<'smfc' | 'smf' | 'smfs' | 'amqp' | 'amqps' | 'mqtt' | 'mqtts' | 'mqttws' | 'mqttwss' | 'SECUREMQTT' | 'SECUREMQTTWS' | 'rest' | 'rests'>;
     type?: string;
 }
 

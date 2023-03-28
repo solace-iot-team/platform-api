@@ -1,7 +1,7 @@
 /* eslint-disable */
 
 
-export type MessagingServiceCredentialsn = {
+export type MessagingServiceCredentials = {
     readonly createdTime?: string;
     readonly updatedTime?: string;
     readonly createdBy?: string;
@@ -25,12 +25,12 @@ export type MessagingServiceCredentialsn = {
     readonly type?: string;
 }
 
-export namespace MessagingServiceCredentialsn {
+export namespace MessagingServiceCredentials {
 
     /**
      * the discriminator for the model if required for more complex api's
      */
-    export const discriminator = 'MessagingServiceCredentialsn';
+    export const discriminator = 'MessagingServiceCredentials';
 
 
 }

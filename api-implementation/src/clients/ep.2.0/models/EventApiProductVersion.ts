@@ -39,6 +39,11 @@ export type EventApiProductVersion = {
      */
     approvalType: EventApiProductVersion.approvalType;
     /**
+     * Publish state
+     */
+    publishState: EventApiProductVersion.publishState;
+    readonly publishedTime?: string;
+    /**
      * The type of payload
      */
     readonly type?: string;
@@ -57,6 +62,14 @@ export namespace EventApiProductVersion {
     export enum approvalType {
         automatic = 'automatic',
         manual = 'manual',
+    }
+
+    /**
+     * Publish state
+     */
+    export enum publishState {
+        unset = 'unset',
+        published = 'published',
     }
 
 

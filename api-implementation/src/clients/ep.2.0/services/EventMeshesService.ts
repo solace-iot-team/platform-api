@@ -5,8 +5,8 @@ import type { ApiRequestOptions } from '../core/ApiRequestOptions';
 export interface EventMeshesService {
 
     /**
-     * Gets the event mesh objects
-     * Use this API to retrieve a list of event meshes that match the given parameters.
+     * Get a list of event meshes
+     * Use this API to get a list of event meshes that match the given parameters.
      * @param pageSize The number of event meshes to get per page.
      * @param pageNumber The page number to get.
      * @param name Name of the event mesh to match on.
@@ -22,8 +22,8 @@ export interface EventMeshesService {
 
     /**
      * **used to get the request options without making a http request**
-     * Gets the event mesh objects
-     * Use this API to retrieve a list of event meshes that match the given parameters.
+     * Get a list of event meshes
+     * Use this API to get a list of event meshes that match the given parameters.
      * @param pageSize The number of event meshes to get per page.
      * @param pageNumber The page number to get.
      * @param name Name of the event mesh to match on.
@@ -38,10 +38,10 @@ export interface EventMeshesService {
     ): ApiRequestOptions;
 
     /**
-     * Creates an event mesh object
-     * Creates an event mesh object.
+     * Create an event mesh
+     * Create an event mesh.
      * @param requestBody Event mesh.
-     * @returns any Created an event mesh. The newly saved event object is returned in the response body.
+     * @returns any Created an event mesh. The newly saved event mesh is returned in the response body.
      */
     createEventMesh(
         requestBody: any,
@@ -49,8 +49,8 @@ export interface EventMeshesService {
 
     /**
      * **used to get the request options without making a http request**
-     * Creates an event mesh object
-     * Creates an event mesh object.
+     * Create an event mesh
+     * Create an event mesh.
      * @param requestBody Event mesh.
      * @returns ApiRequestOptions the request options to fulfill a http request
      */
@@ -59,10 +59,10 @@ export interface EventMeshesService {
     ): ApiRequestOptions;
 
     /**
-     * Retrieves an event mesh object
-     * Retrieves a single event mesh by its ID.
-     * @param id The ID of the event mesh object.
-     * @returns any The event mesh object.
+     * Get an event mesh
+     * Get a single event mesh by its ID.
+     * @param id The ID of the event mesh.
+     * @returns any The event mesh.
      */
     getEventMesh(
         id: string,
@@ -70,9 +70,9 @@ export interface EventMeshesService {
 
     /**
      * **used to get the request options without making a http request**
-     * Retrieves an event mesh object
-     * Retrieves a single event mesh by its ID.
-     * @param id The ID of the event mesh object.
+     * Get an event mesh
+     * Get a single event mesh by its ID.
+     * @param id The ID of the event mesh.
      * @returns ApiRequestOptions the request options to fulfill a http request
      */
     getEventMeshApiRequestOptions(
@@ -80,9 +80,9 @@ export interface EventMeshesService {
     ): ApiRequestOptions;
 
     /**
-     * Deletes an event mesh object
+     * Delete an event mesh
      * Use this API to delete an event mesh.
-     * @param id The ID of the event mesh object.
+     * @param id The ID of the event mesh.
      * @returns void
      */
     deleteEventMesh(
@@ -91,9 +91,9 @@ export interface EventMeshesService {
 
     /**
      * **used to get the request options without making a http request**
-     * Deletes an event mesh object
+     * Delete an event mesh
      * Use this API to delete an event mesh.
-     * @param id The ID of the event mesh object.
+     * @param id The ID of the event mesh.
      * @returns ApiRequestOptions the request options to fulfill a http request
      */
     deleteEventMeshApiRequestOptions(
@@ -101,11 +101,11 @@ export interface EventMeshesService {
     ): ApiRequestOptions;
 
     /**
-     * Updates an event mesh object
+     * Update an event mesh
      * Use this API to update an event mesh. You only need to specify the fields that need to be updated.
-     * @param id The ID of the event mesh object to update.
-     * @param requestBody The event mesh object.
-     * @returns any The updated event mesh object.
+     * @param id The ID of the event mesh to update.
+     * @param requestBody The event mesh.
+     * @returns any The updated event mesh.
      */
     updateEventMesh(
         id: string,
@@ -114,10 +114,10 @@ export interface EventMeshesService {
 
     /**
      * **used to get the request options without making a http request**
-     * Updates an event mesh object
+     * Update an event mesh
      * Use this API to update an event mesh. You only need to specify the fields that need to be updated.
-     * @param id The ID of the event mesh object to update.
-     * @param requestBody The event mesh object.
+     * @param id The ID of the event mesh to update.
+     * @param requestBody The event mesh.
      * @returns ApiRequestOptions the request options to fulfill a http request
      */
     updateEventMeshApiRequestOptions(

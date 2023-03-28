@@ -12,6 +12,11 @@ export type Filter = {
      * List of variable that contains address node name and filters
      */
     topicFilters?: Array<TopicFilter>;
+    id?: string;
+    /**
+     * The type of payload
+     */
+    readonly type: string;
 }
 
 export namespace Filter {

@@ -2,7 +2,6 @@
 
 import type { EventApiProduct } from '../models/EventApiProduct';
 import type { EventApiProductResponse } from '../models/EventApiProductResponse';
-import type { EventApiProductsResponse } from '../models/EventApiProductsResponse';
 import type { EventApiProductVersion } from '../models/EventApiProductVersion';
 import type { EventApiProductVersionResponse } from '../models/EventApiProductVersionResponse';
 import type { EventApiProductVersionsResponse } from '../models/EventApiProductVersionsResponse';
@@ -25,109 +24,6 @@ export class EventApiProductsServiceDefault implements EventApiProductsService {
      */
     public constructor(config: ApiOptions) {
         this.config = config;
-    }
-
-    public async getEventApiProducts(
-        pageSize: number = 20,
-        pageNumber: number = 1,
-        brokerType?: string,
-        name?: string,
-        ids?: Array<string>,
-        applicationDomainId?: string,
-        applicationDomainIds?: Array<string>,
-        shared?: boolean,
-        sort?: string,
-        customAttributes?: string,
-    ): Promise<EventApiProductsResponse> {
-        const options = this.getEventApiProductsApiRequestOptions(
-            pageSize,
-            pageNumber,
-            brokerType,
-            name,
-            ids,
-            applicationDomainId,
-            applicationDomainIds,
-            shared,
-            sort,
-            customAttributes,
-        );
-        const result = await __request(options);
-        return result.body;
-    }
-
-    public getEventApiProductsApiRequestOptions(
-        pageSize: number = 20,
-        pageNumber: number = 1,
-        brokerType?: string,
-        name?: string,
-        ids?: Array<string>,
-        applicationDomainId?: string,
-        applicationDomainIds?: Array<string>,
-        shared?: boolean,
-        sort?: string,
-        customAttributes?: string,
-    ): ApiRequestOptions {
-        return {
-            ...this.config,
-            method: 'GET',
-            path: `/api/v2/architecture/eventApiProducts`,
-            query: {
-                'pageSize': pageSize,
-                'pageNumber': pageNumber,
-                'brokerType': brokerType,
-                'name': name,
-                'ids': ids,
-                'applicationDomainId': applicationDomainId,
-                'applicationDomainIds': applicationDomainIds,
-                'shared': shared,
-                'sort': sort,
-                'customAttributes': customAttributes,
-            },
-            errors: {
-                400: `Bad Request.`,
-                401: `Unauthorized.`,
-                403: `Forbidden.`,
-                404: `Not Found.`,
-                405: `Method Not Allowed`,
-                500: `Internal Server Error.`,
-                501: `Not Implemented`,
-                503: `Service Unavailable.`,
-                504: `Gateway Timeout.`,
-            },
-        };
-    }
-
-    public async createEventApiProduct(
-        requestBody: EventApiProduct,
-    ): Promise<EventApiProductResponse> {
-        const options = this.createEventApiProductApiRequestOptions(
-            requestBody,
-        );
-        const result = await __request(options);
-        return result.body;
-    }
-
-    public createEventApiProductApiRequestOptions(
-        requestBody: EventApiProduct,
-    ): ApiRequestOptions {
-        return {
-            ...this.config,
-            method: 'POST',
-            path: `/api/v2/architecture/eventApiProducts`,
-            body: requestBody,
-            mediaType: 'application/json',
-            errors: {
-                400: `Bad Request.`,
-                401: `Unauthorized.`,
-                403: `Forbidden.`,
-                404: `Not Found.`,
-                405: `Method Not Allowed`,
-                500: `Internal Server Error.`,
-                501: `Not Implemented`,
-                503: `Service Unavailable.`,
-                504: `Gateway Timeout.`,
-            },
-        };
     }
 
     public async getEventApiProduct(
@@ -228,257 +124,6 @@ export class EventApiProductsServiceDefault implements EventApiProductsService {
         };
     }
 
-    public async getEventApiProductVersions(
-        pageSize: number = 20,
-        pageNumber: number = 1,
-        eventApiProductIds?: Array<string>,
-        ids?: Array<string>,
-        include?: string,
-        stateId?: string,
-        messagingServiceId?: string,
-        clientAppId?: string,
-        shared?: boolean,
-        latest?: boolean,
-        customAttributes?: string,
-    ): Promise<EventApiProductVersionsResponse> {
-        const options = this.getEventApiProductVersionsApiRequestOptions(
-            pageSize,
-            pageNumber,
-            eventApiProductIds,
-            ids,
-            include,
-            stateId,
-            messagingServiceId,
-            clientAppId,
-            shared,
-            latest,
-            customAttributes,
-        );
-        const result = await __request(options);
-        return result.body;
-    }
-
-    public getEventApiProductVersionsApiRequestOptions(
-        pageSize: number = 20,
-        pageNumber: number = 1,
-        eventApiProductIds?: Array<string>,
-        ids?: Array<string>,
-        include?: string,
-        stateId?: string,
-        messagingServiceId?: string,
-        clientAppId?: string,
-        shared?: boolean,
-        latest?: boolean,
-        customAttributes?: string,
-    ): ApiRequestOptions {
-        return {
-            ...this.config,
-            method: 'GET',
-            path: `/api/v2/architecture/eventApiProductVersions`,
-            query: {
-                'pageSize': pageSize,
-                'pageNumber': pageNumber,
-                'eventApiProductIds': eventApiProductIds,
-                'ids': ids,
-                'include': include,
-                'stateId': stateId,
-                'messagingServiceId': messagingServiceId,
-                'clientAppId': clientAppId,
-                'shared': shared,
-                'latest': latest,
-                'customAttributes': customAttributes,
-            },
-            errors: {
-                400: `Bad Request.`,
-                401: `Unauthorized.`,
-                403: `Forbidden.`,
-                404: `Not Found.`,
-                405: `Method Not Allowed`,
-                500: `Internal Server Error.`,
-                501: `Not Implemented`,
-                503: `Service Unavailable.`,
-                504: `Gateway Timeout.`,
-            },
-        };
-    }
-
-    public async createEventApiProductVersion(
-        requestBody: EventApiProductVersion,
-    ): Promise<EventApiProductVersionResponse> {
-        const options = this.createEventApiProductVersionApiRequestOptions(
-            requestBody,
-        );
-        const result = await __request(options);
-        return result.body;
-    }
-
-    public createEventApiProductVersionApiRequestOptions(
-        requestBody: EventApiProductVersion,
-    ): ApiRequestOptions {
-        return {
-            ...this.config,
-            method: 'POST',
-            path: `/api/v2/architecture/eventApiProductVersions`,
-            body: requestBody,
-            mediaType: 'application/json',
-            errors: {
-                400: `Bad Request.`,
-                401: `Unauthorized.`,
-                403: `Forbidden.`,
-                404: `Not Found.`,
-                405: `Method Not Allowed`,
-                500: `Internal Server Error.`,
-                501: `Not Implemented`,
-                503: `Service Unavailable.`,
-                504: `Gateway Timeout.`,
-            },
-        };
-    }
-
-    public async getEventApiProductVersion(
-        versionId: string,
-        include: string,
-        clientAppId?: string,
-    ): Promise<EventApiProductVersionResponse> {
-        const options = this.getEventApiProductVersionApiRequestOptions(
-            versionId,
-            include,
-            clientAppId,
-        );
-        const result = await __request(options);
-        return result.body;
-    }
-
-    public getEventApiProductVersionApiRequestOptions(
-        versionId: string,
-        include: string,
-        clientAppId?: string,
-    ): ApiRequestOptions {
-        return {
-            ...this.config,
-            method: 'GET',
-            path: `/api/v2/architecture/eventApiProductVersions/${versionId}`,
-            query: {
-                'include': include,
-                'clientAppId': clientAppId,
-            },
-            errors: {
-                400: `Bad Request.`,
-                401: `Unauthorized.`,
-                403: `Forbidden.`,
-                404: `Not Found.`,
-                405: `Method Not Allowed`,
-                500: `Internal Server Error.`,
-                501: `Not Implemented`,
-                503: `Service Unavailable.`,
-                504: `Gateway Timeout.`,
-            },
-        };
-    }
-
-    public async deleteEventApiProductVersion(
-        versionId: string,
-    ): Promise<void> {
-        const options = this.deleteEventApiProductVersionApiRequestOptions(
-            versionId,
-        );
-        const result = await __request(options);
-        return result.body;
-    }
-
-    public deleteEventApiProductVersionApiRequestOptions(
-        versionId: string,
-    ): ApiRequestOptions {
-        return {
-            ...this.config,
-            method: 'DELETE',
-            path: `/api/v2/architecture/eventApiProductVersions/${versionId}`,
-            errors: {
-                400: `Bad Request.`,
-                401: `Unauthorized.`,
-                403: `Forbidden.`,
-                404: `Not Found.`,
-                405: `Method Not Allowed`,
-                500: `Internal Server Error.`,
-                501: `Not Implemented`,
-                503: `Service Unavailable.`,
-                504: `Gateway Timeout.`,
-            },
-        };
-    }
-
-    public async updateEventApiProductVersion(
-        versionId: string,
-        requestBody: EventApiProductVersion,
-    ): Promise<EventApiProductVersionResponse> {
-        const options = this.updateEventApiProductVersionApiRequestOptions(
-            versionId,
-            requestBody,
-        );
-        const result = await __request(options);
-        return result.body;
-    }
-
-    public updateEventApiProductVersionApiRequestOptions(
-        versionId: string,
-        requestBody: EventApiProductVersion,
-    ): ApiRequestOptions {
-        return {
-            ...this.config,
-            method: 'PATCH',
-            path: `/api/v2/architecture/eventApiProductVersions/${versionId}`,
-            body: requestBody,
-            mediaType: 'application/json',
-            errors: {
-                400: `Bad Request.`,
-                401: `Unauthorized.`,
-                403: `Forbidden.`,
-                404: `Not Found.`,
-                405: `Method Not Allowed`,
-                500: `Internal Server Error.`,
-                501: `Not Implemented`,
-                503: `Service Unavailable.`,
-                504: `Gateway Timeout.`,
-            },
-        };
-    }
-
-    public async updateEventApiProductVersionState(
-        versionId: string,
-        requestBody: EventApiProductVersion,
-    ): Promise<StateChangeRequestResponse> {
-        const options = this.updateEventApiProductVersionStateApiRequestOptions(
-            versionId,
-            requestBody,
-        );
-        const result = await __request(options);
-        return result.body;
-    }
-
-    public updateEventApiProductVersionStateApiRequestOptions(
-        versionId: string,
-        requestBody: EventApiProductVersion,
-    ): ApiRequestOptions {
-        return {
-            ...this.config,
-            method: 'PATCH',
-            path: `/api/v2/architecture/eventApiProductVersions/${versionId}/state`,
-            body: requestBody,
-            mediaType: 'application/json',
-            errors: {
-                400: `Bad Request.`,
-                401: `Unauthorized.`,
-                403: `Forbidden.`,
-                404: `Not Found.`,
-                405: `Method Not Allowed`,
-                500: `Internal Server Error.`,
-                501: `Not Implemented`,
-                503: `Service Unavailable.`,
-                504: `Gateway Timeout.`,
-            },
-        };
-    }
-
     public async getEventApiProductVersionsForEventApiProduct(
         eventApiProductId: string,
         displayName?: string,
@@ -558,37 +203,6 @@ export class EventApiProductsServiceDefault implements EventApiProductsService {
             path: `/api/v2/architecture/eventApiProducts/${eventApiProductId}/versions`,
             body: requestBody,
             mediaType: 'application/json',
-            errors: {
-                400: `Bad Request.`,
-                401: `Unauthorized.`,
-                403: `Forbidden.`,
-                404: `Not Found.`,
-                405: `Method Not Allowed`,
-                500: `Internal Server Error.`,
-                501: `Not Implemented`,
-                503: `Service Unavailable.`,
-                504: `Gateway Timeout.`,
-            },
-        };
-    }
-
-    public async disassociateGatewayMessagingServiceFromEventApiProductVersionById(
-        memAssociationId: string,
-    ): Promise<void> {
-        const options = this.disassociateGatewayMessagingServiceFromEventApiProductVersionByIdApiRequestOptions(
-            memAssociationId,
-        );
-        const result = await __request(options);
-        return result.body;
-    }
-
-    public disassociateGatewayMessagingServiceFromEventApiProductVersionByIdApiRequestOptions(
-        memAssociationId: string,
-    ): ApiRequestOptions {
-        return {
-            ...this.config,
-            method: 'DELETE',
-            path: `/api/v2/architecture/eventApiProductMemAssociations/${memAssociationId}`,
             errors: {
                 400: `Bad Request.`,
                 401: `Unauthorized.`,
@@ -749,6 +363,293 @@ export class EventApiProductsServiceDefault implements EventApiProductsService {
         };
     }
 
+    public async getEventApiProductVersions(
+        pageSize: number = 20,
+        pageNumber: number = 1,
+        eventApiProductIds?: Array<string>,
+        ids?: Array<string>,
+        include?: string,
+        stateId?: string,
+        messagingServiceId?: string,
+        clientAppId?: string,
+        shared?: boolean,
+        latest?: boolean,
+        customAttributes?: string,
+    ): Promise<EventApiProductVersionsResponse> {
+        const options = this.getEventApiProductVersionsApiRequestOptions(
+            pageSize,
+            pageNumber,
+            eventApiProductIds,
+            ids,
+            include,
+            stateId,
+            messagingServiceId,
+            clientAppId,
+            shared,
+            latest,
+            customAttributes,
+        );
+        const result = await __request(options);
+        return result.body;
+    }
+
+    public getEventApiProductVersionsApiRequestOptions(
+        pageSize: number = 20,
+        pageNumber: number = 1,
+        eventApiProductIds?: Array<string>,
+        ids?: Array<string>,
+        include?: string,
+        stateId?: string,
+        messagingServiceId?: string,
+        clientAppId?: string,
+        shared?: boolean,
+        latest?: boolean,
+        customAttributes?: string,
+    ): ApiRequestOptions {
+        return {
+            ...this.config,
+            method: 'GET',
+            path: `/api/v2/architecture/eventApiProductVersions`,
+            query: {
+                'pageSize': pageSize,
+                'pageNumber': pageNumber,
+                'eventApiProductIds': eventApiProductIds,
+                'ids': ids,
+                'include': include,
+                'stateId': stateId,
+                'messagingServiceId': messagingServiceId,
+                'clientAppId': clientAppId,
+                'shared': shared,
+                'latest': latest,
+                'customAttributes': customAttributes,
+            },
+            errors: {
+                400: `Bad Request.`,
+                401: `Unauthorized.`,
+                403: `Forbidden.`,
+                404: `Not Found.`,
+                405: `Method Not Allowed`,
+                500: `Internal Server Error.`,
+                501: `Not Implemented`,
+                503: `Service Unavailable.`,
+                504: `Gateway Timeout.`,
+            },
+        };
+    }
+
+    public async createEventApiProductVersion(
+        requestBody: EventApiProductVersion,
+    ): Promise<EventApiProductVersionResponse> {
+        const options = this.createEventApiProductVersionApiRequestOptions(
+            requestBody,
+        );
+        const result = await __request(options);
+        return result.body;
+    }
+
+    public createEventApiProductVersionApiRequestOptions(
+        requestBody: EventApiProductVersion,
+    ): ApiRequestOptions {
+        return {
+            ...this.config,
+            method: 'POST',
+            path: `/api/v2/architecture/eventApiProductVersions`,
+            body: requestBody,
+            mediaType: 'application/json',
+            errors: {
+                400: `Bad Request.`,
+                401: `Unauthorized.`,
+                403: `Forbidden.`,
+                404: `Not Found.`,
+                405: `Method Not Allowed`,
+                500: `Internal Server Error.`,
+                501: `Not Implemented`,
+                503: `Service Unavailable.`,
+                504: `Gateway Timeout.`,
+            },
+        };
+    }
+
+    public async getEventApiProductVersion(
+        versionId: string,
+        include?: string,
+        clientAppId?: string,
+    ): Promise<EventApiProductVersionResponse> {
+        const options = this.getEventApiProductVersionApiRequestOptions(
+            versionId,
+            include,
+            clientAppId,
+        );
+        const result = await __request(options);
+        return result.body;
+    }
+
+    public getEventApiProductVersionApiRequestOptions(
+        versionId: string,
+        include?: string,
+        clientAppId?: string,
+    ): ApiRequestOptions {
+        return {
+            ...this.config,
+            method: 'GET',
+            path: `/api/v2/architecture/eventApiProductVersions/${versionId}`,
+            query: {
+                'include': include,
+                'clientAppId': clientAppId,
+            },
+            errors: {
+                400: `Bad Request.`,
+                401: `Unauthorized.`,
+                403: `Forbidden.`,
+                404: `Not Found.`,
+                405: `Method Not Allowed`,
+                500: `Internal Server Error.`,
+                501: `Not Implemented`,
+                503: `Service Unavailable.`,
+                504: `Gateway Timeout.`,
+            },
+        };
+    }
+
+    public async deleteEventApiProductVersion(
+        versionId: string,
+    ): Promise<void> {
+        const options = this.deleteEventApiProductVersionApiRequestOptions(
+            versionId,
+        );
+        const result = await __request(options);
+        return result.body;
+    }
+
+    public deleteEventApiProductVersionApiRequestOptions(
+        versionId: string,
+    ): ApiRequestOptions {
+        return {
+            ...this.config,
+            method: 'DELETE',
+            path: `/api/v2/architecture/eventApiProductVersions/${versionId}`,
+            errors: {
+                400: `Bad Request.`,
+                401: `Unauthorized.`,
+                403: `Forbidden.`,
+                404: `Not Found.`,
+                405: `Method Not Allowed`,
+                500: `Internal Server Error.`,
+                501: `Not Implemented`,
+                503: `Service Unavailable.`,
+                504: `Gateway Timeout.`,
+            },
+        };
+    }
+
+    public async updateEventApiProductVersion(
+        versionId: string,
+        requestBody: EventApiProductVersion,
+    ): Promise<EventApiProductVersionResponse> {
+        const options = this.updateEventApiProductVersionApiRequestOptions(
+            versionId,
+            requestBody,
+        );
+        const result = await __request(options);
+        return result.body;
+    }
+
+    public updateEventApiProductVersionApiRequestOptions(
+        versionId: string,
+        requestBody: EventApiProductVersion,
+    ): ApiRequestOptions {
+        return {
+            ...this.config,
+            method: 'PATCH',
+            path: `/api/v2/architecture/eventApiProductVersions/${versionId}`,
+            body: requestBody,
+            mediaType: 'application/json',
+            errors: {
+                400: `Bad Request.`,
+                401: `Unauthorized.`,
+                403: `Forbidden.`,
+                404: `Not Found.`,
+                405: `Method Not Allowed`,
+                500: `Internal Server Error.`,
+                501: `Not Implemented`,
+                503: `Service Unavailable.`,
+                504: `Gateway Timeout.`,
+            },
+        };
+    }
+
+    public async updateEventApiProductVersionState(
+        versionId: string,
+        requestBody: EventApiProductVersion,
+    ): Promise<StateChangeRequestResponse> {
+        const options = this.updateEventApiProductVersionStateApiRequestOptions(
+            versionId,
+            requestBody,
+        );
+        const result = await __request(options);
+        return result.body;
+    }
+
+    public updateEventApiProductVersionStateApiRequestOptions(
+        versionId: string,
+        requestBody: EventApiProductVersion,
+    ): ApiRequestOptions {
+        return {
+            ...this.config,
+            method: 'PATCH',
+            path: `/api/v2/architecture/eventApiProductVersions/${versionId}/state`,
+            body: requestBody,
+            mediaType: 'application/json',
+            errors: {
+                400: `Bad Request.`,
+                401: `Unauthorized.`,
+                403: `Forbidden.`,
+                404: `Not Found.`,
+                405: `Method Not Allowed`,
+                500: `Internal Server Error.`,
+                501: `Not Implemented`,
+                503: `Service Unavailable.`,
+                504: `Gateway Timeout.`,
+            },
+        };
+    }
+
+    public async publishEventApiProductVersion(
+        versionId: string,
+        requestBody?: EventApiProductVersion,
+    ): Promise<StateChangeRequestResponse> {
+        const options = this.publishEventApiProductVersionApiRequestOptions(
+            versionId,
+            requestBody,
+        );
+        const result = await __request(options);
+        return result.body;
+    }
+
+    public publishEventApiProductVersionApiRequestOptions(
+        versionId: string,
+        requestBody?: EventApiProductVersion,
+    ): ApiRequestOptions {
+        return {
+            ...this.config,
+            method: 'PATCH',
+            path: `/api/v2/architecture/eventApiProductVersions/${versionId}/publish`,
+            body: requestBody,
+            mediaType: 'application/json',
+            errors: {
+                400: `Bad Request.`,
+                401: `Unauthorized.`,
+                403: `Forbidden.`,
+                404: `Not Found.`,
+                405: `Method Not Allowed`,
+                500: `Internal Server Error.`,
+                501: `Not Implemented`,
+                503: `Service Unavailable.`,
+                504: `Gateway Timeout.`,
+            },
+        };
+    }
+
     public async associateGatewayMessagingServiceToEapVersion(
         eventApiProductVersionId: string,
         requestBody: GatewayMessagingService,
@@ -805,6 +706,37 @@ export class EventApiProductsServiceDefault implements EventApiProductsService {
             ...this.config,
             method: 'DELETE',
             path: `/api/v2/architecture/eventApiProductVersions/${eventApiProductVersionId}/memAssociations/${memAssociationId}`,
+            errors: {
+                400: `Bad Request.`,
+                401: `Unauthorized.`,
+                403: `Forbidden.`,
+                404: `Not Found.`,
+                405: `Method Not Allowed`,
+                500: `Internal Server Error.`,
+                501: `Not Implemented`,
+                503: `Service Unavailable.`,
+                504: `Gateway Timeout.`,
+            },
+        };
+    }
+
+    public async disassociateGatewayMessagingServiceFromEventApiProductVersionById(
+        memAssociationId: string,
+    ): Promise<void> {
+        const options = this.disassociateGatewayMessagingServiceFromEventApiProductVersionByIdApiRequestOptions(
+            memAssociationId,
+        );
+        const result = await __request(options);
+        return result.body;
+    }
+
+    public disassociateGatewayMessagingServiceFromEventApiProductVersionByIdApiRequestOptions(
+        memAssociationId: string,
+    ): ApiRequestOptions {
+        return {
+            ...this.config,
+            method: 'DELETE',
+            path: `/api/v2/architecture/eventApiProductMemAssociations/${memAssociationId}`,
             errors: {
                 400: `Bad Request.`,
                 401: `Unauthorized.`,

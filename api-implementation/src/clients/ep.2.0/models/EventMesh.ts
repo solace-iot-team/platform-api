@@ -27,7 +27,7 @@ export type EventMesh = {
      */
     brokerType?: EventMesh.brokerType;
     /**
-     * *deprecationDate: 2022-12-01T00:00:00.000Z<br>removalDate: 2023-12-01T00:00:00.000Z<br>reason: Application versions must now be <a href= https://openapi-v2.solace.cloud/#/Applications/updateMessagingServiceAssociationForApplicationVersions>associated to messaging services</a> instead of modeled event meshes.*<br>
+     * *Deprecation Date: 2022-12-01<br>Removal Date: 2023-12-01<br>Reason: Application versions must now be <a href="/cloud/reference/updateMessagingServiceAssociationForApplicationVersions">associated to messaging services</a> instead of modeled event meshes.*<br>
      */
     applicationVersionIds?: Array<string>;
     /**

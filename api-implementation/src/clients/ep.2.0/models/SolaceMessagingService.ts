@@ -8,6 +8,10 @@ import type { BaseMessagingServiceDTO } from './BaseMessagingServiceDTO';
  */
 export type SolaceMessagingService = (BaseMessagingServiceDTO & {
     solaceCloudMessagingServiceId?: string,
+    /**
+     * The type of payload
+     */
+    readonly type: string,
 });
 
 export namespace SolaceMessagingService {

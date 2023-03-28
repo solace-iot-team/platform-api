@@ -6,12 +6,12 @@ import type { ApiRequestOptions } from '../core/ApiRequestOptions';
 export interface CustomAttributeDefinitionsService {
 
     /**
-     * Gets the custom attribute definition objects
-     * Use this API to retrieve a list of custom attributes that match the given parameters.
+     * Get a list of custom attribute definitions
+     * Use this API to get a list of custom attribute definitions that match the given parameters.
      * @param pageSize The number of custom attribute definitions to get per page.
      * @param pageNumber The page number to get.
      * @param associatedEntityTypes Match only custom attribute definitions with the given associated entity type names separated by commas.
-     * @returns any Retrieve a list of custom attribute definitions and the accompanying metadata.
+     * @returns any Get a list of custom attribute definitions and the accompanying metadata.
      */
     getCustomAttributeDefinitions(
         pageSize: number,
@@ -21,8 +21,8 @@ export interface CustomAttributeDefinitionsService {
 
     /**
      * **used to get the request options without making a http request**
-     * Gets the custom attribute definition objects
-     * Use this API to retrieve a list of custom attributes that match the given parameters.
+     * Get a list of custom attribute definitions
+     * Use this API to get a list of custom attribute definitions that match the given parameters.
      * @param pageSize The number of custom attribute definitions to get per page.
      * @param pageNumber The page number to get.
      * @param associatedEntityTypes Match only custom attribute definitions with the given associated entity type names separated by commas.
@@ -35,10 +35,10 @@ export interface CustomAttributeDefinitionsService {
     ): ApiRequestOptions;
 
     /**
-     * Creates a custom attribute definition object
+     * Create a custom attribute definition
      * Use this API to create a custom attribute definition.
-     * @param requestBody The custom attribute object.
-     * @returns any Created a custom attribute definition. Returns the newly saved custom attribute definition object in the response body.
+     * @param requestBody The custom attribute definition.
+     * @returns any Created a custom attribute definition. Returns the newly saved custom attribute definition in the response body.
      */
     createCustomAttributeDefinition(
         requestBody: any,
@@ -46,9 +46,9 @@ export interface CustomAttributeDefinitionsService {
 
     /**
      * **used to get the request options without making a http request**
-     * Creates a custom attribute definition object
+     * Create a custom attribute definition
      * Use this API to create a custom attribute definition.
-     * @param requestBody The custom attribute object.
+     * @param requestBody The custom attribute definition.
      * @returns ApiRequestOptions the request options to fulfill a http request
      */
     createCustomAttributeDefinitionApiRequestOptions(
@@ -56,10 +56,10 @@ export interface CustomAttributeDefinitionsService {
     ): ApiRequestOptions;
 
     /**
-     * Retrieves a custom attribute definition object
-     * Use this API to retrieve a single custom attribute by its ID.
-     * @param id The ID of the custom attribute object.
-     * @returns any The custom attribute definition object.
+     * Get a custom attribute definition
+     * Use this API to get a single custom attribute definition by its ID.
+     * @param id The ID of the custom attribute definition.
+     * @returns any The custom attribute definition.
      */
     getCustomAttributeDefinition(
         id: string,
@@ -67,9 +67,9 @@ export interface CustomAttributeDefinitionsService {
 
     /**
      * **used to get the request options without making a http request**
-     * Retrieves a custom attribute definition object
-     * Use this API to retrieve a single custom attribute by its ID.
-     * @param id The ID of the custom attribute object.
+     * Get a custom attribute definition
+     * Use this API to get a single custom attribute definition by its ID.
+     * @param id The ID of the custom attribute definition.
      * @returns ApiRequestOptions the request options to fulfill a http request
      */
     getCustomAttributeDefinitionApiRequestOptions(
@@ -77,7 +77,7 @@ export interface CustomAttributeDefinitionsService {
     ): ApiRequestOptions;
 
     /**
-     * Deletes a custom attribute definition object
+     * Delete a custom attribute definition
      * Use this API to delete a custom attribute definition.
      * @param id The ID of the custom attribute definition
      * @returns void
@@ -88,7 +88,7 @@ export interface CustomAttributeDefinitionsService {
 
     /**
      * **used to get the request options without making a http request**
-     * Deletes a custom attribute definition object
+     * Delete a custom attribute definition
      * Use this API to delete a custom attribute definition.
      * @param id The ID of the custom attribute definition
      * @returns ApiRequestOptions the request options to fulfill a http request
@@ -98,28 +98,157 @@ export interface CustomAttributeDefinitionsService {
     ): ApiRequestOptions;
 
     /**
-     * Updates a custom attribute definition object
+     * Update a custom attribute definition
      * Use this API to update a custom attribute definition. You can only update the associated entity types.
-     * @param id The ID of the custom attribute object to update.
-     * @param requestBody The custom attribute definition object.
-     * @returns any The updated custom attribute definition object.
+     * @param id The ID of the custom attribute definition to update.
+     * @param requestBody The custom attribute definition.
+     * @returns any The updated custom attribute definition.
      */
     updateCustomAttributeDefinition(
         id: string,
-        requestBody?: CustomAttributeDefinition,
+        requestBody: CustomAttributeDefinition,
     ): Promise<any>;
 
     /**
      * **used to get the request options without making a http request**
-     * Updates a custom attribute definition object
+     * Update a custom attribute definition
      * Use this API to update a custom attribute definition. You can only update the associated entity types.
-     * @param id The ID of the custom attribute object to update.
-     * @param requestBody The custom attribute definition object.
+     * @param id The ID of the custom attribute definition to update.
+     * @param requestBody The custom attribute definition.
      * @returns ApiRequestOptions the request options to fulfill a http request
      */
     updateCustomAttributeDefinitionApiRequestOptions(
         id: string,
-        requestBody?: CustomAttributeDefinition,
+        requestBody: CustomAttributeDefinition,
+    ): ApiRequestOptions;
+
+    /**
+     * Get a list the custom attribute definitions of provided application domain
+     * Use this API to get a list of custom attribute definitions that match the given parameters.
+     * @param applicationDomainId Match only custom attribute definitions with the given application domain Id
+     * @param pageSize The number of custom attribute definitions to get per page.
+     * @param pageNumber The page number to get.
+     * @returns any Get a list of custom attribute definitions of a given application domain id.
+     */
+    getCustomAttributeDefinitionsByApplicationDomain(
+        applicationDomainId: string,
+        pageSize: number,
+        pageNumber: number,
+    ): Promise<any>;
+
+    /**
+     * **used to get the request options without making a http request**
+     * Get a list the custom attribute definitions of provided application domain
+     * Use this API to get a list of custom attribute definitions that match the given parameters.
+     * @param applicationDomainId Match only custom attribute definitions with the given application domain Id
+     * @param pageSize The number of custom attribute definitions to get per page.
+     * @param pageNumber The page number to get.
+     * @returns ApiRequestOptions the request options to fulfill a http request
+     */
+    getCustomAttributeDefinitionsByApplicationDomainApiRequestOptions(
+        applicationDomainId: string,
+        pageSize: number,
+        pageNumber: number,
+    ): ApiRequestOptions;
+
+    /**
+     * Create a custom attribute definition for provided application domain
+     * Use this API to create a custom attribute definition for provided application domain.
+     * @param applicationDomainId The ID of the application domain
+     * @param requestBody The custom attribute definition.
+     * @returns any Created a custom attribute definition in provided application domain and Returns the newly saved custom attribute definition in the response body.
+     */
+    createCustomAttributeDefinitionByApplicationDomain(
+        applicationDomainId: string,
+        requestBody: any,
+    ): Promise<any>;
+
+    /**
+     * **used to get the request options without making a http request**
+     * Create a custom attribute definition for provided application domain
+     * Use this API to create a custom attribute definition for provided application domain.
+     * @param applicationDomainId The ID of the application domain
+     * @param requestBody The custom attribute definition.
+     * @returns ApiRequestOptions the request options to fulfill a http request
+     */
+    createCustomAttributeDefinitionByApplicationDomainApiRequestOptions(
+        applicationDomainId: string,
+        requestBody: any,
+    ): ApiRequestOptions;
+
+    /**
+     * Delete a custom attribute definition of provided application domain
+     * Use this API to delete a custom attribute definition by given application domain.
+     * @param applicationDomainId The ID of the application domain
+     * @returns void
+     */
+    deleteCustomAttributeDefinitionByApplicationDomain(
+        applicationDomainId: string,
+    ): Promise<void>;
+
+    /**
+     * **used to get the request options without making a http request**
+     * Delete a custom attribute definition of provided application domain
+     * Use this API to delete a custom attribute definition by given application domain.
+     * @param applicationDomainId The ID of the application domain
+     * @returns ApiRequestOptions the request options to fulfill a http request
+     */
+    deleteCustomAttributeDefinitionByApplicationDomainApiRequestOptions(
+        applicationDomainId: string,
+    ): ApiRequestOptions;
+
+    /**
+     * Delete a custom attribute definition of provided application domain
+     * Use this API to delete a custom attribute definition of given application domain.
+     * @param applicationDomainId The ID of the application domain
+     * @param customAttributeId The ID of the custom attribute definition
+     * @returns void
+     */
+    deleteCustomAttributeDefinitionOfApplicationDomain(
+        applicationDomainId: string,
+        customAttributeId: string,
+    ): Promise<void>;
+
+    /**
+     * **used to get the request options without making a http request**
+     * Delete a custom attribute definition of provided application domain
+     * Use this API to delete a custom attribute definition of given application domain.
+     * @param applicationDomainId The ID of the application domain
+     * @param customAttributeId The ID of the custom attribute definition
+     * @returns ApiRequestOptions the request options to fulfill a http request
+     */
+    deleteCustomAttributeDefinitionOfApplicationDomainApiRequestOptions(
+        applicationDomainId: string,
+        customAttributeId: string,
+    ): ApiRequestOptions;
+
+    /**
+     * Update a custom attribute definition for provided application domain
+     * Use this API to update a custom attribute definition for provided application domain.
+     * @param applicationDomainId The ID of the application domain
+     * @param customAttributeId The ID of the custom attribute definition
+     * @param requestBody The custom attribute definition.
+     * @returns any Updated a custom attribute definition in provided application domain and Returns the newly saved custom attribute definition in the response body.
+     */
+    updateCustomAttributeDefinitionByApplicationDomain(
+        applicationDomainId: string,
+        customAttributeId: string,
+        requestBody: CustomAttributeDefinition,
+    ): Promise<any>;
+
+    /**
+     * **used to get the request options without making a http request**
+     * Update a custom attribute definition for provided application domain
+     * Use this API to update a custom attribute definition for provided application domain.
+     * @param applicationDomainId The ID of the application domain
+     * @param customAttributeId The ID of the custom attribute definition
+     * @param requestBody The custom attribute definition.
+     * @returns ApiRequestOptions the request options to fulfill a http request
+     */
+    updateCustomAttributeDefinitionByApplicationDomainApiRequestOptions(
+        applicationDomainId: string,
+        customAttributeId: string,
+        requestBody: CustomAttributeDefinition,
     ): ApiRequestOptions;
 
 }
