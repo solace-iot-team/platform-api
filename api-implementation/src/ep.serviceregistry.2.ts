@@ -168,8 +168,8 @@ export class EPServiceRegistry2 implements ServiceRegistry {
     }
 
     private mapAMQP(connections: MessagingServiceConnection[]): MessagingProtocol {
-        const amqpConnection: MessagingServiceConnection = this.findConnectionByProtocol(connections, 'amqp', 'amqp');
-        const amqpsConnection: MessagingServiceConnection = this.findConnectionByProtocol(connections, 'amqps', 'amqp')
+        const amqpConnection: MessagingServiceConnection = connections.find(c=> c.protocol=='amqp');
+        const amqpsConnection: MessagingServiceConnection = connections.find(c=> c.protocol=='amqps');
         if (amqpConnection || amqpsConnection) {
             const mp: MessagingProtocol = {
                 name: 'AMQP',
@@ -209,13 +209,13 @@ export class EPServiceRegistry2 implements ServiceRegistry {
     }
 
     private mapMQTT(connections: MessagingServiceConnection[]): MessagingProtocol {
-        const mqttConnection: MessagingServiceConnection = this.findConnectionByProtocol(connections, 'tcp', 'mqtt');
-        const secureMqttConnection: MessagingServiceConnection = this.findConnectionByProtocol(connections, 'ssl', 'mqtt');
-        const wsMqttConnection: MessagingServiceConnection = this.findConnectionByProtocol(connections, 'ws', 'mqtt');
-        const wssMqttConnection: MessagingServiceConnection = this.findConnectionByProtocol(connections, 'wss', 'mqtt');
+        const mqttConnection: MessagingServiceConnection = connections.find(c=> c.protocol=='mqtt');
+        const secureMqttConnection: MessagingServiceConnection = connections.find(c=> c.protocol=='secure-mqtt');
+        const wsMqttConnection: MessagingServiceConnection = connections.find(c=> c.protocol=='mqttws');
+        const wssMqttConnection: MessagingServiceConnection = connections.find(c=> c.protocol=='secure-mqttws');
         if (mqttConnection || secureMqttConnection || wsMqttConnection || wssMqttConnection) {
             const mp: MessagingProtocol = {
-                name: 'AMQP',
+                name: 'MQTT',
                 endPoints: [],
                 password: "",
                 username: "",
@@ -277,8 +277,8 @@ export class EPServiceRegistry2 implements ServiceRegistry {
     }
 
     private mapJMS(connections: MessagingServiceConnection[]): MessagingProtocol {
-        const jmsConnection: MessagingServiceConnection = this.findConnectionByProtocol(connections, 'tcp', 'smf');
-        const secureJmsConnection: MessagingServiceConnection = this.findConnectionByProtocol(connections, 'tcps', 'smf')
+        const jmsConnection: MessagingServiceConnection = connections.find(c=> c.protocol=='smf');
+        const secureJmsConnection: MessagingServiceConnection = connections.find(c=> c.protocol== 'smfs')
         if (jmsConnection || secureJmsConnection) {
             const mp: MessagingProtocol = {
                 name: 'JMS',
@@ -318,8 +318,8 @@ export class EPServiceRegistry2 implements ServiceRegistry {
     }
 
     private mapSMF(connections: MessagingServiceConnection[]): MessagingProtocol {
-        const smfConnection: MessagingServiceConnection = this.findConnectionByProtocol(connections, 'tcp', 'smf');
-        const secureSmfConnection: MessagingServiceConnection = this.findConnectionByProtocol(connections, 'tcps', 'smf')
+        const smfConnection: MessagingServiceConnection = connections.find(c=> c.protocol=='smf');
+        const secureSmfConnection: MessagingServiceConnection = connections.find(c=> c.protocol=='smfs')
         if (smfConnection || secureSmfConnection) {
             const mp: MessagingProtocol = {
                 name: 'JMS',
@@ -370,8 +370,8 @@ export class EPServiceRegistry2 implements ServiceRegistry {
     }
 
     private mapREST(connections: MessagingServiceConnection[]): MessagingProtocol {
-        const restConnection: MessagingServiceConnection = this.findConnectionByProtocol(connections, 'http', 'rest');
-        const secureRestConnection: MessagingServiceConnection = this.findConnectionByProtocol(connections, 'https', 'rest')
+        const restConnection: MessagingServiceConnection = connections.find(c=> c.protocol=='rest');
+        const secureRestConnection: MessagingServiceConnection = connections.find(c=> c.protocol=='rests')
         if (restConnection || secureRestConnection) {
             const mp: MessagingProtocol = {
                 name: 'JMS',
@@ -412,8 +412,8 @@ export class EPServiceRegistry2 implements ServiceRegistry {
     }
 
     private mapWebMessaging(connections: MessagingServiceConnection[]): MessagingProtocol {
-        const smfConnection: MessagingServiceConnection = this.findConnectionByProtocol(connections, 'ws', 'smf');
-        const secureSmfConnection: MessagingServiceConnection = this.findConnectionByProtocol(connections, 'wss', 'smf')
+        const smfConnection: MessagingServiceConnection = connections.find(c=> c.protocol=='smfws');
+        const secureSmfConnection: MessagingServiceConnection = connections.find(c=> c.protocol=='smfwss')
         if (smfConnection || secureSmfConnection) {
             const mp: MessagingProtocol = {
                 name: 'JMS',
@@ -454,12 +454,9 @@ export class EPServiceRegistry2 implements ServiceRegistry {
 
     private findConnectionByProtocol(connections: MessagingServiceConnection[], transport: string, protocol: string): MessagingServiceConnection {
         return connections.find(c => c.messagingServiceAuthentications?.length > 0
-            && c.messagingServiceAuthentications[0].authenticationDetails
+            && c.protocol == protocol
             && c.messagingServiceAuthentications[0].authenticationDetails['protocol']
-            && c.messagingServiceAuthentications[0].authenticationDetails['protocol'] == transport
-            && c.messagingServiceAuthentications[0].authenticationDetails['properties']
-            && c.messagingServiceAuthentications[0].authenticationDetails['properties'][0]
-            && c.messagingServiceAuthentications[0].authenticationDetails['properties'][0].value == protocol
+            && (c.messagingServiceAuthentications[0]?.authenticationDetails['protocol'] as string)?.startsWith(transport)
         );
     }
 
