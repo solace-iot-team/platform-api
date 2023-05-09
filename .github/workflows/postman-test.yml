@@ -33,7 +33,7 @@ jobs:
         id: auth
       - name: Cancel Workflow
         if: ${{ always() && steps.auth.outputs.IS_AUTHORIZED == 'false' }}
-        uses: andymckay/cancel-action@0.2
+        uses: andymckay/cancel-action@0.3
 
       - name: github-slug-action
         uses: rlespinasse/github-slug-action@v4
@@ -53,7 +53,7 @@ jobs:
           env | grep TEST
 
       - name: setup node
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v3
         with:
           node-version: ${{ matrix.node }}
 
@@ -120,7 +120,7 @@ jobs:
 
       - name: Archive logs
         if: ${{ (failure() && !cancelled()) || (always() && (github.event_name=='workflow_dispatch' || env.DEBUG_FLAG=='true') ) }}
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v3
         with:
           name: ${{ env.TEST_OUTPUT_NAME }}-postman
           path: ${{ github.workspace }}/${{ env.TEST_TEST_RUNNER_OUTPUT_DIR }}
