@@ -23,7 +23,7 @@ jobs:
     strategy:
       max-parallel: 1
       matrix:
-        node: [ '16' ]
+        node: [ '18' ]
     steps:
       - name: Check Auth
         if: github.event_name == 'workflow_dispatch' && github.actor != 'ricardojosegomezulmke' && github.actor != '195858'
