@@ -1,5 +1,29 @@
 # Release Notes
 
+## Version 0.10.1
+* OpenAPI: 0.15.4
+* API Management Connector Server: 0.10.1
+
+### Fixes
+
+* **fix-ep2-serviceregistry-protocol-mapping**
+  - fixed broken protocol mapping for messaging protocol and SEMP v2 connection details
+* **fix-ep-import-use-ep-approvaltype**
+  - copy approval type from Event API Product in Event Portal 2.0
+* **refactor-clean-eventportalfacade-new-client**
+* **fix-catch-app-status-errors**
+  - catching app status errors when back end sempv2 calls fail. Error is logged and empty status is returned
+* **refactor-ep-api-client-update**
+  - regenerated code from EP Architecture and Runtime APIs v2.0.15
+* **feat-ep2importer-enhance-error-reporting**
+  - log error details and complete import results if an error is thrown during import
+* **fix-ep-importer-removed-app-domains**
+  - When retrieiving importer configuration(s) app Domain ids are removed from Importer  filter and attributeMap if the domain no longer exists in EP 2.0
+* **fix-eventportal-facade-pagesize-limits**
+  - catch too large  page size limits when retrieving app domains
+* **fix-ep-importer-asyncapi-version**
+  - default to 2.0.0 async api
+
 ## Version 0.10.0
 * OpenAPI: 0.15.4
 * API Management Connector Server: 0.10.0
