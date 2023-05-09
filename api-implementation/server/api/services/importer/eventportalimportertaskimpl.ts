@@ -195,7 +195,7 @@ export default class EventPortalImporterTaskImpl {
         attributes: mappedAttributes,
         displayName: `${prodVersion.product.name} ${plan.name}`,
         description: prodVersion.version.description,
-        approvalType: 'manual',
+        approvalType: prodVersion.version.approvalType=='manual'?'manual':'auto',
         environments: envNames,
         name: apiProductId,
         protocols: apiProductProtocols,
