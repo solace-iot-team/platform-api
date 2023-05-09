@@ -23,7 +23,7 @@ jobs:
     runs-on: ubuntu-22.04
     strategy:
       matrix:
-        node-version: [ '16.x' ]
+        node-version: [ '18.x' ]
     env:
       TEST_DIRECTORY: "test"
     defaults:
@@ -34,21 +34,21 @@ jobs:
 
       - name: Cancel job if user has insufficient permissions
         if: github.event_name == 'workflow_dispatch' && github.actor != 'NilsEckertSolace' && github.actor != 'ricardojosegomezulmke' && github.actor != '195858'
-        uses: andymckay/cancel-action@0.2
+        uses: andymckay/cancel-action@0.3
 
       - name: Checkout OpenAPI code generator
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
         with:
           repository: solace-iot-team/openapi-typescript-codegen
           path: openapi-typescript-codegen
 
       - name: Checkout Platform API code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           path: platform-api
 
       - name: Setup Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v2
+        uses: actions/setup-node@v3
         with:
           node-version: ${{ matrix.node-version }}
 
@@ -81,7 +81,7 @@ jobs:
 
       - name: Archive logs
         if: ${{ (failure() && !cancelled()) || (always() && github.event_name == 'workflow_dispatch') }}
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: integ-test-logs
           path: ${{ github.workspace }}/${{ env.PLATFORM_API_HOME }}/${{ env.TEST_DIRECTORY }}/tmp

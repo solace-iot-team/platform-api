@@ -6,12 +6,11 @@ import { ApiOptions } from './clients/ep.2.0/core/ApiOptions';
 
 import { EventApiProductVersionsResponse } from './clients/ep.2.0/models/EventApiProductVersionsResponse';
 import { StatesResponse } from './clients/ep.2.0/models/StatesResponse';
-import { EventApiProductsResponse } from './clients/ep.2.0/models/EventApiProductsResponse';
 import { StateDTO } from './clients/ep.2.0/models/StateDTO';
 import { EventAPIAsyncAPIInfo } from './model/eventapiasyncapiinfo';
 import { EventApiProductVersion } from './clients/ep.2.0/models/EventApiProductVersion';
 
-import cmp from 'semver-compare';
+
 import { getEventPortalToken, getEventPortalBaseUrl, validateToken, resolve } from './cloudtokenhelper';
 import { EventApiProduct } from './clients/ep.2.0/models/EventApiProduct';
 import { ApplicationDomainsServiceDefault } from './clients/ep.2.0/services/ApplicationDomainsServiceDefault';
@@ -22,20 +21,18 @@ import ApplicationDomain = Components.Schemas.ApplicationDomain;
 import { ApplicationDomainResponse } from './clients/ep.2.0/models/ApplicationDomainResponse';
 import { ErrorResponseInternal } from '../server/api/middlewares/error.handler';
 
-import { Cache, CacheContainer } from 'node-ts-cache'
-import { MemoryStorage } from 'node-ts-cache-storage-memory'
+import { Cache, CacheContainer } from 'node-ts-cache';
+import { MemoryStorage } from 'node-ts-cache-storage-memory';
 import { EventApiVersionsResponse } from './clients/ep.2.0/models/EventApiVersionsResponse';
 import { EventApiVersion } from './clients/ep.2.0/models/EventApiVersion';
 
-const appDomainCache = new CacheContainer(new MemoryStorage())
-const stateCache = new CacheContainer(new MemoryStorage())
-const eventApiVersionCache = new CacheContainer(new MemoryStorage())
+const appDomainCache = new CacheContainer(new MemoryStorage());
+const stateCache = new CacheContainer(new MemoryStorage());
+const eventApiVersionCache = new CacheContainer(new MemoryStorage());
 
 const opts: ApiOptions = {
   baseUrl: getEventPortalBaseUrl,
   token: getEventPortalToken,
-
-
 };
 
 export interface ExportableEventApiProductVersion {
@@ -91,7 +88,7 @@ export class EventPortalfacade {
       const eventApiResponse = (await this.eventApIsService.getEventApiVersion(id, 'parent'));
       if(eventApiResponse && eventApiResponse.data){
         eventApi = eventApiResponse.data;
-       await eventApiVersionCache.setItem(eventApi.id, eventApi, {ttl: 30})
+       await eventApiVersionCache.setItem(eventApi.id, eventApi, {ttl: 30});
       }
     }
     return eventApi;
@@ -101,7 +98,7 @@ export class EventPortalfacade {
     const list: ExportableEventApiProductVersion[] = [];
     let eventApiVersionIds: string[] = [];
     const draftState = await this.getDraftStateId();
-    const versions: EventApiProductVersionsResponse = await this.eventApiProductsService.getEventApiProductVersions(99, 1, null, null, 'parent', null, null, null, true, true)
+    const versions: EventApiProductVersionsResponse = await this.eventApiProductsService.getEventApiProductVersions(99, 1, null, null, 'parent', null, null, null, true, true);
     for (const version of versions.data) {
       const include: boolean = (applicationDomainIds == null
         || applicationDomainIds.length == 0
@@ -111,7 +108,7 @@ export class EventPortalfacade {
         list.push({
           product: version['parent'],
           version: version,
-        })
+        });
       }
     }
     await this.primeEventApiVersionsCache(eventApiVersionIds);

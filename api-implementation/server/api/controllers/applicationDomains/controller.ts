@@ -1,7 +1,6 @@
 import L from '../../../common/logger'; 
 import EventPortalFacade from '../../../../src/eventportalfacade.2';
 import { NextFunction, Request, Response } from 'express';
-import AsyncAPIHelper from '../../../../src/asyncapihelper'
 
 export class Controller {
   all(req: Request, res: Response, next: NextFunction): void {

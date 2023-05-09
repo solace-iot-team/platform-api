@@ -3,7 +3,7 @@
 ###########################################################################
 
 # FROM node:10-alpine
-FROM node:16.13.2
+FROM node:18.16.0
 
 COPY api-implementation /usr/local/platform-api-server
 

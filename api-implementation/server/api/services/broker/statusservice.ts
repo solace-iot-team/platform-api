@@ -40,38 +40,43 @@ const queueStatusCache = new CacheContainer(new MemoryStorage());
 
 class StatusService {
   async getAppStatus(app: App): Promise<AppConnectionStatus> {
+    try {
+      const environments: EnvironmentResponse[] = await BrokerUtils.getEnvironmentObjects(app);
+      const envs: AppEnvironmentStatus[] = [];
+      for (const currEnv of environments) {
+        const env: AppEnvironmentStatus = {
+          name: currEnv.name,
+          displayName: currEnv.displayName,
+        }
 
-    const environments: EnvironmentResponse[] = await BrokerUtils.getEnvironmentObjects(app);
-    const envs: AppEnvironmentStatus[] = [];
-    for (const currEnv of environments) {
-      const env: AppEnvironmentStatus = {
-        name: currEnv.name,
-        displayName: currEnv.displayName,
+        const services = await BrokerUtils.getServices([currEnv.name]);
+
+        for (const service of services) {
+          const webHooks: WebHookStatus[] = await this.getWebHookStatus(app, service, currEnv.name);
+          if (webHooks.length > 0) {
+            env.webHooks = webHooks;
+          }
+          const connections: AppConnection[] = await this.getConnectionStatus(app, service);
+          if (connections.length > 0) {
+            env.connections = connections;
+          }
+          const queues: QueueStatus[] = await this.getQueueStatus(app, service);
+          if (queues.length > 0) {
+            env.queues = queues;
+          }
+
+        }
+
+        envs.push(env);
       }
-
-      const services = await BrokerUtils.getServices([currEnv.name]);
-
-      for (const service of services) {
-        const webHooks: WebHookStatus[] = await this.getWebHookStatus(app, service, currEnv.name);
-        if (webHooks.length > 0) {
-          env.webHooks = webHooks;
-        }
-        const connections: AppConnection[] = await this.getConnectionStatus(app, service);
-        if (connections.length > 0) {
-          env.connections = connections;
-        }
-        const queues: QueueStatus[] = await this.getQueueStatus(app, service);
-        if (queues.length > 0) {
-          env.queues = queues;
-        }
-
-      }
-
-      envs.push(env);
+      const status: AppConnectionStatus = {};
+      status.environments = envs;
+      return status;
+    } catch (e) {
+      L.error(`Error retrieving app status for ${app.name}`); 
+      L.error(e);
+      return {};
     }
-    const status: AppConnectionStatus = {};
-    status.environments = envs;
-    return status;
   }
 
 
@@ -123,7 +128,7 @@ class StatusService {
           messagesQueued: q.collections.msgs.count,
           messagesQueuedMB: (q.data.msgSpoolUsage / 1048576),
           uri: wh.uri,
-          name: wh.name?wh.name:wh.uri,
+          name: wh.name ? wh.name : wh.uri,
         }
         webHooks.push(conn);
       }
