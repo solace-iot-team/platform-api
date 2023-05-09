@@ -1,6 +1,6 @@
 import L from '../../../common/logger'; import ApisService from '../../services/apis.service';
 import { NextFunction, Request, Response } from 'express';
-import AsyncAPIHelper from '../../../../src/asyncapihelper'
+import AsyncAPIHelper from '../../../../src/asyncapihelper';
 import ApiListFormat = Components.Parameters.ApiListFormat.Format;
 import { ErrorResponseInternal } from '../../middlewares/error.handler';
 
@@ -148,7 +148,7 @@ export class Controller {
         res.status(200).json(r);
       }
       else
-        next(new ErrorResponseInternal(500, `No response`));
+        next(new ErrorResponseInternal(500, 'No response'));
     }).catch((e) => next(e));
   }
   updateAttribute(req: Request, res: Response, next: NextFunction): void {
@@ -157,7 +157,7 @@ export class Controller {
         res.status(200).json(r);
       }
       else
-        next(new ErrorResponseInternal(500, `No response`));
+        next(new ErrorResponseInternal(500, 'No response'));
     }).catch((e) => next(e));
   }
 
@@ -186,7 +186,7 @@ export class Controller {
           res.status(200).json(r);
         }
         else
-          next(new ErrorResponseInternal(500, `No response`));
+          next(new ErrorResponseInternal(500, 'No response'));
       }).catch((e) => next(e));
     }
     updateMetaAttribute(req: Request, res: Response, next: NextFunction): void {
@@ -195,7 +195,7 @@ export class Controller {
           res.status(200).json(r);
         }
         else
-          next(new ErrorResponseInternal(500, `No response`));
+          next(new ErrorResponseInternal(500, 'No response'));
       }).catch((e) => next(e));
     }
   

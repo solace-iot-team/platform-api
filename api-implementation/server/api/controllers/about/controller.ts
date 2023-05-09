@@ -13,7 +13,7 @@ export class Controller {
       APIS_PROXY_MODE: useProxyMode,
       EVENT_PORTAL_VERSION: epVersion as any,
       version: loadAboutJSON(),
-    }
+    };
 
     res.json(response);
   }
@@ -33,4 +33,4 @@ const loadAboutJSON = function loadAboutJson(): any {
     } catch (e) {
       return null;
     }
-  }
+  };

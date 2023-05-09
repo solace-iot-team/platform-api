@@ -15,7 +15,7 @@ export class Controller {
         res.status(201).json(r);
       }
       else
-        next(new ErrorResponseInternal(500, `No response`));
+        next(new ErrorResponseInternal(500, 'No response'));
     }).catch((e) => next(e));
   }
 
@@ -26,7 +26,7 @@ export class Controller {
         res.status(200).json(r);
       }
       else
-        next(new ErrorResponseInternal(500, `No response`));
+        next(new ErrorResponseInternal(500, 'No response'));
     }).catch((e) => next(e));
   }
   byName(req: Request, res: Response, next: NextFunction): void {
@@ -86,7 +86,7 @@ export class Controller {
         res.status(201).json(r);
       }
       else
-        next(new ErrorResponseInternal(500, `No response`));
+        next(new ErrorResponseInternal(500, 'No response'));
     }).catch((e) => next(e));
   }
 
@@ -126,7 +126,7 @@ export class Controller {
         res.status(200).json(r);
       }
       else
-        next(new ErrorResponseInternal(500, `No response`));
+        next(new ErrorResponseInternal(500, 'No response'));
     }).catch((e) => next(e));
   }
   updateAttribute(req: Request, res: Response, next: NextFunction): void {
@@ -135,7 +135,7 @@ export class Controller {
         res.status(200).json(r);
       }
       else
-        next(new ErrorResponseInternal(500, `No response`));
+        next(new ErrorResponseInternal(500, 'No response'));
     }).catch((e) => next(e));
   }
 
@@ -165,7 +165,7 @@ export class Controller {
         res.status(200).json(r);
       }
       else
-        next(new ErrorResponseInternal(500, `No response`));
+        next(new ErrorResponseInternal(500, 'No response'));
     }).catch((e) => next(e));
   }
   updateMetaAttribute(req: Request, res: Response, next: NextFunction): void {
@@ -174,7 +174,7 @@ export class Controller {
         res.status(200).json(r);
       }
       else
-        next(new ErrorResponseInternal(500, `No response`));
+        next(new ErrorResponseInternal(500, 'No response'));
     }).catch((e) => next(e));
   }
 
