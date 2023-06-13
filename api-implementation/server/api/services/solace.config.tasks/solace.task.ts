@@ -17,7 +17,7 @@ export abstract class SEMPv2Task extends TaskTemplate {
     constructor(taskConfig: SEMPv2TaskConfig) {
         super(taskConfig);
         this.apiClient = SempV2ClientFactory.getSEMPv2Client(taskConfig.environment.service as Service);
-        SempV2ClientFactory.getSEMPv2ClientVersion(taskConfig.environment.service as Service).then(p=>{
+        SempV2ClientFactory.getSEMPv2ClientVersion(taskConfig.environment.service as Service).then(p => {
             this.apiVersion = p;
         });
     }
@@ -48,13 +48,18 @@ export abstract class SEMPv2Task extends TaskTemplate {
         let msg: string = `${name} failure: ${e.message}`;
         if (e['body']) {
             const err: SempMetaOnlyResponse = e['body'];
-            L.error(err.meta.error.status);
-            L.error(err.meta.error.description);
-            data = err.meta.error;
-            msg = `${name} failure: ${err.meta.error.status} ${err.meta.error.description}`;
+            if (err?.meta?.error) {
+                L.error(err.meta.error.status);
+                L.error(err.meta.error.description);
+                data = err.meta.error;
+                msg = `${name} failure: ${err.meta.error.status} ${err.meta.error.description}`;
+            } else {
+                L.error(e['body']);
+            }
         } else {
             L.error(e);
         }
+        L.error(msg);
         const result: TaskResult = {
             data: data,
             log: {
