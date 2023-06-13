@@ -32,12 +32,16 @@ export class SempV2ClientFactory {
     ns.getStore().set(SEMPV2_BASE, sempProtocol.endPoints.find(j => j.name === "Secured SEMP Config").uris[0]);
     ns.getStore().set(SEMPV2_USER, sempProtocol.username);
     ns.getStore().set(SEMPV2_PASSWORD, sempProtocol.password);
-
+    const org: Organization = ns.getStore().get(ContextConstants.ORG_OBJECT);
+    const isAPIKeyAuth: boolean = (org.sempV2Authentication && org.sempV2Authentication.authType == 'APIKey')?true:false;
+    
     const options: ApiOptions = {
-      baseUrl: sempProtocol.endPoints.find(j => j.name === "Secured SEMP Config").uris[0],
-      username: sempProtocol.username,
-      password: sempProtocol.password,
+      baseUrl: sempProtocol.endPoints.find(j => j.name === "Secured SEMP Config").uris[0],      
       defaultHeaders: getHeaders
+    }
+    if (!isAPIKeyAuth){
+      options.username=sempProtocol.username;
+      options.password=sempProtocol.password;
     }
     return new AllServiceDefault(options);
   }
