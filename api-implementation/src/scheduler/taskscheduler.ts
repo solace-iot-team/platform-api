@@ -274,7 +274,7 @@ export default class TaskScheduler {
     try {
       // create an agenda per org
       const agenda = new Agenda({
-        mongo: databaseaccess.client.db(orgName),
+        mongo: (await databaseaccess.getClient()).db(orgName),
         name: orgName,
         processEvery: '1 minute',
         defaultLockLifetime: 45000,

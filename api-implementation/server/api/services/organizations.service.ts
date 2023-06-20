@@ -56,7 +56,7 @@ export class OrganizationsService {
     try {
       await ContextRunner(org, OrganizationsService.onDeleteDeprovisionApps);
       await OrganizationsService.delay(1000);
-      await databaseaccess.client
+      await (await databaseaccess.getClient())
         .db(name)
         .dropDatabase();
       DatabaseBootstrapper.emit('deleted', name);

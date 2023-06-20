@@ -14,7 +14,7 @@ import DatabaseBootstrapper from './persistence/databasebootstrapper';
 export class PersistenceService {
   private collection: string;
 
-  private createCollection(db: string) {
+  private async createCollection(db: string) {
     if (!PlatformConstants.PLATFORM_COLLECTIONS.includes(this.collection) && PlatformConstants.PLATFORM_DB == db) {
       L.warn('Attempt to create platform collections');
       //throw new ErrorResponseInternal(500, `Can't write to  ${this.collection} in tenant ${db}`);
@@ -23,13 +23,14 @@ export class PersistenceService {
 
     L.debug(`db is ${db}, creating collection ${this.collection}`);
     const persistenceSvc = this;
-    databaseaccess.client.db(db).createCollection(this.collection, function (err, collection: Collection) {
+    const client = await databaseaccess.getClient();
+    client.db(db).createCollection(this.collection, function (err, collection: Collection) {
 
       if (err) {
         // sometimes the colleciton already exists. it's due to the fact that multipe instances of a persistence service for a specific collection may  exist
         L.warn(JSON.stringify(err));
         if (err.code == 48 && err.codeName == 'NamespaceExists') {
-          collection = databaseaccess.client.db(db).collection(persistenceSvc.collection);
+          collection = client.db(db).collection(persistenceSvc.collection);
           const idxName: string = `idx_text_${db}_${collection.collectionName}`;
           L.info(`creating full text index ${collection.collectionName}`);
           collection.createIndex(
@@ -76,7 +77,7 @@ export class PersistenceService {
     }
 
     L.debug(`db is ${db}`);
-    const client = databaseaccess.client;
+    const client = await databaseaccess.getClient();
     const mongoCollection: Collection = client.db(db).collection(this.collection);
     return mongoCollection;
   }

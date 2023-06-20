@@ -4,8 +4,10 @@ import L from '../server/common/logger';
 
 export class databaseaccess {
   private static delayInterval: number = 0;
-
+  private static dbUrl: string;
+  
   public static async reconnect(url: string) {
+    this.dbUrl = url;
     let isConnected: boolean = false;
     L.info(`Attempting to reconnect to MongoDB`);
     L.info(`delay ${databaseaccess.delayInterval}`);
@@ -30,11 +32,18 @@ export class databaseaccess {
     }
 
   }
-  public static client: MongoClient;
+  private static client: MongoClient;
   constructor() {
 
   }
+
+  public static async getClient(): Promise<MongoClient>{
+    await databaseaccess.client.connect()
+    return this.client;
+  } 
+
   public static connect(url: string): Promise<any> {
+    this.dbUrl = url;
     return new Promise<any>(async (resolve, reject) => {
       try {
         url = databaseaccess.validateUrl(url);
@@ -52,8 +61,7 @@ export class databaseaccess {
           maxIdleTimeMS: 60000,
           maxStalenessSeconds: 20,
           minHeartbeatFrequencyMS: 5000,
-          waitQueueTimeoutMS: 1000,
-
+          waitQueueTimeoutMS: 1000
         });
         await databaseaccess.client.connect();
         databaseaccess.client.removeAllListeners('timeout');

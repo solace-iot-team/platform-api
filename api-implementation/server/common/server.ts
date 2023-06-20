@@ -153,7 +153,7 @@ const checkSolaceCloudAccess = async () => {
 
 const shutdown = async () => {
   console.log('server is starting cleanup');
-  return databaseaccess.client.close().then(() => console.log('client has disconnected'))
+  return (await databaseaccess.getClient()).close().then(() => console.log('client has disconnected'))
     .catch(err => console.error('error during disconnection', err.stack))
 }
 export const healthCheck = async () => {
