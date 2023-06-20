@@ -14,6 +14,7 @@ export class databaseaccess {
     if (databaseaccess.client) {
       try {
         await databaseaccess.client.close();
+        databaseaccess.client = null;
       } catch (e) {
         L.error(e);
       }
@@ -38,8 +39,12 @@ export class databaseaccess {
   }
 
   public static async getClient(): Promise<MongoClient>{
-    await databaseaccess.client.connect()
-    return this.client;
+    if (databaseaccess.client){
+      await databaseaccess.client.connect();
+    } else {
+      await databaseaccess.connect(databaseaccess.dbUrl);
+    }
+    return databaseaccess.client;
   } 
 
   public static connect(url: string): Promise<any> {
@@ -113,6 +118,7 @@ export class databaseaccess {
 
   public disconnect(): void {
     databaseaccess.client.close();
+    databaseaccess.client = null;
   }
 
   private static validateUrl(url: string): string {
