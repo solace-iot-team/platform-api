@@ -23,7 +23,7 @@ jobs:
     strategy:
       max-parallel: 1
       matrix:
-        node: [ '18' ]
+        node: ["18"]
     steps:
       - name: Check Auth
         if: github.event_name == 'workflow_dispatch' && github.actor != 'ricardojosegomezulmke' && github.actor != '195858'
@@ -73,7 +73,7 @@ jobs:
       - name: Create newman folder
         run: |
           mkdir -p /home/runner/work/newman
- 
+
       - name: Install newman
         run: |
           npm install -g newman
@@ -90,23 +90,29 @@ jobs:
           cd "$APIM_SOLACE_PLATFORM_API_PROJECT_HOME/${TEST_PLATFORM_DIR}"
           source test/integration/source.env.sh
           test/integration/mongodb/start.mongo.sh
-          
+
       - name: Start Server
         run: |
           export APIM_SOLACE_PLATFORM_API_PROJECT_HOME="$GITHUB_WORKSPACE"
           cd "$APIM_SOLACE_PLATFORM_API_PROJECT_HOME/${TEST_PLATFORM_DIR}"
           source test/integration/source.env.sh
           test/integration/start.server.background.sh
-        
+
       - name: Run POSTMAN collection (PR)
         run: |
-          newman run https://raw.githubusercontent.com/solace-iot-team/platform-api/${{ env.GITHUB_HEAD_REF_SLUG }}/api-test/APIMConnectorRegressionTests.postman_collection.json -e https://api.getpostman.com/environments/527b7560-d632-482a-a56e-b09c79299db1?apikey=${{ secrets.POSTMAN_APIKEY }} -r htmlextra,cli-response --bail --reporter-htmlextra-export ${{ github.workspace }}/${{ env.TEST_TEST_RUNNER_OUTPUT_DIR }}/regression-report.html --reporter-htmlextra-darkTheme --verbose --delay-request 200 > ${{ github.workspace }}/${{ env.TEST_TEST_RUNNER_OUTPUT_DIR }}/regression-report-stdout.html   
+          newman run https://raw.githubusercontent.com/solace-iot-team/platform-api/${{ env.GITHUB_HEAD_REF_SLUG }}/api-test/APIMConnectorRegressionTests.postman_collection.json -e https://api.getpostman.com/environments/527b7560-d632-482a-a56e-b09c79299db1?apikey=${{ secrets.POSTMAN_APIKEY }} -r htmlextra,cli-response --bail --reporter-htmlextra-export ${{ github.workspace }}/${{ env.TEST_TEST_RUNNER_OUTPUT_DIR }}/regression-report.html --reporter-htmlextra-darkTheme --verbose --delay-request 100 > ${{ github.workspace }}/${{ env.TEST_TEST_RUNNER_OUTPUT_DIR }}/regression-report-stdout.html
         working-directory: /home/runner/work/newman
         if: ${{ env.GITHUB_HEAD_REF_SLUG != '' }}
 
       - name: Run POSTMAN collection (Manual)
         run: |
-          newman run https://raw.githubusercontent.com/solace-iot-team/platform-api/${{ env.GITHUB_REF_SLUG }}/api-test/APIMConnectorRegressionTests.postman_collection.json -e https://api.getpostman.com/environments/527b7560-d632-482a-a56e-b09c79299db1?apikey=${{ secrets.POSTMAN_APIKEY }} -r htmlextra,cli-response --bail --reporter-htmlextra-export ${{ github.workspace }}/${{ env.TEST_TEST_RUNNER_OUTPUT_DIR }}/regression-report.html --reporter-htmlextra-darkTheme --verbose --delay-request 200 > ${{ github.workspace }}/${{ env.TEST_TEST_RUNNER_OUTPUT_DIR }}/regression-report-stdout.html   
+          newman run https://raw.githubusercontent.com/solace-iot-team/platform-api/${{ env.GITHUB_REF_SLUG }}/api-test/APIMConnectorRegressionTests.postman_collection.json -e https://api.getpostman.com/environments/527b7560-d632-482a-a56e-b09c79299db1?apikey=${{ secrets.POSTMAN_APIKEY }} -r htmlextra,cli-response --bail --reporter-htmlextra-export ${{ github.workspace }}/${{ env.TEST_TEST_RUNNER_OUTPUT_DIR }}/regression-report.html --reporter-htmlextra-darkTheme --verbose --delay-request 100 > ${{ github.workspace }}/${{ env.TEST_TEST_RUNNER_OUTPUT_DIR }}/regression-report-stdout.html
+        working-directory: /home/runner/work/newman
+        if: ${{ env.GITHUB_HEAD_REF_SLUG == '' }}
+
+      - name: Clean Up Brokers (POSTMAN)
+        run: |
+          newman run https://raw.githubusercontent.com/solace-iot-team/platform-api/${{ env.GITHUB_REF_SLUG }}/api-test/APIMConnectorRegressionTests.postman_collection.json -e https://api.getpostman.com/environments/527b7560-d632-482a-a56e-b09c79299db1?apikey=${{ secrets.POSTMAN_APIKEY }} -r htmlextra,cli-response --folder "General Tear Down" --reporter-htmlextra-export ${{ github.workspace }}/${{ env.TEST_TEST_RUNNER_OUTPUT_DIR }}/teardown-report.html --reporter-htmlextra-darkTheme --verbose --delay-request 50 > ${{ github.workspace }}/${{ env.TEST_TEST_RUNNER_OUTPUT_DIR }}/teardown-report-stdout.html
         working-directory: /home/runner/work/newman
         if: ${{ env.GITHUB_HEAD_REF_SLUG == '' }}
 
@@ -117,7 +123,6 @@ jobs:
           source test/integration/source.env.sh
           test/integration/stop.server.sh
 
-
       - name: Archive logs
         if: ${{ (failure() && !cancelled()) || (always() && (github.event_name=='workflow_dispatch' || env.DEBUG_FLAG=='true') ) }}
         uses: actions/upload-artifact@v3
@@ -125,6 +130,5 @@ jobs:
           name: ${{ env.TEST_OUTPUT_NAME }}-postman
           path: ${{ github.workspace }}/${{ env.TEST_TEST_RUNNER_OUTPUT_DIR }}
           if-no-files-found: error
-     
 ###
 # The End.
