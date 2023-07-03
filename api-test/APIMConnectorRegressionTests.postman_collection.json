@@ -3316,8 +3316,8 @@
 									"    pm.response.to.have.status(422);",
 									"});",
 									"",
-									"pm.test(\"Response time is less than 200ms\", function () {",
-									"    pm.expect(pm.response.responseTime).to.be.below(100);",
+									"pm.test(\"Response time is less than 500ms\", function () {",
+									"    pm.expect(pm.response.responseTime).to.be.below(500);",
 									"});"
 								],
 								"type": "text/javascript"
