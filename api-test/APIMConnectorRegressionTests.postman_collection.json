@@ -3,7 +3,8 @@
 		"_postman_id": "27d6a9b3-d711-47cf-9137-e2a2a44b724d",
 		"name": "APIM Connector Regression Tests",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
-		"_exporter_id": "1386967"
+		"_exporter_id": "1386967",
+		"_collection_link": "https://planetary-spaceship-134680.postman.co/workspace/APIM-Connector-Tests~09856698-685d-4e38-a0c0-890ac86476fe/collection/1386967-27d6a9b3-d711-47cf-9137-e2a2a44b724d?action=share&creator=1386967&source=collection_link"
 	},
 	"item": [
 		{
@@ -1678,7 +1679,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n  \"name\": \"{{TENANT}}\",\n  \"cloud-token\": {\n\t\t\"eventPortal\": {\n\t\t\t\"baseUrl\": \"{{EP_BASE_URL}}\",\n            \"token\": \"{{EP_TOKEN}}\"\n\n\t\t},\n\t\t\"cloud\":{\n\t\t\t\"baseUrl\": \"{{CLOUD_BASE_URL}}\",\n            \"token\":\"{{CLOUD_TOKEN}}\"\n\t\t}\n  },\n  \"integrations\": {\n    \"notifications\": {\n      \"baseUrl\": \"https://mr1i5g7tif6z9h.messaging.solace.cloud:9443/apim\",\n      \"authentication\": {\n        \"userName\": \"solace-cloud-client\",\n        \"password\": \"enfe56t36gbp4evn4hner9grmh\"\n      }\n    }\n  }\n}",
+							"raw": "{\n  \"name\": \"{{TENANT}}\",\n  \"cloud-token\": {\n\t\t\"eventPortal\": {\n\t\t\t\"baseUrl\": \"{{EP_BASE_URL}}\",\n            \"token\": \"{{EP_TOKEN}}\"\n\n\t\t},\n\t\t\"cloud\":{\n\t\t\t\"baseUrl\": \"{{CLOUD_BASE_URL}}\",\n            \"token\":\"{{CLOUD_TOKEN}}\"\n\t\t}\n  }\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -7829,7 +7830,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n  \"name\": \"{{APP_NAME}}\",\n  \"internalName\": \"{{APP_NAME_INTERNAL}}\",    \n  \"displayName\": \"{{APP_NAME}}\",\n  \"expiresIn\": 0,\n  \"apiProducts\": [\n    \"{{API_NAME}}_PRODUCT2\"\n  ],\n  \"attributes\": [\n    {\n      \"name\": \"equipmentId\",\n      \"value\": \"E1,E2\"\n    }\n  ],\n  \"credentials\": {\n    \"expiresAt\": -1,\n    \"issuedAt\": 0,\n    \"secret\": {\n      \"consumerKey\": \"{{CONSUMER_KEY}}\",\n      \"consumerSecret\": \"{{CONSUMER_SECRET}}\"\n    }\n  }\n}",
+							"raw": "{\n  \"name\": \"{{APP_NAME}}\",\n  \"internalName\": \"{{APP_NAME_INTERNAL}}\",    \n  \"displayName\": \"{{APP_NAME}}\",\n  \"expiresIn\": 0,\n  \"apiProducts\": [\n    \"{{API_NAME}}_PRODUCT2\"\n  ],\n  \"attributes\": [\n    {\n      \"name\": \"equipmentId\",\n      \"value\": \"E1,E2\"\n    },\n    {\n      \"name\": \"shippingline\",\n      \"value\": \"abc\"\n    },\n        {\n      \"name\": \"sensor\",\n      \"value\": \"HUMIDITY,LIGHT\"\n    }\n\n  ],\n  \"credentials\": {\n    \"expiresAt\": -1,\n    \"issuedAt\": 0,\n    \"secret\": {\n      \"consumerKey\": \"{{CONSUMER_KEY}}\",\n      \"consumerSecret\": \"{{CONSUMER_SECRET}}\"\n    }\n  }\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -21902,7 +21903,52 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n}",
+							"raw": "{\n    \"name\": \"mycredentials\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{CONNECTOR_BASEURL}}/{{TENANT}}/teams/{{TEAM_NAME}}/apps/{{APP_NAME}}/credentials",
+							"host": [
+								"{{CONNECTOR_BASEURL}}"
+							],
+							"path": [
+								"{{TENANT}}",
+								"teams",
+								"{{TEAM_NAME}}",
+								"apps",
+								"{{APP_NAME}}",
+								"credentials"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "POST Credentials Duplicate",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Failed POST request\", function () {",
+									"    pm.expect(pm.response.code).to.be.oneOf([400]);",
+									"});",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"mycredentials\"\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -22021,7 +22067,7 @@
 					"response": []
 				},
 				{
-					"name": "POST Named Credentials(has consume key",
+					"name": "POST Credentials identified by consumer key",
 					"event": [
 						{
 							"listen": "test",
@@ -24553,7 +24599,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n  \"name\": \"{{TENANT}}\",\n  \"cloud-token\": {\n\t\t\"eventPortal\": {\n\t\t\t\"baseUrl\": \"{{EP_BASE_URL}}\",\n            \"token\": \"{{EP_TOKEN}}\"\n\n\t\t},\n\t\t\"cloud\":{\n\t\t\t\"baseUrl\": \"{{CLOUD_BASE_URL}}\",\n            \"token\":\"{{CLOUD_TOKEN}}\"\n\t\t}\n  },\n  \"integrations\": {\n    \"notifications\": {\n      \"baseUrl\": \"https://mr1i5g7tif6z9h.messaging.solace.cloud:9443/apim\",\n      \"authentication\": {\n        \"userName\": \"solace-cloud-client\",\n        \"password\": \"enfe56t36gbp4evn4hner9grmh\"\n      }\n    }\n  },\n  \"serviceRegistry\": \"eventportal\"\n}",
+							"raw": "{\n  \"name\": \"{{TENANT}}\",\n  \"cloud-token\": {\n\t\t\"eventPortal\": {\n\t\t\t\"baseUrl\": \"{{EP_BASE_URL}}\",\n            \"token\": \"{{EP_TOKEN}}\"\n\n\t\t},\n\t\t\"cloud\":{\n\t\t\t\"baseUrl\": \"{{CLOUD_BASE_URL}}\",\n            \"token\":\"{{CLOUD_TOKEN}}\"\n\t\t}\n  }\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -24567,6 +24613,63 @@
 							],
 							"path": [
 								"organizations"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Org enable EP2 service registry",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"/*",
+									"pm.test(\"Status OK\", function () {",
+									"    pm.response.to.have.status(201);",
+									"});",
+									"*/"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "{{CONNECTOR_ADMIN_PWD}}",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "{{CONNECTOR_ADMIN}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PATCH",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"{{TENANT}}\",\n    \"serviceRegistry\": \"eventportal\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{CONNECTOR_BASEURL}}/organizations/{{TENANT}}",
+							"host": [
+								"{{CONNECTOR_BASEURL}}"
+							],
+							"path": [
+								"organizations",
+								"{{TENANT}}"
 							]
 						}
 					},
@@ -24609,7 +24712,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n  \"name\": \"{{CONNECTOR_ENV}}\",\n  \"displayName\": \"{{CONNECTOR_ENV}} display\",\n  \"description\": \"{{CONNECTOR_ENV}} environment\",\n  \"serviceId\": \"ch1n1i3a52o\",\n  \"exposedProtocols\": [\n    {\n      \"name\": \"secure-mqtt\",\n      \"version\": \"3.1.1\"\n    },\n    {\n      \"name\": \"mqtt\",\n      \"version\": \"3.1.1\"\n    },\n    {\n      \"name\": \"http\",\n      \"version\": \"1.1\"\n    },\n    {\n      \"name\": \"https\",\n      \"version\": \"1.1\"\n    },\n    {\n      \"name\": \"jms\",\n      \"version\": \"1.1\"\n   },\n    {\n      \"name\": \"smf\",\n      \"version\": \"smf\"\n   },\n    {\n      \"name\": \"smfs\",\n      \"version\": \"smfs\"\n    }\n  ]\n}",
+							"raw": "{\n  \"name\": \"{{CONNECTOR_ENV}}\",\n  \"displayName\": \"{{CONNECTOR_ENV}} display\",\n  \"description\": \"{{CONNECTOR_ENV}} environment\",\n  \"serviceId\": \"z680gkn3b8z\",\n  \"exposedProtocols\": [\n    {\n      \"name\": \"secure-mqtt\",\n      \"version\": \"3.1.1\"\n    },\n    {\n      \"name\": \"mqtt\",\n      \"version\": \"3.1.1\"\n    },\n    {\n      \"name\": \"http\",\n      \"version\": \"1.1\"\n    },\n    {\n      \"name\": \"https\",\n      \"version\": \"1.1\"\n    },\n    {\n      \"name\": \"jms\",\n      \"version\": \"1.1\"\n   },\n    {\n      \"name\": \"smf\",\n      \"version\": \"smf\"\n   },\n    {\n      \"name\": \"smfs\",\n      \"version\": \"smfs\"\n    }\n  ]\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -24810,12 +24913,12 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "http://localhost:9090/SEMP/v2/config/msgVpns/default/aclProfiles/{{APP_NAME_INTERNAL}}",
+							"raw": "http://localhost:7070/SEMP/v2/config/msgVpns/default/aclProfiles/{{APP_NAME_INTERNAL}}",
 							"protocol": "http",
 							"host": [
 								"localhost"
 							],
-							"port": "9090",
+							"port": "7070",
 							"path": [
 								"SEMP",
 								"v2",
@@ -24880,6 +24983,51 @@
 							"path": [
 								"organizations",
 								"{{TENANT}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "http://localhost:9090/private/my-org/applications",
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "Solace123!",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "api-user",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"applicationVersionId\": \"6473cpivvr4\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:9090/private/my-org/applications",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "9090",
+							"path": [
+								"private",
+								"my-org",
+								"applications"
 							]
 						}
 					},
