@@ -1,3 +1,4 @@
+import L from "../../server/common/logger";
 export enum TaskState {
     PRESENT = "PRESENT",
     ABSENT = "ABSENT"
@@ -37,9 +38,10 @@ export interface TaskInterface {
 }
 
 
-export abstract class TaskTemplate implements TaskInterface{
+export abstract class TaskTemplate implements TaskInterface {
+    private retries: number = 3;
     protected taskConfig: TaskConfig;
-    constructor(taskConfig: TaskConfig){
+    constructor(taskConfig: TaskConfig) {
         this.taskConfig = taskConfig;
     }
 
@@ -48,7 +50,7 @@ export abstract class TaskTemplate implements TaskInterface{
     protected abstract update(): Promise<TaskResult>;
     protected abstract delete(): Promise<TaskResult>;
 
-    public config(): TaskConfig{
+    public config(): TaskConfig {
         return this.taskConfig;
     }
 
@@ -56,39 +58,46 @@ export abstract class TaskTemplate implements TaskInterface{
 
     public async execute(): Promise<TaskResult> {
         const desiredState: TaskState = this.taskConfig.state;
-        switch (desiredState){
-            case 'PRESENT': {
-                if (await this.isPresent()){
-                    return await this.update();
-                } else {
-                    return await this.create();
-                }
-            }
-            case 'ABSENT': {
-                if (await this.isPresent()){
-                    return await this.delete();
-                } else {
-                    return {
-                        data: null,
-                        state: desiredState,
-                        success: true,
-                        log: {
-                            action: 'skipped',
-                            info: 'Object is not present'
+
+        for (let i = 0; i < this.retries; i++) {
+            try {
+                switch (desiredState) {
+                    case 'PRESENT': {
+                        if (await this.isPresent()) {
+                            return await this.update();
+                        } else {
+                            return await this.create();
                         }
-                    };
-                }
-            }
-            default: {
-                return {
-                    data: null,
-                    state: desiredState,
-                    success: false,
-                    log: {
-                        action: 'error',
-                        info: 'Task execution internal error'
                     }
-                };
+                    case 'ABSENT': {
+                        if (await this.isPresent()) {
+                            return await this.delete();
+                        } else {
+                            return {
+                                data: null,
+                                state: desiredState,
+                                success: true,
+                                log: {
+                                    action: 'skipped',
+                                    info: 'Object is not present'
+                                }
+                            };
+                        }
+                    }
+                    default: {
+                        return {
+                            data: null,
+                            state: desiredState,
+                            success: false,
+                            log: {
+                                action: 'error',
+                                info: 'Task execution internal error'
+                            }
+                        };
+                    }
+                }
+            } catch (e) {
+                L.warn(`Task executionn failed retry`);
             }
         }
     }
