@@ -24987,51 +24987,6 @@
 						}
 					},
 					"response": []
-				},
-				{
-					"name": "http://localhost:9090/private/my-org/applications",
-					"request": {
-						"auth": {
-							"type": "basic",
-							"basic": [
-								{
-									"key": "password",
-									"value": "Solace123!",
-									"type": "string"
-								},
-								{
-									"key": "username",
-									"value": "api-user",
-									"type": "string"
-								}
-							]
-						},
-						"method": "POST",
-						"header": [],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n    \"applicationVersionId\": \"6473cpivvr4\"\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "http://localhost:9090/private/my-org/applications",
-							"protocol": "http",
-							"host": [
-								"localhost"
-							],
-							"port": "9090",
-							"path": [
-								"private",
-								"my-org",
-								"applications"
-							]
-						}
-					},
-					"response": []
 				}
 			]
 		}
