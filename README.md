@@ -1,3 +1,11 @@
+# Deprecated! - Solace API Management Connector
+
+>[!CAUTION]
+>This repository is superseded by Solace Cloud REST APIs for APIM Integration:
+>https://api.solace.dev/cloud/reference/api-management-in-pubsub-event-portal
+
+
+
 [![integration-test](https://github.com/solace-iot-team/platform-api/actions/workflows/integration-test.yml/badge.svg)](https://github.com/solace-iot-team/platform-api/actions/workflows/integration-test.yml)
 [![release-test](https://github.com/solace-iot-team/platform-api/actions/workflows/release-test.yml/badge.svg)](https://github.com/solace-iot-team/platform-api/actions/workflows/release-test.yml)
 [![release](https://github.com/solace-iot-team/platform-api/actions/workflows/release.yml/badge.svg)](https://github.com/solace-iot-team/platform-api/actions/workflows/release.yml)
